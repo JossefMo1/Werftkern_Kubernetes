@@ -1,7 +1,7 @@
 package discovery
 
 import (
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"strings"
 	"testing"
 	"time"
