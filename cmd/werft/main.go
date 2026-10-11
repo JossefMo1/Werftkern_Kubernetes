@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/ClusterPilot-System/werftkern/internal/cli"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/cli"
 	"os"
 	"os/signal"
 	"syscall"
