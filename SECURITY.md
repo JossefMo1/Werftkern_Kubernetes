@@ -2,9 +2,11 @@
 
 ## Support status
 
-Only experimental 0.2.0-dev.2 source is currently provided. **No version is production-supported.**
+Current sources contain experimental Werftkern Kubernetes 0.1.0-dev.3 and the separate Native Runtime 0.2.0-dev.4. **No version is production-supported.**
 Do not deploy customer data, production credentials, payment workers or untrusted tenants.
 No response-time SLA or 24/7 security team is claimed.
+
+See [the public-launch safety gate](docs/OPEN-SOURCE-LAUNCH-CHECKLIST.md) before changing repository visibility or tagging a release.
 
 ## Private reporting
 
