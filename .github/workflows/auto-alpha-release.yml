@@ -1,0 +1,133 @@
+name: Publish private experimental alpha release
+
+# The release is source-only, explicitly NOT production qualified, and
+# only generated while this repository is PRIVATE. This workflow does
+# NOT change repository visibility or require signed commits.
+on:
+  workflow_run:
+    workflows:
+      - Native runtime source and package checks
+      - Kubernetes backend contracts and package
+      - Pre-publication source history and privacy audit
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: werftkern-private-alpha-release
+  cancel-in-progress: false
+
+jobs:
+  private-alpha:
+    if: >-
+      github.repository == 'JossefMo1/Werftkern_Kubernetes' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Require private repository and matching successful checks
+        id: gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          TRIGGER_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          visibility="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.visibility')"
+          if [ "$visibility" != private ]; then
+            echo '::error::Public release forbidden until separate ownership and security approval.'
+            exit 1
+          fi
+
+          sha="$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')"
+          if [ "$EVENT_NAME" = workflow_run ] && [ "$TRIGGER_SHA" != "$sha" ]; then
+            echo 'A newer main commit exists; ignoring stale workflow result.'
+            exit 0
+          fi
+
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          runs="$(gh api --method GET "repos/$GITHUB_REPOSITORY/actions/runs" \
+            -f head_sha="$sha" -f per_page=100)"
+          if ! jq -e '
+            .workflow_runs as $runs
+            | [
+                "Native runtime source and package checks",
+                "Kubernetes backend contracts and package",
+                "Pre-publication source history and privacy audit"
+              ]
+            | all(.[];
+                . as $required
+                | any($runs[];
+                    .name == $required and
+                    .event == "push" and
+                    .head_branch == "main" and
+                    .conclusion == "success"
+                  )
+              )
+          ' <<< "$runs" > /dev/null; then
+            echo 'Other main CI checks have not all passed for this exact commit; not releasing.'
+            exit 0
+          fi
+          echo 'eligible=true' >> "$GITHUB_OUTPUT"
+
+      - name: Check out tested main commit read-only
+        if: steps.gate.outputs.eligible == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ steps.gate.outputs.sha }}
+          persist-credentials: false
+
+      - name: Create source-only GitHub pre-release once per version
+        if: steps.gate.outputs.eligible == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.gate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          version="$(tr -d '\r\n' < release/alpha-version.txt)"
+          if [[ ! "$version" =~ ^v0\.[0-9]+\.[0-9]+-alpha\.[0-9]+$ ]]; then
+            echo '::error::Only experimental alpha versions are permitted.'
+            exit 1
+          fi
+          notes="releases/$version.md"
+          if [ ! -s "$notes" ]; then
+            echo '::error::Reviewed release notes are missing or empty.'
+            exit 1
+          fi
+
+          if gh release view "$version" > /dev/null 2>&1; then
+            echo "Release $version already exists; not recreating."
+            exit 0
+          fi
+
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$version" > /dev/null 2>&1; then
+            echo '::error::Tag exists without a release. Requires explicit maintainer review.'
+            exit 1
+          fi
+
+          current_main="$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')"
+          if [ "$SOURCE_SHA" != "$current_main" ]; then
+            echo 'main moved during release preparation; aborting.'
+            exit 0
+          fi
+          if [ "$(gh api "repos/$GITHUB_REPOSITORY" --jq '.visibility')" != private ]; then
+            echo '::error::Repository became public: publishing is forbidden.'
+            exit 1
+          fi
+
+          # No binaries, packages, credentials or logs are uploaded.
+          # The GitHub-managed source archives are the only downloadable assets.
+          gh release create "$version" \
+            --target "$SOURCE_SHA" \
+            --title "Werftkern $version (experimental source alpha)" \
+            --notes-file "$notes" \
+            --prerelease \
+            --latest=false
+          echo "Created private source-only pre-release $version."
