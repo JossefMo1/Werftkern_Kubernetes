@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
-	"github.com/ClusterPilot-System/werftkern/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
 	"os"
 	"path/filepath"
 	"testing"

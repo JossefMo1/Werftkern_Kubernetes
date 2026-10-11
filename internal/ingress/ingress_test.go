@@ -14,10 +14,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ClusterPilot-System/werftkern/internal/config"
-	"github.com/ClusterPilot-System/werftkern/internal/discovery"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/pki"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/discovery"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
 )
 
 func cfg() Config {
