@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 )
 
 // MaintenanceNodeRequest binds each mutation to the already held cluster lock.

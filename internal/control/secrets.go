@@ -2,7 +2,7 @@ package control
 
 import (
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"net/http"
 	"strconv"
 	"strings"
