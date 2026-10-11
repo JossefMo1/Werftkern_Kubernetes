@@ -1,0 +1,15 @@
+# Maintainer review routing. This file requests reviews; it is enforceable only
+# if branch protection / ruleset requires CODEOWNER reviews (when available).
+# Commit signatures are NOT required.
+/ @JossefMo1
+
+# Security-sensitive areas
+/.github/ @JossefMo1
+/internal/ @JossefMo1
+/ops/ @JossefMo1
+/packaging/ @JossefMo1
+/scripts/ @JossefMo1
+/release/ @JossefMo1
+/SECURITY.md @JossefMo1
+/NOTICE.md @JossefMo1
+/LICENSE @JossefMo1
