@@ -55,3 +55,11 @@ Die exakten Tag-/Release-Befehle und menschlichen Freigaben stehen in der
 
 Ein GitHub-Tag, Release-Artefakt oder erfolgreich durchgelaufener CI-Test
 wird durch diese Dokumentation **nicht** behauptet.
+
+## Go module identity
+
+For commits after the issue #6 module migration, the canonical Go module and
+internal imports use `github.com/JossefMo1/Werftkern_Kubernetes`, matching the
+actual GitHub remote. The earlier private `v0.1.0-alpha.1` tag predates this
+migration, so do not retroactively claim that it used the new module path.
+This does not establish endorsement by Kubernetes or ClusterPilot.
