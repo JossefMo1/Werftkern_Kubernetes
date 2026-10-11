@@ -5,9 +5,9 @@ package recovery
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/strictjson"
-	"github.com/ClusterPilot-System/werftkern/internal/vault"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/vault"
 	"time"
 )
 
