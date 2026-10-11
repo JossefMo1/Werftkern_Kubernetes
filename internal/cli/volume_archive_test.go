@@ -14,13 +14,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ClusterPilot-System/werftkern/internal/config"
-	"github.com/ClusterPilot-System/werftkern/internal/control"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/pki"
-	"github.com/ClusterPilot-System/werftkern/internal/safefile"
-	"github.com/ClusterPilot-System/werftkern/internal/store"
-	"github.com/ClusterPilot-System/werftkern/internal/testutil"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/store"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/testutil"
 )
 
 func TestVolumeArchiveCLIPhysicalRestoreAfterLostAcknowledgment(t *testing.T) {

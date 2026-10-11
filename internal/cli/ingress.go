@@ -11,14 +11,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ClusterPilot-System/werftkern/internal/apiclient"
-	"github.com/ClusterPilot-System/werftkern/internal/config"
-	"github.com/ClusterPilot-System/werftkern/internal/discovery"
-	"github.com/ClusterPilot-System/werftkern/internal/ingress"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/pki"
-	"github.com/ClusterPilot-System/werftkern/internal/safefile"
-	"github.com/ClusterPilot-System/werftkern/internal/setup"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/apiclient"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/discovery"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/ingress"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/setup"
 )
 
 func ingressCommand(ctx context.Context, args []string) error {
