@@ -1,0 +1,40 @@
+name: Pre-publication source history and privacy audit
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  publication-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout complete reachable history (read-only)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Scan current source for known unsafe content
+        run: python3 scripts/check-public-source.py
+      - name: Scan reachable Git objects, including removed secrets
+        run: python3 scripts/audit-git-history.py
+      - name: Regression tests for publication blockers
+        run: python3 -m unittest discover -s tests/release -v
+      - name: Explicitly preserve production release block
+        run: |
+          set +e
+          python3 scripts/check-release.py --commit "$(git rev-parse HEAD)" > /tmp/werft-release-status.json
+          status=$?
+          set -e
+          test "$status" -eq 1
+          python3 -c 'import json; d=json.load(open("/tmp/werft-release-status.json")); assert d["status"] == "BLOCKED" and d["productionReady"] is False'
+# This workflow is a heuristic audit, NOT a security review or publication approval.
+# GitHub publication and the first Release must be separately approved by the owner.

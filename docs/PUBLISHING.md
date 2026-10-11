@@ -1,46 +1,57 @@
-# Veröffentlichung als eigenes Open-Source-Repository
+# Werftkern: Veröffentlichung als eigenständiges Open-Source-Projekt
 
-Vorgeschlagener Name: `werftkern`. Der Modulpfad verwendet
-`github.com/ClusterPilot-System/werftkern`; dies behauptet nicht, dass dieser Remote
-bereits existiert. Bei anderem Eigentümer den Modulpfad und Imports bewusst anpassen.
+**Aktuelles Repository:** `JossefMo1/Werftkern_Kubernetes` (zunächst PRIVATE).
+Das Repository wurde bereits angelegt; die frühere Anleitung zur Erstellung
+eines neuen `ClusterPilot-System/werftkern`-Repositories ist überholt.
 
-**Nicht das private ClusterPilot-Repository öffentlich schalten.** Dieses Projekt besitzt eine
-separate Historie und keine privaten Geschäftspläne, Keys oder Releaseartefakte daraus.
-`LICENSE` ist Apache-2.0, der angepasste Designanteil wird in `NOTICE.md` genannt.
-Der Eigentümer muss Rechte und gewünschte Lizenz vor der tatsächlichen Veröffentlichung prüfen.
+**Entscheidung: HOLD für PUBLIC und GitHub Release, bis alle Bedingungen in
+[OPEN-SOURCE-LAUNCH-CHECKLIST.md](OPEN-SOURCE-LAUNCH-CHECKLIST.md) erfüllt sind.**
 
-## Aus der ZIP-Datei
+Die Quellen enthalten zwei getrennte, experimentelle Komponenten:
+Werftkern Kubernetes `0.1.0-dev.3` (k0s/k0sctl-basiert) und Werftkern
+Native Runtime `0.2.0-dev.4` (kein Kubernetes-Ersatz). Die erste angestrebte
+öffentliche Quellversion ist `v0.1.0-alpha.1` als ausdrücklich markierte
+**Pre-Release**, nicht als Produktions- oder CNCF-Freigabe.
 
-```bash
-cd werftkern
-git init -b main
-git add .
-git commit -m "Initial experimental Werftkern source"
-gh auth login
-bash scripts/publish-github.sh DEIN-ACCOUNT/werftkern --public
-```
+## Rechte und Sicherheitsgrenzen
 
-Oder die separat mitgelieferte Git-Bundle-Historie mit `git clone DATEI.bundle werftkern`
-übernehmen, dann das lokale Bundle-Origin entfernen und erst den neuen Remote anlegen.
-Eine vorhandene `origin` wird vom Skript nicht überschrieben. Der öffentliche Schritt benötigt
-interaktive Bestätigung des exakten Repositorynamens. Keine Tokens in Chat oder Argumente kopieren.
+`LICENSE` nennt Apache-2.0. `NOTICE.md` nennt ClusterPilot-bezogene
+Provenienz. Das ist kein unabhängiger Nachweis, dass sämtliche betroffenen
+Urheber- und Nutzungsrechte übertragen wurden. Der Repository-Eigentümer
+muss diese Rechte sowie Fremdlizenzen und Geheimhaltungsverpflichtungen
+explizit bestätigen, bevor die Quellen allgemein zugänglich werden.
 
-Das Skript erstellt **keine Produktionsrelease**, ändert keine Branchschutzregeln und erfindet
-keine GitHub-Actions-Ergebnisse. Eine öffentliche Entwicklungs-Alpha ist zulässig; sie darf nicht
-als vollständige Produktionsimplementierung beworben werden.
+Ein ignoriertes Secret kann weiterhin in alten Git-Objekten vorkommen.
+Der historische Scanner (`scripts/audit-git-history.py`) erkennt nur
+bestimmte Muster. Vertrauliche Inhalte sind unabhängig zu prüfen, betroffene
+Schlüssel zu widerrufen und gegebenenfalls die komplette veröffentlichte
+Historie vor dem ersten PUBLIC-Schritt neu aufzubauen.
 
-## Vor öffentlichem Start im GitHub-Repository einstellen
+## Automatisierte Schutzmaßnahmen
 
-Private Vulnerability Reporting aktivieren; Maintainer/Reviewzuständigkeiten festlegen;
-Standardbranch schützen; erforderliche CI-Checks und Review erzwingen; Schreibrechte minimieren.
-Privilegierte VM-Tests nur explizit auf ephemeren runnern mit qualifiziertem Source-Commit,
-niemals mit Fork-Secrets oder auf produktiven selbstgehosteten runnern ausführen.
+- `.github/workflows/publication-audit.yml` prüft Quellbaum und
+  erreichbare Git-Historie mit readonly Checkout. Die bestehenden
+  CI-Workflows prüfen Entwicklungs- und Kontrakttests.
+- Die Release-Qualifikation in `release/qualification.json` bleibt
+  absichtlich **BLOCKED**. JSON-Felder allein sind keine Freigabe.
+- Branchschutz, Pull-Request-Reviews und Dependabot-Einstellungen müssen
+  nach dem verfügbaren GitHub-Plan geprüft werden. Auf kostenlosen Plänen
+  lässt sich Branchschutz für private Repositories ggf. erst nach dem
+  PUBLIC-Schritt aktivieren; in dem Fall zuerst unabhängig prüfen und
+  direkt nach PUBLIC konfigurieren. GitHub private Vulnerability Reporting
+  ist nur bei öffentlichen Repositories aktivierbar. GitHub Secret
+  Scanning/Push Protection für private Repositories hängt vom Plan ab;
+  eine unabhängige Vorabprüfung ist daher zwingend.
+- Keine öffentlichen Kunden-, Cloud-, Kubeconfig-, SSH-, PKI-, Backup-
+  oder persönlichen Daten. Keine privilegierten Tests von fremden Forks
+  auf langlebigen selbstgehosteten Runnern.
 
-## Freigaben
+## Erste Alpha
 
-`release/qualification.json` ist absichtlich nicht freigegeben.
-`python3 scripts/check-release.py --commit "$(git rev-parse HEAD)"` muss derzeit BLOCKED liefern.
-Die Konsistenzprüfung verlangt 52 Planreferenzen, ausgeführte Gates, passenden Commit und
-Hashes vorhandener Evidenzdateien. Sie prüft **nicht**, ob jemand einen Testbericht erfunden hat:
-Authentizität muss durch geschützte Runner, Provenance und unabhängige Freigabe abgesichert werden.
-Keine Selbstattestierung durch Umschalten von `passed` oder `productionReady`.
+Die überprüfbaren Versionshinweise befinden sich in
+[releases/v0.1.0-alpha.1.md](../releases/v0.1.0-alpha.1.md).
+Die exakten Tag-/Release-Befehle und menschlichen Freigaben stehen in der
+[Checkliste](OPEN-SOURCE-LAUNCH-CHECKLIST.md).
+
+Ein GitHub-Tag, Release-Artefakt oder erfolgreich durchgelaufener CI-Test
+wird durch diese Dokumentation **nicht** behauptet.

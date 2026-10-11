@@ -14,6 +14,10 @@ on:
         required: false
         type: boolean
         default: false
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 jobs:
@@ -52,12 +56,29 @@ jobs:
         run: |
           set -o pipefail
           sudo env PATH="$PATH" go test -race -count=1 -json ./internal/cli -run '^TestVolumeArchiveCLIPhysicalRestoreAfterLostAcknowledgment$' | tee evidence/root-volume-cli.jsonl
+      - name: Check whether historical dev.3 source baseline is available
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git cat-file -e '67f5617188a8536d0ce915267a27ed552e55687e^{commit}' 2>/dev/null; then
+            echo 'WERFT_COMPAT_BASE_AVAILABLE=true' >> "$GITHUB_ENV"
+          else
+            echo 'WERFT_COMPAT_BASE_AVAILABLE=false' >> "$GITHUB_ENV"
+            echo '{"status":"BLOCKED","reason":"historical-dev3-commit-not-in-published-repository","previousAgentCompatibilityVerified":false,"productionReady":false}' > evidence/agent-compat-status.json
+            echo '::warning::Historical dev.3 ancestor is absent: real binary compatibility and predecessor signature checks are NOT VERIFIED. Release qualification remains blocked.'
+          fi
       - name: Actual previous-agent executable compatibility (explicit engine/store fixtures)
+        if: env.WERFT_COMPAT_BASE_AVAILABLE == 'true'
         run: bash scripts/test-agent-compat.sh
-      - name: Build unsigned alpha package
+      - name: Build unsigned experimental package (not a public release)
         run: bash scripts/build-deb.sh
       - name: Actual previous verifier authenticates target package (ephemeral test signature only)
+        if: env.WERFT_COMPAT_BASE_AVAILABLE == 'true'
         run: python3 tests/integration/verify_upgrade_package.py --previous-binary evidence/agent-compat/werft-dev3 --package dist/werftkern_0.2.0~dev4_amd64.deb --evidence evidence/package-predecessor-check.json
+      - name: Fail closed if an unavailable historical check was reported as passed
+        if: env.WERFT_COMPAT_BASE_AVAILABLE == 'false'
+        run: |
+          python3 -c 'import json; d=json.load(open("evidence/agent-compat-status.json")); assert d["status"] == "BLOCKED" and d["previousAgentCompatibilityVerified"] is False and d["productionReady"] is False'
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # verified release reference, 2026-09-24
         with:
           name: experimental-source-validation-and-deb

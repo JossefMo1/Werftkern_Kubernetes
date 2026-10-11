@@ -18,3 +18,24 @@ __pycache__/
 *.mesh.json
 /private-ha-kits/
 /private-mesh/
+
+# Developer credentials and local environment overrides (not a history scrub)
+.env
+.env.*
+!.env.example
+!.env.template
+*.local
+*.p12
+*.pfx
+*.tfstate
+*.tfstate.*
+*.kubeconfig
+.kube/
+.npmrc
+.pypirc
+credentials.json
+id_rsa
+id_ed25519
+*.log
+.vscode/
+.idea/
