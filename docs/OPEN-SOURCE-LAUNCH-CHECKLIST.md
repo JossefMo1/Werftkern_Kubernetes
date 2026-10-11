@@ -3,9 +3,12 @@
 Target repository: `JossefMo1/Werftkern_Kubernetes`
 Target first release: `v0.1.0-alpha.1` (**experimental source-only pre-release**).
 
-**Default decision: HOLD.** Do not change visibility, create a tag, publish
-release artifacts, or call a version production-ready just because these
-instructions exist.
+**Default decision: HOLD for PUBLIC publication and production.**
+A separate GitHub Actions workflow may create a **PRIVATE, source-only,
+experimental** `v0.1.0-alpha.1` pre-release once all three defined CI workflows
+succeed for the exact current main commit. No binaries or external distribution
+are authorized. The private alpha does not replace the requirements below
+for a future PUBLIC release. Never label it production-ready.
 
 ## Required checks (must be recorded by a maintainer)
 
@@ -57,9 +60,11 @@ is expected to report `BLOCKED` because the production evidence gates
 are incomplete. **Do not edit JSON flags to make it pass**. Production
 qualification requires separate real-world evidence and independent review.
 
-## First source-only alpha release (only AFTER the checklist passes)
+## Public source publication (only AFTER all checks pass)
 
-From a clean local checkout of the reviewed `main` commit:
+The internal alpha is produced automatically by `.github/workflows/auto-alpha-release.yml`
+while the repository stays private. This section applies solely when approving
+PUBLIC distribution later. From a clean local checkout of the reviewed `main` commit:
 
 ```bash
 git fetch --all --tags
@@ -69,12 +74,14 @@ python3 scripts/check-public-source.py
 python3 scripts/audit-git-history.py --require-noreply
 git tag -a v0.1.0-alpha.1 -m "Werftkern experimental source alpha 1"
 git push origin v0.1.0-alpha.1
-gh release create v0.1.0-alpha.1 --verify-tag --prerelease \
-  --title "Werftkern v0.1.0-alpha.1 (experimental source)" \
-  --notes-file releases/v0.1.0-alpha.1.md
+# If a private prerelease already exists, review/approve the existing tag and
+# release for public visibility; do NOT duplicate or retag it automatically.
+gh release view v0.1.0-alpha.1
 ```
 
-Make GitHub repository visibility PUBLIC only after the same checks.
+Make GitHub repository visibility PUBLIC only after independent ownership,
+secrets/history and security review plus the effective branch protections.
+A PRIVATE source alpha is not that approval.
 Do not attach unsigned packages as verified binaries. Create a future
 production release only after the separate qualification gates pass.
 
