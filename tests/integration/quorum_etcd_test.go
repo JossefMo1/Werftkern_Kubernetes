@@ -18,9 +18,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/pki"
-	"github.com/ClusterPilot-System/werftkern/internal/store"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/store"
 )
 
 // This is intentionally three REAL processes/data directories/peer sockets on

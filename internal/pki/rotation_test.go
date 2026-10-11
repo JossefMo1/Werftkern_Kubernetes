@@ -3,7 +3,7 @@ package pki
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"github.com/ClusterPilot-System/werftkern/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"io"
 	"net"
 	"net/http"

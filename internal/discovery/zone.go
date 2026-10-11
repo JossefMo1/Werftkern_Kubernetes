@@ -5,7 +5,7 @@ package discovery
 import (
 	"errors"
 	"fmt"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"net"
 	"sort"
 	"strings"

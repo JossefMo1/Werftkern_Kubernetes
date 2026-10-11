@@ -2,7 +2,7 @@ package engine
 
 import (
 	"context"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"os"
 	"path/filepath"
 	"strings"

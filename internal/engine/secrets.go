@@ -3,8 +3,8 @@ package engine
 import (
 	"context"
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"os"
 	"path/filepath"
 	"strings"

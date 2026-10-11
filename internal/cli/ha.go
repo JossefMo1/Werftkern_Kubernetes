@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ClusterPilot-System/werftkern/internal/ha"
-	"github.com/ClusterPilot-System/werftkern/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/ha"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"time"
 )
 

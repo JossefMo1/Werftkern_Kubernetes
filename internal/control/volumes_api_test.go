@@ -2,9 +2,9 @@ package control_test
 
 import (
 	"context"
-	"github.com/ClusterPilot-System/werftkern/internal/apiclient"
-	"github.com/ClusterPilot-System/werftkern/internal/control"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/apiclient"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"strings"
 	"testing"
 )

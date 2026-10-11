@@ -17,7 +17,7 @@ commit="$(git rev-parse HEAD 2>/dev/null || printf uncommitted)"
 dirty=false
 [[ -z "$(git status --porcelain 2>/dev/null || true)" ]] || dirty=true
 time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w -X github.com/ClusterPilot-System/werftkern/internal/cli.BuildCommit=$commit -X github.com/ClusterPilot-System/werftkern/internal/cli.BuildTime=$time" -o build/werft ./cmd/werft
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w -X github.com/JossefMo1/Werftkern_Kubernetes/internal/cli.BuildCommit=$commit -X github.com/JossefMo1/Werftkern_Kubernetes/internal/cli.BuildTime=$time" -o build/werft ./cmd/werft
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags='-s -w' -o build/demo-server ./cmd/demo
 python3 scripts/make-demo-image.py
 stage="$(mktemp -d)"; trap 'rm -rf "$stage"' EXIT

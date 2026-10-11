@@ -2,9 +2,9 @@ package recovery
 
 import (
 	"bytes"
-	"github.com/ClusterPilot-System/werftkern/internal/control"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/vault"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/vault"
 	"strings"
 	"testing"
 	"time"

@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ClusterPilot-System/werftkern/internal/apiclient"
-	"github.com/ClusterPilot-System/werftkern/internal/config"
-	"github.com/ClusterPilot-System/werftkern/internal/discovery"
-	"github.com/ClusterPilot-System/werftkern/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/apiclient"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/discovery"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"time"
 )
 

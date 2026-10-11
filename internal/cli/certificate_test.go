@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ClusterPilot-System/werftkern/internal/pki"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
 )
 
 func TestCertificateCommandsRoundTripAndNoOverwrite(t *testing.T) {

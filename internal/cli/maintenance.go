@@ -3,7 +3,7 @@ package cli
 import (
 	"context"
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/control"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
 )
 
 func maintenanceCommand(ctx context.Context, args []string) error {

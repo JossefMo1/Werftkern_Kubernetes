@@ -27,8 +27,9 @@ for a future PUBLIC release. Never label it production-ready.
   documented authorization. `.gitignore` and deleting a current file do
   not remove a secret from old commits. Re-scan all reachable refs.
 - [ ] **Repository identity**: decide the permanent import path and migrate
-  the `github.com/ClusterPilot-System/werftkern` Go module/import references
-  to the actual hosted path (or document a deliberate canonical redirect).
+  the previous `github.com/ClusterPilot-System/werftkern` module/import references
+  to `github.com/JossefMo1/Werftkern_Kubernetes`. This refactor is staged
+  for validation in issue #6, but only a merged, tested commit satisfies the gate.
   Re-run all build, test and packaging checks.
 - [ ] **CI results**: verify green checks for the exact commit on the proposed
   tag, including `publication-audit`, Go/race/vet, Python suites, Kubernetes

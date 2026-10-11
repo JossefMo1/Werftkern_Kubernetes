@@ -18,13 +18,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ClusterPilot-System/werftkern/internal/agent"
-	"github.com/ClusterPilot-System/werftkern/internal/apiclient"
-	"github.com/ClusterPilot-System/werftkern/internal/config"
-	"github.com/ClusterPilot-System/werftkern/internal/control"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/store"
-	"github.com/ClusterPilot-System/werftkern/internal/testutil"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/agent"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/apiclient"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/store"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/testutil"
 )
 
 func TestWorkloadProcess(t *testing.T) {

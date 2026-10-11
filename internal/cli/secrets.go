@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ClusterPilot-System/werftkern/internal/control"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"os"
 	"strconv"
 )

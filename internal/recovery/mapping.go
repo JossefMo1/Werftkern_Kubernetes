@@ -2,7 +2,7 @@ package recovery
 
 import (
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 )
 
 // RestoreMapping only remaps references. It NEVER claims that a target volume's

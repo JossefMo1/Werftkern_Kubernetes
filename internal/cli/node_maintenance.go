@@ -7,10 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ClusterPilot-System/werftkern/internal/apiclient"
-	"github.com/ClusterPilot-System/werftkern/internal/config"
-	"github.com/ClusterPilot-System/werftkern/internal/control"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/apiclient"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 )
 
 func workerStatus(ctx context.Context, args []string) error {

@@ -3,9 +3,9 @@ package cli
 import (
 	"context"
 	"encoding/json"
-	"github.com/ClusterPilot-System/werftkern/internal/config"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/pki"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
 	"net/http"
 	"net/http/httptest"
 	"os"

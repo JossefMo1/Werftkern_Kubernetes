@@ -4,7 +4,7 @@ package safefile
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/strictjson"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 	"io"
 	"os"
 	"path/filepath"

@@ -1,5 +1,10 @@
 # Werftkern
 
+Source repository: `github.com/JossefMo1/Werftkern_Kubernetes`.
+Go module for subsequent development commits: `github.com/JossefMo1/Werftkern_Kubernetes`.
+The existing experimental `v0.1.0-alpha.1` tag is an earlier immutable
+source snapshot with a different module path; it is not production-qualified.
+
 ## Neu: eigenständiger Kubernetes-Betriebsmodus
 
 **Kubernetes-Backend `0.1.0-dev.3` · NOT_PRODUCTION_READY · keine CNCF-Zertifizierung.**

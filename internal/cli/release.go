@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/releaseverify"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/releaseverify"
 	"os"
 )
 

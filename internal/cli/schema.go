@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/setup"
-	"github.com/ClusterPilot-System/werftkern/internal/vault"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/setup"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/vault"
 	"os"
 	"path/filepath"
 )

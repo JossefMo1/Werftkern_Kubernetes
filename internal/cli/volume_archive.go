@@ -13,14 +13,14 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/ClusterPilot-System/werftkern/internal/config"
-	"github.com/ClusterPilot-System/werftkern/internal/control"
-	"github.com/ClusterPilot-System/werftkern/internal/engine"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/safefile"
-	"github.com/ClusterPilot-System/werftkern/internal/setup"
-	"github.com/ClusterPilot-System/werftkern/internal/vault"
-	"github.com/ClusterPilot-System/werftkern/internal/volumearchive"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/engine"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/setup"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/vault"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/volumearchive"
 )
 
 type diskVolumeIdentity struct {

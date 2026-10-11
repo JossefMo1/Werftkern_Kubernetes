@@ -3,7 +3,7 @@ package cli
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/migrate"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/migrate"
 	"io"
 	"os"
 )

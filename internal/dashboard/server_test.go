@@ -3,7 +3,7 @@ package dashboard
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/ClusterPilot-System/werftkern/internal/apiclient"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/apiclient"
 	"io"
 	"net/http"
 	"net/http/httptest"
