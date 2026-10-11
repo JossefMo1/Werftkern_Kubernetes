@@ -67,7 +67,9 @@ not accessible by the integration. This means source files alone do
 
 ## Release blockers
 
-- Correct the canonical Go module and imports.
+- Validate and merge the canonical Go module and import-path migration (issue #6).
+  The initial private alpha tag may still contain the original module path; never
+  change an existing release tag to hide that history.
 - Obtain authorization for code derived from the existing project and
   check third-party license notices.
 - Perform independent source/history secret and security checks;
