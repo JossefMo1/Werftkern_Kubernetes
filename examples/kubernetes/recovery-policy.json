@@ -1,0 +1,35 @@
+{
+  "format": "werftkern-recovery-policy/v1",
+  "clusterUID": "REPLACE-CLUSTER-UID",
+  "enabled": false,
+  "acceptDeleteAndCosts": false,
+  "kinds": [
+    "controller"
+  ],
+  "unhealthySeconds": 600,
+  "observations": 5,
+  "maxPerDay": 1,
+  "cooldownSeconds": 3600,
+  "minHealthyWorkers": 2,
+  "maxUnhealthyPercent": 40,
+  "maxAdditionalMonthlyEUR": 50,
+  "controllerTemplate": {
+    "location": "fsn1",
+    "serverType": "reviewed-type",
+    "imageId": 1,
+    "networkId": 1,
+    "firewallId": 1,
+    "sshKeyId": 1,
+    "maxMonthlyEUR": 50
+  },
+  "workerTemplate": {
+    "location": "fsn1",
+    "serverType": "reviewed-type",
+    "imageId": 1,
+    "networkId": 1,
+    "firewallId": 1,
+    "sshKeyId": 1,
+    "maxMonthlyEUR": 50
+  },
+  "statefulSets": []
+}

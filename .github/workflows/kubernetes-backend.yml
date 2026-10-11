@@ -1,0 +1,36 @@
+name: Kubernetes backend contracts and package
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install parser dependency on isolated CI runner
+        run: sudo apt-get update && sudo apt-get install -y python3-yaml
+      - name: Contract tests (explicit API, cloud and tool test adapters)
+        run: |
+          mkdir -p kube-evidence
+          set -o pipefail
+          PYTHONPATH=ops python3 -m unittest discover -s tests/kubernetes -v 2>&1 | tee kube-evidence/contracts.log
+          python3 -m compileall -q ops
+          bash -n scripts/build-kubernetes-deb.sh tests/e2e/kubernetes-real.sh
+          scripts/werft-kube version
+          python3 scripts/check-public-source.py > kube-evidence/source-scan.json
+      - name: Build unsigned manager package; does not install a cluster
+        run: bash scripts/build-kubernetes-deb.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kubernetes-manager-development-build
+          path: |
+            dist/werftkern-kubernetes_*.deb
+            kube-evidence/
+# Real lab tests require separately approved ephemeral hosts, SSH trust, pinned
+# assets and credentials. Never expose them to fork PRs or auto-publish a badge.

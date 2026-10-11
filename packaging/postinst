@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+if [ "$1" = configure ]; then
+  if ! getent passwd wk-runtime >/dev/null; then
+    adduser --system --group --home /nonexistent --no-create-home --disabled-login wk-runtime
+  fi
+  install -d -m 0755 /var/lib/werftkern
+  install -d -m 0700 /var/lib/werftkern/volumes
+  if [ -d /run/systemd/system ]; then systemctl daemon-reload; fi
+  printf '\nWerftkern experimental alpha installed.\nStart explicitly with: sudo werft setup\nThis local build is unsigned and not production-qualified.\n'
+fi

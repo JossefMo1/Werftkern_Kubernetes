@@ -1,0 +1,29 @@
+[Unit]
+Description=Werftkern control plane (experimental)
+Wants=network-online.target werftkern-etcd.service
+After=network-online.target werftkern-etcd.service
+ConditionPathExists=/etc/werftkern/control.json
+
+[Service]
+Type=simple
+User=wk-runtime
+Group=wk-runtime
+ExecStart=/usr/bin/werft control
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadWritePaths=/var/lib/werftkern/control
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

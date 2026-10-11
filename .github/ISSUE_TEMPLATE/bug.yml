@@ -1,0 +1,25 @@
+name: Bug report
+description: Reproducible error on disposable infrastructure
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "Do not disclose secrets, join bundles or private vulnerability details. See SECURITY.md."
+  - type: textarea
+    id: environment
+    attributes:
+      label: Version, commit, Ubuntu/kernel and Docker/etcd versions
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction and actual versus expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence and whether real runtimes or test doubles were used
+    validations:
+      required: true

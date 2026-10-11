@@ -1,0 +1,19 @@
+[Unit]
+Description=Werftkern headless DNS zone synchronizer
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/etc/werftkern/agent.json
+[Service]
+ExecStart=/usr/bin/werft discovery
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+CapabilityBoundingSet=
+ReadWritePaths=/var/lib/werftkern/dns
+UMask=0077
+[Install]
+WantedBy=multi-user.target

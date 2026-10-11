@@ -1,0 +1,28 @@
+[Unit]
+Description=Werftkern dedicated state store (experimental)
+After=network.target
+ConditionPathExists=/etc/werftkern/control.json
+
+[Service]
+Type=simple
+User=wk-runtime
+Group=wk-runtime
+ExecStart=/usr/bin/etcd --name=cpr --data-dir=/var/lib/werftkern/etcd --listen-client-urls=https://127.0.0.1:23791 --advertise-client-urls=https://127.0.0.1:23791 --listen-peer-urls=https://127.0.0.1:23801 --initial-advertise-peer-urls=https://127.0.0.1:23801 --initial-cluster=cpr=https://127.0.0.1:23801 --initial-cluster-token=werftkern --client-cert-auth=true --trusted-ca-file=/etc/werftkern/etcd-pki/ca.crt --cert-file=/etc/werftkern/etcd-pki/client.crt --key-file=/etc/werftkern/etcd-pki/client.key --peer-client-cert-auth=true --peer-trusted-ca-file=/etc/werftkern/etcd-pki/ca.crt --peer-cert-file=/etc/werftkern/etcd-pki/client.crt --peer-key-file=/etc/werftkern/etcd-pki/client.key --auto-compaction-mode=periodic --auto-compaction-retention=1h --quota-backend-bytes=268435456
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=30
+LimitNOFILE=65536
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadWritePaths=/var/lib/werftkern/etcd
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,94 @@
+{
+  "charts": {
+    "argocd": {
+      "path": "/opt/werftkern/reviewed/charts/argocd.tgz",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_CHART_VERSION"
+    },
+    "cert-manager": {
+      "path": "/opt/werftkern/reviewed/charts/cert-manager.tgz",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_CHART_VERSION"
+    },
+    "hcloud-csi": {
+      "path": "/opt/werftkern/reviewed/charts/hcloud-csi.tgz",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_CHART_VERSION"
+    },
+    "kube-prometheus-stack": {
+      "path": "/opt/werftkern/reviewed/charts/kube-prometheus-stack.tgz",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_CHART_VERSION"
+    },
+    "traefik": {
+      "path": "/opt/werftkern/reviewed/charts/traefik.tgz",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_CHART_VERSION"
+    },
+    "velero": {
+      "path": "/opt/werftkern/reviewed/charts/velero.tgz",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_CHART_VERSION"
+    }
+  },
+  "format": "werftkern-kube-assets/v1",
+  "images": {
+    "conformance:v1.35.1": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST",
+    "keycloak": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST",
+    "smoke-client": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST",
+    "smoke-http": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST",
+    "sonobuoy": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST"
+  },
+  "k0s": {
+    "v1.35.1+k0s.0": {
+      "path": "/opt/werftkern/reviewed/k0s",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "v1.35.1+k0s.0"
+    }
+  },
+  "manifests": {
+    "keycloak-operator": {
+      "path": "/opt/werftkern/reviewed/keycloak-operator.yaml",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_OPERATOR_VERSION"
+    }
+  },
+  "tools": {
+    "age": {
+      "path": "/opt/werftkern/reviewed/bin/age",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_VERSION"
+    },
+    "helm": {
+      "path": "/opt/werftkern/reviewed/bin/helm",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_VERSION"
+    },
+    "k0sctl": {
+      "path": "/opt/werftkern/reviewed/bin/k0sctl",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_VERSION"
+    },
+    "kubectl": {
+      "path": "/opt/werftkern/reviewed/bin/kubectl",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_VERSION"
+    },
+    "sonobuoy": {
+      "path": "/opt/werftkern/reviewed/bin/sonobuoy",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_VERSION"
+    },
+    "ssh-keygen": {
+      "path": "/opt/werftkern/reviewed/bin/ssh-keygen",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
+      "version": "REPLACE_WITH_VERIFIED_VERSION"
+    },
+    "ssh": {
+      "path": "/usr/bin/ssh",
+      "version": "REPLACE_WITH_VERIFIED_OPENSSH_VERSION",
+      "sha256": "REPLACE_WITH_VERIFIED_SHA256"
+    }
+  },
+  "upgradeEdges": []
+}

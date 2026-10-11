@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+installed=/usr/lib/werftkern-kubernetes/ops
+staged="$(CDPATH= cd -- "$(dirname -- "$0")/../lib/werftkern-kubernetes/ops" 2>/dev/null && pwd || true)"
+source_tree="$(CDPATH= cd -- "$(dirname -- "$0")/../ops" 2>/dev/null && pwd || true)"
+if [ -d "$installed" ]; then
+    export PYTHONPATH="$installed"
+elif [ -n "$staged" ] && [ -d "$staged" ]; then
+    # Supports package extraction/smoke testing without requiring host install.
+    export PYTHONPATH="$staged"
+elif [ -n "$source_tree" ] && [ -d "$source_tree" ]; then
+    export PYTHONPATH="$source_tree"
+else
+    echo "werft-kube: Python modules not found" >&2
+    exit 78
+fi
+exec python3 -m werftops.kube_main "$@"

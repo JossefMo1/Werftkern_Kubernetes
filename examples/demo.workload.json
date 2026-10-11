@@ -1,0 +1,13 @@
+{
+  "apiVersion": "werftkern/v1alpha1",
+  "name": "demo",
+  "expectedGeneration": 0,
+  "spec": {
+    "image": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "replicas": 2,
+    "cpuMilli": 100,
+    "memoryMiB": 32,
+    "port": 8080,
+    "readinessPath": "/healthz"
+  }
+}

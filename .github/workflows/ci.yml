@@ -1,0 +1,165 @@
+name: Native runtime source and package checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_real_pitr:
+        description: 'Run real PG17/pgBackRest on a prequalified disposable self-hosted runner (protected environment)'
+        required: false
+        type: boolean
+        default: false
+      run_real_vm_e2e:
+        description: 'Run privileged single-node install on an ephemeral Ubuntu runner'
+        required: false
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # verified release reference, 2026-09-24
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # verified release reference, 2026-09-24
+        with:
+          go-version: '1.27.1'
+          cache: false
+      - name: Compile, race tests and static checks
+        run: |
+          mkdir -p evidence
+          set -o pipefail
+          go test -race -count=1 -json ./... | tee evidence/go-test.jsonl
+          go vet ./...
+          python3 -m unittest discover -s tests/release -v
+          python3 -m unittest discover -s tests/ops -v
+          python3 -m compileall -q ops tests/integration/real_pitr.py
+          go test -tags real_etcd -run '^$' ./tests/integration
+          python3 scripts/check-public-source.py > evidence/public-source-check.json
+          set +e
+          python3 scripts/check-release.py --commit "$GITHUB_SHA" > evidence/production-blockers.json
+          gate_status=$?
+          set -e
+          test "$gate_status" -eq 1
+          python3 -c 'import json; d=json.load(open("evidence/production-blockers.json")); assert not d["productionReady"] and d["status"]=="BLOCKED"' 
+          node --check internal/dashboard/assets/app.js
+          bash -n scripts/build-deb.sh tests/e2e/ubuntu-vm.sh
+      - name: Root-only physical-volume CLI integration with explicit test doubles
+        run: |
+          set -o pipefail
+          sudo env PATH="$PATH" go test -race -count=1 -json ./internal/cli -run '^TestVolumeArchiveCLIPhysicalRestoreAfterLostAcknowledgment$' | tee evidence/root-volume-cli.jsonl
+      - name: Actual previous-agent executable compatibility (explicit engine/store fixtures)
+        run: bash scripts/test-agent-compat.sh
+      - name: Build unsigned alpha package
+        run: bash scripts/build-deb.sh
+      - name: Actual previous verifier authenticates target package (ephemeral test signature only)
+        run: python3 tests/integration/verify_upgrade_package.py --previous-binary evidence/agent-compat/werft-dev3 --package dist/werftkern_0.2.0~dev4_amd64.deb --evidence evidence/package-predecessor-check.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # verified release reference, 2026-09-24
+        with:
+          name: experimental-source-validation-and-deb
+          path: |
+            dist/
+            evidence/*.jsonl
+            evidence/*.json
+            evidence/agent-compat/*.txt
+            evidence/agent-compat/*.log
+  real-etcd:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: '1.27.1'
+          cache: false
+      - name: Verify and install real etcd test dependency
+        run: |
+          bash scripts/install-test-etcd.sh "$RUNNER_TEMP/werft-etcd"
+          echo "$RUNNER_TEMP/werft-etcd" >> "$GITHUB_PATH"
+      - name: Real processes, leader termination, quorum loss and restart
+        run: |
+          mkdir -p real-etcd-evidence
+          set -o pipefail
+          etcd --version | tee real-etcd-evidence/etcd-version.txt
+          go test -race -count=1 -timeout 4m -tags real_etcd -json ./tests/integration | tee real-etcd-evidence/test.jsonl
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: real-etcd-single-host-evidence
+          path: real-etcd-evidence/
+          if-no-files-found: warn
+  real-vm:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_real_vm_e2e
+    runs-on: ubuntu-24.04
+    needs: test
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # verified release reference, 2026-09-24
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # verified release reference, 2026-09-24
+        with:
+          name: experimental-source-validation-and-deb
+          path: artifacts
+      - name: Explicit disposable-runner package qualification
+        run: |
+          package="$(find "$PWD/artifacts" -name '*.deb' -print -quit)"
+          sudo env WERFT_DISPOSABLE_VM=1 bash tests/e2e/ubuntu-vm.sh "$package"
+      - name: Make only non-secret test results readable
+        if: always()
+        run: |
+          mkdir -p vm-evidence
+          # Explicit allowlist: never recursively upload /root, /etc, PKI or backups.
+          for f in ubuntu-vm-result.json version.txt docker-version.txt etcd-version.txt doctor.txt; do
+            if sudo test -f "/var/tmp/werftkern-e2e/$f"; then
+              sudo cp "/var/tmp/werftkern-e2e/$f" vm-evidence/
+            fi
+          done
+          sudo chown -R "$(id -u):$(id -g)" vm-evidence
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # verified release reference, 2026-09-24
+        if: always()
+        with:
+          name: actual-ubuntu-vm-evidence
+          path: vm-evidence/
+          if-no-files-found: warn
+
+  real-pitr:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.run_real_pitr
+    needs: test
+    runs-on: [self-hosted, linux, x64, werft-pitr-disposable]
+    environment: werft-isolated-database-lab
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Explicit real database integration on approved disposable host
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Runner prerequisites/PG packages are preapproved, not downloaded by this job.
+          # Only this temporary checkout is made accessible to postgres. No production data.
+          work="$(mktemp -d /var/tmp/werft-pitr-ci-XXXXXX)"
+          trap 'sudo rm -rf -- "$work"' EXIT
+          git archive HEAD | tar -x -C "$work"
+          sudo chown -R postgres:postgres "$work"
+          mkdir -p real-pitr-evidence
+          status=0
+          sudo -u postgres env WERFT_DISPOSABLE_VM=1 python3 "$work/tests/integration/real_pitr.py"             --evidence "$work/result.json" || status=$?
+          if sudo test -f "$work/result.json"; then
+            sudo cat "$work/result.json" > real-pitr-evidence/result.json
+          fi
+          test "$status" -eq 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: real-pitr-single-host-evidence
+          path: real-pitr-evidence/result.json
+          if-no-files-found: warn

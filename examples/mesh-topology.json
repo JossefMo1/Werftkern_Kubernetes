@@ -1,0 +1,1 @@
+{"name":"werft-lab","hosts":[{"name":"control-1","address":"10.87.0.1","endpoint":"10.10.0.1","podCidr":"10.88.1.0/24"},{"name":"control-2","address":"10.87.0.2","endpoint":"10.10.0.2","podCidr":"10.88.2.0/24"},{"name":"control-3","address":"10.87.0.3","endpoint":"10.10.0.3","podCidr":"10.88.3.0/24"}]}

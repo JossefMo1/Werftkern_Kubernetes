@@ -1,0 +1,9 @@
+{
+  "version": "v3.7.2",
+  "architecture": "linux-amd64",
+  "url": "https://github.com/etcd-io/etcd/releases/download/v3.7.2/etcd-v3.7.2-linux-amd64.tar.gz",
+  "sha256": "3a3679bc51a4ee9d30bccea1da7cd4fe62c6fc1d2ca1255068d2c53bf3026135",
+  "source": "https://api.github.com/repos/etcd-io/etcd/releases/tags/v3.7.2",
+  "verifiedMetadataAt": "2026-09-25",
+  "scope": "CI test dependency; not a completed product support qualification"
+}

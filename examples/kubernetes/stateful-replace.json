@@ -1,0 +1,24 @@
+{
+  "format": "werftkern-stateful-recovery/v1",
+  "clusterUID": "REPLACE-CLUSTER-UID",
+  "sourcePlanHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "worker": "worker-one",
+  "nodeUID": "REPLACE-NODE-UID",
+  "template": {
+    "location": "fsn1",
+    "serverType": "reviewed-type",
+    "imageId": 1,
+    "networkId": 1,
+    "firewallId": 1,
+    "sshKeyId": 1,
+    "maxMonthlyEUR": 50
+  },
+  "statefulSets": [
+    {
+      "namespace": "app",
+      "name": "database",
+      "uid": "REPLACE-STATEFULSET-UID"
+    }
+  ],
+  "acceptDeleteAndCosts": false
+}

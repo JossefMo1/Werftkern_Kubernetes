@@ -1,0 +1,1 @@
+{"addons":["traefik","cert-manager","keycloak-operator","kube-prometheus-stack"],"format":"werftkern-addons/v1","identity":{"acmeEmail":"ops@example.invalid","acmeProduction":true,"databaseCASecret":"db-ca","databaseHost":"db.example.invalid","databaseName":"keycloak","databaseSecret":"db-secret","domain":"example.invalid","realm":"staff"},"values":{}}

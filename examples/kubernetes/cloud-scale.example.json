@@ -1,0 +1,16 @@
+{
+  "format": "werftkern-kube-cloud-scale/v1",
+  "desiredWorkers": 4,
+  "template": {
+    "location": "fsn1",
+    "serverType": "REPLACE_REVIEWED_TYPE",
+    "imageId": 1,
+    "networkId": 1,
+    "firewallId": 1,
+    "sshKeyId": 1,
+    "maxMonthlyEUR": 50
+  },
+  "acceptCreateCosts": false,
+  "acceptDelete": false,
+  "maxAddedMonthlyEUR": 100
+}

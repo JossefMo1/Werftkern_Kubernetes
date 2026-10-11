@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+import pathlib, runpy, sys
+installed=pathlib.Path('/usr/lib/werftkern/ops')
+source=pathlib.Path(__file__).resolve().parents[1]/'ops'
+sys.path.insert(0,str(installed if installed.is_dir() else source))
+runpy.run_module('werftops',run_name='__main__')

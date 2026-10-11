@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+if [ "$1" = remove ] && [ -d /run/systemd/system ]; then
+  systemctl stop werftkern-dns.service werftkern-discovery.service werftkern-agent.service werftkern-control.service werftkern-etcd.service || true
+  systemctl disable werftkern-dns.service werftkern-discovery.service werftkern-agent.service werftkern-control.service werftkern-etcd.service || true
+  printf '\nWerftkern services stopped. Managed containers and all persisted keys/data are retained.\nDelete workloads before uninstalling when cleanup is intended.\n'
+fi

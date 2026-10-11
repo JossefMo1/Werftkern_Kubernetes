@@ -1,0 +1,1 @@
+{"format":"werftkern-hetzner/v1","name":"werft-lab","location":"nbg1","networkId":1,"firewallId":2,"sshKeyId":3,"servers":[{"name":"control-1","serverType":"cx23","imageId":999999},{"name":"control-2","serverType":"cx23","imageId":999999},{"name":"control-3","serverType":"cx23","imageId":999999}]}

@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0-dev.4",
+  "baseCommit": "67f5617188a8536d0ce915267a27ed552e55687e",
+  "createdAt": "2026-09-25T12:45:13.802232+00:00",
+  "sourceFingerprint": "3e7d3c96121b9f62f25111b929e95564808e9d8800bd9de362d45abc58c986cd",
+  "sourceFiles": 213,
+  "goRace": {
+    "mainTestResults": 175,
+    "subTestResults": 110,
+    "packagePasses": 22,
+    "failures": 0,
+    "skippedTests": 0,
+    "packagesWithoutTests": 4
+  },
+  "operationsTests": 64,
+  "releaseGuardTests": 7,
+  "browserDOMChecks": 11,
+  "actualAgentBinaryCompatibility": "passed; actual dev3 and dev4 processes; real TLS/journal; Docker and etcd fixtures",
+  "actualStateWire": "passed; actual Go JSON to actual Python readiness",
+  "actualPredecessorReleaseVerifier": "passed; actual package bytes, OpenSSL ephemeral test signatures; no host installation",
+  "fuzzCampaign": "not-run-in-this-increment; default-suite seeds only",
+  "compiler": "go1.23.2",
+  "realEtcd": "two-tests-failed-missing-binary",
+  "realPITR": "blocked-missing-PostgreSQL17-pgBackRest-exit3",
+  "digitalOcean": "droplet-list403; account warning maximum3 droplets reported; no resources mutated",
+  "productionReady": false,
+  "fullMasterplanComplete": false
+}

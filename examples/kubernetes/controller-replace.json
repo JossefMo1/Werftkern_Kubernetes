@@ -1,0 +1,17 @@
+{
+  "format": "werftkern-controller-recovery/v1",
+  "clusterUID": "REPLACE-CLUSTER-UID",
+  "sourcePlanHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "controller": "controller-one",
+  "expectedPeerURL": "https://10.20.0.10:2380",
+  "template": {
+    "location": "fsn1",
+    "serverType": "reviewed-type",
+    "imageId": 1,
+    "networkId": 1,
+    "firewallId": 1,
+    "sshKeyId": 1,
+    "maxMonthlyEUR": 50
+  },
+  "acceptDeleteAndCosts": false
+}

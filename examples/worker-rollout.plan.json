@@ -1,0 +1,11 @@
+{
+  "format": "werftkern-worker-rollout/v1",
+  "clusterId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "operationId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "workers": [
+    {"nodeId": "cccccccccccccccccccccccccccccccc", "address": "10.2.0.11", "sshUser": "ubuntu"},
+    {"nodeId": "dddddddddddddddddddddddddddddddd", "address": "10.2.0.12", "sshUser": "ubuntu"}
+  ],
+  "drainTimeoutSeconds": 300,
+  "observationSeconds": 30
+}

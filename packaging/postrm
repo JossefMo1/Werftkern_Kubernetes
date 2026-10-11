@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+if [ -d /run/systemd/system ]; then systemctl daemon-reload; fi
+# Never automatically delete identities, state or customer workloads on purge.

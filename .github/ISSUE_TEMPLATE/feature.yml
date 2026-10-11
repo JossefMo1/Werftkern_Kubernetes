@@ -1,0 +1,15 @@
+name: Feature proposal
+description: Propose a bounded implementation and its failure semantics
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: User outcome and relevant K20 plan ID
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Scope, failure behavior, security boundary and measurable acceptance
+    validations:
+      required: true

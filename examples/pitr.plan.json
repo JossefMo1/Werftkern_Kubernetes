@@ -1,0 +1,8 @@
+{
+  "format": "werftkern-pitr/v1",
+  "name": "shop",
+  "pgPath": "/var/lib/werftkern-database/shop/pgdata",
+  "socketDir": "/run/werft-db-shop",
+  "pgPort": 5432,
+  "repositoryPath": "/srv/approved-backup-repository/shop"
+}

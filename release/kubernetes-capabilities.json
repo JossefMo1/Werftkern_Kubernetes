@@ -1,0 +1,27 @@
+{
+  "product": "Werftkern Kubernetes",
+  "version": "0.1.0-dev.3",
+  "nativeRuntimeVersion": "0.2.0-dev.4",
+  "engine": "k0s-kubernetes",
+  "productionReady": false,
+  "fullMasterplanComplete": false,
+  "cncfCertified": false,
+  "capabilities": {
+    "clusterCreateUpgradeScale": "implemented-contract-tested-not-live-qualified",
+    "addons": "reviewed-local-assets-required-not-live-qualified",
+    "keycloakSSO": "kubernetes-and-grafana-configurations-no-user-login-proof",
+    "automaticWorkerReplacement": "stateless-hetzner-only-explicit-delete-cost-policy-not-live-qualified",
+    "sonobuoy": "runner-and-evidence-parser-implemented-no-real-results",
+    "selfHealing": "upstream-plus-stateless-worker-repair-and-opt-in-bounded-controller-stateful-watch-not-general-data-recovery",
+    "oneCommandTurnkeyProduction": "not-implemented",
+    "controllerAutomaticReplacement": "implemented-three-pure-controllers-hetzner-deletion-fence-and-surviving-quorum-required-not-live-qualified",
+    "fullKubernetesDisasterRecovery": "partial-control-plane-plus-quarantined-csi-snapshot-volume-restore-db-pitr-remains-separate-no-sitewide-qualified-dr",
+    "ssoForAllCatalogTools": "not-implemented",
+    "haControlPlaneEntry": "external-lb-contract-or-k0s-keepalived-vip-with-nllb-implemented-not-live-qualified",
+    "cloudBackedWorkerScale": "hetzner-create-join-drain-remove-delete-journaled-not-live-qualified",
+    "statefulNodeReplacement": "implemented-enrolled-single-replica-statefulsets-hetzner-csi-retained-single-writer-volumes-not-live-qualified",
+    "snapshotDataRestore": "implemented-trusted-velero-snapshot-backend-new-namespaces-read-only-file-hash-probes-not-compatible-with-hetzner-volume-snapshots",
+    "signedReleaseEvidence": "implemented-custom-ed25519-envelope-verifier-separated-trust-raw-hash-and-candidate-binding-no-real-signed-release-or-independent-approval",
+    "cloudMutationRecovery": "pinned-provider-credential-delete-intent-and-local-cleanup-lock-replay-tested-not-live-qualified"
+  }
+}

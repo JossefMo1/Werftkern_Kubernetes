@@ -1,0 +1,11 @@
+{
+  "format": "werftkern-database-ha/v1",
+  "name": "shop",
+  "postgresMajor": 17,
+  "hosts": [
+    {"name": "db-one", "address": "10.80.0.1"},
+    {"name": "db-two", "address": "10.80.0.2"},
+    {"name": "db-three", "address": "10.80.0.3"}
+  ],
+  "clientCIDRs": ["10.70.0.0/24"]
+}

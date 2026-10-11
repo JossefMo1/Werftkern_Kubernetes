@@ -1,0 +1,18 @@
+[Unit]
+Description=Werftkern service DNS (CoreDNS, separately verified binary)
+BindsTo=werftkern-discovery.service
+After=werftkern-discovery.service network-online.target
+ConditionPathExists=/etc/werftkern/Corefile
+[Service]
+ExecStart=/usr/local/bin/coredns -conf /etc/werftkern/Corefile
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+RestrictAddressFamilies=AF_INET AF_INET6
+[Install]
+WantedBy=multi-user.target

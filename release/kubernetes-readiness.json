@@ -1,0 +1,93 @@
+{
+  "format": "werftkern-readiness/v1",
+  "version": "0.1.0-dev.3",
+  "productionReady": false,
+  "fullMasterplanComplete": false,
+  "cncfCertified": false,
+  "requirements": [
+    {
+      "id": "controller-replacement",
+      "implementation": "implemented-restricted",
+      "realQualificationPassed": false,
+      "details": "Three pure k0s controllers; two healthy survivors; permanent Hetzner deletion before etcd removal; rejoin. Not quorum-loss recovery."
+    },
+    {
+      "id": "stateful-self-healing",
+      "implementation": "implemented-restricted",
+      "realQualificationPassed": false,
+      "details": "Enrolled one-replica StatefulSets, preserved Retain hcloud CSI filesystems, live detach-policy check; no database semantic proof."
+    },
+    {
+      "id": "full-pv-database-recovery",
+      "implementation": "partial",
+      "realQualificationPassed": false,
+      "details": "Quarantined CSI snapshot restore and selected-file verification added; hcloud does not support volume snapshots. Existing separate PostgreSQL PITR path remains unqualified. No complete site DR."
+    },
+    {
+      "id": "ubuntu-k0s-e2e",
+      "implementation": "not-executed",
+      "realQualificationPassed": false,
+      "details": "No approved disposable VM plan or installed k0s/k0sctl in authoring environment."
+    },
+    {
+      "id": "ha-chaos",
+      "implementation": "not-executed",
+      "realQualificationPassed": false,
+      "details": "Real etcd suite attempted and blocked: binary missing. No real quorum/partition/VIP exercise."
+    },
+    {
+      "id": "cloud-e2e",
+      "implementation": "not-executed",
+      "realQualificationPassed": false,
+      "details": "DigitalOcean inventory read was empty. No provider create/delete or cost incurred."
+    },
+    {
+      "id": "keycloak-login-negative-rbac",
+      "implementation": "not-executed",
+      "realQualificationPassed": false,
+      "details": "Existing configuration and admission tests do not prove a real user login."
+    },
+    {
+      "id": "cert-manager-acme",
+      "implementation": "not-executed",
+      "realQualificationPassed": false,
+      "details": "No actual ACME issuance or expiry/renewal qualification."
+    },
+    {
+      "id": "sonobuoy-certified-conformance",
+      "implementation": "not-executed",
+      "realQualificationPassed": false,
+      "details": "Existing runner/parser only. No real certified-conformance output."
+    },
+    {
+      "id": "cncf-submission-acceptance",
+      "implementation": "not-submitted",
+      "realQualificationPassed": false,
+      "details": "No official submission or acceptance. Signed reference validation never grants certification."
+    },
+    {
+      "id": "real-upgrade-rollback",
+      "implementation": "not-executed",
+      "realQualificationPassed": false,
+      "details": "Contract/replay tests do not prove actual systemd/dpkg/k0sctl upgrade or rollback."
+    },
+    {
+      "id": "load-soak-faults",
+      "implementation": "not-executed",
+      "realQualificationPassed": false,
+      "details": "No multi-host soak/load/reboot/disk-full/registry outage qualification."
+    },
+    {
+      "id": "signed-supply-chain",
+      "implementation": "partial",
+      "realQualificationPassed": false,
+      "details": "Ed25519 candidate evidence and CycloneDX/Trivy/SLSA statement checks implemented; no real complete scanner coverage, protected build, production signing, or provenance attestation executed."
+    },
+    {
+      "id": "independent-security",
+      "implementation": "not-performed",
+      "realQualificationPassed": false,
+      "details": "Test-signature verification is self-testing, not an independent assessment. External qualified reviewer required."
+    }
+  ]
+}

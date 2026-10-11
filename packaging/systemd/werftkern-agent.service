@@ -1,0 +1,33 @@
+[Unit]
+Description=Werftkern node agent (experimental)
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+ConditionPathExists=/etc/werftkern/agent.json
+
+[Service]
+Type=simple
+# Docker socket access is effectively privileged host access. This is explicit,
+# not advertised as rootless or as a hostile-tenant security boundary.
+User=root
+ExecStart=/usr/bin/werft agent
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RuntimeDirectory=werftkern
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=restart
+ReadWritePaths=/var/lib/werftkern/agent /var/lib/werftkern/volumes /run/werftkern
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
