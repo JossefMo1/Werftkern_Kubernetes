@@ -34,9 +34,14 @@ Historie vor dem ersten PUBLIC-Schritt neu aufzubauen.
   CI-Workflows prüfen Entwicklungs- und Kontrakttests.
 - Die Release-Qualifikation in `release/qualification.json` bleibt
   absichtlich **BLOCKED**. JSON-Felder allein sind keine Freigabe.
-- Branchschutz, Pull-Request-Reviews, Dependabot-/Secret-Scanning-
-  Einstellungen und private Vulnerability Reports müssen in GitHub
-  zusätzlich aktiviert und tatsächlich verifiziert werden.
+- Branchschutz, Pull-Request-Reviews und Dependabot-Einstellungen müssen
+  nach dem verfügbaren GitHub-Plan geprüft werden. Auf kostenlosen Plänen
+  lässt sich Branchschutz für private Repositories ggf. erst nach dem
+  PUBLIC-Schritt aktivieren; in dem Fall zuerst unabhängig prüfen und
+  direkt nach PUBLIC konfigurieren. GitHub private Vulnerability Reporting
+  ist nur bei öffentlichen Repositories aktivierbar. GitHub Secret
+  Scanning/Push Protection für private Repositories hängt vom Plan ab;
+  eine unabhängige Vorabprüfung ist daher zwingend.
 - Keine öffentlichen Kunden-, Cloud-, Kubeconfig-, SSH-, PKI-, Backup-
   oder persönlichen Daten. Keine privilegierten Tests von fremden Forks
   auf langlebigen selbstgehosteten Runnern.
