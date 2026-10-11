@@ -79,7 +79,7 @@ jobs:
         if: env.WERFT_COMPAT_BASE_AVAILABLE == 'false'
         run: |
           python3 -c 'import json; d=json.load(open("evidence/agent-compat-status.json")); assert d["status"] == "BLOCKED" and d["previousAgentCompatibilityVerified"] is False and d["productionReady"] is False'
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # verified release reference, 2026-09-24
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # verified release reference, 2026-09-27.0.2
         with:
           name: experimental-source-validation-and-deb
           path: |
@@ -109,7 +109,7 @@ jobs:
           set -o pipefail
           etcd --version | tee real-etcd-evidence/etcd-version.txt
           go test -race -count=1 -timeout 4m -tags real_etcd -json ./tests/integration | tee real-etcd-evidence/test.jsonl
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: real-etcd-single-host-evidence
@@ -143,7 +143,7 @@ jobs:
             fi
           done
           sudo chown -R "$(id -u):$(id -g)" vm-evidence
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # verified release reference, 2026-09-24
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # verified release reference, 2026-09-27.0.2
         if: always()
         with:
           name: actual-ubuntu-vm-evidence
@@ -178,7 +178,7 @@ jobs:
             sudo cat "$work/result.json" > real-pitr-evidence/result.json
           fi
           test "$status" -eq 0
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: real-pitr-single-host-evidence
