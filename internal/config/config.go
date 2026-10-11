@@ -2,8 +2,8 @@ package config
 
 import (
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"net/url"
 	"os"
 	"path/filepath"

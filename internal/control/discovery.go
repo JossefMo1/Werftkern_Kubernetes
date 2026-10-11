@@ -1,7 +1,7 @@
 package control
 
 import (
-	"github.com/ClusterPilot-System/werftkern/internal/discovery"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/discovery"
 	"net/http"
 	"strings"
 )
