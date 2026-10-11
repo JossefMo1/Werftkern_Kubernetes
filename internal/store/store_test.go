@@ -3,8 +3,8 @@ package store
 import (
 	"context"
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/model"
-	"github.com/ClusterPilot-System/werftkern/internal/testutil"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/testutil"
 	"path/filepath"
 	"sync"
 	"testing"

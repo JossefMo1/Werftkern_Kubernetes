@@ -1,7 +1,7 @@
 package testutil
 
 import (
-	"github.com/ClusterPilot-System/werftkern/internal/pki"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
 	"net/http"
 	"net/http/httptest"
 	"testing"

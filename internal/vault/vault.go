@@ -8,7 +8,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
-	"github.com/ClusterPilot-System/werftkern/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"io"
 	"os"
 	"path/filepath"
