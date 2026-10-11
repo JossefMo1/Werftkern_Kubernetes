@@ -33,10 +33,16 @@ instructions exist.
 - [ ] **Version truth**: ensure the source, package and CLI identify their
   actual component versions. `v0.1.0-alpha.1` is the umbrella source tag;
   do not silently rename native `0.2.0-dev.4` or Kubernetes `0.1.0-dev.3`.
-- [ ] **Security settings**: enable GitHub secret scanning and push protection
-  where available, Dependabot alerts, private vulnerability reporting before
-  public launch, least-privilege Actions permissions, and a protected `main`
-  branch requiring review and status checks. Confirm via GitHub settings.
+- [ ] **Security settings**: enable Dependabot alerts and least-privilege
+  Actions permissions now. Protect `main` with PR reviews and status checks
+  if the current GitHub plan permits private-repository rules; verify its
+  protections immediately upon PUBLIC conversion otherwise. Enable available
+  GitHub secret scanning and push protection on the public repository; use
+  an independent history scanner *before* publication because the GitHub
+  repository's private-plan features may be limited. Private vulnerability
+  reporting can be enabled only on PUBLIC repositories, so prepare a
+  confidential interim channel and enable GitHub reporting immediately
+  after the repository becomes public.
 - [ ] **Threat model + scope**: review root/SSH, cloud deletion, fencing,
   credentials, SSL termination, snapshot restore and upgrade contracts. No
   production claims without independent assessment.
