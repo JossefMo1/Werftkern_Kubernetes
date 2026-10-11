@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ClusterPilot-System/werftkern/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 )
 
 // This checks the actual Go JSON encoder against the actual Python admission
