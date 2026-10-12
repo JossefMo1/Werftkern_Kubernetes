@@ -1,4 +1,12 @@
-# Verification levels — dev.2
+# Verification levels
+
+The commands below cover the native runtime; the separate Kubernetes manager
+also has `PYTHONPATH=ops python3 -m unittest discover -s tests/kubernetes -v`.
+Use Linux for process, file-permission and symlink tests. Current GitHub run
+evidence and publication checks are recorded in
+[the 2026-10-12 review](validation/PUBLICATION-REVIEW-2026-10-12.md).
+Historical observations below describe their authoring environment and do not
+override successful or skipped checks on a later exact commit.
 
 Exact counts, toolchain and source fingerprint: `validation/TEST-REPORT.md`.
 Actual behavior and test doubles must remain separate in every claim.
@@ -76,7 +84,11 @@ PKI rollover, hardware identity, online issuance or immediate session revocation
 
 ## Actual previous executable compatibility test
 
-Requires the retained dev.3 commit in Git history. Missing prerequisites FAIL the
+Requires the retained dev.3 commit in Git history or an explicitly supplied,
+hash-verified historical bundle. See
+[the local compatibility report](validation/LOCAL-DEV3-DEV4-COMPAT.md) and
+`scripts/test-agent-compat.sh` for the bundle opt-in. Do not import private
+historical Git refs into the public repository. Missing prerequisites FAIL the
 opt-in test rather than passing or silently skipping. Docker and etcd remain test
 adapters here; this suite qualifies the executable/protocol/journal edge only.
 

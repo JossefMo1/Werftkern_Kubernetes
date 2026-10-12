@@ -10,7 +10,10 @@ See [the public-launch safety gate](docs/OPEN-SOURCE-LAUNCH-CHECKLIST.md) before
 
 ## Private reporting
 
-The repository owner should enable GitHub private vulnerability reporting before public launch.
+Prepare a confidential reporting channel before public launch. Enable GitHub
+private vulnerability reporting immediately after the repository becomes public;
+the private-repository endpoint may be unavailable. Verify the setting rather
+than assuming this document enables it.
 Use **Security → Report a vulnerability** when that option exists. If it is unavailable, request
 an appropriate private reporting channel without posting exploit details, keys or customer data
 in a public issue. This policy does not invent an email address or an already operating security team.
