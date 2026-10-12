@@ -5,6 +5,8 @@ also has `PYTHONPATH=ops python3 -m unittest discover -s tests/kubernetes -v`.
 Use Linux for process, file-permission and symlink tests. Current GitHub run
 evidence and publication checks are recorded in
 [the 2026-10-12 review](validation/PUBLICATION-REVIEW-2026-10-12.md).
+The subsequent [production qualification review](validation/PRODUCTION-READINESS-2026-10-12.md)
+records the real single-host Ubuntu result and the remaining blocked production gates.
 Historical observations below describe their authoring environment and do not
 override successful or skipped checks on a later exact commit.
 
