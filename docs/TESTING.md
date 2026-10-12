@@ -16,6 +16,7 @@ Actual behavior and test doubles must remain separate in every claim.
 ```sh
 go test -race -count=1 ./...
 go vet ./...
+go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
 python3 -m unittest discover -s tests/ops -v
 python3 -m unittest discover -s tests/release -v
 python3 tests/browser/test_ui.py
@@ -26,6 +27,13 @@ HTTP. `TestVolumeArchiveCLIPhysicalRestoreAfterLostAcknowledgment` is root-only 
 real filesystem/CLI/mTLS/Unix HTTP with explicit Docker and etcd fixtures. It skips on
 non-root runs. It is not a container, new-host or database restore test. The older process
 E2E starts true Linux child processes, not Docker containers. Browser data is synthetic.
+
+Native CI pins Go 1.27.2 and runs the pinned Go vulnerability scanner before package
+construction. A nonzero scanner result fails the job; its text output is retained in
+the existing evidence artifact. This check covers reachable Go vulnerabilities, not
+Debian dependencies, Kubernetes assets/images or independent security qualification.
+Manual native qualification and push/PR checks use separate concurrency groups, so
+a delayed push run cannot cancel an explicitly requested disposable-VM test.
 
 ## Actual etcd, never a mock fallback
 

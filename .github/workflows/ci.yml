@@ -15,7 +15,8 @@ on:
         type: boolean
         default: false
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # A delayed push check must not cancel explicitly requested VM qualification.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -31,7 +32,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # verified release reference, 2026-09-24
         with:
-          go-version: '1.27.1'
+          go-version: '1.27.2'
           cache: false
       - name: Compile, race tests and static checks
         run: |
@@ -52,6 +53,13 @@ jobs:
           python3 -c 'import json; d=json.load(open("evidence/production-blockers.json")); assert not d["productionReady"] and d["status"]=="BLOCKED"' 
           node --check internal/dashboard/assets/app.js
           bash -n scripts/build-deb.sh tests/e2e/ubuntu-vm.sh
+      - name: Check reachable Go vulnerabilities
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Fixed scanner version; Go module verification authenticates downloads.
+          # This covers reachable Go code, not OS packages or managed-cluster images.
+          go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./... | tee evidence/go-vulnerabilities.txt
       - name: Root-only physical-volume CLI integration with explicit test doubles
         run: |
           set -o pipefail
@@ -97,7 +105,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.1'
+          go-version: '1.27.2'
           cache: false
       - name: Verify and install real etcd test dependency
         run: |
