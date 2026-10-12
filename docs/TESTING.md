@@ -32,6 +32,8 @@ Native CI pins Go 1.27.2 and runs the pinned Go vulnerability scanner before pac
 construction. A nonzero scanner result fails the job; its text output is retained in
 the existing evidence artifact. This check covers reachable Go vulnerabilities, not
 Debian dependencies, Kubernetes assets/images or independent security qualification.
+Manual native qualification and push/PR checks use separate concurrency groups, so
+a delayed push run cannot cancel an explicitly requested disposable-VM test.
 
 ## Actual etcd, never a mock fallback
 
