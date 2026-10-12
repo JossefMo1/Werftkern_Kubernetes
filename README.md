@@ -1,87 +1,72 @@
 # Werftkern
 
-Source repository: `github.com/JossefMo1/Werftkern_Kubernetes`.
-Go module for subsequent development commits: `github.com/JossefMo1/Werftkern_Kubernetes`.
-The existing experimental `v0.1.0-alpha.1` tag is an earlier immutable
-source snapshot with a different module path; it is not production-qualified.
+**Self-hosted container orchestration and Kubernetes management for Ubuntu.**
 
-## Neu: eigenständiger Kubernetes-Betriebsmodus
+[![Native checks](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/workflows/ci.yml)
+[![Kubernetes checks](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/workflows/kubernetes-backend.yml/badge.svg?branch=main)](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/workflows/kubernetes-backend.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-**Kubernetes-Backend `0.1.0-dev.3` · NOT_PRODUCTION_READY · keine CNCF-Zertifizierung.**
+[Deutsch: hier beginnen](START-HERE-DE.md) · [Documentation](#documentation) ·
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) ·
+[Source releases](https://github.com/JossefMo1/Werftkern_Kubernetes/releases)
 
-Der neue Befehl `werft-kube` ergänzt einen **separaten echten Kubernetes-Pfad auf
-k0s/k0sctl**: Create, Upgrade, Scale, geprüfte lokale Helm-/Operatorkataloge,
-Keycloak/Grafana/Kubernetes-OIDC, Sonobuoy-Auswertung und budgetierter automatischer
-Ersatz zustandsloser Hetzner-Worker. **Es ist keine Neuimplementierung von Kubernetes.**
+> **Experimental alpha — not production-ready.** Use disposable test infrastructure.
+> No production support, SLA or CNCF certification is claimed. Passing CI checks
+> do not establish live cloud, multi-host recovery or production upgrade safety.
 
-[Deutsche Anleitung und genaue Grenzen](docs/kubernetes/README-DE.md) ·
-[Add-ons und SSO](docs/kubernetes/ADDONS-SSO-DE.md) ·
-[Automatischer Node-Ersatz](docs/kubernetes/REPAIR-DE.md) ·
-[Neue Testergebnisse](docs/kubernetes/TEST-REPORT.md)
+## What is Werftkern?
 
-Neu in dev.3: journallierter Controllerersatz im Drei-Controller-Profil, eng
-begrenzte Single-Writer-/Hetzner-CSI-Reparatur, deaktivierter Policy-Watcher,
-quarantinierter CSI-Snapshot-PV-Restore mit Dateihash-Jobs und ein Prüfer für extern
-signierte Freigabenachweise. Nur Vertragstests; keine reale Produktionsqualifikation.
+Werftkern contains two separate operating paths:
 
-[Recovery-Vertrag](docs/kubernetes/DEV3-RECOVERY-DE.md) ·
-[PV-Restore und Backendgrenzen](docs/kubernetes/DEV3-DATA-RESTORE-DE.md) ·
-[Signierte Nachweise](docs/kubernetes/DEV3-RELEASE-EVIDENCE-DE.md) ·
-[Dev.3 Testergebnisse](docs/kubernetes/DEV3-TEST-REPORT.md)
+| Path | Implementation | Component version | Where to start |
+| --- | --- | --- | --- |
+| Native runtime | Go controller and node agent, Docker Engine execution, etcd persistence, mTLS and a local dashboard | `0.2.0-dev.4`, state schema 2 | [Architecture](docs/ARCHITECTURE.md), [Ubuntu setup](docs/INSTALL-UBUNTU-DE.md) |
+| Kubernetes manager | Python management tooling around separately supplied k0s/k0sctl, kubectl, Helm, age and Sonobuoy | `0.1.0-dev.3` | [Kubernetes guide](docs/kubernetes/README-DE.md) |
 
-Das neue `.deb` installiert den Managementcode, **nicht** geprüfte k0s-/Helm-/
-Sonobuoy-Binaries, Charts oder Images. Ein vorbereitetes Artefaktinventar, Zielhosts,
-SSH-Hosttrust und API-Einstieg sind notwendig. Paketinstallation allein erzeugt
-keinen Cluster. Keine Dienste oder Cloudmutationen im Paket-postinst.
+The paths use separate processes, state, credentials and workers. Kubernetes is
+not a dependency of the native runtime. The Kubernetes manager operates actual
+Kubernetes through k0s; it does not implement a replacement Kubernetes engine.
+There is no automatic migration of native workloads into Kubernetes.
 
-Native-Runtime und Kubernetes verwenden getrennte Prozesse, Zustandsspeicher,
-Credentials und Worker. Kein direktes Umstellen bestehender Native-Workloads auf
-Kubernetes. Der nachfolgende Abschnitt dokumentiert den unveränderten Native-Kern.
+This project derives from ClusterPilot Runtime and works without the private
+ClusterPilot backend, commercial portal or licence. The optional ClusterPilot
+connector is unfinished. Source provenance and attribution are recorded in
+[NOTICE.md](NOTICE.md).
 
----
+## Capabilities and boundaries
 
+| Area | Implemented code | Qualification boundary |
+| --- | --- | --- |
+| Native workloads | Scheduling, revisions, scaling, readiness, drain and worker update waves | Docker/etcd fixtures are used in several tests; real host upgrade qualification remains open |
+| Native networking and storage | TLS ingress, discovery, mesh tooling, node-local volumes and encrypted archives | Multi-host networking, replicated storage and physical fencing remain unqualified |
+| Operations | Hetzner provisioning tooling, PostgreSQL/Patroni HA profiles, pgBackRest/PITR integration and certificate renewal | Cloud, database HA, watchdog and real WAL recovery need separate live qualification |
+| Kubernetes lifecycle | Plans, create, scale, upgrade, backups, restore, add-on and OIDC/SSO tooling | Requires reviewed local assets, trusted SSH hosts and explicit topology; contract tests are not live cluster evidence |
+| Kubernetes recovery | Budgeted worker replacement, journalled controller replacement and constrained stateful/CSI recovery | Restricted experimental profiles; full disaster recovery and production safety are not established |
 
-**Independent, self-hosted container orchestration for Ubuntu.**
+Consult [native status](docs/STATUS.md), [Kubernetes readiness](release/kubernetes-readiness.json)
+and the [roadmap](docs/ROADMAP.md) before selecting a feature. Host root and
+Docker-socket access are trusted administrator capabilities. Hostile multi-tenancy
+is unsupported; mTLS is not customer tenant RBAC.
 
-**0.2.0-dev.4 · State schema 2 · NOT_PRODUCTION_READY.** This is an implemented,
-tested development increment, **not** the complete Kubernetes 2.0 masterplan and
-not an official Kubernetes release. Kubernetes is not an execution dependency.
+## Get started
 
-Werftkern derives from the independent ClusterPilot Runtime project. It requires no
-ClusterPilot backend, licence or commercial portal. Its optional ClusterPilot connector
-remains unfinished. Apache-2.0; see [NOTICE](NOTICE.md). The working name has not received
-trademark clearance. No remote repository or cloud resource was created by this delivery.
+### Explore the source
 
-## New in dev.4
+```sh
+git clone https://github.com/JossefMo1/Werftkern_Kubernetes.git
+cd Werftkern_Kubernetes
+```
 
-| Area | Implemented change | Evidence boundary |
-|---|---|---|
-| Rollout safety | Readiness expires even while a node sends fresh heartbeats; stale surge replicas cannot retire healthy old instances | Both defects reproduced against the previous scheduler; regression tests pass after correction. |
-| Worker update waves | Sequential owned drain, signed package staging, durable remote receipt, local engine smoke, advancing observations and uncordon | SSH, package and engine behavior in ordinary tests use explicit fixtures; no Ubuntu/SSH multi-host release qualification. |
-| Node-scoped maintenance | Node credentials read only their own maintenance projection; no controller-admin credential travels to a worker | Real local TLS/API permission and negative tests. |
-| Compatibility | Bounded same-schema **dev.3 agent → dev.4 controller** edge; all controllers must be upgraded first | Actual binaries built from both commits, real agent processes/TLS/journal. Docker and etcd remain fixtures. |
+The repository currently provides experimental source prereleases. Source tags
+such as `v0.1.0-alpha.2` identify the repository release, not the native or
+Kubernetes component versions. Read the [release notes](releases/v0.1.0-alpha.2.md)
+for their exact scope. Source archives are not verified binary distributions.
 
-See [worker rollout contract](docs/WORKER-ROLLOUT.md), [change scope](docs/DEV4-CHANGES.md)
-and the [actual test report](docs/validation/TEST-REPORT.md). Paused workloads may be
-preserved during update verification, but any remaining live allocation still blocks.
+### Native runtime on a disposable Ubuntu VM
 
-## Inherited from dev.3 (still subject to qualification)
-
-| Area | Implemented change | Evidence boundary |
-|---|---|---|
-| Database HA integration | Three dedicated PostgreSQL17/Patroni4 hosts; independent etcd DCS, TLS, strict synchronous policy, mandatory watchdog; planned switchover journal | Real OpenSSL kits; provider/process responses in tests are fixtures. No live Patroni/HA/watchdog qualification. |
-| PostgreSQL PITR | Encrypted pgBackRest repository profile, explicit backup set/system identity, isolated restore, SQL replay-pause verification | Adapter tests use explicit command fixtures. The no-mock PostgreSQL/WAL realtest exists but is BLOCKED by missing dependencies here. |
-| Update correctness | No automatic unfreeze after mere status-read; direct all-controller health checks, advancing node heartbeat and allocation checks; safe lost-unlock-ACK recovery | Runtime/API contracts tested; no real host package update. Worker-wave implementation is new in dev.4. |
-| Leaf credentials | Offline-CA renewal, new private key, fingerprint-bound atomic install; combined PEM live reload for runtime clients/controllers | Actual local TLS tests, no CA rollover or autonomous signer. One-time manual combined-file adoption required. |
-| Input/process safety | Duplicate JSON fields and invalid constants rejected; timed-out commands terminate their owned child process groups | Actual parser and local-process tests, not an independent security review. |
-
-State remains schema2. Exact agent-version matching still requires coordinated offline
-maintenance for dev.2→dev.3; This historical edge remains offline-only. Dev.4 adds only the explicit dev.3→dev.4 worker edge above, not general N/N−1 compatibility. The existing
-native scheduler, Docker Engine adapter, local volume archives, Go ingress, mesh/DNS,
-Hetzner and runtime HA tooling remain. Native database-host integration is a separate
-operational profile, not a completed database service controller in the basic wizard.
-
-## Fresh isolated Ubuntu 24.04 LTS amd64 VM
+Target: **Ubuntu 24.04 LTS, amd64**. Build with Bash, Python 3, `dpkg-deb` and a
+supported Go toolchain accepted by [the build script](scripts/build-deb.sh).
+Review the [installation guide](docs/INSTALL-UBUNTU-DE.md) before running:
 
 ```sh
 bash scripts/build-deb.sh
@@ -92,48 +77,75 @@ sudo werft demo --wait
 sudo werft dashboard
 ```
 
-Use a supported, current Go compiler for builds. A separately supplied Go1.23.2 binary
-is an **unsigned lab artifact**, not a release. Do not install on customer infrastructure.
-The basic wizard asks for role and private IPv4. HA/network/cloud/ingress need additional
-explicit topology, certificates, network trust and cost decisions.
+The package is an unsigned development build. Keep the dashboard local; the
+basic wizard does not configure complete HA, network trust or cloud operations.
+Existing installations require the [schema migration](docs/SCHEMA-MIGRATION.md)
+and [upgrade guidance](docs/UPGRADE.md); do not upgrade one controller in isolation.
 
-**Existing dev.1:** read [SCHEMA-MIGRATION](docs/SCHEMA-MIGRATION.md) first. Do not just
-replace packages and restart one controller. Older ClusterPilot alpha installations
-need separate new-cluster migration; package paths/identities changed previously.
+### Kubernetes manager
+
+```sh
+bash scripts/werft-kube version
+bash scripts/build-kubernetes-deb.sh
+```
+
+Read the [Kubernetes guide](docs/kubernetes/README-DE.md) and review the
+[example inventories](examples/kubernetes/) before provisioning. The `.deb`
+installs management code, not k0s/Helm/Sonobuoy binaries, charts or images. You
+must supply reviewed assets, target hosts, SSH host trust and an API endpoint.
+Package installation alone does not create a cluster; its installation does
+not automatically start services or mutate cloud infrastructure.
 
 ## Documentation
 
-[Ubuntu setup](docs/INSTALL-UBUNTU-DE.md) · [HA](docs/HA.md) · [Network/DNS](docs/NETWORK.md) ·
-[HTTPS ingress](docs/INGRESS.md) · [Storage/PostgreSQL](docs/STORAGE.md) ·
-[Volume archive/restore](docs/VOLUME-BACKUP.md) · [Cloud](docs/CLOUD.md) ·
-[Recovery](docs/RECOVERY.md) · [Update completion](docs/UPGRADE.md) ·
-[Database HA](docs/DATABASE-HA.md) · [PITR](docs/POSTGRES-PITR.md) ·
-[Certificates](docs/CERTIFICATE-ROTATION.md) · [Previous changes](docs/DEV2-CHANGES.md).
+| Topic | Guides |
+| --- | --- |
+| Architecture and API | [Architecture](docs/ARCHITECTURE.md), [API](docs/API.md), [status](docs/STATUS.md), [roadmap](docs/ROADMAP.md) |
+| Native operations | [HA](docs/HA.md), [network/DNS](docs/NETWORK.md), [ingress](docs/INGRESS.md), [cloud](docs/CLOUD.md) |
+| Data and recovery | [Storage](docs/STORAGE.md), [volume archives](docs/VOLUME-BACKUP.md), [database HA](docs/DATABASE-HA.md), [PITR](docs/POSTGRES-PITR.md), [recovery](docs/RECOVERY.md) |
+| Security and maintenance | [Secrets](docs/SECRETS.md), [certificates](docs/CERTIFICATE-ROTATION.md), [worker rollout](docs/WORKER-ROLLOUT.md), [upgrades](docs/UPGRADE.md) |
+| Kubernetes | [Setup](docs/kubernetes/README-DE.md), [add-ons/SSO](docs/kubernetes/ADDONS-SSO-DE.md), [repair](docs/kubernetes/REPAIR-DE.md), [recovery](docs/kubernetes/DEV3-RECOVERY-DE.md), [PV restore](docs/kubernetes/DEV3-DATA-RESTORE-DE.md) |
+| Validation | [Testing](docs/TESTING.md), [native report](docs/validation/TEST-REPORT.md), [Kubernetes report](docs/kubernetes/DEV3-TEST-REPORT.md) |
+| Open-source publication | [Launch checklist](docs/OPEN-SOURCE-LAUNCH-CHECKLIST.md), [GitHub settings](docs/GITHUB-SECURITY-SETTINGS.md), [publication review](docs/validation/PUBLICATION-REVIEW-2026-10-12.md) |
 
-## Tests
+Some operational guides are in German. Historical test reports describe their
+recorded source and environment; current CI results belong to their exact commit.
+
+## Development and tests
+
+Run the checks in a Linux development environment. Privileged integration tests
+require separately approved disposable hosts, never a production workstation.
 
 ```sh
 go test -race -count=1 ./...
 go vet ./...
 python3 -m unittest discover -s tests/ops -v
+PYTHONPATH=ops python3 -m unittest discover -s tests/kubernetes -v
 python3 -m unittest discover -s tests/release -v
 python3 scripts/check-public-source.py
-python3 tests/browser/test_ui.py
+python3 scripts/audit-git-history.py
+node --check internal/dashboard/assets/app.js
 ```
 
-The root-only physical CLI test runs in the isolated authoring container; on non-root
-systems it explicitly skips. Archive tests use actual files and encryption. Ingress
-integration uses actual local TLS/HTTP. The process E2E still substitutes Docker/etcd.
-Browser checks use in-memory fixtures. Those scopes must not be relabelled VM qualification.
-See [TESTING](docs/TESTING.md) and [actual report](docs/validation/TEST-REPORT.md).
+[Testing](docs/TESTING.md) explains additional browser, real-etcd, compatibility,
+VM and database tests. Synthetic browser data and test adapters must remain
+distinct from real runtime evidence. The [production qualification gate](release/qualification.json)
+remains blocked.
 
-## Production and publication
+## Contributing and security
 
-[STATUS](docs/STATUS.md) and [52-task traceability](docs/ROADMAP.md) retain the missing work.
-`release/qualification.json` is blocked. Live qualification of database HA/PITR/watchdog fencing, replicated storage/CSI,
-full disaster recovery, a current signed build, separate-host failure tests, soak testing
-and independent security review remain outstanding. Existing feature counts are not GA.
+Read [CONTRIBUTING.md](CONTRIBUTING.md), [GOVERNANCE.md](GOVERNANCE.md) and the
+[code of conduct](CODE_OF_CONDUCT.md). Use [issues](https://github.com/JossefMo1/Werftkern_Kubernetes/issues)
+for reproducible non-sensitive bugs and bounded feature proposals.
 
-Open-source publication guidance: [PUBLISHING](docs/PUBLISHING.md),
-[CONTRIBUTING](CONTRIBUTING.md), [SECURITY](SECURITY.md). Review IP, secrets and history before
-public upload. The Git bundle is a local repository, not evidence of GitHub publication.
+For vulnerabilities, follow [SECURITY.md](SECURITY.md). Do not put tokens, private
+keys, join bundles, backups, private infrastructure details or exploit reports
+in public issues, PRs or CI artifacts.
+
+## License and provenance
+
+Source is licensed under [Apache License 2.0](LICENSE). Preserve
+[NOTICE.md](NOTICE.md) and [third-party notices](THIRD_PARTY_NOTICES.md).
+Separately installed tools retain their own licenses. Werftkern is a working
+name; trademark clearance has not been established. Public source availability
+does not imply production qualification.

@@ -17,9 +17,11 @@ Visibility: PRIVATE until copyright / secret / security sign-off.
   production-readiness gate remains deliberately BLOCKED.
 - Dependabot is scheduled weekly for GitHub Actions and Go modules.
 - The missing dev.3 historical commit is recorded as **compatibility
-  BLOCKED**, not converted into fictional test success.
-- First alpha release notes are drafted but do not imply a published
-  tag, security attestation or official Kubernetes certification.
+  BLOCKED in ordinary CI**, not converted into fictional test success.
+  A separately supplied verified bundle can support an explicitly opted-in
+  local test; see `validation/LOCAL-DEV3-DEV4-COMPAT.md`.
+- Private source prereleases alpha.1 and alpha.2 already exist. They do not
+  imply public availability, signed binaries or Kubernetes certification.
 
 ## GitHub settings that require administrator UI access
 
@@ -58,18 +60,19 @@ III. **After publication as PUBLIC** (only after launch checks):
 
 ## Important plan/permission limitation
 
-The current GitHub integration cannot modify repository admin
-settings or branch rules. At the time these instructions were written,
-GitHub reported `main.protected=false`; rulesets returned HTTP 403
-(Upgrade to Pro or make public), and the branch protection endpoint was
-not accessible by the integration. This means source files alone do
-**not** mean server-side protection is enabled.
+As checked on 2026-10-12, `main.protected=false`; rulesets returned HTTP 403
+(Upgrade to Pro or make public). Actions default permissions are read-only,
+and Actions cannot approve PR reviews. Dependabot alerts were enabled during
+this review; the alerts endpoint returned an empty list afterward. Description
+and project topics were also configured. Private vulnerability reporting
+returned HTTP 404. Source files alone do **not** enable branch protection.
+Verify the current settings again at launch; the dated review is a snapshot.
 
 ## Release blockers
 
-- Validate and merge the canonical Go module and import-path migration (issue #6).
-  The initial private alpha tag may still contain the original module path; never
-  change an existing release tag to hide that history.
+- The canonical Go module migration (issue #6) is merged. Revalidate it on
+  the chosen launch commit. The initial private alpha.1 tag contains the original
+  module path; never change an existing release tag to hide that history.
 - Obtain authorization for code derived from the existing project and
   check third-party license notices.
 - Perform independent source/history secret and security checks;

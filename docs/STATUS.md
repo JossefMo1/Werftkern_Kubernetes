@@ -2,6 +2,12 @@
 
 **NOT_PRODUCTION_READY. Full masterplan incomplete. State schema 2.**
 
+The authoring-environment observations below are historical, including the
+compiler version and whether CI had run at that time. For subsequently verified
+GitHub CI and public-source preparation, see
+[the dated publication review](validation/PUBLICATION-REVIEW-2026-10-12.md).
+That review does not qualify the production features listed here.
+
 ## Implemented in this increment
 
 Owned sequential worker rollout, separately authorized node maintenance reads and drain,

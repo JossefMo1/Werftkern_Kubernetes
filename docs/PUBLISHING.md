@@ -4,14 +4,17 @@
 Das Repository wurde bereits angelegt; die frühere Anleitung zur Erstellung
 eines neuen `ClusterPilot-System/werftkern`-Repositories ist überholt.
 
-**Entscheidung: HOLD für PUBLIC und GitHub Release, bis alle Bedingungen in
+**Entscheidung: HOLD für PUBLIC, bis alle Bedingungen in
 [OPEN-SOURCE-LAUNCH-CHECKLIST.md](OPEN-SOURCE-LAUNCH-CHECKLIST.md) erfüllt sind.**
 
 Die Quellen enthalten zwei getrennte, experimentelle Komponenten:
 Werftkern Kubernetes `0.1.0-dev.3` (k0s/k0sctl-basiert) und Werftkern
-Native Runtime `0.2.0-dev.4` (kein Kubernetes-Ersatz). Die erste angestrebte
-öffentliche Quellversion ist `v0.1.0-alpha.1` als ausdrücklich markierte
-**Pre-Release**, nicht als Produktions- oder CNCF-Freigabe.
+Native Runtime `0.2.0-dev.4` (kein Kubernetes-Ersatz). Die privaten
+Quell-Prereleases `v0.1.0-alpha.1` und `v0.1.0-alpha.2` existieren bereits.
+`release/alpha-version.txt` nennt aktuell `v0.1.0-alpha.2`. Diese Tags bleiben
+unverändert. Neue Dokumentationsänderungen sind erst nach Merge auf `main`
+sichtbar und gehören nicht rückwirkend zu diesen Releases. Eine öffentliche
+Quell-Alpha ist keine Produktions- oder CNCF-Freigabe.
 
 ## Rechte und Sicherheitsgrenzen
 
@@ -46,15 +49,18 @@ Historie vor dem ersten PUBLIC-Schritt neu aufzubauen.
   oder persönlichen Daten. Keine privilegierten Tests von fremden Forks
   auf langlebigen selbstgehosteten Runnern.
 
-## Erste Alpha
+## Bestehende Alpha-Releases
 
 Die überprüfbaren Versionshinweise befinden sich in
-[releases/v0.1.0-alpha.1.md](../releases/v0.1.0-alpha.1.md).
-Die exakten Tag-/Release-Befehle und menschlichen Freigaben stehen in der
+[releases/v0.1.0-alpha.1.md](../releases/v0.1.0-alpha.1.md) und
+[releases/v0.1.0-alpha.2.md](../releases/v0.1.0-alpha.2.md).
+Die Freigaben und Schritte für den PUBLIC-Wechsel stehen in der
 [Checkliste](OPEN-SOURCE-LAUNCH-CHECKLIST.md).
 
-Ein GitHub-Tag, Release-Artefakt oder erfolgreich durchgelaufener CI-Test
-wird durch diese Dokumentation **nicht** behauptet.
+Der [Prüfbericht vom 12. Oktober 2026](validation/PUBLICATION-REVIEW-2026-10-12.md)
+trennt nachgewiesene GitHub-Ergebnisse von offenen Freigaben. Ein PUBLIC-Wechsel
+macht auch bestehende Tags, Releases und erreichbare Historie öffentlich:
+nicht nur die aktuelle README prüfen.
 
 ## Go module identity
 
