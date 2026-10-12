@@ -125,11 +125,13 @@ func reconcileSelected(s *model.State, now time.Time, scope map[string]bool, mai
 		cur, old := []*model.Allocation{}, []*model.Allocation{}
 		ready := 0
 		running := 0
+		pendingStop := false
 		for _, a := range all {
 			if isReady(s, a, now) {
 				ready++
 			}
 			if a.Desired != "run" {
+				pendingStop = true
 				continue
 			}
 			running++
@@ -141,6 +143,7 @@ func reconcileSelected(s *model.State, now time.Time, scope map[string]bool, mai
 			}
 		}
 		if len(cur) > w.Spec.Replicas {
+			pendingStop = true
 			for _, a := range cur[w.Spec.Replicas:] {
 				stop(s, a, now)
 			}
@@ -181,10 +184,12 @@ func reconcileSelected(s *model.State, now time.Time, scope map[string]bool, mai
 				currentReady++
 			}
 		}
-		if currentReady >= w.Spec.Replicas && len(old) == 0 {
+		// A stop intent is not confirmation that the retiring container exited.
+		// Preserve rollout state until its owner reports stopped.
+		if currentReady >= w.Spec.Replicas && len(old) == 0 && !pendingStop {
 			w.Phase = "ready"
 			w.Reason = ""
-		} else if w.Phase != "blocked" && len(old) > 0 {
+		} else if w.Phase != "blocked" && (len(old) > 0 || pendingStop) {
 			w.Phase = "updating"
 		}
 		for _, a := range cur {

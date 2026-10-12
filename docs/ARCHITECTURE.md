@@ -23,6 +23,9 @@ the Docker socket and therefore has high host authority. No rootless claim is ma
 Node-bound volume claims are exclusive and retain ownership/data after delete. Stateful
 updates wait for confirmed stop, preventing a second planned writer. Loss of contact
 is not fencing; no automatic stateful move. Missing initialized storage fails closed.
+All workload rollouts, including stateless updates and scale-down, remain `updating`
+until retiring allocations have acknowledged `stopped`. Target replica readiness alone
+does not establish that the previous containers have exited.
 
 WireGuard is an optional host mesh; Docker allocates per-node container IPs from fixed
 non-overlapping subnets. The agent reports these IPs; the API verifies subnet ownership.
