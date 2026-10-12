@@ -23,6 +23,10 @@ Implementierungspfad aktiviert; Firewallzugriff muss bereits passend eingeschrä
 VM-CREATE wird vor dem Aufruf persistent journalisiert. Bei verlorener Antwort führt
 der nächste Lauf nur eine Namen-/Label-/ID-/Image-/Netzprüfung aus. Erzeugung wird nicht
 blind wiederholt. Ein unklarer oder noch nicht sichtbarer Providerzustand blockiert.
+Nicht objektförmige JSON-Antworten und fehlende oder falsch typisierte Serverlisten
+blockieren mit `PROVIDER_RESPONSE_INVALID`. Sie gelten nicht als leere Inventarliste.
+Nach einer ungültigen Create-Antwort bleibt der persistierte `create-ambiguous`-Intent
+erhalten; auch ein später leeres Inventar erlaubt keine blinde Wiederholung.
 Fremde vorhandene Ressourcen werden nicht adoptiert, kein Destroy/Terminate ausgeführt.
 Manuelle Auflösung von Quota-/abgelehnten Create-Intents ist noch kein vollautomatischer
 Reconciler. AWS/Azure/IONOS, dynamische Preis-/Imagewahl, automatische Netzwerk- und

@@ -1,9 +1,47 @@
-import base64, copy, json, os, pathlib, sys, tempfile, unittest
+import base64, copy, io, json, os, pathlib, sys, tempfile, unittest
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[2]/'ops'))
 from werftops import cloud, network, postgres, bootstrap
 from werftops.common import Blocked, fingerprint, private_read, read_json, write_json
 
 def plan():return {'format':'werftkern-hetzner/v1','name':'lab','location':'nbg1','networkId':1,'firewallId':2,'sshKeyId':3,'servers':[{'name':'node-one','serverType':'cx23','imageId':999}]}
+class HetznerResponseTests(unittest.TestCase):
+    def adapter(self, response):
+        class Opener:
+            def open(self, request, timeout):return io.BytesIO(json.dumps(response).encode())
+        api=object.__new__(cloud.Hetzner)
+        api.token='non-secret-test-fixture'
+        api.opener=Opener()
+        return api
+    def test_non_object_responses_are_secret_safe_failures(self):
+        for method,path in [('GET','/servers?name=node-one'),('POST','/servers')]:
+            for response in [None,[],True,'sensitive-provider-response']:
+                with self.subTest(method=method,response_type=type(response).__name__):
+                    with self.assertRaisesRegex(cloud.Ambiguous,'^PROVIDER_RESPONSE_INVALID$'):
+                        self.adapter(response).call(method,path)
+    def test_server_list_requires_explicit_object_array(self):
+        for resource in ['servers','server_types']:
+            for response in [{},{resource:None},{resource:{}},{resource:[None]}]:
+                with self.subTest(resource=resource,response=response):
+                    with self.assertRaisesRegex(cloud.Ambiguous,'^PROVIDER_RESPONSE_INVALID$'):
+                        self.adapter(response).call('GET','/'+resource+'?name=node-one')
+        self.assertEqual(self.adapter({'servers':[]}).call('GET','/servers?name=node-one'),{'servers':[]})
+    def test_malformed_create_preserves_intent_and_blocks_blind_retry(self):
+        adapter=self.adapter(None)
+        class InvalidCreateProvider(Provider):
+            def call(self,method,path,payload=None):
+                if method=='POST':
+                    self.creates+=1
+                    return adapter.call(method,path,payload)
+                return super().call(method,path,payload)
+        with tempfile.TemporaryDirectory() as d:
+            p=plan();api=InvalidCreateProvider();journal=pathlib.Path(d)/'journal'
+            with self.assertRaisesRegex(cloud.Ambiguous,'PROVIDER_RESPONSE_INVALID'):
+                cloud.apply(p,journal,fingerprint(p),True,api)
+            self.assertEqual(read_json(journal,private=True)['servers']['node-one']['stage'],'create-ambiguous')
+            with self.assertRaisesRegex(cloud.Ambiguous,'NO_BLIND_RETRY'):
+                cloud.apply(p,journal,fingerprint(p),True,api)
+            self.assertEqual(api.creates,1)
+
 class Provider:
     def __init__(self,lose=False):self.items=[];self.creates=0;self.lose=lose;self.calls=[]
     def call(self,method,path,payload=None):

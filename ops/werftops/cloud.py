@@ -29,7 +29,16 @@ class Hetzner:
             with self.opener.open(request,timeout=30) as resp:
                 raw=resp.read(4*1024*1024+1)
                 if len(raw)>4*1024*1024: raise Blocked("PROVIDER_RESPONSE_TOO_LARGE")
-                return json.loads(raw)
+                result=json.loads(raw)
+                if not isinstance(result,dict): raise Ambiguous("PROVIDER_RESPONSE_INVALID")
+                # An absent/malformed inventory is not proof that a paid resource
+                # does not exist. Validate before callers consider a create.
+                resource=urllib.parse.urlsplit(path).path
+                if method=='GET' and resource in ('/servers','/server_types'):
+                    items=result.get(resource[1:])
+                    if not isinstance(items,list) or any(not isinstance(item,dict) for item in items):
+                        raise Ambiguous("PROVIDER_RESPONSE_INVALID")
+                return result
         except urllib.error.HTTPError as e:
             # Do not repeat mutations automatically, even after 429 or 5xx.
             raise Ambiguous("PROVIDER_HTTP_"+str(e.code)) from None
