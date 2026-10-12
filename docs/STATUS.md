@@ -7,6 +7,9 @@ compiler version and whether CI had run at that time. For subsequently verified
 GitHub CI and public-source preparation, see
 [the dated publication review](validation/PUBLICATION-REVIEW-2026-10-12.md).
 That review does not qualify the production features listed here.
+The later [production qualification review](validation/PRODUCTION-READINESS-2026-10-12.md)
+records a successful exact-commit single-host Ubuntu test. Multi-host, Kubernetes,
+database recovery and signed production acceptance remain unqualified.
 
 ## Implemented in this increment
 

@@ -106,6 +106,7 @@ not automatically start services or mutate cloud infrastructure.
 | Security and maintenance | [Secrets](docs/SECRETS.md), [certificates](docs/CERTIFICATE-ROTATION.md), [worker rollout](docs/WORKER-ROLLOUT.md), [upgrades](docs/UPGRADE.md) |
 | Kubernetes | [Setup](docs/kubernetes/README-DE.md), [add-ons/SSO](docs/kubernetes/ADDONS-SSO-DE.md), [repair](docs/kubernetes/REPAIR-DE.md), [recovery](docs/kubernetes/DEV3-RECOVERY-DE.md), [PV restore](docs/kubernetes/DEV3-DATA-RESTORE-DE.md) |
 | Validation | [Testing](docs/TESTING.md), [native report](docs/validation/TEST-REPORT.md), [Kubernetes report](docs/kubernetes/DEV3-TEST-REPORT.md) |
+| Production qualification | [Current evidence and remaining release gates](docs/validation/PRODUCTION-READINESS-2026-10-12.md) |
 | Open-source publication | [Launch checklist](docs/OPEN-SOURCE-LAUNCH-CHECKLIST.md), [GitHub settings](docs/GITHUB-SECURITY-SETTINGS.md), [publication review](docs/validation/PUBLICATION-REVIEW-2026-10-12.md) |
 
 Some operational guides are in German. Historical test reports describe their
