@@ -2,7 +2,7 @@
 
 Target repository: `JossefMo1/Werftkern_Kubernetes`
 Existing private source prereleases: `v0.1.0-alpha.1` and `v0.1.0-alpha.2`.
-Current alpha selector: `release/alpha-version.txt` (`v0.1.0-alpha.2`).
+Current alpha selector: `release/alpha-version.txt` (`v0.1.0-alpha.3`).
 
 **Default decision: HOLD for PUBLIC publication and production.**
 A separate GitHub Actions workflow may create a **PRIVATE, source-only,

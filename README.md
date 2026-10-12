@@ -58,8 +58,8 @@ cd Werftkern_Kubernetes
 ```
 
 The repository currently provides experimental source prereleases. Source tags
-such as `v0.1.0-alpha.2` identify the repository release, not the native or
-Kubernetes component versions. Read the [release notes](releases/v0.1.0-alpha.2.md)
+such as `v0.1.0-alpha.3` identify the repository release, not the native or
+Kubernetes component versions. Read the [release notes](releases/v0.1.0-alpha.3.md)
 for their exact scope. Source archives are not verified binary distributions.
 
 ### Native runtime on a disposable Ubuntu VM
