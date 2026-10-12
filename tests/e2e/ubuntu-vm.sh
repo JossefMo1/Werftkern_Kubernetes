@@ -14,15 +14,16 @@ out="${WERFT_EVIDENCE_DIR:-/var/tmp/werftkern-e2e}"
 mkdir -p "$out"; chmod 0700 "$out"
 start="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 export TEST_EVIDENCE_DIR="$out" TEST_START="$start"
+stage=installation
 result() {
   code=$?
-  EXIT_CODE="$code" python3 - <<'PY'
+  EXIT_CODE="$code" TEST_STAGE="$stage" python3 - <<'PY'
 import datetime,json,os,pathlib
 p=pathlib.Path(os.environ['TEST_EVIDENCE_DIR'])/'ubuntu-vm-result.json'
-p.write_text(json.dumps({'suite':'real-ubuntu-docker-etcd-single-node-e2e','startedAt':os.environ['TEST_START'],'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'exitCode':int(os.environ['EXIT_CODE']),'status':'passed' if os.environ['EXIT_CODE']=='0' else 'failed','note':'This record is generated only on the machine actually executing the test. It does not certify HA or multi-node networking.'},indent=2)+'\n')
+p.write_text(json.dumps({'suite':'real-ubuntu-docker-etcd-single-node-e2e','stage':os.environ['TEST_STAGE'],'startedAt':os.environ['TEST_START'],'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'exitCode':int(os.environ['EXIT_CODE']),'status':'passed' if os.environ['EXIT_CODE']=='0' else 'failed','note':'This record is generated only on the machine actually executing the test. It does not certify HA or multi-node networking.'},indent=2)+'\n')
 PY
   if [[ "$code" != 0 ]]; then
-    echo 'FAILED: leave the disposable VM for inspection. No automatic wipe of keys/data.' >&2
+    printf 'FAILED at stage %s: leave the disposable VM for inspection. No automatic wipe of keys/data.\n' "$stage" >&2
   fi
   exit "$code"
 }
@@ -35,6 +36,7 @@ werft setup --name runtime-e2e --address "$address"
 werft version > "$out/version.txt"
 docker version > "$out/docker-version.txt"
 etcd --version > "$out/etcd-version.txt"
+stage=demo
 werft demo --replicas 2 --wait
 assert_state() {
  local expected="$1"
@@ -66,6 +68,7 @@ for c in json.load(sys.stdin):
  assert h["ReadonlyRootfs"] and not h["Privileged"] and "ALL" in h["CapDrop"]
  assert not h.get("Binds") and h["Memory"]==32*1024*1024
 '
+stage=service-restart
 systemctl restart werftkern-control.service werftkern-agent.service
 sleep 8
 werft wait demo --timeout 120s
@@ -73,14 +76,17 @@ assert_state 2
 probe
 docker ps -q --filter "label=$filter" | sort > "$out/container-ids-after.txt"
 cmp "$out/container-ids-before.txt" "$out/container-ids-after.txt"
+stage=scale
 werft scale demo 3
 werft wait demo --timeout 120s
 assert_state 3
 probe
+stage=rollback
 werft rollback demo
 werft wait demo --timeout 120s
 assert_state 2
 # The actual store must remain authoritative across its own restart.
+stage=etcd-restart
 systemctl restart werftkern-etcd.service
 sleep 6
 werft wait demo --timeout 120s
@@ -96,10 +102,13 @@ import json,sys
 w=json.load(sys.stdin)["workloads"]["demo"];w["spec"]["secrets"]=[{"name":"e2e","version":1}]
 print(json.dumps({"apiVersion":"werftkern/v1alpha1","name":"demo","expectedGeneration":w["generation"],"spec":w["spec"]}))
 ' > "$private/deploy.json"
+stage=secret-rollout
 werft apply "$private/deploy.json"
 werft wait demo --timeout 120s
+stage=secret-container-count
 mapfile -t secret_ids < <(docker ps -q --filter "label=$filter")
 [[ "${#secret_ids[@]}" == 2 ]]
+stage=secret-mount-verification
 for id in "${secret_ids[@]}"; do
  docker inspect "$id" | python3 -c '
 import json,sys
@@ -111,18 +120,22 @@ assert len(h["Binds"])==1 and h["Binds"][0].endswith(":/run/secrets:ro,rprivate"
  cmp "$private/fixture.secret" "$private/copied.secret"
  rm "$private/copied.secret"
 done
+stage=encrypted-backup
 werft backup create --out "$private/config.backup" --key-file "$private/backup.key"
 werft backup inspect --file "$private/config.backup" --key-file "$private/backup.key" > /dev/null
+stage=pause
 werft pause demo
 for _ in $(seq 1 120); do
  if [[ -z "$(docker ps -q --filter "label=$filter")" ]]; then break; fi
  sleep 1
 done
 [[ -z "$(docker ps -q --filter "label=$filter")" ]]
+stage=resume
 werft resume demo
 werft wait demo --timeout 120s
 probe
 
+stage=delete
 werft delete demo
 for _ in $(seq 1 120); do
  if werft status --json | python3 -c 'import json,sys;s=json.load(sys.stdin);sys.exit(0 if "demo" not in s["workloads"] and not s["allocations"] else 1)'; then break; fi
@@ -130,6 +143,8 @@ for _ in $(seq 1 120); do
 done
 werft status --json | python3 -c 'import json,sys;s=json.load(sys.stdin);assert "demo" not in s["workloads"] and not s["allocations"]'
 [[ -z "$(docker ps -aq --filter "label=$filter")" ]]
+stage=doctor
 werft doctor > "$out/doctor.txt"
 rm -rf -- "$private"
+stage=complete
 printf 'REAL UBUNTU E2E PASSED. Evidence: %s\n' "$out"

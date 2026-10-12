@@ -114,6 +114,61 @@ func TestRollingUpdatePreservesAvailability(t *testing.T) {
 		t.Fatal(w.Phase)
 	}
 }
+func TestRolloutReadyWaitsForRetiredAllocationStopAcknowledgment(t *testing.T) {
+	s, now := base(t, 1, 1)
+	settle(t, s, now, 3)
+	w := s.Workloads["demo"]
+	oldID := model.SortedKeys(s.Allocations)[0]
+	q := model.ApplyRequest{APIVersion: model.APIVersion, Name: w.Name, ExpectedGeneration: w.Generation, Spec: w.Spec}
+	q.Spec.Image = "sha256:" + strings.Repeat("b", 64)
+	if _, err := model.Apply(s, q, model.ID(), now); err != nil {
+		t.Fatal(err)
+	}
+	if err := Reconcile(s, now); err != nil {
+		t.Fatal(err)
+	}
+	for _, a := range s.Allocations {
+		a.Phase = "ready"
+	}
+	for i := 0; i < 3; i++ {
+		if err := Reconcile(s, now); err != nil {
+			t.Fatal(err)
+		}
+		if s.Allocations[oldID].Desired != "stop" || w.Phase == "ready" {
+			t.Fatal("rollout completed before old owner acknowledged stop")
+		}
+	}
+	s.Allocations[oldID].Phase = "stopped"
+	if err := Reconcile(s, now); err != nil {
+		t.Fatal(err)
+	}
+	if w.Phase != "ready" || len(s.Allocations) != 1 {
+		t.Fatal("rollout did not complete after confirmed stop")
+	}
+}
+func TestScaleDownReadyWaitsForStopAcknowledgment(t *testing.T) {
+	s, now := base(t, 1, 2)
+	settle(t, s, now, 4)
+	w := s.Workloads["demo"]
+	w.Spec.Replicas = 1
+	if err := Reconcile(s, now); err != nil {
+		t.Fatal(err)
+	}
+	if w.Phase == "ready" {
+		t.Fatal("scale-down completed before stop acknowledgment")
+	}
+	for _, a := range s.Allocations {
+		if a.Desired == "stop" {
+			a.Phase = "stopped"
+		}
+	}
+	if err := Reconcile(s, now); err != nil {
+		t.Fatal(err)
+	}
+	if w.Phase != "ready" || len(s.Allocations) != 1 {
+		t.Fatal("scale-down did not complete after confirmed stop")
+	}
+}
 func TestRolloutBlocksWithoutSurgeCapacity(t *testing.T) {
 	s, now := base(t, 1, 1)
 	s.Nodes[id(1)].MemoryMiB = 128
