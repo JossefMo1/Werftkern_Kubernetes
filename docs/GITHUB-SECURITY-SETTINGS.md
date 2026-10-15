@@ -2,9 +2,24 @@
 
 Project: `JossefMo1/Werftkern_Kubernetes`
 Default branch: `main`
-Visibility: PRIVATE until copyright / secret / security sign-off.
+Visibility: PUBLIC since 2026-10-15, changed by the repository owner after
+source/history checks and launch review. Production qualification remains
+blocked; public source availability is not production approval.
 **Commit GPG/SSH signatures must remain OPTIONAL.** Do not turn on
 `Require signed commits` or `Commits must have verified signatures`.
+
+## Verified public-repository settings (2026-10-15)
+
+- `main` is covered by the active `Protect main` ruleset.
+- Direct deletion and non-fast-forward updates are blocked.
+- Pull requests, one approval, CODEOWNERS review, stale-review dismissal,
+  last-push approval and conversation resolution are required.
+- `publication-audit`, `contracts`, `test` and `real-etcd` are required checks
+  for the default branch.
+- Actions default permissions are read-only and Actions cannot approve reviews.
+- Dependabot security updates, secret scanning, push protection and private
+  vulnerability reporting are enabled.
+- An independent reviewer still needs access before issue #7 can be closed.
 
 ## Controls already stored in the source repository
 
@@ -20,16 +35,14 @@ Visibility: PRIVATE until copyright / secret / security sign-off.
   BLOCKED in ordinary CI**, not converted into fictional test success.
   A separately supplied verified bundle can support an explicitly opted-in
   local test; see `validation/LOCAL-DEV3-DEV4-COMPAT.md`.
-- Private source prereleases alpha.1 and alpha.2 already exist. They do not
-  imply public availability, signed binaries or Kubernetes certification.
+- Public source prereleases alpha.1, alpha.2 and alpha.3 exist. They do not
+  imply signed binaries, production readiness or Kubernetes certification.
 
-## GitHub settings that require administrator UI access
+## Remaining administrator and reviewer actions
 
-I. **Before the public launch**, use Settings -> Security / Code security
-to enable available Dependabot alerts and automatic security updates.
-Enable secret scanning/push protection if the current plan permits it.
-Configure Actions' workflow permissions as read-only by default, and
-allow GitHub Actions to create/approve PRs only if demonstrably needed.
+I. Reconfirm the settings above after any repository-plan or ownership change.
+Keep Actions' workflow permissions read-only by default, and allow GitHub
+Actions to create/approve PRs only if demonstrably needed.
 Restrict/review who can register self-hosted runners; keep permanent
 production machines completely out of untrusted code paths.
 
@@ -49,24 +62,16 @@ II. **Branch protection / rulesets**, when available for the plan:
   - Confirm by opening the `main` branch details: `protected:true`
     and the expected required checks should actually appear.
 
-III. **After publication as PUBLIC** (only after launch checks):
-  - Enable GitHub private vulnerability reporting via Settings ->
-    Security -> Private vulnerability reporting.
-  - Enable GitHub secret scanning and push protection where available.
-  - Re-check that rulesets/branch protections *apply* to the now-public
-    repository, and test a sample PR without a verified commit signature.
-  - Enable security advisory reviews and maintain a confidential
-    vulnerability-report channel, without posting exploit details.
+III. Keep security-advisory reviews and a confidential vulnerability-report
+channel operational; do not post exploit details in public issues.
 
 ## Important plan/permission limitation
 
-As checked on 2026-10-12, `main.protected=false`; rulesets returned HTTP 403
-(Upgrade to Pro or make public). Actions default permissions are read-only,
-and Actions cannot approve PR reviews. Dependabot alerts were enabled during
-this review; the alerts endpoint returned an empty list afterward. Description
-and project topics were also configured. Private vulnerability reporting
-returned HTTP 404. Source files alone do **not** enable branch protection.
-Verify the current settings again at launch; the dated review is a snapshot.
+The 2026-10-12 private-repository snapshot recorded unavailable rulesets and
+private vulnerability reporting. After the owner changed visibility to PUBLIC
+on 2026-10-15, the ruleset and public security controls became configurable and
+were verified as listed above. Source files alone do **not** enable branch
+protection; re-check the live settings after administrator changes.
 
 ## Release blockers
 
