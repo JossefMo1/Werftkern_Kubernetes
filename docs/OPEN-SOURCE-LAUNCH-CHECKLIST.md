@@ -1,10 +1,12 @@
 # Werftkern Open-Source Launch Gate
 
 Target repository: `JossefMo1/Werftkern_Kubernetes`
-Existing private source prereleases: `v0.1.0-alpha.1` and `v0.1.0-alpha.2`.
+Existing public source prereleases: `v0.1.0-alpha.1`, `v0.1.0-alpha.2` and
+`v0.1.0-alpha.3`.
 Current alpha selector: `release/alpha-version.txt` (`v0.1.0-alpha.3`).
 
-**Default decision: HOLD for PUBLIC publication and production.**
+**Historical launch checklist:** repository visibility was changed to PUBLIC on
+2026-10-15 by the repository owner. Production publication remains HOLD.
 A separate GitHub Actions workflow may create a **PRIVATE, source-only,
 experimental** pre-release selected by `release/alpha-version.txt` once all three defined CI workflows
 succeed for the exact current main commit. No binaries or external distribution
