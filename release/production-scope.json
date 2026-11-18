@@ -1,0 +1,132 @@
+{
+  "schema": "werftkern/production-scope/v1",
+  "status": "candidate-not-qualified",
+  "productionReady": false,
+  "exactCandidateRequired": true,
+  "releaseUnit": "one immutable commit and one digest-bound artifact set",
+  "paths": {
+    "native": {
+      "componentVersion": "0.2.0-dev.4",
+      "stateSchema": 2,
+      "engine": "docker-engine",
+      "operatingSystem": "ubuntu-24.04-lts-amd64",
+      "topology": "exactly-three-controllers-and-at-least-three-workers",
+      "trustBoundary": "single-trusted-administrator-and-trusted-workloads",
+      "installation": "fresh-hosts-only",
+      "upgradePath": "dev3-workers-to-dev4-after-all-controllers-run-dev4",
+      "rollback": "candidate-specific-package-rollback-must-pass-live-qualification",
+      "requiredDependencies": ["systemd", "cgroup-v2", "docker-engine", "etcd"],
+      "limits": {
+        "nodes": 20,
+        "workloads": 50,
+        "allocations": 200,
+        "stateBytes": 900000
+      },
+      "qualificationGates": [
+        "unit-race",
+        "static-analysis",
+        "source-audit",
+        "supported-toolchain-security",
+        "ubuntu-install-e2e",
+        "real-engine-etcd",
+        "multi-node-network",
+        "ha-partition",
+        "restore-new-host",
+        "upgrade-rollback",
+        "load-soak",
+        "independent-security",
+        "maintainer-approval"
+      ]
+    },
+    "kubernetes": {
+      "componentVersion": "0.1.0-dev.3",
+      "engine": "k0s-kubernetes",
+      "managementHost": "ubuntu-24.04-lts-amd64-python-3.10-or-newer",
+      "targetHosts": "ubuntu-24.04-lts-amd64",
+      "topology": "exactly-three-controllers-and-at-least-three-workers-with-external-ha-api-endpoint",
+      "trustBoundary": "single-trusted-administrator-and-one-cluster",
+      "installation": "fresh-target-hosts-only",
+      "upgradePath": "one-adjacent-qualified-kubernetes-minor-edge-to-be-pinned",
+      "rollback": "candidate-specific-k0s-and-manager-rollback-must-pass-live-qualification",
+      "requiredPinnings": {
+        "k0s": {"status": "unresolved"},
+        "k0sctl": {"status": "unresolved"},
+        "kubernetes": {"status": "unresolved"},
+        "storageProfile": {"status": "unresolved"},
+        "addonImagesAndCharts": {"status": "unresolved"}
+      },
+      "qualificationRequirements": [
+        "controller-replacement",
+        "stateful-self-healing",
+        "full-pv-database-recovery",
+        "ubuntu-k0s-e2e",
+        "ha-chaos",
+        "cloud-e2e",
+        "keycloak-login-negative-rbac",
+        "cert-manager-acme",
+        "sonobuoy-certified-conformance",
+        "cncf-submission-acceptance",
+        "real-upgrade-rollback",
+        "load-soak-faults",
+        "signed-supply-chain",
+        "independent-security"
+      ]
+    }
+  },
+  "crossPathReleaseGates": [
+    "reproducible-clean-build",
+    "artifact-commit-digest-identity",
+    "unit-race-contract-integration-package-source-vulnerability",
+    "sbom-dependency-supply-chain",
+    "signed-artifacts-and-provenance",
+    "install-uninstall-reinstall",
+    "upgrade-and-rollback",
+    "backup-restore-and-new-host-restore",
+    "multi-host-ha-partition-and-restart",
+    "negative-authorization-and-secure-defaults",
+    "load-soak-and-fault-limits",
+    "operator-runbooks",
+    "published-rc-and-user-feedback",
+    "independent-review-where-required",
+    "final-go-no-go"
+  ],
+  "fullMasterplan": {
+    "source": "docs/ROADMAP.md",
+    "currentQualificationContract": "full-masterplan-all-52-remain-blocking",
+    "inCandidateScope": [
+      "K20-001", "K20-002", "K20-004", "K20-005", "K20-006", "K20-007",
+      "K20-008", "K20-009", "K20-010", "K20-011", "K20-013", "K20-014",
+      "K20-015", "K20-016", "K20-018", "K20-020", "K20-021", "K20-022",
+      "K20-023", "K20-024", "K20-025", "K20-027", "K20-028", "K20-029",
+      "K20-030", "K20-031", "K20-032", "K20-033", "K20-034", "K20-035",
+      "K20-038", "K20-039", "K20-040", "K20-045", "K20-046", "K20-047",
+      "K20-048", "K20-052"
+    ],
+    "deferred": {
+      "K20-003": "Private or commercial .NET management integration is outside this standalone release.",
+      "K20-012": "The bounded native profile supports Docker Engine; direct containerd is not claimed.",
+      "K20-017": "The native profile uses its documented routed Docker bridge and does not claim CNI compatibility.",
+      "K20-019": "Hostile multi-tenancy and per-workload network policy are unsupported; only trusted workloads are in scope.",
+      "K20-026": "Private management outbox integration is outside this standalone release.",
+      "K20-036": "Air-gapped installation is not supported by the first production scope.",
+      "K20-037": "Live failure qualification is required; a complete state-space simulator is not a supported product feature.",
+      "K20-041": "Automated Kubernetes migration assessment is not part of either supported operating path.",
+      "K20-042": "Parallel migration routing is not part of either supported operating path.",
+      "K20-043": "Commercial discovery is tracked separately; published-RC user feedback remains a release gate.",
+      "K20-044": "A paid design-partner pilot is not a technical support claim or release prerequisite.",
+      "K20-049": "Native Jobs and CronJobs are not supported; Kubernetes users rely on upstream Kubernetes APIs.",
+      "K20-050": "Native autoscaling is not supported; no automatic scaling claim is made.",
+      "K20-051": "GPU workloads are not supported by the first production scope."
+    }
+  },
+  "unsupported": [
+    "hostile-multi-tenancy",
+    "automatic-native-to-kubernetes-migration",
+    "single-controller-production",
+    "unbounded-cluster-sizes",
+    "automatic-quorum-loss-recovery",
+    "air-gapped-installation",
+    "gpu-workloads",
+    "production-use-before-exact-candidate-qualification"
+  ]
+}

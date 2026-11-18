@@ -6,7 +6,8 @@
 [![Kubernetes checks](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/workflows/kubernetes-backend.yml/badge.svg?branch=main)](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/workflows/kubernetes-backend.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-[Deutsch: hier beginnen](START-HERE-DE.md) · [Documentation](#documentation) ·
+[Deutsch: hier beginnen](START-HERE-DE.md) · [Candidate production scope](docs/PRODUCTION-SCOPE.md) ·
+[Documentation](#documentation) ·
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) ·
 [Source releases](https://github.com/JossefMo1/Werftkern_Kubernetes/releases)
 
@@ -43,7 +44,8 @@ connector is unfinished. Source provenance and attribution are recorded in
 | Kubernetes lifecycle | Plans, create, scale, upgrade, backups, restore, add-on and OIDC/SSO tooling | Requires reviewed local assets, trusted SSH hosts and explicit topology; contract tests are not live cluster evidence |
 | Kubernetes recovery | Budgeted worker replacement, journalled controller replacement and constrained stateful/CSI recovery | Restricted experimental profiles; full disaster recovery and production safety are not established |
 
-Consult [native status](docs/STATUS.md), [Kubernetes readiness](release/kubernetes-readiness.json)
+Consult the [candidate production scope](docs/PRODUCTION-SCOPE.md),
+[native status](docs/STATUS.md), [Kubernetes readiness](release/kubernetes-readiness.json)
 and the [roadmap](docs/ROADMAP.md) before selecting a feature. Host root and
 Docker-socket access are trusted administrator capabilities. Hostile multi-tenancy
 is unsupported; mTLS is not customer tenant RBAC.
@@ -150,3 +152,4 @@ Source is licensed under [Apache License 2.0](LICENSE). Preserve
 Separately installed tools retain their own licenses. Werftkern is a working
 name; trademark clearance has not been established. Public source availability
 does not imply production qualification.
+

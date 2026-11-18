@@ -18,6 +18,7 @@ go vet ./...
 python3 -m unittest discover -s tests/ops -v
 PYTHONPATH=ops python3 -m unittest discover -s tests/kubernetes -v
 python3 -m unittest discover -s tests/release -v
+python3 scripts/check-production-scope.py
 python3 scripts/check-public-source.py
 python3 scripts/audit-git-history.py
 node --check internal/dashboard/assets/app.js
@@ -43,3 +44,4 @@ Provide sanitized evidence only; never upload PKI, join bundles, backups or secr
 Issue IDs in ROADMAP are plan references, not live GitHub issues. Never close a task because
 only interfaces, documentation or test doubles exist. Critical control-plane/host/security paths
 require a reviewer other than the implementer before production qualification.
+
