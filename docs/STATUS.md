@@ -2,6 +2,12 @@
 
 **NOT_PRODUCTION_READY. Full masterplan incomplete. State schema 2.**
 
+The [candidate production scope](PRODUCTION-SCOPE.md) records a proposed,
+bounded first support matrix for the Native and Kubernetes paths. It is a
+planning and drift-detection contract, not qualification evidence. All listed
+live, security, supply-chain and operational gates remain open until evidence
+for one unchanged release candidate is verified.
+
 The authoring-environment observations below are historical, including the
 compiler version and whether CI had run at that time. For subsequently verified
 GitHub CI and public-source preparation, see
@@ -54,3 +60,4 @@ are absent. All production qualification gates remain BLOCKED.
 Local compiler: Go1.23.2 on Debian13. Prepared CI: Go1.27.1, not executed here. A separately
 supplied `.deb` is unsigned, unqualified and for fresh disposable lab VMs only. Actual
 counts and evidence scopes: `validation/TEST-REPORT.md`.
+

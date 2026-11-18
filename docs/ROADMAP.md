@@ -2,6 +2,12 @@
 
 **Dev.4: full scope remains incomplete.** Partial means code exists, not production qualification.
 
+The [candidate production scope](PRODUCTION-SCOPE.md) classifies every K20 item
+as in the proposed first support boundary or explicitly deferred. A deferral is
+not completion and does not remove the item from this masterplan; the current
+Native qualification contract still treats all 52 entries as blocking.
+`release/production-scope.json` is checked against the complete inventory.
+
 ## K20-001 — Review-Baseline und Ausführungspfade verifizieren
 
 **partial**. Separate Alpha neu gebaut/getestet; private C#-DI nicht erneut ausgeführt.
@@ -209,3 +215,4 @@
 ## K20-052 — Enge GA anhand der Freigabegates entscheiden
 
 **not-implemented-or-not-executed**. Externer Review, Kundenarbeit oder Freigabeentscheidung; nicht durch Code erzeugt.
+
