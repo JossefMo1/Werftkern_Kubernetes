@@ -16,7 +16,10 @@ import (
 
 const MaxDepth = 64
 
-func Unmarshal(raw []byte, target any) error {
+// Validate rejects ambiguous JSON syntax without imposing a typed schema.
+// Callers that need forward-compatible response decoding can validate first and
+// then use encoding/json, while Unmarshal additionally rejects unknown fields.
+func Validate(raw []byte) error {
 	d := json.NewDecoder(bytes.NewReader(raw))
 	d.UseNumber()
 	if e := value(d, 0); e != nil {
@@ -25,10 +28,18 @@ func Unmarshal(raw []byte, target any) error {
 	if _, e := d.Token(); e != io.EOF {
 		return errors.New("JSON_TRAILING_DATA")
 	}
-	d = json.NewDecoder(bytes.NewReader(raw))
+	return nil
+}
+
+func Unmarshal(raw []byte, target any) error {
+	if e := Validate(raw); e != nil {
+		return e
+	}
+	d := json.NewDecoder(bytes.NewReader(raw))
 	d.DisallowUnknownFields()
 	return d.Decode(target)
 }
+
 func value(d *json.Decoder, depth int) error {
 	if depth > MaxDepth {
 		return errors.New("JSON_NESTING_LIMIT")
