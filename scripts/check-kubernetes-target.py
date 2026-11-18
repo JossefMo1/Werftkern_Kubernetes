@@ -145,6 +145,57 @@ def validate(matrix: dict) -> list[str]:
     ):
         problems.append("KUBECTL_ARTIFACT_URL_INVALID")
 
+    storage = matrix.get("storageProfile")
+    expected_qualification = {
+        "chartRendered": False,
+        "imageDigestsPinned": False,
+        "realProvisionAttachMount": False,
+        "expansionPassed": False,
+        "nodeFailureReattachPassed": False,
+        "reclaimRetainPassed": False,
+        "backupRestorePassed": False,
+        "restoreOnNewClusterPassed": False,
+    }
+    if (
+        not isinstance(storage, dict)
+        or storage.get("status") != "selected-not-qualified"
+        or storage.get("name") != "hetzner-cloud-volume-rwo-retain"
+        or storage.get("provider") != "hetzner-cloud"
+        or storage.get("helmValues") != "examples/kubernetes/hcloud-csi-values.example.yaml"
+        or storage.get("k0sKubeletDirectory") != "/var/lib/k0s/kubelet"
+        or storage.get("qualification") != expected_qualification
+    ):
+        problems.append("STORAGE_PROFILE_INVALID")
+    else:
+        driver = storage.get("driver")
+        chart = driver.get("chart") if isinstance(driver, dict) else None
+        if (
+            not isinstance(driver, dict)
+            or driver.get("repository") != "hetznercloud/csi-driver"
+            or driver.get("version") != "v2.24.2"
+            or driver.get("releaseUrl") != "https://github.com/hetznercloud/csi-driver/releases/tag/v2.24.2"
+            or not timestamp(driver.get("publishedAt"))
+            or driver.get("kubernetesCompatibilityBasis") != "upstream-v2.24.0-release-notes-state-kubernetes-v1.37-support"
+            or not isinstance(chart, dict)
+            or chart.get("name") != "hcloud-csi-2.24.2.tgz"
+            or chart.get("url") != "https://github.com/hetznercloud/csi-driver/releases/download/v2.24.2/hcloud-csi-2.24.2.tgz"
+            or chart.get("sha256") != "1f4ebe7d2a8b06e95559a5315ecf125e158ccdadc8a6aae885c7ecd33a7fb4f6"
+            or chart.get("digestSource") != "github-release-api"
+            or chart.get("downloadedAndHashed") is not False
+            or chart.get("signatureAvailable") is not False
+        ):
+            problems.append("STORAGE_CHART_PROVENANCE_INVALID")
+        if storage.get("storageClass") != {
+            "name": "werftkern-hcloud-retain",
+            "provisioner": "csi.hetzner.cloud",
+            "default": False,
+            "accessModes": ["ReadWriteOnce"],
+            "reclaimPolicy": "Retain",
+            "volumeBindingMode": "WaitForFirstConsumer",
+            "allowVolumeExpansion": True,
+        }:
+            problems.append("STORAGE_CLASS_BOUNDARY_INVALID")
+
     compatibility = matrix.get("compatibility")
     if not isinstance(compatibility, dict) or compatibility != {
         "basis": "matching-kubernetes-patch-in-k0s-tag-only",
@@ -155,7 +206,9 @@ def validate(matrix: dict) -> list[str]:
     }:
         problems.append("COMPATIBILITY_CLAIM_INVALID")
     unresolved = matrix.get("unresolved")
-    if not isinstance(unresolved, dict) or set(unresolved) != {"storageProfile", "addonImagesAndCharts"}:
+    if not isinstance(unresolved, dict) or set(unresolved) != {
+        "storageImageDigests", "storageQualification", "addonImagesAndCharts"
+    }:
         problems.append("UNRESOLVED_INVENTORY_INVALID")
     elif any(not isinstance(value, str) or not value.strip() for value in unresolved.values()):
         problems.append("UNRESOLVED_REASON_MISSING")

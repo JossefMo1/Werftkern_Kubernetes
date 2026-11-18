@@ -12,8 +12,8 @@
     },
     "hcloud-csi": {
       "path": "/opt/werftkern/reviewed/charts/hcloud-csi.tgz",
-      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
-      "version": "REPLACE_WITH_VERIFIED_CHART_VERSION"
+      "sha256": "1f4ebe7d2a8b06e95559a5315ecf125e158ccdadc8a6aae885c7ecd33a7fb4f6",
+      "version": "2.24.2"
     },
     "kube-prometheus-stack": {
       "path": "/opt/werftkern/reviewed/charts/kube-prometheus-stack.tgz",

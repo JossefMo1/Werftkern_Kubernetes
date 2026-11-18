@@ -194,7 +194,10 @@ Native qualification contract still treats all 52 entries as blocking.
 
 ## K20-047 — Einen CSI-Treiber vollständig qualifizieren
 
-**not-implemented-or-not-executed**. Nicht implementiert bzw. nicht durchgeführt.
+**partial**. Hetzner hcloud-csi 2.24.2 ist als enger Kandidat mit festem Chart-Digest,
+k0s-Kubelet-Pfad und konservativer `Retain`-StorageClass ausgewählt. Image-Digests,
+Chart-Rendering sowie reale Provision/Attach/Mount/Expansion/Failure/Backup/Restore-
+Qualifikation fehlen; keine Produktionsfreigabe.
 
 ## K20-048 — Ein Stateful-Profil mit Replikation und Restore freigeben
 
