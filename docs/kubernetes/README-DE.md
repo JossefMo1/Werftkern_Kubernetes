@@ -161,6 +161,11 @@ Die Wertevorlage `hcloud-csi-values.example.yaml` setzt für k0s
 `node.kubeletDir: /var/lib/k0s/kubelet`, zwei Controller-Replikate und eine
 nicht standardmäßige StorageClass `werftkern-hcloud-retain` mit `Retain`.
 Das Chart selbst erzwingt `WaitForFirstConsumer` und Volume-Expansion.
+`release/hcloud-csi-image-lock.json` erfasst die sechs eindeutigen Images des
+Upstream-Values-Git-Blobs. `scripts/check-hcloud-csi-image-lock.py` blockiert
+unvollständige Inventare, mutable Tags sowie ein gerendertes Manifest mit Tag-Images
+oder nicht freigegebenen Images. Da die Registry-Digests noch `null` sind, kann der
+Prüfer derzeit absichtlich keinen Render als verifiziert melden.
 
 Das Hetzner-Token wird als bereits vorhandenes Secret `kube-system/hcloud`
 erwartet und gehört niemals in `assets.json`, Wertevorlagen, Logs oder Git.
