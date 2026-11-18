@@ -127,9 +127,13 @@ def validate(scope: dict, qualification: dict, kubernetes: dict) -> list[str]:
         for key in ("k0s", "k0sctl", "kubernetes"):
             if pins.get(key) != {"status": "pinned", "targetMatrix": matrix}:
                 problems.append("CORE_PIN_REFERENCE_INVALID:" + key)
-        for key in ("storageProfile", "addonImagesAndCharts"):
-            if pins.get(key) != {"status": "unresolved"}:
-                problems.append("UNRESOLVED_PIN_STATE_INVALID:" + key)
+        if pins.get("storageProfile") != {
+            "status": "selected-not-qualified",
+            "targetMatrix": matrix,
+        }:
+            problems.append("STORAGE_SELECTION_REFERENCE_INVALID")
+        if pins.get("addonImagesAndCharts") != {"status": "unresolved"}:
+            problems.append("UNRESOLVED_PIN_STATE_INVALID:addonImagesAndCharts")
 
     plan = scope.get("fullMasterplan")
     features = set(qualification.get("features", {}))

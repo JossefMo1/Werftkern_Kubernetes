@@ -71,6 +71,49 @@
       "binaryDownloadedAndHashed": false
     }
   },
+  "storageProfile": {
+    "status": "selected-not-qualified",
+    "name": "hetzner-cloud-volume-rwo-retain",
+    "provider": "hetzner-cloud",
+    "driver": {
+      "repository": "hetznercloud/csi-driver",
+      "version": "v2.24.2",
+      "releaseUrl": "https://github.com/hetznercloud/csi-driver/releases/tag/v2.24.2",
+      "publishedAt": "2026-11-13T06:51:36Z",
+      "kubernetesCompatibilityBasis": "upstream-v2.24.0-release-notes-state-kubernetes-v1.37-support",
+      "chart": {
+        "name": "hcloud-csi-2.24.2.tgz",
+        "url": "https://github.com/hetznercloud/csi-driver/releases/download/v2.24.2/hcloud-csi-2.24.2.tgz",
+        "sha256": "1f4ebe7d2a8b06e95559a5315ecf125e158ccdadc8a6aae885c7ecd33a7fb4f6",
+        "digestSource": "github-release-api",
+        "downloadedAndHashed": false,
+        "signatureAvailable": false
+      }
+    },
+    "helmValues": "examples/kubernetes/hcloud-csi-values.example.yaml",
+    "k0sKubeletDirectory": "/var/lib/k0s/kubelet",
+    "storageClass": {
+      "name": "werftkern-hcloud-retain",
+      "provisioner": "csi.hetzner.cloud",
+      "default": false,
+      "accessModes": [
+        "ReadWriteOnce"
+      ],
+      "reclaimPolicy": "Retain",
+      "volumeBindingMode": "WaitForFirstConsumer",
+      "allowVolumeExpansion": true
+    },
+    "qualification": {
+      "chartRendered": false,
+      "imageDigestsPinned": false,
+      "realProvisionAttachMount": false,
+      "expansionPassed": false,
+      "nodeFailureReattachPassed": false,
+      "reclaimRetainPassed": false,
+      "backupRestorePassed": false,
+      "restoreOnNewClusterPassed": false
+    }
+  },
   "compatibility": {
     "basis": "matching-kubernetes-patch-in-k0s-tag-only",
     "contractTestsPassed": false,
@@ -79,13 +122,16 @@
     "upgradeEdgeQualified": false
   },
   "unresolved": {
-    "storageProfile": "Select and digest-pin one CSI/storage profile, then qualify lifecycle, fencing, backup and restore.",
+    "storageImageDigests": "Resolve and pin every driver and sidecar image manifest digest used by the selected chart.",
+    "storageQualification": "Render and review the chart, then qualify provision, attach, mount, expansion, failure reattach, retention, backup and restore on disposable Hetzner Cloud hosts.",
     "addonImagesAndCharts": "Select only the required add-ons and pin every chart, manifest and image digest."
   },
   "limitations": [
     "Release metadata and checksum entries were inspected; the binaries were not downloaded or executed.",
     "The k0s signature and SBOM signature were not verified against an independently trusted key.",
     "The k0sctl release exposes checksums but no signature asset in the inspected release.",
+    "The selected Hetzner CSI chart digest comes from the GitHub release API; the chart was not downloaded, rendered, signature-verified or executed.",
+    "Hetzner Cloud Volumes are ReadWriteOnce, attach to one server at a time, and the provider does not supply Volume backups or snapshots; application-level backup remains mandatory.",
     "No real Ubuntu host, k0s cluster, upgrade, storage, backup, restore, load or failure test has used this matrix.",
     "Selection does not imply support, certification, vulnerability clearance or production readiness."
   ]

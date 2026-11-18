@@ -26,8 +26,11 @@ Ed25519-SSH-Hostkeys. Der Managementhost muss alle privaten Zieladressen erreich
 Konkrete k0s-/k0sctl-/Kubernetes-/Chart-/Imagekombinationen sind **noch nicht qualifiziert**.
 Die [Core-Zielmatrix](../../release/kubernetes-target-matrix.json) schlägt
 `v1.37.2+k0s.1`, k0sctl `v0.33.1` und kubectl/Kubernetes `v1.37.2`
-mit festen Upstream-Digests vor. Die Binaries wurden damit noch nicht ausgeführt
-oder signaturgeprüft; Storage, Charts und Images bleiben unaufgelöst. Die Matrix
+mit festen Upstream-Digests vor. Als enges Storage-Kandidatenprofil ist außerdem
+hcloud-csi `2.24.2` mit dem digestgebundenen offiziellen Chart, k0s-Kubelet-Pfad
+und einer nicht standardmäßigen `Retain`-StorageClass ausgewählt. Die Binaries
+und das Chart wurden damit noch nicht ausgeführt, gerendert oder signaturgeprüft;
+sämtliche Container-Image-Digests und Live-Storage-Gates bleiben offen. Die Matrix
 ist deshalb weder Supportzusage noch Upgrade- oder Produktionsevidenz.
 Helm-Vertrag: Helm 3. Keycloak-CRs benötigen einen geprüften Operator/Server mit
 `v2beta1`, Truststores und `db-tls-mode=verify-server` (neuere 26.x-Linie, mindestens
@@ -148,6 +151,25 @@ Restore nach unklarem Ergebnis nicht blind. Der API-Endpunkt bleibt identisch. P
 Volumes und externe Datenbanken sind **nicht** Bestandteil dieses Restores; sie benötigen
 eigene Backups, Fencing und fachliche Verifikation. Vollständige standortweite DR ist daher
 weiterhin nicht freigegeben. Kein pauschaler Rollback durch Installation alter Binaries.
+
+## Kandidatenprofil für persistente Volumes
+
+Der ausgewählte, noch nicht qualifizierte Pfad verwendet ausschließlich Hetzner
+Cloud Volumes über hcloud-csi `2.24.2`. Das offizielle Chart ist in
+`assets.example.json` mit dem vom GitHub-Release-API gemeldeten SHA256 gebunden.
+Die Wertevorlage `hcloud-csi-values.example.yaml` setzt für k0s
+`node.kubeletDir: /var/lib/k0s/kubelet`, zwei Controller-Replikate und eine
+nicht standardmäßige StorageClass `werftkern-hcloud-retain` mit `Retain`.
+Das Chart selbst erzwingt `WaitForFirstConsumer` und Volume-Expansion.
+
+Das Hetzner-Token wird als bereits vorhandenes Secret `kube-system/hcloud`
+erwartet und gehört niemals in `assets.json`, Wertevorlagen, Logs oder Git.
+Dieser Pfad ist ReadWriteOnce und kann ein Volume nur an einen Server gleichzeitig
+anhängen. Hetzner stellt für Volumes keine Backups oder Snapshots bereit. Ein
+Control-Plane-Backup enthält die Volumes ebenfalls nicht. Vor jeder Freigabe sind
+deshalb mindestens Chart-Rendering, vollständige Image-Digests, Provision/Attach/
+Mount, Expansion, Node-Ausfall mit sicherem Reattach, `Retain`-Verhalten sowie
+anwendungskonsistentes Backup und Restore auf einem neuen Cluster real auszuführen.
 
 ## Add-ons, Zertifikate und SSO
 

@@ -1,0 +1,22 @@
+# Candidate values for hcloud-csi 2.24.2 on k0s. Not production-qualified.
+# The hcloud API token is an existing kube-system/hcloud Secret and must not be
+# stored in this file or committed to Git.
+
+controller:
+  replicaCount: 2
+  priorityClassName: system-cluster-critical
+  podDisruptionBudget:
+    create: true
+    minAvailable: 1
+
+node:
+  kubeletDir: /var/lib/k0s/kubelet
+  priorityClassName: system-node-critical
+
+metrics:
+  enabled: true
+
+storageClasses:
+  - name: werftkern-hcloud-retain
+    defaultStorageClass: false
+    reclaimPolicy: Retain

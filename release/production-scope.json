@@ -52,7 +52,7 @@
         "k0s": {"status": "pinned", "targetMatrix": "release/kubernetes-target-matrix.json"},
         "k0sctl": {"status": "pinned", "targetMatrix": "release/kubernetes-target-matrix.json"},
         "kubernetes": {"status": "pinned", "targetMatrix": "release/kubernetes-target-matrix.json"},
-        "storageProfile": {"status": "unresolved"},
+        "storageProfile": {"status": "selected-not-qualified", "targetMatrix": "release/kubernetes-target-matrix.json"},
         "addonImagesAndCharts": {"status": "unresolved"}
       },
       "qualificationRequirements": [

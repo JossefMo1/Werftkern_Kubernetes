@@ -54,6 +54,9 @@ class ProductionScopeTests(unittest.TestCase):
         changed["paths"]["kubernetes"]["requiredPinnings"]["k0s"]["targetMatrix"] = "latest"
         self.assertIn("CORE_PIN_REFERENCE_INVALID:k0s", self.validate(changed))
         changed = copy.deepcopy(self.scope)
+        changed["paths"]["kubernetes"]["requiredPinnings"]["storageProfile"]["status"] = "pinned"
+        self.assertIn("STORAGE_SELECTION_REFERENCE_INVALID", self.validate(changed))
+        changed = copy.deepcopy(self.scope)
         changed["crossPathReleaseGates"].append(changed["crossPathReleaseGates"][0])
         self.assertIn("CROSS_PATH_GATE_INVENTORY_MISMATCH", self.validate(changed))
 

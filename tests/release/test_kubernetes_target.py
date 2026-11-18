@@ -50,8 +50,31 @@ class KubernetesTargetTests(unittest.TestCase):
 
     def test_unresolved_storage_and_addons_remain_explicit(self):
         changed = copy.deepcopy(self.matrix)
-        changed["unresolved"].pop("storageProfile")
+        changed["unresolved"].pop("storageQualification")
         self.assertIn("UNRESOLVED_INVENTORY_INVALID", TARGET.validate(changed))
+
+    def test_storage_selection_and_unexecuted_gates_are_fail_closed(self):
+        changed = copy.deepcopy(self.matrix)
+        changed["storageProfile"]["storageClass"]["reclaimPolicy"] = "Delete"
+        self.assertIn("STORAGE_CLASS_BOUNDARY_INVALID", TARGET.validate(changed))
+        changed = copy.deepcopy(self.matrix)
+        changed["storageProfile"]["qualification"]["realProvisionAttachMount"] = True
+        self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
+
+    def test_public_asset_example_matches_selected_storage_chart(self):
+        assets = TARGET.parse_json((ROOT / "examples/kubernetes/assets.example.json").read_text())
+        chart = self.matrix["storageProfile"]["driver"]["chart"]
+        self.assertEqual(assets["charts"]["hcloud-csi"], {
+            "path": "/opt/werftkern/reviewed/charts/hcloud-csi.tgz",
+            "sha256": chart["sha256"],
+            "version": "2.24.2",
+        })
+        values = (ROOT / "examples/kubernetes/hcloud-csi-values.example.yaml").read_text()
+        self.assertIn("kubeletDir: /var/lib/k0s/kubelet", values)
+        self.assertIn("name: werftkern-hcloud-retain", values)
+        self.assertIn("defaultStorageClass: false", values)
+        self.assertIn("reclaimPolicy: Retain", values)
+        self.assertNotIn("token:", values)
 
     def test_public_asset_example_matches_core_target(self):
         assets = TARGET.parse_json((ROOT / "examples/kubernetes/assets.example.json").read_text())
