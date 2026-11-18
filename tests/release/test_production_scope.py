@@ -59,6 +59,16 @@ class ProductionScopeTests(unittest.TestCase):
         changed["productionReady"] = True
         self.assertIn("SCOPE_MUST_REMAIN_UNQUALIFIED", self.validate(changed))
 
+    def test_ambiguous_json_and_upstream_readiness_are_rejected(self):
+        with self.assertRaises(ValueError):
+            SCOPE.parse_json('{"productionReady":false,"productionReady":true}')
+        qualification = copy.deepcopy(self.qualification)
+        qualification["productionReady"] = True
+        self.assertIn(
+            "UPSTREAM_READINESS_CONTRACT_INVALID",
+            SCOPE.validate(self.scope, qualification, self.kubernetes),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

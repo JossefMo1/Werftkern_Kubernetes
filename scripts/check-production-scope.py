@@ -32,6 +32,18 @@ CROSS_PATH_GATES = {
 REQUIRED_PINS = {"k0s", "k0sctl", "kubernetes", "storageProfile", "addonImagesAndCharts"}
 
 
+def parse_json(text: str):
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"duplicate JSON key: {key}")
+            result[key] = value
+        return result
+
+    return json.loads(text, object_pairs_hook=unique_object)
+
+
 def _set(value):
     return set(value) if isinstance(value, list) and all(isinstance(v, str) for v in value) else set()
 
@@ -48,6 +60,14 @@ def validate(scope: dict, qualification: dict, kubernetes: dict) -> list[str]:
         problems.append("SCOPE_MUST_REMAIN_UNQUALIFIED")
     if scope.get("exactCandidateRequired") is not True:
         problems.append("EXACT_CANDIDATE_REQUIRED")
+    if (
+        qualification.get("scope") != "full-masterplan"
+        or qualification.get("productionReady") is not False
+        or kubernetes.get("productionReady") is not False
+        or kubernetes.get("fullMasterplanComplete") is not False
+        or kubernetes.get("cncfCertified") is not False
+    ):
+        problems.append("UPSTREAM_READINESS_CONTRACT_INVALID")
 
     paths = scope.get("paths")
     if not isinstance(paths, dict) or set(paths) != {"native", "kubernetes"}:
@@ -129,9 +149,9 @@ def main() -> int:
     args = parser.parse_args()
     root = args.root.resolve()
     try:
-        scope = json.loads((root / "release/production-scope.json").read_text())
-        qualification = json.loads((root / "release/qualification.json").read_text())
-        kubernetes = json.loads((root / "release/kubernetes-readiness.json").read_text())
+        scope = parse_json((root / "release/production-scope.json").read_text())
+        qualification = parse_json((root / "release/qualification.json").read_text())
+        kubernetes = parse_json((root / "release/kubernetes-readiness.json").read_text())
         problems = validate(scope, qualification, kubernetes)
     except (OSError, ValueError, TypeError, AttributeError):
         problems = ["SCOPE_INPUT_INVALID"]
