@@ -38,8 +38,11 @@ contact is not storage fencing and no automatic quorum-loss recovery is promised
 | Storage and add-ons | Only the exact storage profile, charts and images pinned for the candidate and proven by the live matrix |
 | Upgrade | One adjacent Kubernetes minor-version edge selected before RC; no skipped-minor, downgrade or simultaneous topology/authentication change |
 
-The k0s, k0sctl, Kubernetes, storage and add-on version pins are deliberately
-unresolved today. Until they are selected, reviewed and tested, there is no
+The [candidate target matrix](../release/kubernetes-target-matrix.json) pins
+k0s, k0sctl, Kubernetes/kubectl and their inspected upstream digests. Those
+binaries have not been executed or signature-verified, so the pins are not
+compatibility or support evidence. Storage and add-on selection remains
+unresolved. Until the complete matrix is reviewed and tested, there is no
 supported Kubernetes combination. Control-plane backup does not include
 application volumes; storage and database recovery need their own evidence.
 

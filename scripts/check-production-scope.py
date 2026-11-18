@@ -122,8 +122,14 @@ def validate(scope: dict, qualification: dict, kubernetes: dict) -> list[str]:
     pins = kube.get("requiredPinnings")
     if not isinstance(pins, dict) or set(pins) != REQUIRED_PINS:
         problems.append("PIN_INVENTORY_INVALID")
-    elif any(not isinstance(v, dict) or v.get("status") not in {"unresolved", "pinned"} for v in pins.values()):
-        problems.append("PIN_STATUS_INVALID")
+    else:
+        matrix = "release/kubernetes-target-matrix.json"
+        for key in ("k0s", "k0sctl", "kubernetes"):
+            if pins.get(key) != {"status": "pinned", "targetMatrix": matrix}:
+                problems.append("CORE_PIN_REFERENCE_INVALID:" + key)
+        for key in ("storageProfile", "addonImagesAndCharts"):
+            if pins.get(key) != {"status": "unresolved"}:
+                problems.append("UNRESOLVED_PIN_STATE_INVALID:" + key)
 
     plan = scope.get("fullMasterplan")
     features = set(qualification.get("features", {}))
