@@ -20,6 +20,7 @@ PYTHONPATH=ops python3 -m unittest discover -s tests/kubernetes -v
 python3 -m unittest discover -s tests/release -v
 python3 scripts/check-production-scope.py
 python3 scripts/check-kubernetes-target.py
+python3 scripts/check-hcloud-csi-image-lock.py
 python3 scripts/check-public-source.py
 python3 scripts/audit-git-history.py
 node --check internal/dashboard/assets/app.js

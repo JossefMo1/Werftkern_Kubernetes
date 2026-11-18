@@ -60,6 +60,9 @@ class KubernetesTargetTests(unittest.TestCase):
         changed = copy.deepcopy(self.matrix)
         changed["storageProfile"]["qualification"]["realProvisionAttachMount"] = True
         self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
+        changed = copy.deepcopy(self.matrix)
+        changed["storageProfile"]["imageLock"] = "release/latest.json"
+        self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
 
     def test_public_asset_example_matches_selected_storage_chart(self):
         assets = TARGET.parse_json((ROOT / "examples/kubernetes/assets.example.json").read_text())

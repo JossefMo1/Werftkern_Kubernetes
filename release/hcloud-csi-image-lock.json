@@ -1,0 +1,61 @@
+{
+  "schema": "werftkern/hcloud-csi-image-lock/v1",
+  "status": "inventory-complete-digests-unresolved",
+  "productionReady": false,
+  "chartVersion": "2.24.2",
+  "sourceValues": {
+    "repository": "hetznercloud/csi-driver",
+    "ref": "v2.24.2",
+    "path": "chart/values.yaml",
+    "gitBlobSha": "0c38bd9e9889e29ba2d52d71368ea4f31d84174a",
+    "inspectedAt": "2026-11-19"
+  },
+  "images": {
+    "csi-attacher": {
+      "repository": "registry.k8s.io/sig-storage/csi-attacher",
+      "tag": "v4.13.0",
+      "digest": null,
+      "consumers": ["controller"]
+    },
+    "csi-node-driver-registrar": {
+      "repository": "registry.k8s.io/sig-storage/csi-node-driver-registrar",
+      "tag": "v2.18.0",
+      "digest": null,
+      "consumers": ["node"]
+    },
+    "csi-provisioner": {
+      "repository": "registry.k8s.io/sig-storage/csi-provisioner",
+      "tag": "v6.3.0",
+      "digest": null,
+      "consumers": ["controller"]
+    },
+    "csi-resizer": {
+      "repository": "registry.k8s.io/sig-storage/csi-resizer",
+      "tag": "v2.2.1",
+      "digest": null,
+      "consumers": ["controller"]
+    },
+    "hcloud-csi-driver": {
+      "repository": "docker.io/hetznercloud/hcloud-csi-driver",
+      "tag": "v2.24.2",
+      "digest": null,
+      "consumers": ["controller", "node"]
+    },
+    "liveness-probe": {
+      "repository": "registry.k8s.io/sig-storage/livenessprobe",
+      "tag": "v2.20.0",
+      "digest": null,
+      "consumers": ["controller", "node"]
+    }
+  },
+  "render": {
+    "manifestSha256": null,
+    "verified": false
+  },
+  "limitations": [
+    "The inventory was transcribed from the immutable v2.24.2 chart values Git blob; the chart was not rendered.",
+    "Tags identify the upstream defaults but do not establish immutable image identity.",
+    "Every digest must be resolved from its authoritative registry and independently rechecked before rendering.",
+    "A policy-valid render is not a vulnerability scan, signature verification, runtime test or production qualification."
+  ]
+}

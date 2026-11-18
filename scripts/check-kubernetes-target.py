@@ -148,6 +148,7 @@ def validate(matrix: dict) -> list[str]:
     storage = matrix.get("storageProfile")
     expected_qualification = {
         "chartRendered": False,
+        "imageInventoryComplete": True,
         "imageDigestsPinned": False,
         "realProvisionAttachMount": False,
         "expansionPassed": False,
@@ -162,6 +163,7 @@ def validate(matrix: dict) -> list[str]:
         or storage.get("name") != "hetzner-cloud-volume-rwo-retain"
         or storage.get("provider") != "hetzner-cloud"
         or storage.get("helmValues") != "examples/kubernetes/hcloud-csi-values.example.yaml"
+        or storage.get("imageLock") != "release/hcloud-csi-image-lock.json"
         or storage.get("k0sKubeletDirectory") != "/var/lib/k0s/kubelet"
         or storage.get("qualification") != expected_qualification
     ):

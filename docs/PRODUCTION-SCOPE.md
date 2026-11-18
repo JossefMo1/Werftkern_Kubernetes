@@ -43,7 +43,9 @@ k0s, k0sctl, Kubernetes/kubectl and their inspected upstream digests. Those
 binaries have not been executed or signature-verified, so the pins are not
 compatibility or support evidence. The matrix also records a candidate Hetzner
 CSI chart and conservative StorageClass contract. Its images are not digest-pinned,
-the chart has not been downloaded or rendered, and no Volume lifecycle test ran.
+but the exact six-image tag inventory is bound to the upstream values Git blob and
+a render-policy checker rejects tag-only or unlisted images. The chart has not been
+downloaded or rendered, and no Volume lifecycle test ran.
 Hetzner Cloud Volumes attach to one server at a time and the provider does not
 offer Volume backups or snapshots. Application-consistent backup and restore
 therefore remain separate mandatory gates. Until the complete matrix is reviewed

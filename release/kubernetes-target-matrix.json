@@ -91,6 +91,7 @@
       }
     },
     "helmValues": "examples/kubernetes/hcloud-csi-values.example.yaml",
+    "imageLock": "release/hcloud-csi-image-lock.json",
     "k0sKubeletDirectory": "/var/lib/k0s/kubelet",
     "storageClass": {
       "name": "werftkern-hcloud-retain",
@@ -105,6 +106,7 @@
     },
     "qualification": {
       "chartRendered": false,
+      "imageInventoryComplete": true,
       "imageDigestsPinned": false,
       "realProvisionAttachMount": false,
       "expansionPassed": false,
