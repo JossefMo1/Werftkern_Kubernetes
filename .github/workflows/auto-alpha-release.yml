@@ -41,8 +41,9 @@ jobs:
           set -euo pipefail
           visibility="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.visibility')"
           if [ "$visibility" != private ]; then
-            echo '::error::Public release forbidden until separate ownership and security approval.'
-            exit 1
+            echo "::notice::Private alpha publisher is disabled for $visibility repositories; no release was created."
+            echo 'eligible=false' >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
           sha="$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')"
