@@ -4,15 +4,20 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"strings"
+
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/failover"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
-	"io"
-	"net/http"
-	"strings"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 )
+
+const maxResponseBytes = 2 * model.MaxStateBytes
 
 type Client struct {
 	HTTP      *http.Client
@@ -73,7 +78,17 @@ func (c *Client) Call(ctx context.Context, method, path string, in, out any, key
 		io.Copy(io.Discard, io.LimitReader(resp.Body, 8192))
 		return nil
 	}
-	return json.NewDecoder(io.LimitReader(resp.Body, 2*model.MaxStateBytes)).Decode(out)
+	raw, e := io.ReadAll(io.LimitReader(resp.Body, maxResponseBytes+1))
+	if e != nil {
+		return e
+	}
+	if len(raw) > maxResponseBytes {
+		return errors.New("CONTROL_PLANE_RESPONSE_TOO_LARGE")
+	}
+	if e = strictjson.Validate(raw); e != nil {
+		return e
+	}
+	return json.Unmarshal(raw, out)
 }
 func (c *Client) State(ctx context.Context) (*model.State, error) {
 	var s model.State
