@@ -1,0 +1,92 @@
+{
+  "schema": "werftkern/kubernetes-target-matrix/v1",
+  "status": "candidate-not-qualified",
+  "productionReady": false,
+  "selectedAt": "2026-11-18",
+  "platform": {
+    "architecture": "linux-amd64",
+    "managementHost": "ubuntu-24.04-lts-amd64",
+    "targetHosts": "ubuntu-24.04-lts-amd64"
+  },
+  "core": {
+    "k0s": {
+      "version": "v1.37.2+k0s.1",
+      "kubernetesVersion": "v1.37.2",
+      "repository": "k0sproject/k0s",
+      "releaseUrl": "https://github.com/k0sproject/k0s/releases/tag/v1.37.2%2Bk0s.1",
+      "publishedAt": "2026-11-06T16:58:53Z",
+      "artifact": {
+        "name": "k0s-v1.37.2+k0s.1-amd64",
+        "url": "https://github.com/k0sproject/k0s/releases/download/v1.37.2%2Bk0s.1/k0s-v1.37.2+k0s.1-amd64",
+        "sha256": "4770cf89ff45e43292819f6e3a02a25a453bc750c777f6f7ad2de335f3f41df5"
+      },
+      "checksumManifest": {
+        "url": "https://github.com/k0sproject/k0s/releases/download/v1.37.2%2Bk0s.1/sha256sums.txt",
+        "sha256": "a3afe7e8634cef1d24df2c4739c5390216bde73801ddcc853ddcda9b980304d9",
+        "entryMatchedReleaseApiDigest": true
+      },
+      "signature": {
+        "url": "https://github.com/k0sproject/k0s/releases/download/v1.37.2%2Bk0s.1/k0s-v1.37.2+k0s.1-amd64.sig",
+        "sha256": "f9e2fd604c13855bf598223447440b58d9dba98ddfa4529710be65e9afc74ea3",
+        "verified": false
+      },
+      "sbom": {
+        "url": "https://github.com/k0sproject/k0s/releases/download/v1.37.2%2Bk0s.1/spdx.json",
+        "sha256": "9f5bce473d7c190628328d8b687e83bc5f425d0dd77b3e71160c7ecaec81f42f",
+        "signatureUrl": "https://github.com/k0sproject/k0s/releases/download/v1.37.2%2Bk0s.1/spdx.json.sig",
+        "signatureSha256": "d69c4754e1de963739297804506ae8ec8ed9790b53ea02082b910c7d31d49b4f",
+        "verified": false
+      },
+      "binaryDownloadedAndHashed": false
+    },
+    "k0sctl": {
+      "version": "v0.33.1",
+      "repository": "k0sproject/k0sctl",
+      "releaseUrl": "https://github.com/k0sproject/k0sctl/releases/tag/v0.33.1",
+      "publishedAt": "2026-09-21T12:13:27Z",
+      "artifact": {
+        "name": "k0sctl-linux-amd64",
+        "url": "https://github.com/k0sproject/k0sctl/releases/download/v0.33.1/k0sctl-linux-amd64",
+        "sha256": "bd5cd9125c93d8d30c33f7b2f3693fed0d74140a248d433dad74f2b7015295b5"
+      },
+      "checksumManifest": {
+        "url": "https://github.com/k0sproject/k0sctl/releases/download/v0.33.1/checksums.txt",
+        "sha256": "36963696eec37f1b50eaf99eb1075adcf675b31d3d6521ae2aa4fbc7d69edb27",
+        "entryMatchedReleaseApiDigest": true
+      },
+      "signatureAvailable": false,
+      "binaryDownloadedAndHashed": false
+    },
+    "kubectl": {
+      "version": "v1.37.2",
+      "repository": "kubernetes/kubernetes",
+      "releaseUrl": "https://github.com/kubernetes/kubernetes/releases/tag/v1.37.2",
+      "publishedAt": "2026-10-28T04:37:53Z",
+      "artifact": {
+        "name": "kubectl",
+        "url": "https://dl.k8s.io/release/v1.37.2/bin/linux/amd64/kubectl",
+        "sha256Url": "https://dl.k8s.io/release/v1.37.2/bin/linux/amd64/kubectl.sha256",
+        "sha256": "c04487523e7aa7d1493f7808174c899db93d7a9cf57531420cd76b9bd415f8f4"
+      },
+      "binaryDownloadedAndHashed": false
+    }
+  },
+  "compatibility": {
+    "basis": "matching-kubernetes-patch-in-k0s-tag-only",
+    "contractTestsPassed": false,
+    "realClusterPassed": false,
+    "upgradeSourceVersion": null,
+    "upgradeEdgeQualified": false
+  },
+  "unresolved": {
+    "storageProfile": "Select and digest-pin one CSI/storage profile, then qualify lifecycle, fencing, backup and restore.",
+    "addonImagesAndCharts": "Select only the required add-ons and pin every chart, manifest and image digest."
+  },
+  "limitations": [
+    "Release metadata and checksum entries were inspected; the binaries were not downloaded or executed.",
+    "The k0s signature and SBOM signature were not verified against an independently trusted key.",
+    "The k0sctl release exposes checksums but no signature asset in the inspected release.",
+    "No real Ubuntu host, k0s cluster, upgrade, storage, backup, restore, load or failure test has used this matrix.",
+    "Selection does not imply support, certification, vulnerability clearance or production readiness."
+  ]
+}

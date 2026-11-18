@@ -33,17 +33,17 @@
   },
   "format": "werftkern-kube-assets/v1",
   "images": {
-    "conformance:v1.35.1": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST",
+    "conformance:v1.37.2": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST",
     "keycloak": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST",
     "smoke-client": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST",
     "smoke-http": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST",
     "sonobuoy": "REPLACE_WITH_REVIEWED_IMAGE_AT_SHA256_DIGEST"
   },
   "k0s": {
-    "v1.35.1+k0s.0": {
+    "v1.37.2+k0s.1": {
       "path": "/opt/werftkern/reviewed/k0s",
-      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
-      "version": "v1.35.1+k0s.0"
+      "sha256": "4770cf89ff45e43292819f6e3a02a25a453bc750c777f6f7ad2de335f3f41df5",
+      "version": "v1.37.2+k0s.1"
     }
   },
   "manifests": {
@@ -66,13 +66,13 @@
     },
     "k0sctl": {
       "path": "/opt/werftkern/reviewed/bin/k0sctl",
-      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
-      "version": "REPLACE_WITH_VERIFIED_VERSION"
+      "sha256": "bd5cd9125c93d8d30c33f7b2f3693fed0d74140a248d433dad74f2b7015295b5",
+      "version": "v0.33.1"
     },
     "kubectl": {
       "path": "/opt/werftkern/reviewed/bin/kubectl",
-      "sha256": "REPLACE_WITH_VERIFIED_SHA256",
-      "version": "REPLACE_WITH_VERIFIED_VERSION"
+      "sha256": "c04487523e7aa7d1493f7808174c899db93d7a9cf57531420cd76b9bd415f8f4",
+      "version": "v1.37.2"
     },
     "sonobuoy": {
       "path": "/opt/werftkern/reviewed/bin/sonobuoy",
@@ -92,3 +92,4 @@
   },
   "upgradeEdges": []
 }
+

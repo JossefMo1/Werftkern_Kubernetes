@@ -24,6 +24,11 @@ frische dedizierte Ubuntu-24.04-amd64-Zielhosts; root oder freigegebener passwor
 sudo-Zugang; private, gegenseitig erreichbare IPv4-Adressen; fest verifizierte
 Ed25519-SSH-Hostkeys. Der Managementhost muss alle privaten Zieladressen erreichen.
 Konkrete k0s-/k0sctl-/Kubernetes-/Chart-/Imagekombinationen sind **noch nicht qualifiziert**.
+Die [Core-Zielmatrix](../../release/kubernetes-target-matrix.json) schlägt
+`v1.37.2+k0s.1`, k0sctl `v0.33.1` und kubectl/Kubernetes `v1.37.2`
+mit festen Upstream-Digests vor. Die Binaries wurden damit noch nicht ausgeführt
+oder signaturgeprüft; Storage, Charts und Images bleiben unaufgelöst. Die Matrix
+ist deshalb weder Supportzusage noch Upgrade- oder Produktionsevidenz.
 Helm-Vertrag: Helm 3. Keycloak-CRs benötigen einen geprüften Operator/Server mit
 `v2beta1`, Truststores und `db-tls-mode=verify-server` (neuere 26.x-Linie, mindestens
 26.7 für diese Datenbank-TLS-Option). Keine generelle Unterstützung aller Versionen.
@@ -271,3 +276,4 @@ prüfen. Neue Dienste bleiben deaktiviert. Laufende dev.2-Cloudoperationen ohne
 Credentialbindung niemals durch nachträgliches Erfinden eines Journalfelds freigeben.
 Dieser Stand ist nicht produktionsqualifiziert. Das Managementpaket enthält keine
 geprüfte Kubernetes-/Chart-/Image-Lieferkette und keinen automatischen unabhängigen Review.
+

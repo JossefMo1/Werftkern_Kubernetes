@@ -49,9 +49,9 @@
       "upgradePath": "one-adjacent-qualified-kubernetes-minor-edge-to-be-pinned",
       "rollback": "candidate-specific-k0s-and-manager-rollback-must-pass-live-qualification",
       "requiredPinnings": {
-        "k0s": {"status": "unresolved"},
-        "k0sctl": {"status": "unresolved"},
-        "kubernetes": {"status": "unresolved"},
+        "k0s": {"status": "pinned", "targetMatrix": "release/kubernetes-target-matrix.json"},
+        "k0sctl": {"status": "pinned", "targetMatrix": "release/kubernetes-target-matrix.json"},
+        "kubernetes": {"status": "pinned", "targetMatrix": "release/kubernetes-target-matrix.json"},
         "storageProfile": {"status": "unresolved"},
         "addonImagesAndCharts": {"status": "unresolved"}
       },
