@@ -45,9 +45,10 @@ compatibility or support evidence. The matrix also records a candidate Hetzner
 CSI chart and conservative StorageClass contract. The exact six-image inventory is
 bound to the upstream values Git blob and every OCI index digest is pinned after
 registry header/body hash agreement. The checker can re-resolve those tags and
-rejects drift, tag-only renders or unlisted images. The chart has not been downloaded
-or rendered; images have not been signature- or vulnerability-verified, and no
-Volume lifecycle test ran.
+rejects drift, tag-only renders or unlisted images. The hash-checked chart has been
+rendered with pinned images and conservative values; the exact generated manifest
+is committed and hash-bound. Helm/chart/image signatures and vulnerabilities remain
+unverified, the manifest was not applied, and no Volume lifecycle test ran.
 Hetzner Cloud Volumes attach to one server at a time and the provider does not
 offer Volume backups or snapshots. Application-consistent backup and restore
 therefore remain separate mandatory gates. Until the complete matrix is reviewed

@@ -1,6 +1,6 @@
 {
   "schema": "werftkern/hcloud-csi-image-lock/v1",
-  "status": "digests-pinned-not-render-qualified",
+  "status": "render-verified-not-runtime-qualified",
   "productionReady": false,
   "chartVersion": "2.24.2",
   "sourceValues": {
@@ -97,13 +97,36 @@
     }
   },
   "render": {
-    "manifestSha256": null,
-    "verified": false
+    "manifestPath": "release/evidence/hcloud-csi-2.24.2-render.yaml",
+    "manifestSha256": "0e4d4a753d49ed3d1f60850bd950b2e74ca9db0b178371bd0c5a118e6b305d2d",
+    "verified": true,
+    "renderedAt": "2026-11-19T01:53:08Z",
+    "releaseName": "werftkern-hcloud-csi",
+    "namespace": "kube-system",
+    "kubernetesVersion": "1.37.2",
+    "documentCount": 10,
+    "imageReferenceCount": 8,
+    "chart": {
+      "url": "https://github.com/hetznercloud/csi-driver/releases/download/v2.24.2/hcloud-csi-2.24.2.tgz",
+      "sha256": "1f4ebe7d2a8b06e95559a5315ecf125e158ccdadc8a6aae885c7ecd33a7fb4f6"
+    },
+    "values": {
+      "path": "examples/kubernetes/hcloud-csi-values.example.yaml",
+      "sha256": "8e6550f43edd311f86c459b4999dcabdca18783a65e4e122142d8931e6e5e93e"
+    },
+    "helm": {
+      "version": "v3.22.1",
+      "archiveUrl": "https://get.helm.sh/helm-v3.22.1-linux-amd64.tar.gz",
+      "archiveSha256": "896cf63684a42a723d61c980369d6e588330927deb13676ca0d85006dd6da0ea",
+      "binarySha256": "46aeab5e043f62d01f7c168823b392cabc1cea3807b67906296290483791be43",
+      "signatureVerified": false
+    }
   },
   "limitations": [
-    "The inventory was transcribed from the immutable v2.24.2 chart values Git blob; the chart was not rendered.",
+    "The inventory was transcribed from the immutable v2.24.2 chart values Git blob.",
     "The OCI index digests were resolved from registry.k8s.io and Docker Hub; each Docker-Content-Digest header matched the SHA-256 of the received manifest body.",
     "The online result was self-checked once and is not an independent registry, signature or vulnerability review.",
+    "The chart archive hash, values hash, Helm version and generated manifest hash are bound; the Helm signature was not verified.",
     "A policy-valid render is not a vulnerability scan, signature verification, runtime test or production qualification."
   ]
 }

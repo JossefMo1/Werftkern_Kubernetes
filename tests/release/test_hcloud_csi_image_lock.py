@@ -42,14 +42,36 @@ class HcloudCsiImageLockTests(unittest.TestCase):
         self.assertIn("TAG_OR_INVALID_DIGEST_IN_RENDER:registry.k8s.io/sig-storage/csi-attacher:v4.13.0", problems)
 
     def test_only_exact_digest_locked_image_set_is_accepted(self):
-        lines = []
-        for item in self.lock["images"].values():
-            lines.extend(
-                [f"image: {item['repository']}@{item['digest']}"] * len(item["consumers"])
-            )
-        self.assertEqual(LOCK.validate_render("\n".join(lines), self.lock), [])
-        lines.append("image: example.invalid/unreviewed@sha256:" + "f" * 64)
-        self.assertIn("RENDER_IMAGE_SET_MISMATCH", LOCK.validate_render("\n".join(lines), self.lock))
+        rendered = (ROOT / self.lock["render"]["manifestPath"]).read_text()
+        self.assertEqual(LOCK.validate_render(rendered, self.lock), [])
+        rendered += "image: example.invalid/unreviewed@sha256:" + "f" * 64 + "\n"
+        self.assertIn("RENDER_IMAGE_SET_MISMATCH", LOCK.validate_render(rendered, self.lock))
+
+    def test_committed_render_hash_and_conservative_markers_are_bound(self):
+        rendered = (ROOT / self.lock["render"]["manifestPath"]).read_text()
+        self.assertEqual(
+            LOCK.hashlib.sha256(rendered.encode()).hexdigest(),
+            self.lock["render"]["manifestSha256"],
+        )
+        self.assertNotIn("kind: Secret\n", rendered)
+        changed = copy.deepcopy(self.lock)
+        changed["render"]["manifestSha256"] = "0" * 64
+        self.assertIn("RENDER_STATE_INVALID", LOCK.validate_lock(changed))
+
+    def test_render_rejects_secret_and_weakened_storage_policy(self):
+        rendered = (ROOT / self.lock["render"]["manifestPath"]).read_text()
+        weakened = rendered.replace('reclaimPolicy: "Retain"', 'reclaimPolicy: "Delete"')
+        weakened_lock = copy.deepcopy(self.lock)
+        weakened_lock["render"]["manifestSha256"] = LOCK.hashlib.sha256(weakened.encode()).hexdigest()
+        self.assertIn(
+            'RENDER_REQUIRED_MARKER_MISSING:reclaimPolicy: "Retain"',
+            LOCK.validate_render(weakened, weakened_lock),
+        )
+        with_secret = rendered + "---\napiVersion: v1\nkind: Secret\nmetadata:\n  name: forbidden\n"
+        secret_lock = copy.deepcopy(self.lock)
+        secret_lock["render"]["manifestSha256"] = LOCK.hashlib.sha256(with_secret.encode()).hexdigest()
+        secret_lock["render"]["documentCount"] += 1
+        self.assertIn("RENDER_MUST_NOT_CREATE_SECRET", LOCK.validate_render(with_secret, secret_lock))
 
     def test_static_digest_and_registry_evidence_drift_are_rejected(self):
         changed = copy.deepcopy(self.lock)

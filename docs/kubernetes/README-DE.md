@@ -168,14 +168,18 @@ oder nicht freigegebenen Images. Die sechs OCI-Index-Digests sind gebunden, nach
 der jeweilige Registry-Header mit dem SHA-256 des empfangenen Manifest-Bodys
 übereinstimmte. `--verify-registry` wiederholt diese Online-Prüfung und erkennt
 Tag-Drift. Das ist weder Signatur- noch Schwachstellenprüfung; da das Chart noch
-nicht digestgebunden gerendert wurde, bleibt `chartRendered=false`.
+nicht angewendet wurde, bleibt jede Live-Qualifikation offen. Das SHA256-geprüfte
+Chart wurde mit Helm `v3.22.1`, Kubernetes-Ziel `1.37.2` und diesen Werten
+digestgebunden gerendert. Das exakte Ergebnis liegt unter
+`release/evidence/hcloud-csi-2.24.2-render.yaml`; Lock und Prüfer binden Chart-,
+Values-, Tool- und Manifest-Hash sowie das exakte Image-Multiset.
 
 Das Hetzner-Token wird als bereits vorhandenes Secret `kube-system/hcloud`
 erwartet und gehört niemals in `assets.json`, Wertevorlagen, Logs oder Git.
 Dieser Pfad ist ReadWriteOnce und kann ein Volume nur an einen Server gleichzeitig
 anhängen. Hetzner stellt für Volumes keine Backups oder Snapshots bereit. Ein
 Control-Plane-Backup enthält die Volumes ebenfalls nicht. Vor jeder Freigabe sind
-deshalb mindestens Chart-Rendering, vollständige Image-Digests, Provision/Attach/
+deshalb mindestens reproduzierbares Chart-Rendering, vollständige Image-Digests, Provision/Attach/
 Mount, Expansion, Node-Ausfall mit sicherem Reattach, `Retain`-Verhalten sowie
 anwendungskonsistentes Backup und Restore auf einem neuen Cluster real auszuführen.
 

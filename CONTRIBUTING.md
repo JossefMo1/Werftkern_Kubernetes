@@ -23,6 +23,8 @@ python3 scripts/check-kubernetes-target.py
 python3 scripts/check-hcloud-csi-image-lock.py
 # Optional live OCI recheck; requires network access to registry.k8s.io and Docker Hub.
 python3 scripts/check-hcloud-csi-image-lock.py --verify-registry
+# Reproduce the bound hcloud-csi manifest with the exact reviewed Helm/chart files.
+bash scripts/render-hcloud-csi.sh /path/to/helm /path/to/hcloud-csi-2.24.2.tgz /tmp/render.yaml
 python3 scripts/check-public-source.py
 python3 scripts/audit-git-history.py
 node --check internal/dashboard/assets/app.js
