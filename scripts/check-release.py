@@ -8,6 +8,18 @@ import argparse, datetime, hashlib, json, re
 REQUIRED = ('unit-race','static-analysis','source-audit','supported-toolchain-security',
  'ubuntu-install-e2e','real-engine-etcd','multi-node-network','ha-partition',
  'restore-new-host','upgrade-rollback','load-soak','independent-security','maintainer-approval')
+
+def parse_manifest(text):
+ def unique(pairs):
+  result={}
+  for key,value in pairs:
+   if key in result: raise ValueError('duplicate JSON key: '+key)
+   result[key]=value
+  return result
+ value=json.loads(text,object_pairs_hook=unique)
+ if not isinstance(value,dict): raise ValueError('manifest must be an object')
+ return value
+
 def validate(m,root,commit):
  problems=[]
  if m.get('schema')!='clusterpilot/qualification/v1':problems.append('SCHEMA_INVALID')
@@ -40,7 +52,7 @@ if __name__=='__main__':
  p=argparse.ArgumentParser();p.add_argument('--manifest',type=Path,default=Path('release/qualification.json'));p.add_argument('--commit',required=True);p.add_argument('--root',type=Path,default=Path('.'));a=p.parse_args()
  try:
   if a.manifest.stat().st_size>2_000_000:raise ValueError('manifest too large')
-  m=json.loads(a.manifest.read_text());problems=validate(m,a.root.resolve(),a.commit)
+  m=parse_manifest(a.manifest.read_text());problems=validate(m,a.root.resolve(),a.commit)
  except (OSError,ValueError,TypeError,AttributeError) as e:problems=['MANIFEST_INVALID']
  print(json.dumps({'productionReady':False,'evidenceConsistent':not problems,'status':'BLOCKED' if problems else 'EVIDENCE_CONSISTENCY_PASSED','blockers':problems,'notice':'Content consistency only. Independent producer authentication and protected approval are required.'},indent=2))
  raise SystemExit(1 if problems else 0)
