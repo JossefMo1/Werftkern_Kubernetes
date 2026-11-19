@@ -97,9 +97,9 @@ def validate_lock(lock: dict) -> list[str]:
     render = lock.get("render")
     if not isinstance(render, dict) or render != {
         "manifestPath": "release/evidence/hcloud-csi-2.24.2-render.yaml",
-        "manifestSha256": "4a0e3048d01a22e420ccde763eed889fa660357ad270cfe11c05ef721bc24de6",
+        "manifestSha256": "09d55e336a2cfa5de96ab46af8cc588e6af43dee8f9d4782801bf60bf01526bf",
         "verified": True,
-        "renderedAt": "2026-11-19T06:53:08Z",
+        "renderedAt": "2026-11-19T11:53:48Z",
         "releaseName": "werftkern-hcloud-csi",
         "namespace": "kube-system",
         "kubernetesVersion": "1.37.2",
@@ -111,7 +111,7 @@ def validate_lock(lock: dict) -> list[str]:
         },
         "values": {
             "path": "examples/kubernetes/hcloud-csi-values.example.yaml",
-            "sha256": "beb09c6f3fd5569de4dae7dbb81064f5893c5451fcef5a4be2ecc43453541088",
+            "sha256": "6d67c0a63f6b78fb6456e4c5572df5e4319ad15c00cb4aca13b17d0dccfe1d67",
         },
         "nodeServiceAccount": {
             "path": "examples/kubernetes/hcloud-csi-node-serviceaccount.yaml",
@@ -230,6 +230,8 @@ def validate_render(rendered: str, lock: dict) -> list[str]:
         "name: werftkern-hcloud-csi-node",
         "automountServiceAccountToken: false",
         "serviceAccountName: werftkern-hcloud-csi-node",
+        "seccompProfile:",
+        "type: RuntimeDefault",
     ]
     for marker in required:
         if marker not in rendered:

@@ -13,7 +13,7 @@ values="examples/kubernetes/hcloud-csi-values.example.yaml"
 node_service_account="examples/kubernetes/hcloud-csi-node-serviceaccount.yaml"
 expected_helm_sha="46aeab5e043f62d01f7c168823b392cabc1cea3807b67906296290483791be43"
 expected_chart_sha="1f4ebe7d2a8b06e95559a5315ecf125e158ccdadc8a6aae885c7ecd33a7fb4f6"
-expected_values_sha="beb09c6f3fd5569de4dae7dbb81064f5893c5451fcef5a4be2ecc43453541088"
+expected_values_sha="6d67c0a63f6b78fb6456e4c5572df5e4319ad15c00cb4aca13b17d0dccfe1d67"
 expected_node_service_account_sha="494c760af35dd6a4307f17a7d5fd840b1c70e6de3a39bdde8568374421c66b7b"
 
 for file in "$helm_bin" "$chart" "$values" "$node_service_account"; do

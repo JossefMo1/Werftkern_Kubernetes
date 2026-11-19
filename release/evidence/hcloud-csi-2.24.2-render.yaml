@@ -239,6 +239,8 @@ spec:
       priorityClassName: "system-node-critical"
       securityContext:
         fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
       initContainers:
       containers:
         - name: csi-node-driver-registrar
@@ -367,6 +369,8 @@ spec:
       priorityClassName: "system-cluster-critical"
       securityContext:
         fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
       initContainers:
       containers:
         - name: hcloud-csi-driver

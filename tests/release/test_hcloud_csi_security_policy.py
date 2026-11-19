@@ -39,6 +39,10 @@ class HcloudCsiSecurityPolicyTests(unittest.TestCase):
             "NODE_DEFAULT_SERVICE_ACCOUNT_TOKEN_IMPLICITLY_MOUNTED",
             self.policy["observedHardeningGaps"],
         )
+        self.assertNotIn(
+            "SECCOMP_PROFILE_NOT_ENFORCED",
+            self.policy["observedHardeningGaps"],
+        )
 
     def test_duplicate_policy_keys_are_rejected(self):
         with self.assertRaises(ValueError):
@@ -108,6 +112,21 @@ class HcloudCsiSecurityPolicyTests(unittest.TestCase):
             "METRICS_SERVICE_EXPOSURE_DRIFT",
             POLICY.validate_manifest(self.policy, self.render(mutate)),
         )
+
+    def test_runtime_default_seccomp_is_required_for_both_workloads(self):
+        for kind, expected_problem in (
+            ("Deployment", "CONTROLLER_POD_SECCOMP_PROFILE_DRIFT"),
+            ("DaemonSet", "NODE_POD_SECCOMP_PROFILE_DRIFT"),
+        ):
+            with self.subTest(kind=kind):
+                def mutate(documents):
+                    workload = next(item for item in documents if item["kind"] == kind)
+                    security = workload["spec"]["template"]["spec"]["securityContext"]
+                    del security["seccompProfile"]
+
+                problems = POLICY.validate_manifest(self.policy, self.render(mutate))
+                self.assertIn(expected_problem, problems)
+                self.assertIn("OBSERVED_HARDENING_GAPS_DRIFT", problems)
 
 
 if __name__ == "__main__":

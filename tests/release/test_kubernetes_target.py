@@ -59,6 +59,7 @@ class KubernetesTargetTests(unittest.TestCase):
         self.assertTrue(qualification["chartRendered"])
         self.assertTrue(qualification["staticSecurityAuditRecorded"])
         self.assertTrue(qualification["nodeServiceAccountTokenDisabled"])
+        self.assertTrue(qualification["podSeccompRuntimeDefault"])
         self.assertFalse(qualification["staticSecurityHardeningPassed"])
         self.assertFalse(qualification["realProvisionAttachMount"])
 
