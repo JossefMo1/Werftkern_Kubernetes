@@ -53,6 +53,12 @@ class KubernetesTargetTests(unittest.TestCase):
         changed["unresolved"].pop("storageQualification")
         self.assertIn("UNRESOLVED_INVENTORY_INVALID", TARGET.validate(changed))
 
+    def test_storage_image_digests_are_pinned_without_live_qualification(self):
+        qualification = self.matrix["storageProfile"]["qualification"]
+        self.assertTrue(qualification["imageDigestsPinned"])
+        self.assertFalse(qualification["chartRendered"])
+        self.assertFalse(qualification["realProvisionAttachMount"])
+
     def test_storage_selection_and_unexecuted_gates_are_fail_closed(self):
         changed = copy.deepcopy(self.matrix)
         changed["storageProfile"]["storageClass"]["reclaimPolicy"] = "Delete"
