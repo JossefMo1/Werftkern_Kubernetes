@@ -16,6 +16,11 @@ The hash-checked chart was rendered with the conservative values and exact image
 multiset; the generated manifest is committed and hash-bound. The chart, Helm and
 images have not been signature- or vulnerability-verified, executed or independently
 reviewed; real Volume lifecycle, failure, backup and restore evidence remains absent.
+The exact render now also has a fail-closed static privilege audit: RBAC contains no
+wildcards or Secret access, and the only accepted privileged container/host-path set
+is the CSI node driver boundary. Hardening is still blocked because the node token is
+not disabled by the manifest and container security contexts, seccomp and measured
+resource constraints are not enforced. This audit is not runtime security evidence.
 
 The authoring-environment observations below are historical, including the
 compiler version and whether CI had run at that time. For subsequently verified

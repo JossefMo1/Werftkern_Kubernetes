@@ -57,6 +57,8 @@ class KubernetesTargetTests(unittest.TestCase):
         qualification = self.matrix["storageProfile"]["qualification"]
         self.assertTrue(qualification["imageDigestsPinned"])
         self.assertTrue(qualification["chartRendered"])
+        self.assertTrue(qualification["staticSecurityAuditRecorded"])
+        self.assertFalse(qualification["staticSecurityHardeningPassed"])
         self.assertFalse(qualification["realProvisionAttachMount"])
 
     def test_storage_selection_and_unexecuted_gates_are_fail_closed(self):
@@ -68,6 +70,12 @@ class KubernetesTargetTests(unittest.TestCase):
         self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
         changed = copy.deepcopy(self.matrix)
         changed["storageProfile"]["imageLock"] = "release/latest.json"
+        self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
+        changed = copy.deepcopy(self.matrix)
+        changed["storageProfile"]["securityPolicy"] = "release/approved.json"
+        self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
+        changed = copy.deepcopy(self.matrix)
+        changed["storageProfile"]["qualification"]["staticSecurityHardeningPassed"] = True
         self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
 
     def test_public_asset_example_matches_selected_storage_chart(self):

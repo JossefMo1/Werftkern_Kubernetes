@@ -150,6 +150,8 @@ def validate(matrix: dict) -> list[str]:
         "chartRendered": True,
         "imageInventoryComplete": True,
         "imageDigestsPinned": True,
+        "staticSecurityAuditRecorded": True,
+        "staticSecurityHardeningPassed": False,
         "realProvisionAttachMount": False,
         "expansionPassed": False,
         "nodeFailureReattachPassed": False,
@@ -164,6 +166,7 @@ def validate(matrix: dict) -> list[str]:
         or storage.get("provider") != "hetzner-cloud"
         or storage.get("helmValues") != "examples/kubernetes/hcloud-csi-values.example.yaml"
         or storage.get("imageLock") != "release/hcloud-csi-image-lock.json"
+        or storage.get("securityPolicy") != "release/hcloud-csi-security-policy.json"
         or storage.get("k0sKubeletDirectory") != "/var/lib/k0s/kubelet"
         or storage.get("qualification") != expected_qualification
     ):
@@ -209,7 +212,7 @@ def validate(matrix: dict) -> list[str]:
         problems.append("COMPATIBILITY_CLAIM_INVALID")
     unresolved = matrix.get("unresolved")
     if not isinstance(unresolved, dict) or set(unresolved) != {
-        "storageImageTrust", "storageQualification", "addonImagesAndCharts"
+        "storageImageTrust", "storageSecurityHardening", "storageQualification", "addonImagesAndCharts"
     }:
         problems.append("UNRESOLVED_INVENTORY_INVALID")
     elif any(not isinstance(value, str) or not value.strip() for value in unresolved.values()):
