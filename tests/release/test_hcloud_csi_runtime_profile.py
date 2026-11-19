@@ -2,6 +2,7 @@ import copy
 import importlib.util
 import pathlib
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
@@ -47,6 +48,13 @@ class HcloudCsiRuntimeProfileTests(unittest.TestCase):
         changed = copy.deepcopy(self.profile)
         changed["images"]["csi-provisioner"]["configuredUser"] = "65532"
         self.assertIn("UNPROVEN_NONROOT_USER:csi-provisioner", RUNTIME.validate(changed, self.lock))
+
+    def test_registry_token_duplicate_keys_fail_closed(self):
+        with mock.patch.object(
+            RUNTIME, "_request", return_value=(b'{"token":"one","token":"two"}', {})
+        ):
+            with self.assertRaises(ValueError):
+                RUNTIME._docker_token("hetznercloud/hcloud-csi-driver")
 
 
 if __name__ == "__main__":

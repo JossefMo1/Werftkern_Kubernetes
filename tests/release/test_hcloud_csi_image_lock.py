@@ -3,6 +3,7 @@ import importlib.util
 import json
 import pathlib
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
@@ -103,6 +104,29 @@ class HcloudCsiImageLockTests(unittest.TestCase):
         problems = LOCK.verify_registry(one, fetcher)
         self.assertIn("REGISTRY_HEADER_BODY_MISMATCH:csi-attacher", problems)
         self.assertIn("REGISTRY_TAG_DIGEST_DRIFT:csi-attacher", problems)
+
+    def test_registry_manifest_duplicate_keys_fail_closed(self):
+        class Headers(dict):
+            def get_content_type(self):
+                return "application/vnd.docker.distribution.manifest.list.v2+json"
+
+        class Response:
+            headers = Headers()
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def read(self, limit=-1):
+                return b'{"manifests": [], "manifests": []}'
+
+        with mock.patch.object(LOCK.urllib.request, "urlopen", return_value=Response()):
+            with self.assertRaises(ValueError):
+                LOCK.fetch_manifest(
+                    "registry.k8s.io/sig-storage/csi-attacher", "v4.13.0"
+                )
 
     def test_render_without_images_is_rejected(self):
         self.assertEqual(LOCK.validate_render("kind: ConfigMap\n", self.lock), ["RENDER_CONTAINS_NO_IMAGES"])
