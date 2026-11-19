@@ -4,6 +4,9 @@ def load(name):
  spec=importlib.util.spec_from_file_location(name,ROOT/'scripts'/f'{name}.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 release=load('check-release');public=load('check-public-source')
 class Guards(unittest.TestCase):
+ def test_duplicate_manifest_keys_are_rejected(self):
+  with self.assertRaises(ValueError): release.parse_manifest('{"schema":"one","schema":"two"}')
+
  def manifest(self,root):
   (root/'evidence').mkdir();b=b'independent test fixture, NOT production evidence';(root/'evidence/a.txt').write_bytes(b);sha='a'*40
   m={'schema':'clusterpilot/qualification/v1','sourceCommit':sha,'scope':'full-masterplan','features':{f'K20-{i:03d}':{'status':'implemented-and-qualified'} for i in range(1,53)},'gates':{g:{'status':'passed','sourceCommit':sha,'executedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'evidence':'evidence/a.txt','sha256':hashlib.sha256(b).hexdigest()} for g in release.REQUIRED}}
