@@ -26,10 +26,14 @@ The linux/amd64 manifest and config blobs behind all six locked image indexes we
 also hash-checked. Their image configs select root explicitly (`User: 0`) or implicitly
 (empty `User`), while the upstream chart exposes no per-container security-context
 values. Pod-level `runAsNonRoot` is therefore explicitly unsafe for this candidate,
-not a completed control. Hardening remains blocked pending reviewed per-container
-identities and disposable-cluster runtime evidence. Every rendered CSI container now
-has a hash-bound CPU/memory request and limit; these conservative starting budgets
-have not been measured under load or soak and are not production capacity claims.
+not a completed control. An exact-input, fail-closed post-render step now makes every
+root identity explicit. The seven non-privileged container instances disable privilege
+escalation, drop every Linux capability and bind `RuntimeDefault` at container level;
+the privileged node driver retains only its reviewed explicit root/privileged context.
+Hardening remains blocked pending qualified non-root identities and disposable-cluster
+runtime evidence. Every rendered CSI container has a hash-bound CPU/memory request and
+limit; these conservative starting budgets have not been measured under load or soak
+and are not production capacity claims.
 These audits are not runtime security or live CSI compatibility evidence.
 
 The authoring-environment observations below are historical, including the

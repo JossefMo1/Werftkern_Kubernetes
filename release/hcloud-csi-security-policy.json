@@ -1,10 +1,10 @@
 {
   "schema": "werftkern/hcloud-csi-static-security-policy/v1",
-  "status": "audited-blocked-container-identity-and-live-resource-validation-required",
+  "status": "audited-blocked-nonroot-identity-and-live-validation-required",
   "productionReady": false,
   "manifest": {
     "path": "release/evidence/hcloud-csi-2.24.2-render.yaml",
-    "sha256": "1fb2e34ccb267064ee8c84084bab78fd2777afef906b2767b51722500caa6fbc"
+    "sha256": "1a439e5735f2635904acc8379a55185e010abfe8e3466b1ff8ae75433da6e438"
   },
   "rbac": {
     "clusterRole": "werftkern-hcloud-csi-controller",
@@ -32,6 +32,13 @@
       "privilegedContainers": [],
       "bidirectionalMounts": [],
       "secretRefs": ["hcloud/token"],
+      "containerSecurityContexts": {
+        "hcloud-csi-driver": {"runAsUser": 0, "runAsNonRoot": false, "allowPrivilegeEscalation": false, "capabilities": {"drop": ["ALL"]}, "seccompProfile": {"type": "RuntimeDefault"}},
+        "csi-attacher": {"runAsUser": 0, "runAsNonRoot": false, "allowPrivilegeEscalation": false, "capabilities": {"drop": ["ALL"]}, "seccompProfile": {"type": "RuntimeDefault"}},
+        "csi-resizer": {"runAsUser": 0, "runAsNonRoot": false, "allowPrivilegeEscalation": false, "capabilities": {"drop": ["ALL"]}, "seccompProfile": {"type": "RuntimeDefault"}},
+        "csi-provisioner": {"runAsUser": 0, "runAsNonRoot": false, "allowPrivilegeEscalation": false, "capabilities": {"drop": ["ALL"]}, "seccompProfile": {"type": "RuntimeDefault"}},
+        "liveness-probe": {"runAsUser": 0, "runAsNonRoot": false, "allowPrivilegeEscalation": false, "capabilities": {"drop": ["ALL"]}, "seccompProfile": {"type": "RuntimeDefault"}}
+      },
       "containerResources": {
         "hcloud-csi-driver": {
           "limits": {"cpu": "500m", "memory": "256Mi"},
@@ -71,6 +78,11 @@
       ],
       "privilegedContainers": ["hcloud-csi-driver"],
       "bidirectionalMounts": ["hcloud-csi-driver:kubelet-dir:/var/lib/k0s/kubelet"],
+      "containerSecurityContexts": {
+        "csi-node-driver-registrar": {"runAsUser": 0, "runAsNonRoot": false, "allowPrivilegeEscalation": false, "capabilities": {"drop": ["ALL"]}, "seccompProfile": {"type": "RuntimeDefault"}},
+        "liveness-probe": {"runAsUser": 0, "runAsNonRoot": false, "allowPrivilegeEscalation": false, "capabilities": {"drop": ["ALL"]}, "seccompProfile": {"type": "RuntimeDefault"}},
+        "hcloud-csi-driver": {"privileged": true, "runAsUser": 0, "runAsNonRoot": false}
+      },
       "containerResources": {
         "csi-node-driver-registrar": {
           "limits": {"cpu": "100m", "memory": "64Mi"},
@@ -88,7 +100,7 @@
     }
   },
   "observedHardeningGaps": [
-    "CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED",
+    "NON_ROOT_CONTAINER_IDENTITIES_NOT_QUALIFIED",
     "RESOURCE_BUDGETS_NOT_LIVE_VALIDATED"
   ],
   "hardeningPassed": false,
@@ -99,6 +111,7 @@
     "The node DaemonSet selects a dedicated ServiceAccount with automatic API-token mounts disabled; this static control still requires a live compatibility test.",
     "RuntimeDefault seccomp is set at pod level for controller and node workloads. Kubernetes privileged-container semantics mean this does not constrain the privileged node driver; that exception remains a live qualification boundary.",
     "Conservative per-container resource requests and limits are statically bound but remain unmeasured until disposable-cluster load and soak evidence exists.",
-    "Unenforced container-level security contexts require an upstream-compatible identity split before production use."
+    "All root identities are explicit. The seven non-privileged container instances disable privilege escalation, drop all Linux capabilities and bind RuntimeDefault at container level; this is static configuration evidence only.",
+    "A fail-closed post-render step applies those contexts only to the exact reviewed input. Non-root execution, read-only root filesystems and live CSI compatibility remain unqualified."
   ]
 }

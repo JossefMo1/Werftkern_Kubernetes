@@ -186,9 +186,16 @@ vier k0s-HostPaths und dem bidirektionalen Kubelet-Mount. Die Prüfung bleibt be
 setzen `RuntimeDefault` auf Pod-Ebene. Das schützt die nicht privilegierten Container,
 erzwingt wegen Kubernetes-Privileged-Semantik aber keinen Seccomp-Filter für den
 privilegierten CSI-Node-Treiber. Container-SecurityContexts und die live gemessene
-Eignung der Ressourcenbudgets bleiben offen. Die Werte setzen jetzt für jede der acht
-gerenderten Container-Instanzen explizite CPU-/Memory-Requests und -Limits. Der Prüfer
-bindet diese Budgets exakt und lehnt fehlende oder veränderte Werte ab. Es sind
+Eignung der Ressourcenbudgets waren offen. Der deterministische Post-Renderer
+`scripts/harden-hcloud-csi-render.py` akzeptiert jetzt nur den exakten geprüften
+Eingangs-Hash und die vollständige erwartete Workload-/Containergrenze. Er macht alle
+Root-Identitäten explizit. Für die sieben nicht privilegierten Containerinstanzen
+erzwingt er `allowPrivilegeEscalation: false`, den Drop aller Capabilities und
+`RuntimeDefault` auf Container-Ebene. Beim privilegierten Node-Treiber bleibt bewusst
+nur der geprüfte Root-/Privileged-Kontext; ein stilles Abschwächen oder Erweitern wird
+abgelehnt. Das ist keine Non-root- oder Laufzeitqualifikation. Die Werte setzen für jede
+der acht gerenderten Container-Instanzen explizite CPU-/Memory-Requests und -Limits. Der
+Prüfer bindet diese Budgets exakt und lehnt fehlende oder veränderte Werte ab. Es sind
 konservative Startwerte ohne Last- oder Soak-Nachweis; ihre Eignung für Produktion
 bleibt deshalb ausdrücklich unqualifiziert.
 
@@ -199,10 +206,11 @@ kann sie mit `--verify-registry` direkt gegen die Registries wiederholen. Alle g
 Configs starten derzeit explizit mit `User: 0` oder implizit mit leerem `User` als root.
 Da das Upstream-Chart keine SecurityContext-Werte je Container anbietet, darf
 `runAsNonRoot` nicht auf Pod-Ebene aktiviert oder als erfüllt gemeldet werden: Die
-digestgebundenen Workloads würden so nicht starten. Vor einer Non-root-Aussage sind
-ein geprüfter Chart-/Template-Pfad für getrennte Container-Identitäten und ein echter
-Lauf auf einem entbehrlichen Cluster erforderlich. Das ist weder Admission-, Laufzeit-,
-CSI-Kompatibilitäts- noch Penetrationstest.
+digestgebundenen Workloads würden so nicht starten. Der Post-Renderer erlaubt enge
+root-kompatible Kontexte, ersetzt aber keine non-root-fähigen Images. Vor einer
+Non-root-Aussage sind ein geprüfter Image-/Template-Pfad für getrennte
+Container-Identitäten und ein echter Lauf auf einem entbehrlichen Cluster erforderlich.
+Das ist weder Admission-, Laufzeit-, CSI-Kompatibilitäts- noch Penetrationstest.
 
 Das Hetzner-Token wird als bereits vorhandenes Secret `kube-system/hcloud`
 erwartet und gehört niemals in `assets.json`, Wertevorlagen, Logs oder Git.

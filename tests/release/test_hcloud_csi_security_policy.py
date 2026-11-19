@@ -139,6 +139,24 @@ class HcloudCsiSecurityPolicyTests(unittest.TestCase):
                 problems = POLICY.validate_manifest(self.policy, self.render(mutate))
                 self.assertIn(expected_problem, problems)
 
+    def test_container_security_context_drift_is_rejected(self):
+        for kind, container_name, expected_problem in (
+            ("Deployment", "csi-attacher", "CONTROLLER_SECURITY_CONTEXT_DRIFT"),
+            ("DaemonSet", "csi-node-driver-registrar", "NODE_SECURITY_CONTEXT_DRIFT"),
+        ):
+            with self.subTest(kind=kind, container=container_name):
+                def mutate(documents):
+                    workload = next(item for item in documents if item["kind"] == kind)
+                    container = next(
+                        item
+                        for item in workload["spec"]["template"]["spec"]["containers"]
+                        if item["name"] == container_name
+                    )
+                    container["securityContext"]["allowPrivilegeEscalation"] = True
+
+                problems = POLICY.validate_manifest(self.policy, self.render(mutate))
+                self.assertIn(expected_problem, problems)
+
     def test_runtime_default_seccomp_is_required_for_both_workloads(self):
         for kind, expected_problem in (
             ("Deployment", "CONTROLLER_POD_SECCOMP_PROFILE_DRIFT"),

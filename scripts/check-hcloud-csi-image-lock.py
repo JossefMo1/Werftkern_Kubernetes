@@ -97,9 +97,9 @@ def validate_lock(lock: dict) -> list[str]:
     render = lock.get("render")
     if not isinstance(render, dict) or render != {
         "manifestPath": "release/evidence/hcloud-csi-2.24.2-render.yaml",
-        "manifestSha256": "1fb2e34ccb267064ee8c84084bab78fd2777afef906b2767b51722500caa6fbc",
+        "manifestSha256": "1a439e5735f2635904acc8379a55185e010abfe8e3466b1ff8ae75433da6e438",
         "verified": True,
-        "renderedAt": "2026-11-19T15:58:28Z",
+        "renderedAt": "2026-11-19T16:56:24Z",
         "releaseName": "werftkern-hcloud-csi",
         "namespace": "kube-system",
         "kubernetesVersion": "1.37.2",
