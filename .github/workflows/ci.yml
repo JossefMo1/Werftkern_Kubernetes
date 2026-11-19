@@ -45,6 +45,7 @@ jobs:
           python3 -m compileall -q ops tests/integration/real_pitr.py
           go test -tags real_etcd -run '^$' ./tests/integration
           python3 scripts/check-public-source.py > evidence/public-source-check.json
+          python3 scripts/check-hcloud-csi-runtime-profile.py > evidence/hcloud-csi-runtime-profile.json
           set +e
           python3 scripts/check-release.py --commit "$GITHUB_SHA" > evidence/production-blockers.json
           gate_status=$?

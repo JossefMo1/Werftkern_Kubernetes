@@ -22,8 +22,13 @@ is the CSI node driver boundary. The exact render now selects a separately hash-
 node ServiceAccount with automatic API-token mounts disabled. Both workloads set
 `RuntimeDefault` at pod level, covering their non-privileged containers; Kubernetes
 privileged-container semantics leave the CSI node driver as an explicit exception.
-Hardening is still blocked because container security contexts and measured resource
-constraints are not enforced. This audit is not runtime security or live CSI compatibility evidence.
+The linux/amd64 manifest and config blobs behind all six locked image indexes were
+also hash-checked. Their image configs select root explicitly (`User: 0`) or implicitly
+(empty `User`), while the upstream chart exposes no per-container security-context
+values. Pod-level `runAsNonRoot` is therefore explicitly unsafe for this candidate,
+not a completed control. Hardening remains blocked pending reviewed per-container
+identities, measured resource constraints and disposable-cluster runtime evidence.
+These audits are not runtime security or live CSI compatibility evidence.
 
 The authoring-environment observations below are historical, including the
 compiler version and whether CI had run at that time. For subsequently verified

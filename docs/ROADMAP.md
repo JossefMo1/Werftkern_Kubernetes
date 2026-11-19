@@ -202,7 +202,11 @@ Restore-Qualifikation fehlen. Ein statischer Fail-closed-Audit bindet RBAC, eine
 Node-ServiceAccount ohne automatischen Token-Mount, privilegierten Node-Treiber, HostPaths
 und MountPropagation. `RuntimeDefault` ist auf Pod-Ebene für die nicht privilegierten
 Container gebunden; der privilegierte Node-Treiber bleibt eine explizite Ausnahme.
-Container-SecurityContexts und gemessene Ressourcenlimits bleiben offen. Keine Produktionsfreigabe.
+Die immutable linux/amd64 Manifest-/Config-Kette ist zusätzlich geprüft: Alle sechs
+Images verwenden explizit oder implizit root, und das Upstream-Chart bietet keine
+SecurityContext-Werte je Container. Pod-weites `runAsNonRoot` bleibt deshalb bewusst
+blockiert. Geprüfte Container-Identitäten, echte Laufzeittests und gemessene
+Ressourcenlimits bleiben offen. Keine Produktionsfreigabe.
 
 ## K20-048 — Ein Stateful-Profil mit Replikation und Restore freigeben
 

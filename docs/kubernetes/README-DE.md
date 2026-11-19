@@ -186,7 +186,19 @@ vier k0s-HostPaths und dem bidirektionalen Kubelet-Mount. Die Prüfung bleibt be
 setzen `RuntimeDefault` auf Pod-Ebene. Das schützt die nicht privilegierten Container,
 erzwingt wegen Kubernetes-Privileged-Semantik aber keinen Seccomp-Filter für den
 privilegierten CSI-Node-Treiber. Container-SecurityContexts und gemessene Ressourcenlimits
-bleiben offen. Das ist weder Admission-, Laufzeit-, CSI-Kompatibilitäts- noch Penetrationstest.
+bleiben offen.
+
+`release/hcloud-csi-runtime-profile.json` bindet zusätzlich für `linux/amd64` den
+Index-, Plattform-Manifest- und Config-Digest sowie `User` und Entrypoint aller sechs
+Images. `scripts/check-hcloud-csi-runtime-profile.py` prüft diese Kette fail-closed und
+kann sie mit `--verify-registry` direkt gegen die Registries wiederholen. Alle geprüften
+Configs starten derzeit explizit mit `User: 0` oder implizit mit leerem `User` als root.
+Da das Upstream-Chart keine SecurityContext-Werte je Container anbietet, darf
+`runAsNonRoot` nicht auf Pod-Ebene aktiviert oder als erfüllt gemeldet werden: Die
+digestgebundenen Workloads würden so nicht starten. Vor einer Non-root-Aussage sind
+ein geprüfter Chart-/Template-Pfad für getrennte Container-Identitäten und ein echter
+Lauf auf einem entbehrlichen Cluster erforderlich. Das ist weder Admission-, Laufzeit-,
+CSI-Kompatibilitäts- noch Penetrationstest.
 
 Das Hetzner-Token wird als bereits vorhandenes Secret `kube-system/hcloud`
 erwartet und gehört niemals in `assets.json`, Wertevorlagen, Logs oder Git.

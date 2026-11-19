@@ -35,7 +35,7 @@ contact is not storage fencing and no automatic quorum-loss recovery is promised
 | Engine | Separately supplied and digest-pinned k0s/Kubernetes; not the Native scheduler |
 | Topology | Exactly three controllers and at least three workers with an external highly available API endpoint |
 | Trust | One trusted administrator and one cluster; no multi-writer manager HA |
-| Storage and add-ons | Candidate storage profile: Hetzner Cloud Volumes through hcloud-csi 2.24.2, ReadWriteOnce, non-default `werftkern-hcloud-retain` StorageClass, `Retain`, `WaitForFirstConsumer`; exact RBAC/privilege/host-path boundary statically audited, node token automount disabled and `RuntimeDefault` pod seccomp bound for non-privileged containers; the privileged node driver remains an exception, while container security-context and measured resource hardening remain blocked; no add-on set is selected yet |
+| Storage and add-ons | Candidate storage profile: Hetzner Cloud Volumes through hcloud-csi 2.24.2, ReadWriteOnce, non-default `werftkern-hcloud-retain` StorageClass, `Retain`, `WaitForFirstConsumer`; exact RBAC/privilege/host-path boundary statically audited, node token automount disabled and `RuntimeDefault` pod seccomp bound for non-privileged containers; all six locked linux/amd64 configs default to root, so pod-level `runAsNonRoot` is explicitly blocked; the privileged node driver, per-container identities and measured resource hardening remain unresolved; no add-on set is selected yet |
 | Upgrade | One adjacent Kubernetes minor-version edge selected before RC; no skipped-minor, downgrade or simultaneous topology/authentication change |
 
 The [candidate target matrix](../release/kubernetes-target-matrix.json) pins
@@ -47,7 +47,11 @@ bound to the upstream values Git blob and every OCI index digest is pinned after
 registry header/body hash agreement. The checker can re-resolve those tags and
 rejects drift, tag-only renders or unlisted images. The hash-checked chart has been
 rendered with pinned images and conservative values; the exact generated manifest
-is committed and hash-bound. Helm/chart/image signatures and vulnerabilities remain
+is committed and hash-bound. The locked linux/amd64 manifest/config chain is also
+recorded: all six configs select root explicitly or implicitly, and the upstream chart
+does not expose per-container security-context values. A pod-level non-root claim is
+therefore rejected until a reviewed per-container change and real runtime proof exist.
+Helm/chart/image signatures and vulnerabilities remain
 unverified, the manifest was not applied, and no Volume lifecycle test ran.
 Hetzner Cloud Volumes attach to one server at a time and the provider does not
 offer Volume backups or snapshots. Application-consistent backup and restore
