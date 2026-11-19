@@ -1,0 +1,103 @@
+{
+  "schema": "werftkern/production-tracker/v1",
+  "status": "active-not-production-ready",
+  "productionReady": false,
+  "updatedAt": "2026-11-19T17:16:00Z",
+  "sources": {
+    "productionScope": "release/production-scope.json",
+    "nativeQualification": "release/qualification.json",
+    "kubernetesReadiness": "release/kubernetes-readiness.json",
+    "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
+  },
+  "lastCompleted": {
+    "commit": "0b0a417c6c3fa1ffff181da72ca6bfeefb6e0be1",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/34",
+    "summary": "Bound exact hcloud CSI container security contexts without claiming non-root or live qualification."
+  },
+  "nextAction": {
+    "id": "E2E-K01-PREFLIGHT",
+    "priority": "P0",
+    "status": "blocked-external",
+    "summary": "Run the exact hcloud CSI render on an explicitly authorized disposable k0s lab and collect candidate-bound lifecycle evidence.",
+    "blockers": [
+      "No expressly authorized disposable k0s/Hetzner lab or credentials are configured.",
+      "No immutable release-candidate package/artifact set is selected for a full production gate run."
+    ],
+    "successCriteria": [
+      "Exact render hash, pod admission/start and container contexts are recorded without exposing secrets.",
+      "Provision, attach, mount, write/read hash, expansion and owned-resource cleanup are observed on the disposable lab.",
+      "Evidence identifies one unchanged candidate and leaves unsupported gates open."
+    ],
+    "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes."
+  },
+  "workstreams": [
+    {
+      "id": "E2E-00",
+      "priority": "P0",
+      "status": "prepared",
+      "scope": "candidate identity and reproducible build",
+      "requiredGateFamilies": ["reproducible-clean-build", "artifact-commit-digest-identity"],
+      "evidence": [],
+      "blockers": ["No immutable release candidate is selected."],
+      "nextStep": "Create one candidate-bound build and artifact inventory before any production gate can pass."
+    },
+    {
+      "id": "E2E-K01",
+      "priority": "P0",
+      "status": "blocked-external",
+      "scope": "k0s hcloud CSI provision/attach/mount/expansion and cleanup",
+      "requiredGateFamilies": ["ubuntu-k0s-e2e", "cloud-e2e"],
+      "evidence": ["release/hcloud-csi-image-lock.json", "release/hcloud-csi-security-policy.json"],
+      "blockers": ["No expressly authorized disposable k0s/Hetzner lab or credentials are configured."],
+      "nextStep": "Execute the E2E-K01 preflight only after disposable infrastructure is explicitly configured."
+    },
+    {
+      "id": "E2E-N01",
+      "priority": "P0",
+      "status": "blocked-external",
+      "scope": "fresh Ubuntu install, restart, uninstall and reinstall",
+      "requiredGateFamilies": ["ubuntu-install-e2e", "install-uninstall-reinstall"],
+      "evidence": ["tests/e2e/ubuntu-vm.sh"],
+      "blockers": ["No expressly authorized disposable Ubuntu VM and candidate package are configured."],
+      "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with an exact candidate package."
+    },
+    {
+      "id": "E2E-H01",
+      "priority": "P1",
+      "status": "not-started",
+      "scope": "multi-host, quorum, partition and restart behavior",
+      "requiredGateFamilies": ["multi-node-network", "ha-partition", "multi-host-ha-partition-and-restart"],
+      "evidence": [],
+      "blockers": ["Requires successful basic native and Kubernetes live paths plus a disposable multi-host topology."],
+      "nextStep": "Prepare only after E2E-K01 and E2E-N01 have candidate-bound live evidence."
+    },
+    {
+      "id": "E2E-P01",
+      "priority": "P2",
+      "status": "not-started",
+      "scope": "load, soak and fault limits",
+      "requiredGateFamilies": ["load-soak", "load-soak-and-fault-limits"],
+      "evidence": [],
+      "blockers": ["Requires stable candidate-bound live lifecycle and recovery paths."],
+      "nextStep": "Define measured workloads and ceilings after the live topology is qualified."
+    },
+    {
+      "id": "E2E-R01",
+      "priority": "P2",
+      "status": "not-started",
+      "scope": "release candidate, feedback, independent review and Go/No-Go",
+      "requiredGateFamilies": ["published-rc-and-user-feedback", "independent-review-where-required", "final-go-no-go"],
+      "evidence": [],
+      "blockers": ["All prerequisite technical, security and operational gates remain open."],
+      "nextStep": "Do not create a stable tag before every required exact-candidate gate is evidenced."
+    }
+  ],
+  "reporting": {
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7016442114",
+    "rules": [
+      "Record only actual commits, runs, evidence and blockers.",
+      "Never set productionReady true from fixture, static or plan-only evidence.",
+      "Keep Native Runtime and Kubernetes manager evidence separate."
+    ]
+  }
+}
