@@ -15,7 +15,7 @@
       "id": "stateful-self-healing",
       "implementation": "implemented-restricted",
       "realQualificationPassed": false,
-      "details": "Enrolled one-replica StatefulSets, preserved Retain hcloud CSI filesystems and live detach-policy check. The selected candidate render disables automatic node ServiceAccount token mounts, sets RuntimeDefault pod seccomp for non-privileged containers and hash-binds per-container CPU/memory requests and limits. The privileged node driver remains an exception, and the budgets have no live load or soak evidence. No live CSI compatibility or database semantic proof exists."
+      "details": "Enrolled one-replica StatefulSets, preserved Retain hcloud CSI filesystems and live detach-policy check. The selected candidate render disables automatic node ServiceAccount token mounts and uses an exact-input, fail-closed post-render contract. All root identities are explicit; seven non-privileged container instances disable privilege escalation, drop all capabilities and bind RuntimeDefault at container level. CPU/memory requests and limits are hash-bound. The privileged node driver and root identities remain explicit exceptions, and the budgets have no live load or soak evidence. No live CSI compatibility or database semantic proof exists."
     },
     {
       "id": "full-pv-database-recovery",

@@ -18,13 +18,39 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "release/hcloud-csi-security-policy.json"
-EXPECTED_MANIFEST_SHA = "1fb2e34ccb267064ee8c84084bab78fd2777afef906b2767b51722500caa6fbc"
+EXPECTED_MANIFEST_SHA = "1a439e5735f2635904acc8379a55185e010abfe8e3466b1ff8ae75433da6e438"
 EXPECTED_RBAC_SHA = "900eee9afc2761185fe4e5346cd16c3efc0b4d1dad0b4a6024b0f862d18597e3"
 EXPECTED_GAPS = [
-    "CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED",
+    "NON_ROOT_CONTAINER_IDENTITIES_NOT_QUALIFIED",
     "RESOURCE_BUDGETS_NOT_LIVE_VALIDATED",
 ]
 EXPECTED_POD_SECCOMP_PROFILE = {"type": "RuntimeDefault"}
+EXPECTED_NON_PRIVILEGED_CONTEXT = {
+    "runAsUser": 0,
+    "runAsNonRoot": False,
+    "allowPrivilegeEscalation": False,
+    "capabilities": {"drop": ["ALL"]},
+    "seccompProfile": {"type": "RuntimeDefault"},
+}
+EXPECTED_PRIVILEGED_NODE_CONTEXT = {
+    "privileged": True,
+    "runAsUser": 0,
+    "runAsNonRoot": False,
+}
+EXPECTED_CONTAINER_SECURITY_CONTEXTS = {
+    "controller": {
+        "hcloud-csi-driver": EXPECTED_NON_PRIVILEGED_CONTEXT,
+        "csi-attacher": EXPECTED_NON_PRIVILEGED_CONTEXT,
+        "csi-resizer": EXPECTED_NON_PRIVILEGED_CONTEXT,
+        "csi-provisioner": EXPECTED_NON_PRIVILEGED_CONTEXT,
+        "liveness-probe": EXPECTED_NON_PRIVILEGED_CONTEXT,
+    },
+    "node": {
+        "csi-node-driver-registrar": EXPECTED_NON_PRIVILEGED_CONTEXT,
+        "liveness-probe": EXPECTED_NON_PRIVILEGED_CONTEXT,
+        "hcloud-csi-driver": EXPECTED_PRIVILEGED_NODE_CONTEXT,
+    },
+}
 EXPECTED_RESOURCES = {
     "controller": {
         "hcloud-csi-driver": {
@@ -172,13 +198,20 @@ def container_resources(spec: dict) -> dict[str, dict]:
     }
 
 
+def container_security_contexts(spec: dict) -> dict[str, dict]:
+    return {
+        str(item.get("name", "")): item.get("securityContext", {})
+        for item in (spec.get("containers") or []) + (spec.get("initContainers") or [])
+    }
+
+
 def validate_policy(policy: dict) -> list[str]:
     problems: list[str] = []
     if policy.get("schema") != "werftkern/hcloud-csi-static-security-policy/v1":
         problems.append("POLICY_SCHEMA_INVALID")
     if (
         policy.get("status")
-        != "audited-blocked-container-identity-and-live-resource-validation-required"
+        != "audited-blocked-nonroot-identity-and-live-validation-required"
     ):
         problems.append("POLICY_STATUS_MUST_REMAIN_BLOCKED")
     if policy.get("productionReady") is not False or policy.get("hardeningPassed") is not False:
@@ -218,6 +251,7 @@ def validate_policy(policy: dict) -> list[str]:
         "privilegedContainers": [],
         "bidirectionalMounts": [],
         "secretRefs": ["hcloud/token"],
+        "containerSecurityContexts": EXPECTED_CONTAINER_SECURITY_CONTEXTS["controller"],
         "containerResources": EXPECTED_RESOURCES["controller"],
     }:
         problems.append("POLICY_CONTROLLER_BOUNDARY_INVALID")
@@ -233,6 +267,7 @@ def validate_policy(policy: dict) -> list[str]:
         "hostPaths": EXPECTED_HOST_PATHS,
         "privilegedContainers": ["hcloud-csi-driver"],
         "bidirectionalMounts": ["hcloud-csi-driver:kubelet-dir:/var/lib/k0s/kubelet"],
+        "containerSecurityContexts": EXPECTED_CONTAINER_SECURITY_CONTEXTS["node"],
         "containerResources": EXPECTED_RESOURCES["node"],
     }:
         problems.append("POLICY_NODE_BOUNDARY_INVALID")
@@ -331,6 +366,11 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
         problems.append("CONTROLLER_SECRET_REFERENCE_DRIFT")
     if container_resources(controller_spec) != EXPECTED_RESOURCES["controller"]:
         problems.append("CONTROLLER_RESOURCE_BUDGET_DRIFT")
+    if (
+        container_security_contexts(controller_spec)
+        != EXPECTED_CONTAINER_SECURITY_CONTEXTS["controller"]
+    ):
+        problems.append("CONTROLLER_SECURITY_CONTEXT_DRIFT")
 
     if node_spec.get("serviceAccountName") != "werftkern-hcloud-csi-node":
         problems.append("NODE_SERVICE_ACCOUNT_DRIFT")
@@ -353,6 +393,8 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
         problems.append("NODE_SECRET_REFERENCE_FORBIDDEN")
     if container_resources(node_spec) != EXPECTED_RESOURCES["node"]:
         problems.append("NODE_RESOURCE_BUDGET_DRIFT")
+    if container_security_contexts(node_spec) != EXPECTED_CONTAINER_SECURITY_CONTEXTS["node"]:
+        problems.append("NODE_SECURITY_CONTEXT_DRIFT")
 
     workloads = [controller_spec, node_spec]
     containers = [item for spec in workloads for item in spec.get("containers", [])]
@@ -362,12 +404,8 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
         or node_account.get("automountServiceAccountToken") is not False
     ):
         observed_gaps.append("NODE_DEFAULT_SERVICE_ACCOUNT_TOKEN_IMPLICITLY_MOUNTED")
-    if any(
-        not item.get("securityContext")
-        for item in containers
-        if item.get("securityContext", {}).get("privileged") is not True
-    ):
-        observed_gaps.append("CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED")
+    if all(item.get("securityContext", {}).get("runAsUser") == 0 for item in containers):
+        observed_gaps.append("NON_ROOT_CONTAINER_IDENTITIES_NOT_QUALIFIED")
     if any(
         spec.get("securityContext", {}).get("seccompProfile") != EXPECTED_POD_SECCOMP_PROFILE
         for spec in workloads

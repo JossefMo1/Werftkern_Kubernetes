@@ -65,7 +65,14 @@ export TZ=UTC
 
 # The upstream chart can select an existing node ServiceAccount but does not
 # create it. Bind the reviewed token-free account into the exact render.
-cat -- "$node_service_account" "$tmpdir/chart.yaml" > "$tmpdir/render.yaml"
+cat -- "$node_service_account" "$tmpdir/chart.yaml" > "$tmpdir/pre-hardening-render.yaml"
+
+# The upstream chart has no per-container SecurityContext values. Apply the
+# reviewed root-aware contexts only to the exact hash-bound input and reject
+# workload, container or pre-existing context drift.
+python3 scripts/harden-hcloud-csi-render.py \
+  --input "$tmpdir/pre-hardening-render.yaml" \
+  --output "$tmpdir/render.yaml"
 
 python3 scripts/check-hcloud-csi-image-lock.py --rendered "$tmpdir/render.yaml"
 install -m 0644 -- "$tmpdir/render.yaml" "$output"
