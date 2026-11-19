@@ -152,6 +152,7 @@ def validate(matrix: dict) -> list[str]:
         "imageDigestsPinned": True,
         "staticSecurityAuditRecorded": True,
         "nodeServiceAccountTokenDisabled": True,
+        "podSeccompRuntimeDefault": True,
         "staticSecurityHardeningPassed": False,
         "realProvisionAttachMount": False,
         "expansionPassed": False,

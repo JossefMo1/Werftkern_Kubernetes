@@ -200,8 +200,9 @@ Digests und ein reproduzierbarer, hashgebundener Helm-Render sind geprüft. Sign
 Vulnerability-Clearance sowie reale Provision/Attach/Mount/Expansion/Failure/Backup/
 Restore-Qualifikation fehlen. Ein statischer Fail-closed-Audit bindet RBAC, einen dedizierten
 Node-ServiceAccount ohne automatischen Token-Mount, privilegierten Node-Treiber, HostPaths
-und MountPropagation; Seccomp, Container-SecurityContexts und Ressourcenlimits bleiben
-offen. Keine Produktionsfreigabe.
+und MountPropagation. `RuntimeDefault` ist auf Pod-Ebene für die nicht privilegierten
+Container gebunden; der privilegierte Node-Treiber bleibt eine explizite Ausnahme.
+Container-SecurityContexts und gemessene Ressourcenlimits bleiben offen. Keine Produktionsfreigabe.
 
 ## K20-048 — Ein Stateful-Profil mit Replikation und Restore freigeben
 

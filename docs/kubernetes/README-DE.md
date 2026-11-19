@@ -182,9 +182,11 @@ aufgenommen; `node.serviceAccountName` wählt ihn explizit aus und sein
 fail-closed fest: keine RBAC-Wildcards oder Secret-Rechte, keine Host-Network/PID/IPC-
 Freigabe und ausschließlich der erwartete privilegierte Node-Treiber mit `/dev`, den
 vier k0s-HostPaths und dem bidirektionalen Kubelet-Mount. Die Prüfung bleibt bewusst
-**nicht bestanden**: Der Node-Token-Mount ist statisch deaktiviert, aber Container-
-SecurityContexts, Seccomp sowie gemessene Ressourcenlimits sind nicht erzwungen. Das ist
-weder Admission-, Laufzeit-, CSI-Kompatibilitäts- noch Penetrationstest.
+**nicht bestanden**: Der Node-Token-Mount ist statisch deaktiviert und beide Workloads
+setzen `RuntimeDefault` auf Pod-Ebene. Das schützt die nicht privilegierten Container,
+erzwingt wegen Kubernetes-Privileged-Semantik aber keinen Seccomp-Filter für den
+privilegierten CSI-Node-Treiber. Container-SecurityContexts und gemessene Ressourcenlimits
+bleiben offen. Das ist weder Admission-, Laufzeit-, CSI-Kompatibilitäts- noch Penetrationstest.
 
 Das Hetzner-Token wird als bereits vorhandenes Secret `kube-system/hcloud`
 erwartet und gehört niemals in `assets.json`, Wertevorlagen, Logs oder Git.

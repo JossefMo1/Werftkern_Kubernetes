@@ -18,13 +18,13 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "release/hcloud-csi-security-policy.json"
-EXPECTED_MANIFEST_SHA = "4a0e3048d01a22e420ccde763eed889fa660357ad270cfe11c05ef721bc24de6"
+EXPECTED_MANIFEST_SHA = "09d55e336a2cfa5de96ab46af8cc588e6af43dee8f9d4782801bf60bf01526bf"
 EXPECTED_RBAC_SHA = "900eee9afc2761185fe4e5346cd16c3efc0b4d1dad0b4a6024b0f862d18597e3"
 EXPECTED_GAPS = [
     "CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED",
-    "SECCOMP_PROFILE_NOT_ENFORCED",
     "RESOURCE_REQUESTS_AND_LIMITS_EMPTY",
 ]
+EXPECTED_POD_SECCOMP_PROFILE = {"type": "RuntimeDefault"}
 EXPECTED_HOST_PATHS = [
     {"name": "kubelet-dir", "path": "/var/lib/k0s/kubelet", "type": "Directory"},
     {
@@ -131,7 +131,10 @@ def validate_policy(policy: dict) -> list[str]:
     problems: list[str] = []
     if policy.get("schema") != "werftkern/hcloud-csi-static-security-policy/v1":
         problems.append("POLICY_SCHEMA_INVALID")
-    if policy.get("status") != "audited-blocked-hardening-required":
+    if (
+        policy.get("status")
+        != "audited-blocked-container-and-resource-hardening-required"
+    ):
         problems.append("POLICY_STATUS_MUST_REMAIN_BLOCKED")
     if policy.get("productionReady") is not False or policy.get("hardeningPassed") is not False:
         problems.append("POLICY_CANNOT_CLAIM_READINESS")
@@ -164,6 +167,7 @@ def validate_policy(policy: dict) -> list[str]:
         "namespace": "kube-system",
         "serviceAccount": "werftkern-hcloud-csi-controller",
         "serviceAccountTokenMode": "service-account-explicit-true",
+        "podSeccompProfile": EXPECTED_POD_SECCOMP_PROFILE,
         "hostNamespaces": False,
         "hostPaths": [],
         "privilegedContainers": [],
@@ -178,6 +182,7 @@ def validate_policy(policy: dict) -> list[str]:
         "namespace": "kube-system",
         "serviceAccount": "werftkern-hcloud-csi-node",
         "serviceAccountTokenMode": "service-account-explicit-false",
+        "podSeccompProfile": EXPECTED_POD_SECCOMP_PROFILE,
         "hostNamespaces": False,
         "hostPaths": EXPECTED_HOST_PATHS,
         "privilegedContainers": ["hcloud-csi-driver"],
@@ -262,6 +267,11 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
             problems.append(label + "_HOST_PORT_FORBIDDEN")
     if controller_spec.get("serviceAccountName") != "werftkern-hcloud-csi-controller":
         problems.append("CONTROLLER_SERVICE_ACCOUNT_INVALID")
+    if (
+        controller_spec.get("securityContext", {}).get("seccompProfile")
+        != EXPECTED_POD_SECCOMP_PROFILE
+    ):
+        problems.append("CONTROLLER_POD_SECCOMP_PROFILE_DRIFT")
     if controller_spec.get("automountServiceAccountToken") is not None:
         problems.append("CONTROLLER_POD_TOKEN_OVERRIDE_DRIFT")
     if host_paths(controller_spec):
@@ -275,6 +285,11 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
 
     if node_spec.get("serviceAccountName") != "werftkern-hcloud-csi-node":
         problems.append("NODE_SERVICE_ACCOUNT_DRIFT")
+    if (
+        node_spec.get("securityContext", {}).get("seccompProfile")
+        != EXPECTED_POD_SECCOMP_PROFILE
+    ):
+        problems.append("NODE_POD_SECCOMP_PROFILE_DRIFT")
     if "automountServiceAccountToken" in node_spec:
         problems.append("NODE_TOKEN_MODE_DRIFT_REQUIRES_REVIEW")
     if host_paths(node_spec) != EXPECTED_HOST_PATHS:
@@ -302,9 +317,10 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
         if item.get("securityContext", {}).get("privileged") is not True
     ):
         observed_gaps.append("CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED")
-    if all(
-        spec.get("securityContext", {}).get("seccompProfile") is None for spec in workloads
-    ) and all(item.get("securityContext", {}).get("seccompProfile") is None for item in containers):
+    if any(
+        spec.get("securityContext", {}).get("seccompProfile") != EXPECTED_POD_SECCOMP_PROFILE
+        for spec in workloads
+    ):
         observed_gaps.append("SECCOMP_PROFILE_NOT_ENFORCED")
     if any(
         item.get("resources", {}).get("requests", {}) == {}

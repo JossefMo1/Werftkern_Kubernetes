@@ -5,6 +5,11 @@
 controller:
   replicaCount: 2
   priorityClassName: system-cluster-critical
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+    seccompProfile:
+      type: RuntimeDefault
   image:
     csiAttacher:
       name: registry.k8s.io/sig-storage/csi-attacher@sha256:d1a26170efed45491074ca4545c81844eee2b9043fb885ac01fb4aed6f8b72d2
@@ -28,6 +33,13 @@ controller:
 node:
   kubeletDir: /var/lib/k0s/kubelet
   priorityClassName: system-node-critical
+  # RuntimeDefault applies to the non-privileged sidecars. The privileged CSI
+  # node driver remains an explicit high-trust exception requiring live tests.
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+    seccompProfile:
+      type: RuntimeDefault
   # This separately managed ServiceAccount disables automatic API-token mounts.
   serviceAccountName: werftkern-hcloud-csi-node
   image:

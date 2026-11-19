@@ -1,10 +1,10 @@
 {
   "schema": "werftkern/hcloud-csi-static-security-policy/v1",
-  "status": "audited-blocked-hardening-required",
+  "status": "audited-blocked-container-and-resource-hardening-required",
   "productionReady": false,
   "manifest": {
     "path": "release/evidence/hcloud-csi-2.24.2-render.yaml",
-    "sha256": "4a0e3048d01a22e420ccde763eed889fa660357ad270cfe11c05ef721bc24de6"
+    "sha256": "09d55e336a2cfa5de96ab46af8cc588e6af43dee8f9d4782801bf60bf01526bf"
   },
   "rbac": {
     "clusterRole": "werftkern-hcloud-csi-controller",
@@ -26,6 +26,7 @@
       "namespace": "kube-system",
       "serviceAccount": "werftkern-hcloud-csi-controller",
       "serviceAccountTokenMode": "service-account-explicit-true",
+      "podSeccompProfile": {"type": "RuntimeDefault"},
       "hostNamespaces": false,
       "hostPaths": [],
       "privilegedContainers": [],
@@ -38,6 +39,7 @@
       "namespace": "kube-system",
       "serviceAccount": "werftkern-hcloud-csi-node",
       "serviceAccountTokenMode": "service-account-explicit-false",
+      "podSeccompProfile": {"type": "RuntimeDefault"},
       "hostNamespaces": false,
       "hostPaths": [
         {"name": "kubelet-dir", "path": "/var/lib/k0s/kubelet", "type": "Directory"},
@@ -51,7 +53,6 @@
   },
   "observedHardeningGaps": [
     "CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED",
-    "SECCOMP_PROFILE_NOT_ENFORCED",
     "RESOURCE_REQUESTS_AND_LIMITS_EMPTY"
   ],
   "hardeningPassed": false,
@@ -60,6 +61,7 @@
     "The privileged node driver, /dev access, k0s host paths and bidirectional kubelet mount are expected CSI capabilities but remain high-trust boundaries requiring live qualification.",
     "The controller service-account token is shared by all containers in the controller pod because the upstream chart does not isolate projected tokens per sidecar.",
     "The node DaemonSet selects a dedicated ServiceAccount with automatic API-token mounts disabled; this static control still requires a live compatibility test.",
+    "RuntimeDefault seccomp is set at pod level for controller and node workloads. Kubernetes privileged-container semantics mean this does not constrain the privileged node driver; that exception remains a live qualification boundary.",
     "Empty resource constraints and unenforced container-level security contexts require measured hardening before production use."
   ]
 }
