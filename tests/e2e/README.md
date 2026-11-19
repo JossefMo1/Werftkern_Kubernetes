@@ -34,6 +34,13 @@ Worker gemäß `docs/INSTALL-UBUNTU-DE.md` beitreten lassen. Dann mindestens pr�
 Diese Anleitung ist kein automatisierter Multi-VM-Test und kein bestehender Erfolgsnachweis.
 Keine Produktionsdaten oder bestehenden Unternehmenscluster verwenden.
 
+Der Kubernetes-Lauf `kubernetes-real.sh` verlangt zusätzlich die exakte Umgebungsvariable
+`WERFT_DISPOSABLE_CLUSTER_ATTESTATION=WERFTKERN-DISPOSABLE-K0S-ONLY`. Vor jedem mutierenden
+Schritt prüft `scripts/check-e2e-k01-preflight.py`, dass Assets und Plan absolute, nicht
+symbolische Dateien sind und das Management-Root kein breites Systemverzeichnis ist.
+Fehlende oder unsichere Vorbedingungen beenden den Lauf mit Status `BLOCKED` und Exit 3;
+es werden dabei keine Cluster- oder Cloud-Aktionen ausgeführt.
+
 Alpha2 ergänzt im Skript echte Secretdatei-Bindprüfung per Docker, verschlüsseltes logisches
 Backup/Inspect sowie Pause/Resume. Temporäre Secrets/Backupkeys liegen außerhalb der
 Evidence-Uploadliste. Auch diese neuen Schritte wurden hier nicht auf Ubuntu ausgeführt.

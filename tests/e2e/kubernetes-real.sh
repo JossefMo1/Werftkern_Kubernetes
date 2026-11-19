@@ -6,6 +6,7 @@ if [[ "${WERFT_DISPOSABLE_CLUSTER:-}" != 1 || -z "${WERFT_KUBE_ASSETS:-}" || -z 
     echo '{"status":"BLOCKED","reason":"Explicit disposable cluster, reviewed assets, host plan and management root are required; no Kubernetes/SSH fixtures are used.","productionReady":false}'
     exit 3
 fi
+python3 "$root/scripts/check-e2e-k01-preflight.py"
 cli="$root/scripts/werft-kube"
 digest="$($cli plan "$WERFT_KUBE_PLAN" | python3 -c 'import json,sys; print(json.load(sys.stdin)["sha256"])')"
 "$cli" --root "$WERFT_KUBE_ROOT" --assets "$WERFT_KUBE_ASSETS" apply --plan "$WERFT_KUBE_PLAN" --confirm "$digest"
