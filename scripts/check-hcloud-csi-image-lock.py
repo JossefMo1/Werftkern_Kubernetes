@@ -147,7 +147,10 @@ def fetch_manifest(repository: str, tag: str) -> dict:
             "scope": f"repository:{registry_path}:pull",
         })
         with urllib.request.urlopen("https://auth.docker.io/token?" + query, timeout=30) as response:
-            token = json.load(response)["token"]
+            token_document = parse_json(response.read().decode("utf-8"))
+        if not isinstance(token_document, dict) or not isinstance(token_document.get("token"), str):
+            raise ValueError("registry token response must be an object with a string token")
+        token = token_document["token"]
         headers = {"Authorization": "Bearer " + token}
     else:
         raise ValueError("unsupported registry")
@@ -162,7 +165,9 @@ def fetch_manifest(repository: str, tag: str) -> dict:
             raise ValueError("manifest too large")
         digest_header = response.headers.get("Docker-Content-Digest")
         media_type = response.headers.get_content_type()
-    document = json.loads(body)
+    document = parse_json(body.decode("utf-8"))
+    if not isinstance(document, dict):
+        raise ValueError("registry manifest must be an object")
     manifests = document.get("manifests", [])
     return {
         "digest": digest_header,

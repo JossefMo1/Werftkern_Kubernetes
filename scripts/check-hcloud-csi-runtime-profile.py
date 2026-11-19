@@ -86,7 +86,10 @@ def _request(url: str, token: str | None = None, accept: str | None = None):
 def _docker_token(repository: str) -> str:
     query = urllib.parse.urlencode({"service": "registry.docker.io", "scope": f"repository:{repository}:pull"})
     body, _ = _request("https://auth.docker.io/token?" + query)
-    return json.loads(body)["token"]
+    document = parse_json(body.decode("utf-8"))
+    if not isinstance(document, dict) or not isinstance(document.get("token"), str):
+        raise ValueError("registry token response must be an object with a string token")
+    return document["token"]
 
 
 def verify_registry(profile: dict, lock: dict) -> list[str]:
@@ -110,6 +113,8 @@ def verify_registry(profile: dict, lock: dict) -> list[str]:
             problems.append("INDEX_BODY_DIGEST_MISMATCH:" + name)
             continue
         index = parse_json(body.decode())
+        if not isinstance(index, dict):
+            raise ValueError("registry index must be an object")
         candidates = [m for m in index.get("manifests", []) if m.get("platform", {}).get("os") == "linux"
                       and m.get("platform", {}).get("architecture") == "amd64"
                       and not m.get("platform", {}).get("variant")]
@@ -122,6 +127,8 @@ def verify_registry(profile: dict, lock: dict) -> list[str]:
             problems.append("PLATFORM_BODY_DIGEST_MISMATCH:" + name)
             continue
         manifest = parse_json(body.decode())
+        if not isinstance(manifest, dict):
+            raise ValueError("registry manifest must be an object")
         config_digest = manifest.get("config", {}).get("digest")
         if config_digest != expected["configDigest"]:
             problems.append("CONFIG_DESCRIPTOR_MISMATCH:" + name)
@@ -130,7 +137,12 @@ def verify_registry(profile: dict, lock: dict) -> list[str]:
         if _sha(body) != config_digest:
             problems.append("CONFIG_BODY_DIGEST_MISMATCH:" + name)
             continue
-        config = parse_json(body.decode()).get("config", {})
+        config_document = parse_json(body.decode())
+        if not isinstance(config_document, dict):
+            raise ValueError("registry config must be an object")
+        config = config_document.get("config", {})
+        if not isinstance(config, dict):
+            raise ValueError("registry config field must be an object")
         if config.get("User", "") != expected["configuredUser"]:
             problems.append("CONFIG_USER_MISMATCH:" + name)
         if config.get("Entrypoint") != expected["entrypoint"]:
