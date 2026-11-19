@@ -205,8 +205,10 @@ Container gebunden; der privilegierte Node-Treiber bleibt eine explizite Ausnahm
 Die immutable linux/amd64 Manifest-/Config-Kette ist zusätzlich geprüft: Alle sechs
 Images verwenden explizit oder implizit root, und das Upstream-Chart bietet keine
 SecurityContext-Werte je Container. Pod-weites `runAsNonRoot` bleibt deshalb bewusst
-blockiert. Geprüfte Container-Identitäten, echte Laufzeittests und gemessene
-Ressourcenlimits bleiben offen. Keine Produktionsfreigabe.
+blockiert. Alle acht gerenderten Container-Instanzen besitzen nun fail-closed geprüfte
+CPU-/Memory-Requests und -Limits als konservative Startbudgets. Deren Eignung ist nicht
+gemessen; echte Last-, Soak- und Laufzeittests sowie geprüfte Container-Identitäten
+bleiben offen. Keine Produktionsfreigabe.
 
 ## K20-048 — Ein Stateful-Profil mit Replikation und Restore freigeben
 

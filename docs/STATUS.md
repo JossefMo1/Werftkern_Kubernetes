@@ -27,7 +27,9 @@ also hash-checked. Their image configs select root explicitly (`User: 0`) or imp
 (empty `User`), while the upstream chart exposes no per-container security-context
 values. Pod-level `runAsNonRoot` is therefore explicitly unsafe for this candidate,
 not a completed control. Hardening remains blocked pending reviewed per-container
-identities, measured resource constraints and disposable-cluster runtime evidence.
+identities and disposable-cluster runtime evidence. Every rendered CSI container now
+has a hash-bound CPU/memory request and limit; these conservative starting budgets
+have not been measured under load or soak and are not production capacity claims.
 These audits are not runtime security or live CSI compatibility evidence.
 
 The authoring-environment observations below are historical, including the

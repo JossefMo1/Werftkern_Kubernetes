@@ -98,9 +98,9 @@
   },
   "render": {
     "manifestPath": "release/evidence/hcloud-csi-2.24.2-render.yaml",
-    "manifestSha256": "09d55e336a2cfa5de96ab46af8cc588e6af43dee8f9d4782801bf60bf01526bf",
+    "manifestSha256": "1fb2e34ccb267064ee8c84084bab78fd2777afef906b2767b51722500caa6fbc",
     "verified": true,
-    "renderedAt": "2026-11-19T11:53:48Z",
+    "renderedAt": "2026-11-19T15:58:28Z",
     "releaseName": "werftkern-hcloud-csi",
     "namespace": "kube-system",
     "kubernetesVersion": "1.37.2",
@@ -112,7 +112,7 @@
     },
     "values": {
       "path": "examples/kubernetes/hcloud-csi-values.example.yaml",
-      "sha256": "6d67c0a63f6b78fb6456e4c5572df5e4319ad15c00cb4aca13b17d0dccfe1d67"
+      "sha256": "360dbe6dfd68a20a600e90683c142438fbcf80fba7fb57411ad0f6dc0554a9f1"
     },
     "nodeServiceAccount": {
       "path": "examples/kubernetes/hcloud-csi-node-serviceaccount.yaml",

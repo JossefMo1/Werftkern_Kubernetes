@@ -1,10 +1,10 @@
 {
   "schema": "werftkern/hcloud-csi-static-security-policy/v1",
-  "status": "audited-blocked-container-and-resource-hardening-required",
+  "status": "audited-blocked-container-identity-and-live-resource-validation-required",
   "productionReady": false,
   "manifest": {
     "path": "release/evidence/hcloud-csi-2.24.2-render.yaml",
-    "sha256": "09d55e336a2cfa5de96ab46af8cc588e6af43dee8f9d4782801bf60bf01526bf"
+    "sha256": "1fb2e34ccb267064ee8c84084bab78fd2777afef906b2767b51722500caa6fbc"
   },
   "rbac": {
     "clusterRole": "werftkern-hcloud-csi-controller",
@@ -31,7 +31,29 @@
       "hostPaths": [],
       "privilegedContainers": [],
       "bidirectionalMounts": [],
-      "secretRefs": ["hcloud/token"]
+      "secretRefs": ["hcloud/token"],
+      "containerResources": {
+        "hcloud-csi-driver": {
+          "limits": {"cpu": "500m", "memory": "256Mi"},
+          "requests": {"cpu": "50m", "memory": "64Mi"}
+        },
+        "csi-attacher": {
+          "limits": {"cpu": "200m", "memory": "128Mi"},
+          "requests": {"cpu": "10m", "memory": "32Mi"}
+        },
+        "csi-resizer": {
+          "limits": {"cpu": "200m", "memory": "128Mi"},
+          "requests": {"cpu": "10m", "memory": "32Mi"}
+        },
+        "csi-provisioner": {
+          "limits": {"cpu": "200m", "memory": "128Mi"},
+          "requests": {"cpu": "10m", "memory": "32Mi"}
+        },
+        "liveness-probe": {
+          "limits": {"cpu": "100m", "memory": "64Mi"},
+          "requests": {"cpu": "5m", "memory": "16Mi"}
+        }
+      }
     },
     "node": {
       "kind": "DaemonSet",
@@ -48,12 +70,26 @@
         {"name": "device-dir", "path": "/dev", "type": "Directory"}
       ],
       "privilegedContainers": ["hcloud-csi-driver"],
-      "bidirectionalMounts": ["hcloud-csi-driver:kubelet-dir:/var/lib/k0s/kubelet"]
+      "bidirectionalMounts": ["hcloud-csi-driver:kubelet-dir:/var/lib/k0s/kubelet"],
+      "containerResources": {
+        "csi-node-driver-registrar": {
+          "limits": {"cpu": "100m", "memory": "64Mi"},
+          "requests": {"cpu": "10m", "memory": "32Mi"}
+        },
+        "liveness-probe": {
+          "limits": {"cpu": "100m", "memory": "64Mi"},
+          "requests": {"cpu": "5m", "memory": "16Mi"}
+        },
+        "hcloud-csi-driver": {
+          "limits": {"cpu": "500m", "memory": "256Mi"},
+          "requests": {"cpu": "50m", "memory": "64Mi"}
+        }
+      }
     }
   },
   "observedHardeningGaps": [
     "CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED",
-    "RESOURCE_REQUESTS_AND_LIMITS_EMPTY"
+    "RESOURCE_BUDGETS_NOT_LIVE_VALIDATED"
   ],
   "hardeningPassed": false,
   "limitations": [
@@ -62,6 +98,7 @@
     "The controller service-account token is shared by all containers in the controller pod because the upstream chart does not isolate projected tokens per sidecar.",
     "The node DaemonSet selects a dedicated ServiceAccount with automatic API-token mounts disabled; this static control still requires a live compatibility test.",
     "RuntimeDefault seccomp is set at pod level for controller and node workloads. Kubernetes privileged-container semantics mean this does not constrain the privileged node driver; that exception remains a live qualification boundary.",
-    "Empty resource constraints and unenforced container-level security contexts require measured hardening before production use."
+    "Conservative per-container resource requests and limits are statically bound but remain unmeasured until disposable-cluster load and soak evidence exists.",
+    "Unenforced container-level security contexts require an upstream-compatible identity split before production use."
   ]
 }

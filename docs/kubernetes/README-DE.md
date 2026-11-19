@@ -185,8 +185,12 @@ vier k0s-HostPaths und dem bidirektionalen Kubelet-Mount. Die Prüfung bleibt be
 **nicht bestanden**: Der Node-Token-Mount ist statisch deaktiviert und beide Workloads
 setzen `RuntimeDefault` auf Pod-Ebene. Das schützt die nicht privilegierten Container,
 erzwingt wegen Kubernetes-Privileged-Semantik aber keinen Seccomp-Filter für den
-privilegierten CSI-Node-Treiber. Container-SecurityContexts und gemessene Ressourcenlimits
-bleiben offen.
+privilegierten CSI-Node-Treiber. Container-SecurityContexts und die live gemessene
+Eignung der Ressourcenbudgets bleiben offen. Die Werte setzen jetzt für jede der acht
+gerenderten Container-Instanzen explizite CPU-/Memory-Requests und -Limits. Der Prüfer
+bindet diese Budgets exakt und lehnt fehlende oder veränderte Werte ab. Es sind
+konservative Startwerte ohne Last- oder Soak-Nachweis; ihre Eignung für Produktion
+bleibt deshalb ausdrücklich unqualifiziert.
 
 `release/hcloud-csi-runtime-profile.json` bindet zusätzlich für `linux/amd64` den
 Index-, Plattform-Manifest- und Config-Digest sowie `User` und Entrypoint aller sechs
