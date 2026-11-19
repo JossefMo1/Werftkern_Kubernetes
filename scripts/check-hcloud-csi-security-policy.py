@@ -18,10 +18,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "release/hcloud-csi-security-policy.json"
-EXPECTED_MANIFEST_SHA = "0e4d4a753d49ed3d1f60850bd950b2e74ca9db0b178371bd0c5a118e6b305d2d"
+EXPECTED_MANIFEST_SHA = "4a0e3048d01a22e420ccde763eed889fa660357ad270cfe11c05ef721bc24de6"
 EXPECTED_RBAC_SHA = "900eee9afc2761185fe4e5346cd16c3efc0b4d1dad0b4a6024b0f862d18597e3"
 EXPECTED_GAPS = [
-    "NODE_DEFAULT_SERVICE_ACCOUNT_TOKEN_IMPLICITLY_MOUNTED",
     "CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED",
     "SECCOMP_PROFILE_NOT_ENFORCED",
     "RESOURCE_REQUESTS_AND_LIMITS_EMPTY",
@@ -177,8 +176,8 @@ def validate_policy(policy: dict) -> list[str]:
         "kind": "DaemonSet",
         "name": "werftkern-hcloud-csi-node",
         "namespace": "kube-system",
-        "serviceAccount": "default",
-        "serviceAccountTokenMode": "implicit-cluster-default",
+        "serviceAccount": "werftkern-hcloud-csi-node",
+        "serviceAccountTokenMode": "service-account-explicit-false",
         "hostNamespaces": False,
         "hostPaths": EXPECTED_HOST_PATHS,
         "privilegedContainers": ["hcloud-csi-driver"],
@@ -211,6 +210,7 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
         role = find_one(documents, "ClusterRole", policy["rbac"]["clusterRole"])
         binding = find_one(documents, "ClusterRoleBinding", policy["rbac"]["binding"]["name"])
         account = find_one(documents, "ServiceAccount", "werftkern-hcloud-csi-controller")
+        node_account = find_one(documents, "ServiceAccount", "werftkern-hcloud-csi-node")
         controller = find_one(documents, "Deployment", "werftkern-hcloud-csi-controller")
         node = find_one(documents, "DaemonSet", "werftkern-hcloud-csi-node")
     except ValueError as exc:
@@ -250,6 +250,8 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
         problems.append("RBAC_BINDING_SUBJECT_INVALID")
     if account.get("automountServiceAccountToken") is not True:
         problems.append("CONTROLLER_SERVICE_ACCOUNT_TOKEN_MODE_DRIFT")
+    if node_account.get("automountServiceAccountToken") is not False:
+        problems.append("NODE_SERVICE_ACCOUNT_TOKEN_MODE_DRIFT")
 
     controller_spec = pod_spec(controller)
     node_spec = pod_spec(node)
@@ -271,7 +273,7 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
     if secret_refs(controller_spec) != ["hcloud/token"]:
         problems.append("CONTROLLER_SECRET_REFERENCE_DRIFT")
 
-    if node_spec.get("serviceAccountName", "default") != "default":
+    if node_spec.get("serviceAccountName") != "werftkern-hcloud-csi-node":
         problems.append("NODE_SERVICE_ACCOUNT_DRIFT")
     if "automountServiceAccountToken" in node_spec:
         problems.append("NODE_TOKEN_MODE_DRIFT_REQUIRES_REVIEW")
@@ -289,7 +291,10 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
     workloads = [controller_spec, node_spec]
     containers = [item for spec in workloads for item in spec.get("containers", [])]
     observed_gaps: list[str] = []
-    if "automountServiceAccountToken" not in node_spec:
+    if (
+        node_spec.get("automountServiceAccountToken") is True
+        or node_account.get("automountServiceAccountToken") is not False
+    ):
         observed_gaps.append("NODE_DEFAULT_SERVICE_ACCOUNT_TOKEN_IMPLICITLY_MOUNTED")
     if any(
         not item.get("securityContext")

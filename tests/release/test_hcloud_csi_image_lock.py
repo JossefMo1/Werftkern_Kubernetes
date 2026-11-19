@@ -54,6 +54,11 @@ class HcloudCsiImageLockTests(unittest.TestCase):
             self.lock["render"]["manifestSha256"],
         )
         self.assertNotIn("kind: Secret\n", rendered)
+        node_account = ROOT / self.lock["render"]["nodeServiceAccount"]["path"]
+        self.assertEqual(
+            LOCK.hashlib.sha256(node_account.read_bytes()).hexdigest(),
+            self.lock["render"]["nodeServiceAccount"]["sha256"],
+        )
         changed = copy.deepcopy(self.lock)
         changed["render"]["manifestSha256"] = "0" * 64
         self.assertIn("RENDER_STATE_INVALID", LOCK.validate_lock(changed))

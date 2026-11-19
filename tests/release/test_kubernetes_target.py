@@ -58,6 +58,7 @@ class KubernetesTargetTests(unittest.TestCase):
         self.assertTrue(qualification["imageDigestsPinned"])
         self.assertTrue(qualification["chartRendered"])
         self.assertTrue(qualification["staticSecurityAuditRecorded"])
+        self.assertTrue(qualification["nodeServiceAccountTokenDisabled"])
         self.assertFalse(qualification["staticSecurityHardeningPassed"])
         self.assertFalse(qualification["realProvisionAttachMount"])
 
@@ -88,6 +89,7 @@ class KubernetesTargetTests(unittest.TestCase):
         })
         values = (ROOT / "examples/kubernetes/hcloud-csi-values.example.yaml").read_text()
         self.assertIn("kubeletDir: /var/lib/k0s/kubelet", values)
+        self.assertIn("serviceAccountName: werftkern-hcloud-csi-node", values)
         self.assertIn("name: werftkern-hcloud-retain", values)
         self.assertIn("defaultStorageClass: false", values)
         self.assertIn("reclaimPolicy: Retain", values)
@@ -99,6 +101,9 @@ class KubernetesTargetTests(unittest.TestCase):
             )
         self.assertEqual(values.count('tag: ""'), 8)
         self.assertNotIn("token:", values)
+        account = (ROOT / "examples/kubernetes/hcloud-csi-node-serviceaccount.yaml").read_text()
+        self.assertIn("name: werftkern-hcloud-csi-node", account)
+        self.assertIn("automountServiceAccountToken: false", account)
 
     def test_public_asset_example_matches_core_target(self):
         assets = TARGET.parse_json((ROOT / "examples/kubernetes/assets.example.json").read_text())

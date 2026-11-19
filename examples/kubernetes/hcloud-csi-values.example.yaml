@@ -28,6 +28,8 @@ controller:
 node:
   kubeletDir: /var/lib/k0s/kubelet
   priorityClassName: system-node-critical
+  # This separately managed ServiceAccount disables automatic API-token mounts.
+  serviceAccountName: werftkern-hcloud-csi-node
   image:
     csiNodeDriverRegistrar:
       name: registry.k8s.io/sig-storage/csi-node-driver-registrar@sha256:b7fefd08651f00ac4df1a196ed4c621c2451fbb899297fe9fad9e36c667af0c0
