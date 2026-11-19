@@ -17,10 +17,10 @@ class HcloudCsiImageLockTests(unittest.TestCase):
     def setUpClass(cls):
         cls.lock = LOCK.parse_json((ROOT / "release/hcloud-csi-image-lock.json").read_text())
 
-    def test_repository_inventory_is_complete_but_unresolved(self):
+    def test_repository_inventory_is_complete_and_digest_pinned(self):
         self.assertEqual(LOCK.validate_lock(self.lock), [])
         self.assertEqual(set(self.lock["images"]), set(LOCK.EXPECTED))
-        self.assertTrue(all(item["digest"] is None for item in self.lock["images"].values()))
+        self.assertTrue(all(item["digest"].startswith("sha256:") for item in self.lock["images"].values()))
         self.assertFalse(self.lock["productionReady"])
 
     def test_duplicate_keys_are_rejected(self):
@@ -36,25 +36,46 @@ class HcloudCsiImageLockTests(unittest.TestCase):
         self.assertIn("IMAGE_SOURCE_DRIFT:csi-attacher", LOCK.validate_lock(changed))
         self.assertIn("MUTABLE_IMAGE_TAG_FORBIDDEN:csi-attacher", LOCK.validate_lock(changed))
 
-    def test_render_is_blocked_while_digests_are_unresolved(self):
+    def test_tag_only_render_is_blocked_after_digests_are_pinned(self):
         rendered = "image: registry.k8s.io/sig-storage/csi-attacher:v4.13.0\n"
         problems = LOCK.validate_render(rendered, self.lock)
-        self.assertIn("UNRESOLVED_IMAGE_DIGEST:csi-attacher", problems)
         self.assertIn("TAG_OR_INVALID_DIGEST_IN_RENDER:registry.k8s.io/sig-storage/csi-attacher:v4.13.0", problems)
 
     def test_only_exact_digest_locked_image_set_is_accepted(self):
-        changed = copy.deepcopy(self.lock)
-        changed["status"] = "digests-pinned-not-render-qualified"
         lines = []
-        for index, item in enumerate(changed["images"].values(), start=1):
-            item["digest"] = "sha256:" + f"{index:064x}"
+        for item in self.lock["images"].values():
             lines.extend(
                 [f"image: {item['repository']}@{item['digest']}"] * len(item["consumers"])
             )
-        self.assertEqual(LOCK.validate_lock(changed), [])
-        self.assertEqual(LOCK.validate_render("\n".join(lines), changed), [])
+        self.assertEqual(LOCK.validate_render("\n".join(lines), self.lock), [])
         lines.append("image: example.invalid/unreviewed@sha256:" + "f" * 64)
-        self.assertIn("RENDER_IMAGE_SET_MISMATCH", LOCK.validate_render("\n".join(lines), changed))
+        self.assertIn("RENDER_IMAGE_SET_MISMATCH", LOCK.validate_render("\n".join(lines), self.lock))
+
+    def test_static_digest_and_registry_evidence_drift_are_rejected(self):
+        changed = copy.deepcopy(self.lock)
+        changed["images"]["csi-attacher"]["digest"] = "sha256:" + "0" * 64
+        self.assertIn("IMAGE_DIGEST_DRIFT:csi-attacher", LOCK.validate_lock(changed))
+        changed = copy.deepcopy(self.lock)
+        changed["images"]["csi-attacher"]["registryEvidence"]["dockerContentDigestMatchedBody"] = False
+        self.assertIn("REGISTRY_EVIDENCE_INVALID:csi-attacher", LOCK.validate_lock(changed))
+
+    def test_online_verifier_detects_tag_drift_and_header_mismatch(self):
+        expected = self.lock["images"]["csi-attacher"]
+        def fetcher(repository, tag):
+            self.assertEqual(repository, expected["repository"])
+            self.assertEqual(tag, expected["tag"])
+            return {
+                "digest": "sha256:" + "0" * 64,
+                "computedDigest": "sha256:" + "1" * 64,
+                "mediaType": expected["registryEvidence"]["mediaType"],
+                "manifestCount": expected["registryEvidence"]["manifestCount"],
+                "linuxAmd64Present": True,
+            }
+        one = copy.deepcopy(self.lock)
+        one["images"] = {"csi-attacher": expected}
+        problems = LOCK.verify_registry(one, fetcher)
+        self.assertIn("REGISTRY_HEADER_BODY_MISMATCH:csi-attacher", problems)
+        self.assertIn("REGISTRY_TAG_DIGEST_DRIFT:csi-attacher", problems)
 
     def test_render_without_images_is_rejected(self):
         self.assertEqual(LOCK.validate_render("kind: ConfigMap\n", self.lock), ["RENDER_CONTAINS_NO_IMAGES"])

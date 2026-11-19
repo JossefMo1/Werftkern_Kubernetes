@@ -149,7 +149,7 @@ def validate(matrix: dict) -> list[str]:
     expected_qualification = {
         "chartRendered": False,
         "imageInventoryComplete": True,
-        "imageDigestsPinned": False,
+        "imageDigestsPinned": True,
         "realProvisionAttachMount": False,
         "expansionPassed": False,
         "nodeFailureReattachPassed": False,
@@ -209,7 +209,7 @@ def validate(matrix: dict) -> list[str]:
         problems.append("COMPATIBILITY_CLAIM_INVALID")
     unresolved = matrix.get("unresolved")
     if not isinstance(unresolved, dict) or set(unresolved) != {
-        "storageImageDigests", "storageQualification", "addonImagesAndCharts"
+        "storageImageTrust", "storageQualification", "addonImagesAndCharts"
     }:
         problems.append("UNRESOLVED_INVENTORY_INVALID")
     elif any(not isinstance(value, str) or not value.strip() for value in unresolved.values()):

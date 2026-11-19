@@ -164,8 +164,11 @@ Das Chart selbst erzwingt `WaitForFirstConsumer` und Volume-Expansion.
 `release/hcloud-csi-image-lock.json` erfasst die sechs eindeutigen Images des
 Upstream-Values-Git-Blobs. `scripts/check-hcloud-csi-image-lock.py` blockiert
 unvollständige Inventare, mutable Tags sowie ein gerendertes Manifest mit Tag-Images
-oder nicht freigegebenen Images. Da die Registry-Digests noch `null` sind, kann der
-Prüfer derzeit absichtlich keinen Render als verifiziert melden.
+oder nicht freigegebenen Images. Die sechs OCI-Index-Digests sind gebunden, nachdem
+der jeweilige Registry-Header mit dem SHA-256 des empfangenen Manifest-Bodys
+übereinstimmte. `--verify-registry` wiederholt diese Online-Prüfung und erkennt
+Tag-Drift. Das ist weder Signatur- noch Schwachstellenprüfung; da das Chart noch
+nicht digestgebunden gerendert wurde, bleibt `chartRendered=false`.
 
 Das Hetzner-Token wird als bereits vorhandenes Secret `kube-system/hcloud`
 erwartet und gehört niemals in `assets.json`, Wertevorlagen, Logs oder Git.

@@ -9,10 +9,12 @@ live, security, supply-chain and operational gates remain open until evidence
 for one unchanged release candidate is verified.
 
 The Kubernetes matrix now selects hcloud-csi 2.24.2 as a candidate RWO storage
-path with a digest-bound chart and `Retain` StorageClass. The chart and images
-have not been rendered, executed or independently verified. Its six-image upstream
-tag inventory is source-bound and policy-checked, but registry digests remain
-unresolved; real Volume lifecycle, failure, backup and restore evidence remains absent.
+path with a digest-bound chart and `Retain` StorageClass. Its six upstream OCI
+index digests are pinned after each registry digest header matched the SHA-256 of
+the received manifest body, and the checker can repeat that online comparison.
+The chart and images have not been rendered, signature- or vulnerability-verified,
+executed or independently reviewed; real Volume lifecycle, failure, backup and
+restore evidence remains absent.
 
 The authoring-environment observations below are historical, including the
 compiler version and whether CI had run at that time. For subsequently verified

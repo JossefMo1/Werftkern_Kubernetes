@@ -1,6 +1,6 @@
 {
   "schema": "werftkern/hcloud-csi-image-lock/v1",
-  "status": "inventory-complete-digests-unresolved",
+  "status": "digests-pinned-not-render-qualified",
   "productionReady": false,
   "chartVersion": "2.24.2",
   "sourceValues": {
@@ -14,38 +14,86 @@
     "csi-attacher": {
       "repository": "registry.k8s.io/sig-storage/csi-attacher",
       "tag": "v4.13.0",
-      "digest": null,
-      "consumers": ["controller"]
+      "digest": "sha256:d1a26170efed45491074ca4545c81844eee2b9043fb885ac01fb4aed6f8b72d2",
+      "consumers": ["controller"],
+      "registryEvidence": {
+        "registryHost": "registry.k8s.io",
+        "resolvedAt": "2026-11-19T00:53:35Z",
+        "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+        "manifestCount": 6,
+        "linuxAmd64Present": true,
+        "dockerContentDigestMatchedBody": true
+      }
     },
     "csi-node-driver-registrar": {
       "repository": "registry.k8s.io/sig-storage/csi-node-driver-registrar",
       "tag": "v2.18.0",
-      "digest": null,
-      "consumers": ["node"]
+      "digest": "sha256:b7fefd08651f00ac4df1a196ed4c621c2451fbb899297fe9fad9e36c667af0c0",
+      "consumers": ["node"],
+      "registryEvidence": {
+        "registryHost": "registry.k8s.io",
+        "resolvedAt": "2026-11-19T00:53:35Z",
+        "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+        "manifestCount": 8,
+        "linuxAmd64Present": true,
+        "dockerContentDigestMatchedBody": true
+      }
     },
     "csi-provisioner": {
       "repository": "registry.k8s.io/sig-storage/csi-provisioner",
       "tag": "v6.3.0",
-      "digest": null,
-      "consumers": ["controller"]
+      "digest": "sha256:a4b0b1a37605b7b04a293e136edf7006ec1786a8eb3f4e5a945f81d667dcc371",
+      "consumers": ["controller"],
+      "registryEvidence": {
+        "registryHost": "registry.k8s.io",
+        "resolvedAt": "2026-11-19T00:53:35Z",
+        "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+        "manifestCount": 6,
+        "linuxAmd64Present": true,
+        "dockerContentDigestMatchedBody": true
+      }
     },
     "csi-resizer": {
       "repository": "registry.k8s.io/sig-storage/csi-resizer",
       "tag": "v2.2.1",
-      "digest": null,
-      "consumers": ["controller"]
+      "digest": "sha256:ea1d25e23479000c7e8eeb92d827df66258df4e482ca054c5e7ce3fc0f5c41a5",
+      "consumers": ["controller"],
+      "registryEvidence": {
+        "registryHost": "registry.k8s.io",
+        "resolvedAt": "2026-11-19T00:53:35Z",
+        "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+        "manifestCount": 6,
+        "linuxAmd64Present": true,
+        "dockerContentDigestMatchedBody": true
+      }
     },
     "hcloud-csi-driver": {
       "repository": "docker.io/hetznercloud/hcloud-csi-driver",
       "tag": "v2.24.2",
-      "digest": null,
-      "consumers": ["controller", "node"]
+      "digest": "sha256:c231060c9d24d485c8ac25eeb3dd445994ce1abb7417c5a49b88301931a9fe29",
+      "consumers": ["controller", "node"],
+      "registryEvidence": {
+        "registryHost": "registry-1.docker.io",
+        "resolvedAt": "2026-11-19T00:53:35Z",
+        "mediaType": "application/vnd.oci.image.index.v1+json",
+        "manifestCount": 3,
+        "linuxAmd64Present": true,
+        "dockerContentDigestMatchedBody": true
+      }
     },
     "liveness-probe": {
       "repository": "registry.k8s.io/sig-storage/livenessprobe",
       "tag": "v2.20.0",
-      "digest": null,
-      "consumers": ["controller", "node"]
+      "digest": "sha256:19f2cf2f40e1987c7943945deca5f65cd4e4bf5cc0657fc78a5df131861578e8",
+      "consumers": ["controller", "node"],
+      "registryEvidence": {
+        "registryHost": "registry.k8s.io",
+        "resolvedAt": "2026-11-19T00:53:35Z",
+        "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+        "manifestCount": 8,
+        "linuxAmd64Present": true,
+        "dockerContentDigestMatchedBody": true
+      }
     }
   },
   "render": {
@@ -54,8 +102,8 @@
   },
   "limitations": [
     "The inventory was transcribed from the immutable v2.24.2 chart values Git blob; the chart was not rendered.",
-    "Tags identify the upstream defaults but do not establish immutable image identity.",
-    "Every digest must be resolved from its authoritative registry and independently rechecked before rendering.",
+    "The OCI index digests were resolved from registry.k8s.io and Docker Hub; each Docker-Content-Digest header matched the SHA-256 of the received manifest body.",
+    "The online result was self-checked once and is not an independent registry, signature or vulnerability review.",
     "A policy-valid render is not a vulnerability scan, signature verification, runtime test or production qualification."
   ]
 }

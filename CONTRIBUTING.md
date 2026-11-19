@@ -21,6 +21,8 @@ python3 -m unittest discover -s tests/release -v
 python3 scripts/check-production-scope.py
 python3 scripts/check-kubernetes-target.py
 python3 scripts/check-hcloud-csi-image-lock.py
+# Optional live OCI recheck; requires network access to registry.k8s.io and Docker Hub.
+python3 scripts/check-hcloud-csi-image-lock.py --verify-registry
 python3 scripts/check-public-source.py
 python3 scripts/audit-git-history.py
 node --check internal/dashboard/assets/app.js

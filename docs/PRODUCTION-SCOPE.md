@@ -42,10 +42,12 @@ The [candidate target matrix](../release/kubernetes-target-matrix.json) pins
 k0s, k0sctl, Kubernetes/kubectl and their inspected upstream digests. Those
 binaries have not been executed or signature-verified, so the pins are not
 compatibility or support evidence. The matrix also records a candidate Hetzner
-CSI chart and conservative StorageClass contract. Its images are not digest-pinned,
-but the exact six-image tag inventory is bound to the upstream values Git blob and
-a render-policy checker rejects tag-only or unlisted images. The chart has not been
-downloaded or rendered, and no Volume lifecycle test ran.
+CSI chart and conservative StorageClass contract. The exact six-image inventory is
+bound to the upstream values Git blob and every OCI index digest is pinned after
+registry header/body hash agreement. The checker can re-resolve those tags and
+rejects drift, tag-only renders or unlisted images. The chart has not been downloaded
+or rendered; images have not been signature- or vulnerability-verified, and no
+Volume lifecycle test ran.
 Hetzner Cloud Volumes attach to one server at a time and the provider does not
 offer Volume backups or snapshots. Application-consistent backup and restore
 therefore remain separate mandatory gates. Until the complete matrix is reviewed
