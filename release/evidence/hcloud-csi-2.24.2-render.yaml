@@ -254,8 +254,12 @@ spec:
             - name: registration-dir
               mountPath: /registration
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              cpu: 100m
+              memory: 64Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
         - name: liveness-probe
           image: registry.k8s.io/sig-storage/livenessprobe@sha256:19f2cf2f40e1987c7943945deca5f65cd4e4bf5cc0657fc78a5df131861578e8
           imagePullPolicy: IfNotPresent
@@ -263,8 +267,12 @@ spec:
           - mountPath: /run/csi
             name: plugin-dir
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              cpu: 100m
+              memory: 64Mi
+            requests:
+              cpu: 5m
+              memory: 16Mi
         - name: hcloud-csi-driver
           image: docker.io/hetznercloud/hcloud-csi-driver@sha256:c231060c9d24d485c8ac25eeb3dd445994ce1abb7417c5a49b88301931a9fe29 # x-releaser-pleaser-version
           imagePullPolicy: IfNotPresent
@@ -294,8 +302,12 @@ spec:
               protocol: TCP
               containerPort: 9808
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
           livenessProbe:
             failureThreshold: 5
             initialDelaySeconds: 10
@@ -396,8 +408,12 @@ spec:
                   name: hcloud
                   key: token
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
           ports:
             - name: metrics
               containerPort: 9189
@@ -420,8 +436,12 @@ spec:
           image: registry.k8s.io/sig-storage/csi-attacher@sha256:d1a26170efed45491074ca4545c81844eee2b9043fb885ac01fb4aed6f8b72d2
           imagePullPolicy: IfNotPresent
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              cpu: 200m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
           args:
             - --default-fstype=ext4
             - --timeout=60s
@@ -435,8 +455,12 @@ spec:
           image: registry.k8s.io/sig-storage/csi-resizer@sha256:ea1d25e23479000c7e8eeb92d827df66258df4e482ca054c5e7ce3fc0f5c41a5
           imagePullPolicy: IfNotPresent
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              cpu: 200m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
           args:
             - --leader-election
             - --leader-election-namespace=kube-system
@@ -448,8 +472,12 @@ spec:
           image: registry.k8s.io/sig-storage/csi-provisioner@sha256:a4b0b1a37605b7b04a293e136edf7006ec1786a8eb3f4e5a945f81d667dcc371
           imagePullPolicy: IfNotPresent
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              cpu: 200m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
           args:
             - --feature-gates=Topology=true
             - --default-fstype=ext4
@@ -465,8 +493,12 @@ spec:
           image: registry.k8s.io/sig-storage/livenessprobe@sha256:19f2cf2f40e1987c7943945deca5f65cd4e4bf5cc0657fc78a5df131861578e8
           imagePullPolicy: IfNotPresent
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              cpu: 100m
+              memory: 64Mi
+            requests:
+              cpu: 5m
+              memory: 16Mi
           volumeMounts:
           - mountPath: /run/csi
             name: socket-dir

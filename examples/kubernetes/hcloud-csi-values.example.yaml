@@ -26,6 +26,24 @@ controller:
     hcloudCSIDriver:
       name: docker.io/hetznercloud/hcloud-csi-driver@sha256:c231060c9d24d485c8ac25eeb3dd445994ce1abb7417c5a49b88301931a9fe29
       tag: ""
+  # Conservative scheduler and containment guardrails. These are not measured
+  # capacity limits and still require load and soak validation before release.
+  resources:
+    csiAttacher:
+      requests: {cpu: 10m, memory: 32Mi}
+      limits: {cpu: 200m, memory: 128Mi}
+    csiResizer:
+      requests: {cpu: 10m, memory: 32Mi}
+      limits: {cpu: 200m, memory: 128Mi}
+    csiProvisioner:
+      requests: {cpu: 10m, memory: 32Mi}
+      limits: {cpu: 200m, memory: 128Mi}
+    livenessProbe:
+      requests: {cpu: 5m, memory: 16Mi}
+      limits: {cpu: 100m, memory: 64Mi}
+    hcloudCSIDriver:
+      requests: {cpu: 50m, memory: 64Mi}
+      limits: {cpu: 500m, memory: 256Mi}
   podDisruptionBudget:
     create: true
     minAvailable: 1
@@ -52,6 +70,18 @@ node:
     hcloudCSIDriver:
       name: docker.io/hetznercloud/hcloud-csi-driver@sha256:c231060c9d24d485c8ac25eeb3dd445994ce1abb7417c5a49b88301931a9fe29
       tag: ""
+  # Kept separate from controller budgets so node-side load can be qualified
+  # independently on the supported k0s topology.
+  resources:
+    csiNodeDriverRegistrar:
+      requests: {cpu: 10m, memory: 32Mi}
+      limits: {cpu: 100m, memory: 64Mi}
+    livenessProbe:
+      requests: {cpu: 5m, memory: 16Mi}
+      limits: {cpu: 100m, memory: 64Mi}
+    hcloudCSIDriver:
+      requests: {cpu: 50m, memory: 64Mi}
+      limits: {cpu: 500m, memory: 256Mi}
 
 metrics:
   enabled: true

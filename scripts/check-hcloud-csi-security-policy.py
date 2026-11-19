@@ -18,13 +18,51 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "release/hcloud-csi-security-policy.json"
-EXPECTED_MANIFEST_SHA = "09d55e336a2cfa5de96ab46af8cc588e6af43dee8f9d4782801bf60bf01526bf"
+EXPECTED_MANIFEST_SHA = "1fb2e34ccb267064ee8c84084bab78fd2777afef906b2767b51722500caa6fbc"
 EXPECTED_RBAC_SHA = "900eee9afc2761185fe4e5346cd16c3efc0b4d1dad0b4a6024b0f862d18597e3"
 EXPECTED_GAPS = [
     "CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED",
-    "RESOURCE_REQUESTS_AND_LIMITS_EMPTY",
+    "RESOURCE_BUDGETS_NOT_LIVE_VALIDATED",
 ]
 EXPECTED_POD_SECCOMP_PROFILE = {"type": "RuntimeDefault"}
+EXPECTED_RESOURCES = {
+    "controller": {
+        "hcloud-csi-driver": {
+            "limits": {"cpu": "500m", "memory": "256Mi"},
+            "requests": {"cpu": "50m", "memory": "64Mi"},
+        },
+        "csi-attacher": {
+            "limits": {"cpu": "200m", "memory": "128Mi"},
+            "requests": {"cpu": "10m", "memory": "32Mi"},
+        },
+        "csi-resizer": {
+            "limits": {"cpu": "200m", "memory": "128Mi"},
+            "requests": {"cpu": "10m", "memory": "32Mi"},
+        },
+        "csi-provisioner": {
+            "limits": {"cpu": "200m", "memory": "128Mi"},
+            "requests": {"cpu": "10m", "memory": "32Mi"},
+        },
+        "liveness-probe": {
+            "limits": {"cpu": "100m", "memory": "64Mi"},
+            "requests": {"cpu": "5m", "memory": "16Mi"},
+        },
+    },
+    "node": {
+        "csi-node-driver-registrar": {
+            "limits": {"cpu": "100m", "memory": "64Mi"},
+            "requests": {"cpu": "10m", "memory": "32Mi"},
+        },
+        "liveness-probe": {
+            "limits": {"cpu": "100m", "memory": "64Mi"},
+            "requests": {"cpu": "5m", "memory": "16Mi"},
+        },
+        "hcloud-csi-driver": {
+            "limits": {"cpu": "500m", "memory": "256Mi"},
+            "requests": {"cpu": "50m", "memory": "64Mi"},
+        },
+    },
+}
 EXPECTED_HOST_PATHS = [
     {"name": "kubelet-dir", "path": "/var/lib/k0s/kubelet", "type": "Directory"},
     {
@@ -127,13 +165,20 @@ def secret_refs(spec: dict) -> list[str]:
     return sorted(result)
 
 
+def container_resources(spec: dict) -> dict[str, dict]:
+    return {
+        str(item.get("name", "")): item.get("resources", {})
+        for item in (spec.get("containers") or []) + (spec.get("initContainers") or [])
+    }
+
+
 def validate_policy(policy: dict) -> list[str]:
     problems: list[str] = []
     if policy.get("schema") != "werftkern/hcloud-csi-static-security-policy/v1":
         problems.append("POLICY_SCHEMA_INVALID")
     if (
         policy.get("status")
-        != "audited-blocked-container-and-resource-hardening-required"
+        != "audited-blocked-container-identity-and-live-resource-validation-required"
     ):
         problems.append("POLICY_STATUS_MUST_REMAIN_BLOCKED")
     if policy.get("productionReady") is not False or policy.get("hardeningPassed") is not False:
@@ -173,6 +218,7 @@ def validate_policy(policy: dict) -> list[str]:
         "privilegedContainers": [],
         "bidirectionalMounts": [],
         "secretRefs": ["hcloud/token"],
+        "containerResources": EXPECTED_RESOURCES["controller"],
     }:
         problems.append("POLICY_CONTROLLER_BOUNDARY_INVALID")
     node = workloads.get("node", {})
@@ -187,6 +233,7 @@ def validate_policy(policy: dict) -> list[str]:
         "hostPaths": EXPECTED_HOST_PATHS,
         "privilegedContainers": ["hcloud-csi-driver"],
         "bidirectionalMounts": ["hcloud-csi-driver:kubelet-dir:/var/lib/k0s/kubelet"],
+        "containerResources": EXPECTED_RESOURCES["node"],
     }:
         problems.append("POLICY_NODE_BOUNDARY_INVALID")
     if policy.get("observedHardeningGaps") != EXPECTED_GAPS:
@@ -282,6 +329,8 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
         problems.append("CONTROLLER_BIDIRECTIONAL_MOUNT_FORBIDDEN")
     if secret_refs(controller_spec) != ["hcloud/token"]:
         problems.append("CONTROLLER_SECRET_REFERENCE_DRIFT")
+    if container_resources(controller_spec) != EXPECTED_RESOURCES["controller"]:
+        problems.append("CONTROLLER_RESOURCE_BUDGET_DRIFT")
 
     if node_spec.get("serviceAccountName") != "werftkern-hcloud-csi-node":
         problems.append("NODE_SERVICE_ACCOUNT_DRIFT")
@@ -302,6 +351,8 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
         problems.append("NODE_BIDIRECTIONAL_MOUNT_BOUNDARY_DRIFT")
     if secret_refs(node_spec):
         problems.append("NODE_SECRET_REFERENCE_FORBIDDEN")
+    if container_resources(node_spec) != EXPECTED_RESOURCES["node"]:
+        problems.append("NODE_RESOURCE_BUDGET_DRIFT")
 
     workloads = [controller_spec, node_spec]
     containers = [item for spec in workloads for item in spec.get("containers", [])]
@@ -322,12 +373,7 @@ def validate_manifest(policy: dict, raw: str) -> list[str]:
         for spec in workloads
     ):
         observed_gaps.append("SECCOMP_PROFILE_NOT_ENFORCED")
-    if any(
-        item.get("resources", {}).get("requests", {}) == {}
-        or item.get("resources", {}).get("limits", {}) == {}
-        for item in containers
-    ):
-        observed_gaps.append("RESOURCE_REQUESTS_AND_LIMITS_EMPTY")
+    observed_gaps.append("RESOURCE_BUDGETS_NOT_LIVE_VALIDATED")
     if observed_gaps != EXPECTED_GAPS:
         problems.append("OBSERVED_HARDENING_GAPS_DRIFT")
 

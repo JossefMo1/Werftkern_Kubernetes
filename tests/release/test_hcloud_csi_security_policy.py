@@ -43,6 +43,14 @@ class HcloudCsiSecurityPolicyTests(unittest.TestCase):
             "SECCOMP_PROFILE_NOT_ENFORCED",
             self.policy["observedHardeningGaps"],
         )
+        self.assertNotIn(
+            "RESOURCE_REQUESTS_AND_LIMITS_EMPTY",
+            self.policy["observedHardeningGaps"],
+        )
+        self.assertIn(
+            "RESOURCE_BUDGETS_NOT_LIVE_VALIDATED",
+            self.policy["observedHardeningGaps"],
+        )
 
     def test_duplicate_policy_keys_are_rejected(self):
         with self.assertRaises(ValueError):
@@ -112,6 +120,24 @@ class HcloudCsiSecurityPolicyTests(unittest.TestCase):
             "METRICS_SERVICE_EXPOSURE_DRIFT",
             POLICY.validate_manifest(self.policy, self.render(mutate)),
         )
+
+    def test_resource_budget_drift_is_rejected(self):
+        for kind, container_name, expected_problem in (
+            ("Deployment", "csi-provisioner", "CONTROLLER_RESOURCE_BUDGET_DRIFT"),
+            ("DaemonSet", "hcloud-csi-driver", "NODE_RESOURCE_BUDGET_DRIFT"),
+        ):
+            with self.subTest(kind=kind, container=container_name):
+                def mutate(documents):
+                    workload = next(item for item in documents if item["kind"] == kind)
+                    container = next(
+                        item
+                        for item in workload["spec"]["template"]["spec"]["containers"]
+                        if item["name"] == container_name
+                    )
+                    del container["resources"]["requests"]["memory"]
+
+                problems = POLICY.validate_manifest(self.policy, self.render(mutate))
+                self.assertIn(expected_problem, problems)
 
     def test_runtime_default_seccomp_is_required_for_both_workloads(self):
         for kind, expected_problem in (
