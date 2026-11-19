@@ -150,6 +150,8 @@ def validate(matrix: dict) -> list[str]:
         "chartRendered": True,
         "imageInventoryComplete": True,
         "imageDigestsPinned": True,
+        "imageRuntimeConfigAudited": True,
+        "podLevelRunAsNonRootSafe": False,
         "staticSecurityAuditRecorded": True,
         "nodeServiceAccountTokenDisabled": True,
         "podSeccompRuntimeDefault": True,
@@ -168,6 +170,7 @@ def validate(matrix: dict) -> list[str]:
         or storage.get("provider") != "hetzner-cloud"
         or storage.get("helmValues") != "examples/kubernetes/hcloud-csi-values.example.yaml"
         or storage.get("imageLock") != "release/hcloud-csi-image-lock.json"
+        or storage.get("runtimeProfile") != "release/hcloud-csi-runtime-profile.json"
         or storage.get("securityPolicy") != "release/hcloud-csi-security-policy.json"
         or storage.get("k0sKubeletDirectory") != "/var/lib/k0s/kubelet"
         or storage.get("qualification") != expected_qualification

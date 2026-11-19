@@ -21,9 +21,12 @@ python3 -m unittest discover -s tests/release -v
 python3 scripts/check-production-scope.py
 python3 scripts/check-kubernetes-target.py
 python3 scripts/check-hcloud-csi-image-lock.py
+python3 scripts/check-hcloud-csi-runtime-profile.py
 python3 scripts/check-hcloud-csi-security-policy.py
 # Optional live OCI recheck; requires network access to registry.k8s.io and Docker Hub.
 python3 scripts/check-hcloud-csi-image-lock.py --verify-registry
+# Recheck the locked linux/amd64 manifest/config digests, users and entrypoints.
+python3 scripts/check-hcloud-csi-runtime-profile.py --verify-registry
 # Reproduce the bound hcloud-csi manifest with the exact reviewed Helm/chart files.
 bash scripts/render-hcloud-csi.sh /path/to/helm /path/to/hcloud-csi-2.24.2.tgz /tmp/render.yaml
 python3 scripts/check-public-source.py

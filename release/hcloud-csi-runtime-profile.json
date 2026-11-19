@@ -1,0 +1,60 @@
+{
+  "schema": "werftkern/hcloud-csi-runtime-profile/v1",
+  "status": "audited-root-defaults-container-security-context-required",
+  "productionReady": false,
+  "platform": "linux-amd64",
+  "sourceImageLock": "release/hcloud-csi-image-lock.json",
+  "inspectedAt": "2026-11-19T13:05:51Z",
+  "runAsNonRootSafeAtPodLevel": false,
+  "images": {
+    "csi-attacher": {
+      "indexDigest": "sha256:d1a26170efed45491074ca4545c81844eee2b9043fb885ac01fb4aed6f8b72d2",
+      "platformManifestDigest": "sha256:3998c70f02511068e879b2222d7d4943db86fe044dd311f7bbb90812f778ad82",
+      "configDigest": "sha256:484d2276fc5bbb0409e4fe579ed7be9265b9d0bde1910919a045791670e458e1",
+      "configuredUser": "0",
+      "entrypoint": ["/csi-attacher"]
+    },
+    "csi-node-driver-registrar": {
+      "indexDigest": "sha256:b7fefd08651f00ac4df1a196ed4c621c2451fbb899297fe9fad9e36c667af0c0",
+      "platformManifestDigest": "sha256:692a30d9f27d32a25ea2784d01251b73e189e9d1156dd43c58f87ad2b70ec1e6",
+      "configDigest": "sha256:5c799be6c4567b1db4e78b3993d0040af2d5095d1b1aabb49ff39eecbe710de9",
+      "configuredUser": "0",
+      "entrypoint": ["/csi-node-driver-registrar"]
+    },
+    "csi-provisioner": {
+      "indexDigest": "sha256:a4b0b1a37605b7b04a293e136edf7006ec1786a8eb3f4e5a945f81d667dcc371",
+      "platformManifestDigest": "sha256:54de28a6565647405647b34d092eefb4a51c7be14f29bdafc721773a5ec0600c",
+      "configDigest": "sha256:d2554c75df37acb1f0671d9f66e395b402243cd82c778f0863d4d5361780a5d6",
+      "configuredUser": "0",
+      "entrypoint": ["/csi-provisioner"]
+    },
+    "csi-resizer": {
+      "indexDigest": "sha256:ea1d25e23479000c7e8eeb92d827df66258df4e482ca054c5e7ce3fc0f5c41a5",
+      "platformManifestDigest": "sha256:da560f720351d2c5ed1d3f85ad5a03d3935967a0586810eb2c1ea4d3109493fa",
+      "configDigest": "sha256:e30b98ca11fe0d51eda866e73efe55a547a49b2879f505a090382e4aa9ce430c",
+      "configuredUser": "0",
+      "entrypoint": ["/csi-resizer"]
+    },
+    "hcloud-csi-driver": {
+      "indexDigest": "sha256:c231060c9d24d485c8ac25eeb3dd445994ce1abb7417c5a49b88301931a9fe29",
+      "platformManifestDigest": "sha256:d82632f1648bbfe937d0dd754b7e7693f2e0c19a6f6b75e24713eab88c6a70e2",
+      "configDigest": "sha256:ea67042e31bb1c8136397721aa6fda20a152131d5cad7effa26d08a213d85415",
+      "configuredUser": "",
+      "entrypoint": ["/bin/hcloud-csi-driver"]
+    },
+    "liveness-probe": {
+      "indexDigest": "sha256:19f2cf2f40e1987c7943945deca5f65cd4e4bf5cc0657fc78a5df131861578e8",
+      "platformManifestDigest": "sha256:c3dc967a4d8b18655e14bab5553017f850fda96221b8b0d2abfd9f6213c30f35",
+      "configDigest": "sha256:c9805964c745598b22cc022ec4cb6596d0f3ac9e2edbcb72c8256febaf6a9367",
+      "configuredUser": "0",
+      "entrypoint": ["/livenessprobe"]
+    }
+  },
+  "limitations": [
+    "Every inspected image config selects root explicitly with User 0 or implicitly with an empty User.",
+    "The upstream v2.24.2 chart exposes podSecurityContext but no per-container securityContext values for these containers.",
+    "Setting runAsNonRoot at pod level would currently make the digest-bound workloads fail rather than prove least privilege.",
+    "This immutable OCI metadata audit is not admission, execution, vulnerability, signature or production qualification.",
+    "A reviewed per-container identity change and a disposable-cluster runtime test are required before any non-root claim."
+  ]
+}

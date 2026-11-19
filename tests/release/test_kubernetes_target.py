@@ -56,6 +56,8 @@ class KubernetesTargetTests(unittest.TestCase):
     def test_storage_image_digests_are_pinned_without_live_qualification(self):
         qualification = self.matrix["storageProfile"]["qualification"]
         self.assertTrue(qualification["imageDigestsPinned"])
+        self.assertTrue(qualification["imageRuntimeConfigAudited"])
+        self.assertFalse(qualification["podLevelRunAsNonRootSafe"])
         self.assertTrue(qualification["chartRendered"])
         self.assertTrue(qualification["staticSecurityAuditRecorded"])
         self.assertTrue(qualification["nodeServiceAccountTokenDisabled"])
@@ -75,6 +77,9 @@ class KubernetesTargetTests(unittest.TestCase):
         self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
         changed = copy.deepcopy(self.matrix)
         changed["storageProfile"]["securityPolicy"] = "release/approved.json"
+        self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
+        changed = copy.deepcopy(self.matrix)
+        changed["storageProfile"]["runtimeProfile"] = "release/approved.json"
         self.assertIn("STORAGE_PROFILE_INVALID", TARGET.validate(changed))
         changed = copy.deepcopy(self.matrix)
         changed["storageProfile"]["qualification"]["staticSecurityHardeningPassed"] = True
