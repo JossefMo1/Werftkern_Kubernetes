@@ -44,18 +44,22 @@ einem Management-Host, drei Controllern, mindestens einem Worker, privaten
 Zugängen, passenden Hetzner-Cloud-Volumes und einem bereits vorhandenen
 `kube-system/hcloud`-Secret. Der Tokenwert wird niemals ausgegeben oder committed.
 
-1. Kandidat und Assets hashen; der hcloud-CSI-Render muss exakt
+1. Den fail-closed Preflight `scripts/check-e2e-k01-preflight.py` mit der exakten
+   Wegwerf-Lab-Bestätigung `WERFTKERN-DISPOSABLE-K0S-ONLY` ausführen. Relative,
+   symbolische oder breit angelegte Management-Pfade blockieren den Lauf, bevor
+   `werft-kube apply` oder irgendeine Cloud-/Cluster-Mutation startet.
+2. Kandidat und Assets hashen; der hcloud-CSI-Render muss exakt
    `1a439e5735f2635904acc8379a55185e010abfe8e3466b1ff8ae75433da6e438`
    entsprechen oder der Lauf wird abgebrochen.
-2. Den Render anwenden und alle CSI-Pods direkt beobachten. Dokumentieren: Images,
+3. Den Render anwenden und alle CSI-Pods direkt beobachten. Dokumentieren: Images,
    Workload-UIDs, gestartete Container, SecurityContexts und dass der Node-Pod keinen
    Service-Account-Token erhält. Keine Secrets auslesen.
-3. Eine isolierte Test-Namespace/PVC/Pod-Kette mit `werftkern-hcloud-retain` erstellen;
+4. Eine isolierte Test-Namespace/PVC/Pod-Kette mit `werftkern-hcloud-retain` erstellen;
    Daten schreiben, Hash erfassen und denselben Inhalt nach Attach/Mount lesen.
-4. Eine erlaubte Expansion durchführen und den erweiterten Zustand direkt prüfen.
-5. Testobjekte in umgekehrter Reihenfolge entfernen; `Retain`-Verhalten getrennt
+5. Eine erlaubte Expansion durchführen und den erweiterten Zustand direkt prüfen.
+6. Testobjekte in umgekehrter Reihenfolge entfernen; `Retain`-Verhalten getrennt
    dokumentieren. Nie ein fremdes Volume löschen.
-6. Logs und Checks an den exakten Kandidaten binden. Ein erfolgreicher E2E-K01 schließt
+7. Logs und Checks an den exakten Kandidaten binden. Ein erfolgreicher E2E-K01 schließt
    nur die dokumentierten Storage-Teilaspekte, nicht HA, Backup/Restore oder Production.
 
 **Sichere Rückabwicklung:** Test-Workloads und Namespace entfernen; nur eindeutig
