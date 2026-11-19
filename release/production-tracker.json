@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-19T22:07:12Z",
+  "updatedAt": "2026-11-19T23:02:00Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "a583d396147ae7370338ed6cdf6487405a674f28",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/36",
-    "summary": "Added a fail-closed K01 preflight for disposable-lab attestation and safe input paths; no live gate was claimed."
+    "commit": "beafaf72b68cade261a827809488769af08b65d6",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/38",
+    "summary": "Release evidence parser now rejects duplicate JSON keys before gate evaluation; no live gate was claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -93,7 +93,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7023542386",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7024645338",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
