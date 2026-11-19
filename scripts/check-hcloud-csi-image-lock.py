@@ -97,13 +97,13 @@ def validate_lock(lock: dict) -> list[str]:
     render = lock.get("render")
     if not isinstance(render, dict) or render != {
         "manifestPath": "release/evidence/hcloud-csi-2.24.2-render.yaml",
-        "manifestSha256": "0e4d4a753d49ed3d1f60850bd950b2e74ca9db0b178371bd0c5a118e6b305d2d",
+        "manifestSha256": "4a0e3048d01a22e420ccde763eed889fa660357ad270cfe11c05ef721bc24de6",
         "verified": True,
-        "renderedAt": "2026-11-19T01:53:08Z",
+        "renderedAt": "2026-11-19T06:53:08Z",
         "releaseName": "werftkern-hcloud-csi",
         "namespace": "kube-system",
         "kubernetesVersion": "1.37.2",
-        "documentCount": 10,
+        "documentCount": 11,
         "imageReferenceCount": 8,
         "chart": {
             "url": "https://github.com/hetznercloud/csi-driver/releases/download/v2.24.2/hcloud-csi-2.24.2.tgz",
@@ -111,7 +111,11 @@ def validate_lock(lock: dict) -> list[str]:
         },
         "values": {
             "path": "examples/kubernetes/hcloud-csi-values.example.yaml",
-            "sha256": "8e6550f43edd311f86c459b4999dcabdca18783a65e4e122142d8931e6e5e93e",
+            "sha256": "beb09c6f3fd5569de4dae7dbb81064f5893c5451fcef5a4be2ecc43453541088",
+        },
+        "nodeServiceAccount": {
+            "path": "examples/kubernetes/hcloud-csi-node-serviceaccount.yaml",
+            "sha256": "494c760af35dd6a4307f17a7d5fd840b1c70e6de3a39bdde8568374421c66b7b",
         },
         "helm": {
             "version": "v3.22.1",
@@ -223,6 +227,9 @@ def validate_render(rendered: str, lock: dict) -> list[str]:
         'reclaimPolicy: "Retain"',
         "replicas: 2",
         "/var/lib/k0s/kubelet",
+        "name: werftkern-hcloud-csi-node",
+        "automountServiceAccountToken: false",
+        "serviceAccountName: werftkern-hcloud-csi-node",
     ]
     for marker in required:
         if marker not in rendered:

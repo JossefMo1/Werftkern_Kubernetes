@@ -198,9 +198,10 @@ Native qualification contract still treats all 52 entries as blocking.
 k0s-Kubelet-Pfad und konservativer `Retain`-StorageClass ausgewählt. Sechs OCI-Index-
 Digests und ein reproduzierbarer, hashgebundener Helm-Render sind geprüft. Signaturen,
 Vulnerability-Clearance sowie reale Provision/Attach/Mount/Expansion/Failure/Backup/
-Restore-Qualifikation fehlen. Ein statischer Fail-closed-Audit bindet RBAC, privilegierten
-Node-Treiber, HostPaths und MountPropagation; Node-ServiceAccount-Token, Seccomp,
-Container-SecurityContexts und Ressourcenlimits bleiben offen. Keine Produktionsfreigabe.
+Restore-Qualifikation fehlen. Ein statischer Fail-closed-Audit bindet RBAC, einen dedizierten
+Node-ServiceAccount ohne automatischen Token-Mount, privilegierten Node-Treiber, HostPaths
+und MountPropagation; Seccomp, Container-SecurityContexts und Ressourcenlimits bleiben
+offen. Keine Produktionsfreigabe.
 
 ## K20-048 — Ein Stateful-Profil mit Replikation und Restore freigeben
 

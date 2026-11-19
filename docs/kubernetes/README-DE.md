@@ -172,16 +172,19 @@ nicht angewendet wurde, bleibt jede Live-Qualifikation offen. Das SHA256-geprüf
 Chart wurde mit Helm `v3.22.1`, Kubernetes-Ziel `1.37.2` und diesen Werten
 digestgebunden gerendert. Das exakte Ergebnis liegt unter
 `release/evidence/hcloud-csi-2.24.2-render.yaml`; Lock und Prüfer binden Chart-,
-Values-, Tool- und Manifest-Hash sowie das exakte Image-Multiset.
+Values-, Tool- und Manifest-Hash sowie das exakte Image-Multiset. Zusätzlich wird der
+separat verwaltete `werftkern-hcloud-csi-node`-ServiceAccount hashgebunden in den Render
+aufgenommen; `node.serviceAccountName` wählt ihn explizit aus und sein
+`automountServiceAccountToken: false` verhindert den automatischen API-Token-Mount.
 
 `release/hcloud-csi-security-policy.json` und
 `scripts/check-hcloud-csi-security-policy.py` halten die statische Vertrauensgrenze
 fail-closed fest: keine RBAC-Wildcards oder Secret-Rechte, keine Host-Network/PID/IPC-
 Freigabe und ausschließlich der erwartete privilegierte Node-Treiber mit `/dev`, den
 vier k0s-HostPaths und dem bidirektionalen Kubelet-Mount. Die Prüfung bleibt bewusst
-**nicht bestanden**: Der Node-DaemonSet deaktiviert den impliziten Default-ServiceAccount-
-Token nicht, und Container-SecurityContexts, Seccomp sowie gemessene Ressourcenlimits
-sind nicht erzwungen. Das ist weder Admission- noch Laufzeit- oder Penetrationstest.
+**nicht bestanden**: Der Node-Token-Mount ist statisch deaktiviert, aber Container-
+SecurityContexts, Seccomp sowie gemessene Ressourcenlimits sind nicht erzwungen. Das ist
+weder Admission-, Laufzeit-, CSI-Kompatibilitäts- noch Penetrationstest.
 
 Das Hetzner-Token wird als bereits vorhandenes Secret `kube-system/hcloud`
 erwartet und gehört niemals in `assets.json`, Wertevorlagen, Logs oder Git.

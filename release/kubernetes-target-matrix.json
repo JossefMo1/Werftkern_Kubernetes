@@ -110,6 +110,7 @@
       "imageInventoryComplete": true,
       "imageDigestsPinned": true,
       "staticSecurityAuditRecorded": true,
+      "nodeServiceAccountTokenDisabled": true,
       "staticSecurityHardeningPassed": false,
       "realProvisionAttachMount": false,
       "expansionPassed": false,
@@ -128,7 +129,7 @@
   },
   "unresolved": {
     "storageImageTrust": "The six OCI index digests are pinned; signature verification, vulnerability review and an independent registry recheck remain open.",
-    "storageSecurityHardening": "The exact render has a fail-closed static privilege audit, but the node default service-account token is not disabled and container security contexts, seccomp and resource constraints are not enforced.",
+    "storageSecurityHardening": "The exact render selects a dedicated node service account with automatic token mounts disabled; container security contexts, seccomp and resource constraints are still not enforced.",
     "storageQualification": "The digest-bound chart render is policy-verified; provision, attach, mount, expansion, failure reattach, retention, backup and restore still require disposable Hetzner Cloud hosts.",
     "addonImagesAndCharts": "Select only the required add-ons and pin every chart, manifest and image digest."
   },
@@ -138,7 +139,7 @@
     "The k0sctl release exposes checksums but no signature asset in the inspected release.",
     "The selected Hetzner CSI chart was downloaded, hash-checked and rendered with pinned images; it was not signature-verified or executed.",
     "The six default hcloud-csi image index digests were resolved from their OCI registries with header/body hash agreement; this is not signature or vulnerability verification.",
-    "The static manifest audit binds the exact RBAC, privileged container, host paths and bidirectional mount while keeping node token, seccomp, container security-context and resource hardening explicitly blocked.",
+    "The static manifest audit binds the exact RBAC, token-free node service account, privileged container, host paths and bidirectional mount while keeping seccomp, container security-context and resource hardening explicitly blocked.",
     "Hetzner Cloud Volumes are ReadWriteOnce, attach to one server at a time, and the provider does not supply Volume backups or snapshots; application-level backup remains mandatory.",
     "No real Ubuntu host, k0s cluster, upgrade, storage, backup, restore, load or failure test has used this matrix.",
     "Selection does not imply support, certification, vulnerability clearance or production readiness."

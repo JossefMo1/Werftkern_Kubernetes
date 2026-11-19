@@ -151,6 +151,7 @@ def validate(matrix: dict) -> list[str]:
         "imageInventoryComplete": True,
         "imageDigestsPinned": True,
         "staticSecurityAuditRecorded": True,
+        "nodeServiceAccountTokenDisabled": True,
         "staticSecurityHardeningPassed": False,
         "realProvisionAttachMount": False,
         "expansionPassed": False,

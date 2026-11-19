@@ -4,7 +4,7 @@
   "productionReady": false,
   "manifest": {
     "path": "release/evidence/hcloud-csi-2.24.2-render.yaml",
-    "sha256": "0e4d4a753d49ed3d1f60850bd950b2e74ca9db0b178371bd0c5a118e6b305d2d"
+    "sha256": "4a0e3048d01a22e420ccde763eed889fa660357ad270cfe11c05ef721bc24de6"
   },
   "rbac": {
     "clusterRole": "werftkern-hcloud-csi-controller",
@@ -36,8 +36,8 @@
       "kind": "DaemonSet",
       "name": "werftkern-hcloud-csi-node",
       "namespace": "kube-system",
-      "serviceAccount": "default",
-      "serviceAccountTokenMode": "implicit-cluster-default",
+      "serviceAccount": "werftkern-hcloud-csi-node",
+      "serviceAccountTokenMode": "service-account-explicit-false",
       "hostNamespaces": false,
       "hostPaths": [
         {"name": "kubelet-dir", "path": "/var/lib/k0s/kubelet", "type": "Directory"},
@@ -50,7 +50,6 @@
     }
   },
   "observedHardeningGaps": [
-    "NODE_DEFAULT_SERVICE_ACCOUNT_TOKEN_IMPLICITLY_MOUNTED",
     "CONTAINER_SECURITY_CONTEXTS_NOT_ENFORCED",
     "SECCOMP_PROFILE_NOT_ENFORCED",
     "RESOURCE_REQUESTS_AND_LIMITS_EMPTY"
@@ -60,7 +59,7 @@
     "This is a static review of one exact rendered manifest, not a Kubernetes admission, runtime or penetration test.",
     "The privileged node driver, /dev access, k0s host paths and bidirectional kubelet mount are expected CSI capabilities but remain high-trust boundaries requiring live qualification.",
     "The controller service-account token is shared by all containers in the controller pod because the upstream chart does not isolate projected tokens per sidecar.",
-    "The node DaemonSet implicitly uses the default service account token; production qualification remains blocked until that exposure is removed or separately justified and constrained.",
+    "The node DaemonSet selects a dedicated ServiceAccount with automatic API-token mounts disabled; this static control still requires a live compatibility test.",
     "Empty resource constraints and unenforced container-level security contexts require measured hardening before production use."
   ]
 }

@@ -35,7 +35,7 @@ contact is not storage fencing and no automatic quorum-loss recovery is promised
 | Engine | Separately supplied and digest-pinned k0s/Kubernetes; not the Native scheduler |
 | Topology | Exactly three controllers and at least three workers with an external highly available API endpoint |
 | Trust | One trusted administrator and one cluster; no multi-writer manager HA |
-| Storage and add-ons | Candidate storage profile: Hetzner Cloud Volumes through hcloud-csi 2.24.2, ReadWriteOnce, non-default `werftkern-hcloud-retain` StorageClass, `Retain`, `WaitForFirstConsumer`; exact RBAC/privilege/host-path boundary statically audited but node token, seccomp, container security-context and resource hardening still blocked; no add-on set is selected yet |
+| Storage and add-ons | Candidate storage profile: Hetzner Cloud Volumes through hcloud-csi 2.24.2, ReadWriteOnce, non-default `werftkern-hcloud-retain` StorageClass, `Retain`, `WaitForFirstConsumer`; exact RBAC/privilege/host-path boundary statically audited and node token automount disabled, but seccomp, container security-context and resource hardening remain blocked; no add-on set is selected yet |
 | Upgrade | One adjacent Kubernetes minor-version edge selected before RC; no skipped-minor, downgrade or simultaneous topology/authentication change |
 
 The [candidate target matrix](../release/kubernetes-target-matrix.json) pins

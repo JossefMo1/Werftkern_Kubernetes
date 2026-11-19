@@ -35,6 +35,10 @@ class HcloudCsiSecurityPolicyTests(unittest.TestCase):
         self.assertFalse(self.policy["hardeningPassed"])
         self.assertFalse(self.policy["productionReady"])
         self.assertEqual(self.policy["observedHardeningGaps"], POLICY.EXPECTED_GAPS)
+        self.assertNotIn(
+            "NODE_DEFAULT_SERVICE_ACCOUNT_TOKEN_IMPLICITLY_MOUNTED",
+            self.policy["observedHardeningGaps"],
+        )
 
     def test_duplicate_policy_keys_are_rejected(self):
         with self.assertRaises(ValueError):
@@ -75,10 +79,24 @@ class HcloudCsiSecurityPolicyTests(unittest.TestCase):
     def test_node_token_change_requires_policy_review(self):
         def mutate(documents):
             node = next(item for item in documents if item["kind"] == "DaemonSet")
-            node["spec"]["template"]["spec"]["automountServiceAccountToken"] = False
+            node["spec"]["template"]["spec"]["automountServiceAccountToken"] = True
 
         problems = POLICY.validate_manifest(self.policy, self.render(mutate))
         self.assertIn("NODE_TOKEN_MODE_DRIFT_REQUIRES_REVIEW", problems)
+        self.assertIn("OBSERVED_HARDENING_GAPS_DRIFT", problems)
+
+    def test_node_service_account_must_keep_token_automount_disabled(self):
+        def mutate(documents):
+            account = next(
+                item
+                for item in documents
+                if item["kind"] == "ServiceAccount"
+                and item["metadata"]["name"] == "werftkern-hcloud-csi-node"
+            )
+            account["automountServiceAccountToken"] = True
+
+        problems = POLICY.validate_manifest(self.policy, self.render(mutate))
+        self.assertIn("NODE_SERVICE_ACCOUNT_TOKEN_MODE_DRIFT", problems)
         self.assertIn("OBSERVED_HARDENING_GAPS_DRIFT", problems)
 
     def test_external_metrics_exposure_is_rejected(self):

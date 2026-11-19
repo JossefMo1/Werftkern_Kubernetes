@@ -10,11 +10,13 @@ helm_bin="$1"
 chart="$2"
 output="$3"
 values="examples/kubernetes/hcloud-csi-values.example.yaml"
+node_service_account="examples/kubernetes/hcloud-csi-node-serviceaccount.yaml"
 expected_helm_sha="46aeab5e043f62d01f7c168823b392cabc1cea3807b67906296290483791be43"
 expected_chart_sha="1f4ebe7d2a8b06e95559a5315ecf125e158ccdadc8a6aae885c7ecd33a7fb4f6"
-expected_values_sha="8e6550f43edd311f86c459b4999dcabdca18783a65e4e122142d8931e6e5e93e"
+expected_values_sha="beb09c6f3fd5569de4dae7dbb81064f5893c5451fcef5a4be2ecc43453541088"
+expected_node_service_account_sha="494c760af35dd6a4307f17a7d5fd840b1c70e6de3a39bdde8568374421c66b7b"
 
-for file in "$helm_bin" "$chart" "$values"; do
+for file in "$helm_bin" "$chart" "$values" "$node_service_account"; do
   if [ ! -f "$file" ] || [ -L "$file" ]; then
     echo "required regular non-symlink file missing: $file" >&2
     exit 1
@@ -38,6 +40,7 @@ check_sha() {
 check_sha "$expected_helm_sha" "$helm_bin"
 check_sha "$expected_chart_sha" "$chart"
 check_sha "$expected_values_sha" "$values"
+check_sha "$expected_node_service_account_sha" "$node_service_account"
 
 helm_version="$("$helm_bin" version --short)"
 case "$helm_version" in
@@ -58,7 +61,11 @@ export TZ=UTC
   --namespace kube-system \
   --kube-version 1.37.2 \
   --values "$values" \
-  --include-crds > "$tmpdir/render.yaml"
+  --include-crds > "$tmpdir/chart.yaml"
+
+# The upstream chart can select an existing node ServiceAccount but does not
+# create it. Bind the reviewed token-free account into the exact render.
+cat -- "$node_service_account" "$tmpdir/chart.yaml" > "$tmpdir/render.yaml"
 
 python3 scripts/check-hcloud-csi-image-lock.py --rendered "$tmpdir/render.yaml"
 install -m 0644 -- "$tmpdir/render.yaml" "$output"
