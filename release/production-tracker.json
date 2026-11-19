@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-19T17:16:00Z",
+  "updatedAt": "2026-11-19T22:07:12Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "0b0a417c6c3fa1ffff181da72ca6bfeefb6e0be1",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/34",
-    "summary": "Bound exact hcloud CSI container security contexts without claiming non-root or live qualification."
+    "commit": "a583d396147ae7370338ed6cdf6487405a674f28",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/36",
+    "summary": "Added a fail-closed K01 preflight for disposable-lab attestation and safe input paths; no live gate was claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -47,7 +47,7 @@
       "status": "blocked-external",
       "scope": "k0s hcloud CSI provision/attach/mount/expansion and cleanup",
       "requiredGateFamilies": ["ubuntu-k0s-e2e", "cloud-e2e"],
-      "evidence": ["release/hcloud-csi-image-lock.json", "release/hcloud-csi-security-policy.json"],
+      "evidence": ["release/hcloud-csi-image-lock.json", "release/hcloud-csi-security-policy.json", "scripts/check-e2e-k01-preflight.py", "tests/release/test_e2e_k01_preflight.py"],
       "blockers": ["No expressly authorized disposable k0s/Hetzner lab or credentials are configured."],
       "nextStep": "Execute the E2E-K01 preflight only after disposable infrastructure is explicitly configured."
     },
@@ -93,7 +93,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7016442114",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7023542386",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
