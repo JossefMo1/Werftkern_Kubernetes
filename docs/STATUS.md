@@ -8,6 +8,11 @@ planning and drift-detection contract, not qualification evidence. All listed
 live, security, supply-chain and operational gates remain open until evidence
 for one unchanged release candidate is verified.
 
+The active [German E2E production plan](PRODUCTION-E2E-PLAN-DE.md) and the
+machine-readable [`production-tracker.json`](../release/production-tracker.json)
+make the next blocked and independent steps explicit between runs. They are
+tracking aids only; their status never closes a qualification gate.
+
 The Kubernetes matrix now selects hcloud-csi 2.24.2 as a candidate RWO storage
 path with a digest-bound chart and `Retain` StorageClass. Its six upstream OCI
 index digests are pinned after each registry digest header matched the SHA-256 of
