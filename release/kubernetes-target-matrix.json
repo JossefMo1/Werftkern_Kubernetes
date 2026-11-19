@@ -86,7 +86,7 @@
         "url": "https://github.com/hetznercloud/csi-driver/releases/download/v2.24.2/hcloud-csi-2.24.2.tgz",
         "sha256": "1f4ebe7d2a8b06e95559a5315ecf125e158ccdadc8a6aae885c7ecd33a7fb4f6",
         "digestSource": "github-release-api",
-        "downloadedAndHashed": false,
+        "downloadedAndHashed": true,
         "signatureAvailable": false
       }
     },
@@ -105,7 +105,7 @@
       "allowVolumeExpansion": true
     },
     "qualification": {
-      "chartRendered": false,
+      "chartRendered": true,
       "imageInventoryComplete": true,
       "imageDigestsPinned": true,
       "realProvisionAttachMount": false,
@@ -125,14 +125,14 @@
   },
   "unresolved": {
     "storageImageTrust": "The six OCI index digests are pinned; signature verification, vulnerability review and an independent registry recheck remain open.",
-    "storageQualification": "Render and review the chart, then qualify provision, attach, mount, expansion, failure reattach, retention, backup and restore on disposable Hetzner Cloud hosts.",
+    "storageQualification": "The digest-bound chart render is policy-verified; provision, attach, mount, expansion, failure reattach, retention, backup and restore still require disposable Hetzner Cloud hosts.",
     "addonImagesAndCharts": "Select only the required add-ons and pin every chart, manifest and image digest."
   },
   "limitations": [
     "Release metadata and checksum entries were inspected; the binaries were not downloaded or executed.",
     "The k0s signature and SBOM signature were not verified against an independently trusted key.",
     "The k0sctl release exposes checksums but no signature asset in the inspected release.",
-    "The selected Hetzner CSI chart digest comes from the GitHub release API; the chart was not downloaded, rendered, signature-verified or executed.",
+    "The selected Hetzner CSI chart was downloaded, hash-checked and rendered with pinned images; it was not signature-verified or executed.",
     "The six default hcloud-csi image index digests were resolved from their OCI registries with header/body hash agreement; this is not signature or vulnerability verification.",
     "Hetzner Cloud Volumes are ReadWriteOnce, attach to one server at a time, and the provider does not supply Volume backups or snapshots; application-level backup remains mandatory.",
     "No real Ubuntu host, k0s cluster, upgrade, storage, backup, restore, load or failure test has used this matrix.",

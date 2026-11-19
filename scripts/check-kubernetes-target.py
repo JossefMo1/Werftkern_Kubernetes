@@ -147,7 +147,7 @@ def validate(matrix: dict) -> list[str]:
 
     storage = matrix.get("storageProfile")
     expected_qualification = {
-        "chartRendered": False,
+        "chartRendered": True,
         "imageInventoryComplete": True,
         "imageDigestsPinned": True,
         "realProvisionAttachMount": False,
@@ -183,7 +183,7 @@ def validate(matrix: dict) -> list[str]:
             or chart.get("url") != "https://github.com/hetznercloud/csi-driver/releases/download/v2.24.2/hcloud-csi-2.24.2.tgz"
             or chart.get("sha256") != "1f4ebe7d2a8b06e95559a5315ecf125e158ccdadc8a6aae885c7ecd33a7fb4f6"
             or chart.get("digestSource") != "github-release-api"
-            or chart.get("downloadedAndHashed") is not False
+            or chart.get("downloadedAndHashed") is not True
             or chart.get("signatureAvailable") is not False
         ):
             problems.append("STORAGE_CHART_PROVENANCE_INVALID")

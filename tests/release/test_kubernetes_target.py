@@ -56,7 +56,7 @@ class KubernetesTargetTests(unittest.TestCase):
     def test_storage_image_digests_are_pinned_without_live_qualification(self):
         qualification = self.matrix["storageProfile"]["qualification"]
         self.assertTrue(qualification["imageDigestsPinned"])
-        self.assertFalse(qualification["chartRendered"])
+        self.assertTrue(qualification["chartRendered"])
         self.assertFalse(qualification["realProvisionAttachMount"])
 
     def test_storage_selection_and_unexecuted_gates_are_fail_closed(self):
@@ -83,6 +83,13 @@ class KubernetesTargetTests(unittest.TestCase):
         self.assertIn("name: werftkern-hcloud-retain", values)
         self.assertIn("defaultStorageClass: false", values)
         self.assertIn("reclaimPolicy: Retain", values)
+        image_lock = TARGET.parse_json((ROOT / "release/hcloud-csi-image-lock.json").read_text())
+        for image in image_lock["images"].values():
+            self.assertEqual(
+                values.count(f"{image['repository']}@{image['digest']}"),
+                len(image["consumers"]),
+            )
+        self.assertEqual(values.count('tag: ""'), 8)
         self.assertNotIn("token:", values)
 
     def test_public_asset_example_matches_core_target(self):

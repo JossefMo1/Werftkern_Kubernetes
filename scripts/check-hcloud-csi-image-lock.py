@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
-import datetime
 import hashlib
 import json
 import re
@@ -91,15 +90,38 @@ def validate_lock(lock: dict) -> list[str]:
         if "latest" in reference.lower():
             problems.append("MUTABLE_IMAGE_TAG_FORBIDDEN:" + name)
     status = lock.get("status")
-    if all_pinned and status != "digests-pinned-not-render-qualified":
+    if all_pinned and status != "render-verified-not-runtime-qualified":
         problems.append("DIGEST_STATUS_INVALID")
     if not all_pinned and status != "inventory-complete-digests-unresolved":
         problems.append("UNRESOLVED_STATUS_INVALID")
     render = lock.get("render")
-    if not isinstance(render, dict) or set(render) != {"manifestSha256", "verified"}:
+    if not isinstance(render, dict) or render != {
+        "manifestPath": "release/evidence/hcloud-csi-2.24.2-render.yaml",
+        "manifestSha256": "0e4d4a753d49ed3d1f60850bd950b2e74ca9db0b178371bd0c5a118e6b305d2d",
+        "verified": True,
+        "renderedAt": "2026-11-19T01:53:08Z",
+        "releaseName": "werftkern-hcloud-csi",
+        "namespace": "kube-system",
+        "kubernetesVersion": "1.37.2",
+        "documentCount": 10,
+        "imageReferenceCount": 8,
+        "chart": {
+            "url": "https://github.com/hetznercloud/csi-driver/releases/download/v2.24.2/hcloud-csi-2.24.2.tgz",
+            "sha256": "1f4ebe7d2a8b06e95559a5315ecf125e158ccdadc8a6aae885c7ecd33a7fb4f6",
+        },
+        "values": {
+            "path": "examples/kubernetes/hcloud-csi-values.example.yaml",
+            "sha256": "8e6550f43edd311f86c459b4999dcabdca18783a65e4e122142d8931e6e5e93e",
+        },
+        "helm": {
+            "version": "v3.22.1",
+            "archiveUrl": "https://get.helm.sh/helm-v3.22.1-linux-amd64.tar.gz",
+            "archiveSha256": "896cf63684a42a723d61c980369d6e588330927deb13676ca0d85006dd6da0ea",
+            "binarySha256": "46aeab5e043f62d01f7c168823b392cabc1cea3807b67906296290483791be43",
+            "signatureVerified": False,
+        },
+    }:
         problems.append("RENDER_STATE_INVALID")
-    elif render.get("verified") is not False or render.get("manifestSha256") is not None:
-        problems.append("UNEXECUTED_RENDER_MUST_REMAIN_FALSE")
     limitations = lock.get("limitations")
     if not isinstance(limitations, list) or not limitations or any(not isinstance(v, str) or not v for v in limitations):
         problems.append("LIMITATIONS_MISSING")
@@ -185,6 +207,28 @@ def validate_render(rendered: str, lock: dict) -> list[str]:
     images = extract_images(rendered)
     if not images:
         return ["RENDER_CONTAINS_NO_IMAGES"]
+    render = lock.get("render", {})
+    if hashlib.sha256(rendered.encode()).hexdigest() != render.get("manifestSha256"):
+        problems.append("RENDER_SHA256_MISMATCH")
+    if sum(line == "---" for line in rendered.splitlines()) != render.get("documentCount"):
+        problems.append("RENDER_DOCUMENT_COUNT_MISMATCH")
+    if len(images) != render.get("imageReferenceCount"):
+        problems.append("RENDER_IMAGE_COUNT_MISMATCH")
+    required = [
+        "kind: StorageClass",
+        "name: werftkern-hcloud-retain",
+        'storageclass.kubernetes.io/is-default-class: "false"',
+        "volumeBindingMode: WaitForFirstConsumer",
+        "allowVolumeExpansion: true",
+        'reclaimPolicy: "Retain"',
+        "replicas: 2",
+        "/var/lib/k0s/kubelet",
+    ]
+    for marker in required:
+        if marker not in rendered:
+            problems.append("RENDER_REQUIRED_MARKER_MISSING:" + marker)
+    if re.search(r"(?m)^kind:\s*Secret\s*$", rendered):
+        problems.append("RENDER_MUST_NOT_CREATE_SECRET")
     expected: list[str] = []
     for name, item in lock.get("images", {}).items():
         digest = item.get("digest") if isinstance(item, dict) else None
@@ -219,10 +263,13 @@ def main() -> int:
             registry_verified = not registry_problems
         rendered_sha = None
         render_verified = False
-        if args.rendered is not None:
-            if args.rendered.stat().st_size > 10_000_000:
+        rendered_path = args.rendered
+        if rendered_path is None and lock.get("render", {}).get("verified") is True:
+            rendered_path = Path(lock["render"]["manifestPath"])
+        if rendered_path is not None:
+            if rendered_path.stat().st_size > 10_000_000:
                 raise ValueError("render too large")
-            rendered = args.rendered.read_text()
+            rendered = rendered_path.read_text()
             rendered_sha = hashlib.sha256(rendered.encode()).hexdigest()
             render_problems = validate_render(rendered, lock)
             problems.extend(render_problems)

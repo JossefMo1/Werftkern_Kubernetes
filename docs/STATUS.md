@@ -12,9 +12,10 @@ The Kubernetes matrix now selects hcloud-csi 2.24.2 as a candidate RWO storage
 path with a digest-bound chart and `Retain` StorageClass. Its six upstream OCI
 index digests are pinned after each registry digest header matched the SHA-256 of
 the received manifest body, and the checker can repeat that online comparison.
-The chart and images have not been rendered, signature- or vulnerability-verified,
-executed or independently reviewed; real Volume lifecycle, failure, backup and
-restore evidence remains absent.
+The hash-checked chart was rendered with the conservative values and exact image
+multiset; the generated manifest is committed and hash-bound. The chart, Helm and
+images have not been signature- or vulnerability-verified, executed or independently
+reviewed; real Volume lifecycle, failure, backup and restore evidence remains absent.
 
 The authoring-environment observations below are historical, including the
 compiler version and whether CI had run at that time. For subsequently verified
