@@ -154,8 +154,13 @@ jobs:
             esac
           fi
           if gh release view "$tag" >/dev/null 2>&1; then
-            echo "Release $tag already exists; refusing to replace it."
-            exit 1
+            # Releases are immutable in this channel.  A repeated workflow run
+            # must remain green without replacing the already published assets.
+            # The freshly built candidate is still uploaded as an Actions
+            # artifact above, so it can be compared with the existing release
+            # before any deliberate new test tag is created.
+            echo "Release $tag already exists; leaving the immutable release untouched."
+            exit 0
           fi
           if [ "$EVENT_NAME" = push ] && [ "${GITHUB_REF_TYPE:-}" = tag ]; then
             gh release create "$tag" --verify-tag --title "Werftkern $tag (experimental test release)" \
@@ -167,3 +172,4 @@ jobs:
               --notes-file docs/TEST-RELEASE-DE.md --prerelease --latest=false \
               dist/*.deb dist/*.tar.gz dist/release-manifest.json dist/SHA256SUMS
           fi
+
