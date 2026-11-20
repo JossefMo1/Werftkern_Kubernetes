@@ -4,10 +4,11 @@ Der vorhandene Einzelhost-Befehl `werft-ops bootstrap` installiert ein Paket
 und ein bereits erzeugtes HA-Kit über zuvor geprüfte SSH-Verbindungen. Der
 Orchestrator `werft-ops native-bootstrap` bündelt diesen Schritt für ein
 Inventar mit drei Controllern und mindestens einem Worker. Der bevorzugte
-`--auto-discover`-Modus benötigt keine manuell eingetragenen IP-Adressen. Er
-verwendet die logischen Hostnamen aus dem Rollenprofil, löst sie ausschließlich
-über die geprüfte `/etc/hosts`-Datei auf und akzeptiert nur Adressen, die als
-Host-Key-Endpunkt in `known_hosts` vertrauenswürdig hinterlegt sind.
+`--auto-discover`-Modus benötigt keine manuell eingetragenen IP-Adressen oder
+Hostnamen. Er verwendet ausschließlich bereits vertrauenswürdige SSH-Endpunkte
+aus `known_hosts`, prüft sie read-only und erzeugt daraus ein gebundenes
+Inventar. Eine vorhandene `/etc/hosts`-Zuordnung wird als zusätzliche
+Plausibilitätsprüfung verwendet, ist aber im Auto-Modus nicht erforderlich.
 
 ## Was automatisch geprüft wird
 
@@ -36,15 +37,15 @@ Host-Key-Endpunkt in `known_hosts` vertrauenswürdig hinterlegt sind.
 
 Im Auto-Modus werden die folgenden Schritte automatisch ausgeführt:
 
-1. logische Profilnamen aus der geprüften Hosts-Datei auf private IPv4-Adressen
-   abbilden;
-2. jede Adresse gegen einen exakten, vertrauenswürdigen `known_hosts`-Endpunkt
-   abgleichen;
-3. Hostnamen- und IP-Endpunkt mit `StrictHostKeyChecking=yes`, `BatchMode` und
+1. private IPv4-Endpunkte aus der geprüften `known_hosts`-Datei lesen;
+2. logische Profilnamen zunächst über vertrauenswürdige Aliase und anschließend
+   über read-only Remote-Hostname-Probes zuordnen;
+3. Namensformen wie `worker-1` und `worker1` sicher gleich behandeln;
+4. jeden Kandidaten mit `StrictHostKeyChecking=yes`, `BatchMode` und
    `sudo -n` auf Ubuntu 24.04, systemd und cgroup v2 prüfen;
-4. die Controller-/Worker-Rollen aus dem unveränderten Rollenprofil übernehmen;
-5. das automatisch erzeugte Inventar unter `<journal>.inventory.json` speichern
-   und Hosts-Datei, `known_hosts`, Topologie und Paket-Hash im Journal binden.
+5. Controller-/Worker-Rollen nur bei eindeutiger Zuordnung übernehmen;
+6. das automatisch erzeugte Inventar unter `<journal>.inventory.json` speichern
+   und gemeinsam mit `known_hosts`, Topologie und Paket-Hash im Journal binden.
 
 Es gibt kein blindes `ssh-keyscan`, kein Vertrauen auf unbekannte Schlüssel und
 kein unkontrolliertes Netzwerkscanning. Sind mehrere Hosts derselben Rolle nicht

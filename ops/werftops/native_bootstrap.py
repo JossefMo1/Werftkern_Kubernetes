@@ -198,10 +198,28 @@ def _short_host(value: object) -> str:
     return value.rstrip(".").lower().split(".", 1)[0]
 
 
+def _host_key(value: object) -> str:
+    """Normalize common lab naming separators for safe profile matching."""
+    return re.sub(r"[-_]", "", _short_host(value))
+
+
 def _role_hint(values: list[str]) -> str | None:
     text = "-".join(values).lower().replace("_", "-").replace(".", "-")
-    controller = re.search(r"(^|-)master(-|$)|(^|-)control(?:ler)?(-|$)|(^|-)cp(-|$)", text)
-    worker = re.search(r"(^|-)worker(-|$)|(^|-)compute(-|$)|(^|-)node(-|$)", text)
+    # Accept both worker-1 and worker1, plus the corresponding controller
+    # forms. Only a numeric suffix is accepted; arbitrary substrings such as
+    # workermanager are not role evidence.
+    controller = re.search(
+        r"(^|-)master(?:-?\d+)?(?=-|$)|"
+        r"(^|-)control(?:ler)?(?:-?\d+)?(?=-|$)|"
+        r"(^|-)cp(?:-?\d+)?(?=-|$)",
+        text,
+    )
+    worker = re.search(
+        r"(^|-)worker(?:-?\d+)?(?=-|$)|"
+        r"(^|-)compute(?:-?\d+)?(?=-|$)|"
+        r"(^|-)node(?:-?\d+)?(?=-|$)",
+        text,
+    )
     if controller and not worker:
         return "controller"
     if worker and not controller:
@@ -210,11 +228,11 @@ def _role_hint(values: list[str]) -> str | None:
 
 
 def _candidate_matches(candidate: dict, desired: str) -> bool:
-    wanted = _short_host(desired)
+    wanted = _host_key(desired)
     values = list(candidate.get("aliases", []))
     if candidate.get("observedHostname"):
         values.append(candidate["observedHostname"])
-    return any(value == desired or _short_host(value) == wanted for value in values)
+    return any(value == desired or _host_key(value) == wanted for value in values)
 
 
 def _default_inventory(known_hosts: str, ssh_user: str, ssh_port: int) -> dict:
@@ -298,7 +316,11 @@ def _resolve_inventory(raw: dict, inventory_path: pathlib.Path, *, auto_discover
         if addr is None:
             raise Blocked("HOST_ADDRESS_REQUIRED")
         addr = _private_ipv4(addr)
-        if mapping.get(host_name) != addr:
+        mapped_address = mapping.get(host_name)
+        if auto_discover:
+            if mapped_address is not None and mapped_address != addr:
+                raise Blocked("HOSTS_FILE_ADDRESS_MISMATCH")
+        elif mapped_address != addr:
             raise Blocked("HOSTS_FILE_ADDRESS_MISMATCH")
         if addr in seen_addresses:
             raise Blocked("NATIVE_INVENTORY_DUPLICATE_ADDRESS")
@@ -526,7 +548,7 @@ def _seed_host(hosts: list[dict]) -> dict:
 
 
 def _auto_discover_inventory(raw: dict, known_hosts: pathlib.Path, runner: Callable, hosts_file: pathlib.Path | None = None) -> dict:
-    """Resolve profile through hosts-file names and trusted SSH keys."""
+    """Resolve a role profile from trusted SSH endpoints without manual edits."""
     if not isinstance(raw, dict) or not isinstance(raw.get("hosts"), list):
         raise Blocked("NATIVE_INVENTORY_HOSTS_REQUIRED")
     candidates = _known_hosts_candidates(known_hosts)
@@ -537,29 +559,117 @@ def _auto_discover_inventory(raw: dict, known_hosts: pathlib.Path, runner: Calla
         raise Blocked("SSH_USER_INVALID")
     global_port = _port(raw.get("sshPort"))
     hosts_path = pathlib.Path(hosts_file or raw.get("hostsFile", "/etc/hosts")).resolve()
-    mapping = _hosts_file(hosts_path)
-    assigned = {}
-    used = set()
+    mapping = _hosts_file(hosts_path) if hosts_path.exists() else {}
+
+    assigned: dict[int, dict] = {}
+    used: set[int] = set()
+
+    # A matching hosts-file entry is useful evidence, but its absence is not
+    # an operator task in auto mode. If present, it must point to a trusted
+    # known_hosts endpoint.
     for index, item in enumerate(raw["hosts"]):
         if not isinstance(item, dict) or not isinstance(item.get("name"), str):
             raise Blocked("NATIVE_INVENTORY_HOST_INVALID")
         host_name = item["name"]
         name(host_name)
         address = mapping.get(host_name)
-        if address is None:
-            raise Blocked("AUTO_DISCOVERY_HOSTS_NAME_MISSING:" + host_name)
-        address = _private_ipv4(address)
-        wanted_port = _port(item.get("sshPort", global_port))
-        matches = [candidate_index for candidate_index, candidate in enumerate(candidates) if candidate_index not in used and candidate["address"] == address and candidate["sshPort"] == wanted_port]
-        if len(matches) == 0:
-            raise Blocked("AUTO_DISCOVERY_HOSTS_ADDRESS_NOT_TRUSTED:" + host_name)
+        if address is not None:
+            address = _private_ipv4(address)
+            wanted_port = _port(item.get("sshPort", global_port))
+            matches = [
+                candidate_index for candidate_index, candidate in enumerate(candidates)
+                if candidate_index not in used
+                and candidate["address"] == address
+                and candidate["sshPort"] == wanted_port
+            ]
+            if not matches:
+                raise Blocked("AUTO_DISCOVERY_HOSTS_ADDRESS_NOT_TRUSTED:" + host_name)
+            if len(matches) > 1:
+                raise Blocked("AUTO_DISCOVERY_HOSTS_ADDRESS_AMBIGUOUS:" + host_name)
+            candidate_index = matches[0]
+            assigned[index] = candidates[candidate_index]
+            used.add(candidate_index)
+            continue
+        matches = [
+            candidate_index for candidate_index, candidate in enumerate(candidates)
+            if candidate_index not in used and _candidate_matches(candidate, host_name)
+        ]
         if len(matches) > 1:
-            raise Blocked("AUTO_DISCOVERY_HOSTS_ADDRESS_AMBIGUOUS:" + host_name)
-        candidate_index = matches[0]
-        assigned[index] = candidates[candidate_index]
-        used.add(candidate_index)
+            raise Blocked("AUTO_DISCOVERY_NAME_AMBIGUOUS:" + host_name)
+        if len(matches) == 1:
+            candidate_index = matches[0]
+            assigned[index] = candidates[candidate_index]
+            used.add(candidate_index)
+
+    # IP-only known_hosts entries are mapped through a read-only remote
+    # hostname probe. No key scanning, TOFU, or network scan is performed.
+    for candidate_index, candidate in enumerate(candidates):
+        if candidate_index in used:
+            continue
+        probe_spec = {
+            "name": "discovery",
+            "address": candidate["address"],
+            "sshHost": candidate["sshHosts"][0],
+            "sshUser": global_user,
+            "sshPort": candidate["sshPort"] or global_port,
+        }
+        try:
+            observed = probe(probe_spec, known_hosts, runner)
+        except Blocked:
+            continue
+        candidate["observedHostname"] = observed["hostname"]
+
+    for index, item in enumerate(raw["hosts"]):
+        if index in assigned:
+            continue
+        matches = [
+            candidate_index for candidate_index, candidate in enumerate(candidates)
+            if candidate_index not in used and _candidate_matches(candidate, item["name"])
+        ]
+        if len(matches) > 1:
+            raise Blocked("AUTO_DISCOVERY_NAME_AMBIGUOUS:" + item["name"])
+        if len(matches) == 1:
+            candidate_index = matches[0]
+            assigned[index] = candidates[candidate_index]
+            used.add(candidate_index)
+
+    remaining_by_role: dict[str, list[int]] = {"controller": [], "worker": []}
+    for index, item in enumerate(raw["hosts"]):
+        if index not in assigned:
+            role = item.get("role") if isinstance(item, dict) else None
+            if role not in remaining_by_role:
+                raise Blocked("NATIVE_INVENTORY_ROLE_INVALID")
+            remaining_by_role[role].append(index)
+
+    candidates_by_role: dict[str, list[int]] = {"controller": [], "worker": []}
+    for candidate_index, candidate in enumerate(candidates):
+        if candidate_index in used:
+            continue
+        hint = _role_hint(
+            list(candidate.get("aliases", []))
+            + ([candidate["observedHostname"]] if candidate.get("observedHostname") else [])
+        )
+        if hint is not None:
+            candidates_by_role[hint].append(candidate_index)
+
+    for role in ("controller", "worker"):
+        slots = remaining_by_role[role]
+        available = candidates_by_role[role]
+        if not slots:
+            continue
+        if len(available) != len(slots):
+            raise Blocked("AUTO_DISCOVERY_ROLE_MAPPING_AMBIGUOUS:" + role)
+        available.sort(key=lambda i: (candidates[i]["address"], candidates[i]["sshHosts"][0]))
+        for index, candidate_index in zip(
+            sorted(slots, key=lambda i: raw["hosts"][i]["name"]),
+            available,
+        ):
+            assigned[index] = candidates[candidate_index]
+            used.add(candidate_index)
+
     if len(assigned) != len(raw["hosts"]):
-        raise Blocked("AUTO_DISCOVERY_HOST_MAPPING_INCOMPLETE")
+        raise Blocked("AUTO_DISCOVERY_HOST_MAPPING_AMBIGUOUS")
+
     discovered_hosts = []
     for index, item in enumerate(raw["hosts"]):
         candidate = assigned[index]
@@ -567,7 +677,13 @@ def _auto_discover_inventory(raw: dict, known_hosts: pathlib.Path, runner: Calla
         updated["address"] = candidate["address"]
         if "sshPort" not in updated:
             updated["sshPort"] = candidate["sshPort"] or global_port
-        updated["sshHost"] = next((alias for alias in candidate["sshHosts"] if _short_host(alias) == _short_host(item["name"])), candidate["sshHosts"][0])
+        updated["sshHost"] = next(
+            (
+                alias for alias in candidate["sshHosts"]
+                if _host_key(alias) == _host_key(item["name"])
+            ),
+            candidate["sshHosts"][0],
+        )
         discovered_hosts.append(updated)
     result = dict(raw)
     result["autoDiscover"] = True
