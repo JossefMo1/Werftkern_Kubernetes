@@ -110,6 +110,12 @@ unvollständige oder unklare Zustände werden absichtlich blockiert. Die Native-
 Bootstrap-Anleitung enthält die vollständigen Vorbedingungen und die sichere
 Rückabwicklung.
 
+Bei einer Wiederaufnahme wird ein vorhandenes generiertes Auto-Discovery-Inventar
+wiederverwendet. Wenn dabei ein anderer `--known-hosts`-Pfad angegeben wird, bricht
+Werftkern mit `AUTO_DISCOVERY_KNOWN_HOSTS_CHANGED` ab, statt die neue Vertrauensdatei
+still zu ignorieren. Für einen neuen Vertrauensbestand muss ein neues Journal in
+einer Wegwerfumgebung verwendet werden.
+
 ## Kubernetes-3-Controller/3-Worker-Labor
 
 Das Kubernetes-Paket installiert ausschließlich den Managementbaustein. Es

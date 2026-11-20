@@ -742,7 +742,15 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
     hosts_path = hosts_path.resolve()
     if auto_mode:
         if generated_inventory.exists():
-            raw = read_json(generated_inventory, private=True)
+            replayed = read_json(generated_inventory, private=True)
+            if known_hosts_override is not None:
+                stored_known_hosts = replayed.get("knownHostsFile")
+                if (
+                    not isinstance(stored_known_hosts, str)
+                    or pathlib.Path(stored_known_hosts).resolve() != known_path.resolve()
+                ):
+                    raise Blocked("AUTO_DISCOVERY_KNOWN_HOSTS_CHANGED")
+            raw = replayed
         else:
             raw = _auto_discover_inventory(raw, known_path, runner, hosts_path)
             write_json(generated_inventory, raw, exclusive=True)
