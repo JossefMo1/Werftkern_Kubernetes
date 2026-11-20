@@ -25,10 +25,12 @@ def _read_payload(path, limit=MAX_PACKAGE_BYTES):
 
 def commands(spec, package, kit, known_hosts):
     required={"name","address","sshUser","packageSha256"}
-    if not isinstance(spec,dict) or not required.issubset(spec) or set(spec)-required-{"sshPort"}:
+    if not isinstance(spec,dict) or not required.issubset(spec) or set(spec)-required-{"sshPort","sshHost"}:
         raise Blocked("BOOTSTRAP_SCHEMA_INVALID")
     name(spec["name"]);ipaddress.IPv4Address(spec["address"])
     if not re.fullmatch(r"[a-z_][a-z0-9_-]{0,30}",spec["sshUser"]): raise Blocked("SSH_USER_INVALID")
+    ssh_host=spec.get("sshHost",spec["address"])
+    if not isinstance(ssh_host,str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,252}",ssh_host): raise Blocked("SSH_HOST_INVALID")
     port=spec.get("sshPort",22)
     if type(port) is not int or not 1 <= port <= 65535: raise Blocked("SSH_PORT_INVALID")
     try:
@@ -39,7 +41,7 @@ def commands(spec, package, kit, known_hosts):
     if digest_file(package)!=sha(spec["packageSha256"]): raise Blocked("PACKAGE_CHECKSUM_MISMATCH")
     hk=read_json(kit,private=True)
     if hk.get("host",{}).get("name")!=spec["name"]: raise Blocked("HOST_KIT_MISMATCH")
-    target=spec["sshUser"]+"@"+spec["address"]
+    target=spec["sshUser"]+"@"+ssh_host
     options=["-F","/dev/null","-p",str(port),"-o","BatchMode=yes","-o","StrictHostKeyChecking=yes","-o","UserKnownHostsFile="+str(pathlib.Path(known_hosts).resolve()),"-o","ConnectTimeout=10"]
     if not pathlib.Path(known_hosts).is_file(): raise Blocked("OUT_OF_BAND_VERIFIED_KNOWN_HOSTS_REQUIRED")
     # Root-owned staging directory created by sudo, not a predictable writable /tmp path.
