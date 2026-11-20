@@ -266,6 +266,33 @@ class NativeBootstrapTests(unittest.TestCase):
             )
             self.assertEqual(resolved["hosts"][0]["address"], "10.87.0.1")
 
+    def test_auto_discovery_accepts_numeric_role_suffixes(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            raw, known = self.auto_profile(root)
+            hosts = root / "hosts"
+            hosts.write_text("127.0.0.1 localhost\n", encoding="utf-8")
+            raw["hostsFile"] = str(hosts)
+            addresses = [
+                "10.87.0.1", "10.87.0.2", "10.87.0.3",
+                "10.87.0.11", "10.87.0.12", "10.87.0.13",
+            ]
+            known.write_text(
+                "".join(f"{address} ssh-ed25519 AAAA\n" for address in addresses),
+                encoding="utf-8",
+            )
+            names = {
+                "10.87.0.1": "master1", "10.87.0.2": "master2", "10.87.0.3": "master3",
+                "10.87.0.11": "worker1", "10.87.0.12": "worker2", "10.87.0.13": "worker3",
+            }
+            discovered = native_bootstrap._auto_discover_inventory(
+                raw, known, self.discovery_runner(names)
+            )
+            self.assertEqual(
+                [host["sshHost"] for host in discovered["hosts"]],
+                addresses,
+            )
+
     def test_dual_endpoint_preflight_checks_alias_and_ip(self):
         with tempfile.TemporaryDirectory() as d:
             root = pathlib.Path(d)
@@ -305,14 +332,32 @@ class NativeBootstrapTests(unittest.TestCase):
             self.assertEqual([item["endpoint"] for item in observations], seen)
             self.assertEqual(parsed["hostname"], "master-1")
 
-    def test_auto_discovery_requires_each_hosts_file_name(self):
+    def test_auto_discovery_allows_missing_hosts_file_names(self):
         with tempfile.TemporaryDirectory() as d:
             root = pathlib.Path(d)
             raw, known = self.auto_profile(root)
             hosts = root / "hosts"
-            hosts.write_text("10.87.0.1 master-1\n", encoding="utf-8")
-            with self.assertRaisesRegex(Blocked, "^AUTO_DISCOVERY_HOSTS_NAME_MISSING:master-2$"):
-                native_bootstrap._auto_discover_inventory(raw, known, self.discovery_runner({}))
+            hosts.write_text("127.0.0.1 localhost\n", encoding="utf-8")
+            raw["hostsFile"] = str(hosts)
+            addresses = [
+                "10.87.0.1", "10.87.0.2", "10.87.0.3",
+                "10.87.0.11", "10.87.0.12", "10.87.0.13",
+            ]
+            known.write_text(
+                "".join(f"{address} ssh-ed25519 AAAA\n" for address in addresses),
+                encoding="utf-8",
+            )
+            names = {
+                "10.87.0.1": "master-1", "10.87.0.2": "master-2", "10.87.0.3": "master-3",
+                "10.87.0.11": "worker-1", "10.87.0.12": "worker-2", "10.87.0.13": "worker-3",
+            }
+            discovered = native_bootstrap._auto_discover_inventory(
+                raw, known, self.discovery_runner(names)
+            )
+            self.assertEqual(
+                [host["address"] for host in discovered["hosts"]],
+                addresses,
+            )
 
     def test_auto_discovery_blocks_ambiguous_role_mapping(self):
         with tempfile.TemporaryDirectory() as d:
@@ -322,7 +367,7 @@ class NativeBootstrapTests(unittest.TestCase):
             names = {address: "host" for address in (
                 "10.87.0.1", "10.87.0.2", "10.87.0.3", "10.87.0.11", "10.87.0.12", "10.87.0.13"
             )}
-            with self.assertRaisesRegex(Blocked, "^AUTO_DISCOVERY_HOSTS_NAME_MISSING:node-1$"):
+            with self.assertRaisesRegex(Blocked, "^AUTO_DISCOVERY_ROLE_MAPPING_AMBIGUOUS:controller$"):
                 native_bootstrap._auto_discover_inventory(raw, known, self.discovery_runner(names))
 
 
