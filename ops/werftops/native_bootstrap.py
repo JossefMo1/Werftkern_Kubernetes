@@ -448,8 +448,10 @@ if command -v etcd >/dev/null 2>&1; then printf 'etcd=present\\n'; else printf '
 
 
 def _probe_endpoints(spec: dict, known_hosts: pathlib.Path, runner: Callable = run) -> tuple[list[dict[str, str]], dict]:
-    """Probe both endpoints and bind the observed host identity to the profile."""
-    """Probe both the trusted hostname and its resolved IP endpoint."""
+    """Probe both endpoints and bind the observed host identity to the profile.
+
+    This covers the trusted hostname and its resolved IP endpoint.
+    """
     endpoints = []
     for endpoint in (spec.get("sshHost", spec["address"]), spec["address"]):
         if endpoint not in endpoints:
