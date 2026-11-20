@@ -69,6 +69,8 @@ class NativeBootstrapTests(unittest.TestCase):
                     b"incomplete=absent\n"
                     b"data=absent\n"
                     b"package=absent\n"
+                    b"docker=missing\n"
+                    b"etcd=missing\n"
                 )
             raise AssertionError(args)
         return run
@@ -129,7 +131,8 @@ class NativeBootstrapTests(unittest.TestCase):
                             for i in range(1, 4)
                         }}).encode()
                     if "sh -c" in command:
-                        config = "present" if host in installed else "absent"
+                        configured = host in installed
+                        config = "present" if configured else "absent"
                         address_value = address
                         return ("WERFTKERN_NATIVE_PREFLIGHT_V1\n"
                                 f"hostname={host}\n"
@@ -138,7 +141,9 @@ class NativeBootstrapTests(unittest.TestCase):
                                 f"config={config}\n"
                                 "incomplete=absent\n"
                                 "data=absent\n"
-                                "package=absent\n").encode()
+                                f"package={'install ok installed|0.2.0~dev4' if configured else 'absent'}\n"
+                                f"docker={'present' if configured else 'missing'}\n"
+                                f"etcd={'present' if configured else 'missing'}\n").encode()
                     return b""
                 raise AssertionError(args)
 
@@ -166,6 +171,7 @@ class NativeBootstrapTests(unittest.TestCase):
                 b"WERFTKERN_NATIVE_PREFLIGHT_V1\n"
                 b"hostname=fixture\nos=debian:12\ncgroup=v2\n"
                 b"config=absent\nincomplete=absent\ndata=absent\n"
+                b"package=absent\ndocker=missing\netcd=missing\n"
             )
 
 

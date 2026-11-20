@@ -24,7 +24,6 @@ from . import bootstrap
 from .common import (
     Blocked,
     bounded_read,
-    canonical,
     digest_file,
     fingerprint,
     lock,
@@ -236,7 +235,7 @@ def _parse_probe(raw: bytes) -> dict:
             if key in result:
                 raise Blocked("REMOTE_PREFLIGHT_DUPLICATE_FIELD")
             result[key] = value
-    for key in ("hostname", "os", "cgroup", "config", "incomplete", "data"):
+    for key in ("hostname", "os", "cgroup", "config", "incomplete", "data", "package", "docker", "etcd"):
         if not result.get(key):
             raise Blocked("REMOTE_PREFLIGHT_FIELD_MISSING")
     if result["os"] != "ubuntu:24.04" or result["cgroup"] != "v2":
@@ -259,6 +258,8 @@ if test -f /etc/werftkern/ha-host.json; then printf 'config=present\\n'; else pr
 if test -f /etc/werftkern/ha-installing.json; then printf 'incomplete=present\\n'; else printf 'incomplete=absent\\n'; fi
 if test -e /var/lib/werftkern/etcd/member || test -e /var/lib/werftkern/agent/journal.json; then printf 'data=present\\n'; else printf 'data=absent\\n'; fi
 if dpkg-query -W -f='${Status}|${Version}' werftkern 2>/dev/null; then printf '\\n'; else printf 'package=absent\\n'; fi
+if command -v docker >/dev/null 2>&1; then printf 'docker=present\\n'; else printf 'docker=missing\\n'; fi
+if command -v etcd >/dev/null 2>&1; then printf 'etcd=present\\n'; else printf 'etcd=missing\\n'; fi
 """
     args = ["ssh", *_ssh_options(spec, known_hosts), _target(spec),
             "sudo", "-n", "sh", "-c", shlex.quote(script)]
@@ -283,8 +284,10 @@ def _remote_command(spec: dict, known_hosts: pathlib.Path, command: list[str], r
 
 
 def _probe_state(spec: dict, known_hosts: pathlib.Path, expected_cluster: str, runner: Callable,
-                 observed: dict | None = None) -> tuple[str, dict]:
+                 observed: dict | None = None, require_tools: bool = False) -> tuple[str, dict]:
     p = observed if observed is not None else probe(spec, known_hosts, runner)
+    if require_tools and (p["docker"] != "present" or p["etcd"] != "present"):
+        raise Blocked("REMOTE_RUNTIME_TOOLS_MISSING")
     if p["incomplete"] == "present":
         raise Blocked("REMOTE_INSTALLATION_INCOMPLETE_REQUIRES_REVIEW")
     if p["config"] == "present":
@@ -408,6 +411,7 @@ def apply(inventory_path: str | os.PathLike[str], package_path: str | os.PathLik
                     continue
                 state, _ = _probe_state(spec, known_hosts, expected_cluster, runner)
                 if state == "configured":
+                    _probe_state(spec, known_hosts, expected_cluster, runner, require_tools=True)
                     n["phase"] = "staged"
                     n["remoteState"] = state
                     write_json(journal_file, journal)
@@ -415,7 +419,7 @@ def apply(inventory_path: str | os.PathLike[str], package_path: str | os.PathLik
                 n["phase"] = "install-intent"
                 write_json(journal_file, journal)
                 bootstrap.install(spec, str(package), str(kits[host["name"]]), str(known_hosts), host["name"], runner)
-                verify, _ = _probe_state(spec, known_hosts, expected_cluster, runner)
+                verify, _ = _probe_state(spec, known_hosts, expected_cluster, runner, require_tools=True)
                 if verify != "configured":
                     raise Blocked("REMOTE_INSTALLATION_NOT_CONFIRMED")
                 n["phase"] = "staged"
