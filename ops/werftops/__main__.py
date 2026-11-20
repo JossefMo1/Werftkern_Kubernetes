@@ -15,11 +15,14 @@ def main(argv=None):
     a=cs.add_parser("apply");a.add_argument("--file",required=True);a.add_argument("--journal",required=True);a.add_argument("--token-file",required=True);a.add_argument("--confirm-plan",required=True);a.add_argument("--accept-costs",action="store_true",required=True)
     b=sub.add_parser("bootstrap");b.add_argument("--host",required=True);b.add_argument("--package",required=True);b.add_argument("--kit",required=True);b.add_argument("--known-hosts",required=True);b.add_argument("--confirm-host",required=True)
     nb=sub.add_parser("native-bootstrap", help="Native-HA-Inventar prüfen und sicher fortsetzen")
-    nb.add_argument("--inventory", required=True)
+    nb.add_argument("--inventory", help="Rollenprofil; im Auto-Modus optional")
     nb.add_argument("--package", required=True)
     nb.add_argument("--known-hosts", help="Override für known_hosts; sonst Inventarwert")
     nb.add_argument("--journal", required=True)
     nb.add_argument("--check-only", action="store_true")
+    nb.add_argument("--auto-discover", action="store_true", help="Verifizierte Hosts aus known_hosts automatisch auflösen")
+    nb.add_argument("--ssh-user", default="ubuntu", help="SSH-Benutzer für automatische Discovery")
+    nb.add_argument("--ssh-port", default=22, type=int, help="SSH-Port für automatische Discovery")
     g=sub.add_parser("postgres");gs=g.add_subparsers(dest="action",required=True)
     for action in ("backup","restore"):
         a=gs.add_parser(action);a.add_argument("--config",required=True);a.add_argument("--passfile",required=True);a.add_argument("--archive",required=True)
@@ -78,10 +81,15 @@ def main(argv=None):
     elif args.command=="native-bootstrap":
         # ``known-hosts`` is an explicit operator override, never an implicit
         # TOFU/ssh-keyscan path.
+        if args.inventory is None and not args.auto_discover:
+            p.error("native-bootstrap benötigt --inventory oder --auto-discover")
         result = native_bootstrap.apply(
             args.inventory, args.package, args.journal,
             check_only=args.check_only,
             known_hosts_override=args.known_hosts,
+            auto_discover=args.auto_discover,
+            auto_ssh_user=args.ssh_user,
+            auto_ssh_port=args.ssh_port,
         )
     elif args.command=="postgres":
         config=read_json(args.config,private=True)
