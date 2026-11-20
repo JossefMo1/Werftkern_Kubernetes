@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T05:52:12Z",
+  "updatedAt": "2026-11-20T06:59:45Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "6e372976b3833ce29bd62640a2d9d92e8f0a9961",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/53",
-    "summary": "Reviewed Kubernetes manifest assets now use a 16 MiB bounded O_NOFOLLOW regular-file read before YAML parsing; oversized or unsafe input fails closed while digest and render checks remain enforced. No live or production gate is claimed."
+    "commit": "d999a910c73a5bd5b6fafcdb1f3f2e475046b102",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/55",
+    "summary": "Public JSON inputs now use an FD-bound regular-file size check before parsing; oversized input fails closed before allocation. Private state-file checks and all production gates remain unchanged. No live or production gate is claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -93,7 +93,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7031702982",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7032800707",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
