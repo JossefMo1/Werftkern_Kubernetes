@@ -4,7 +4,7 @@ No unmaintained ingress-nginx default. Optional tools are not Kubernetes core.
 No issuer, external DB, cloud LB, DNS ownership or conformance is fabricated.
 """
 from __future__ import annotations
-import base64, copy, json, pathlib, re, secrets, time, urllib.request, ssl
+import base64, copy, json, os, pathlib, re, secrets, stat, time, urllib.request, ssl
 from .common import Blocked, atomic, canonical, fingerprint, lock, name, private_read, read_json, write_json
 from .kube_spec import fields,domain,image,path
 from .kube_driver import NoRedirect
@@ -18,6 +18,28 @@ CATALOG={
  'hcloud-csi':{'namespace':'storage-system','requires':[],'rollouts':[]},
  'argocd':{'namespace':'argocd','requires':['traefik','cert-manager'],'rollouts':[]},
 }
+
+MAX_RENDER_BYTES = 16 * 1024 * 1024
+
+def read_manifest(filename):
+    """Read a reviewed manifest without an unbounded allocation or symlink race."""
+    try:
+        fd = os.open(filename, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError:
+        raise Blocked('RENDER_ASSET_UNREADABLE') from None
+    with os.fdopen(fd, 'rb') as f:
+        try:
+            st = os.fstat(f.fileno())
+            if not stat.S_ISREG(st.st_mode) or st.st_uid != os.geteuid() or st.st_mode & 0o022:
+                raise Blocked('ASSET_OWNER_OR_MODE_INVALID')
+            if st.st_size > MAX_RENDER_BYTES:
+                raise Blocked('RENDER_TOO_LARGE')
+            raw = f.read(MAX_RENDER_BYTES + 1)
+        except OSError:
+            raise Blocked('RENDER_ASSET_UNREADABLE') from None
+    if len(raw) > MAX_RENDER_BYTES:
+        raise Blocked('RENDER_TOO_LARGE')
+    return raw
 
 def order(selected):
     result=[];visiting=set()
@@ -34,7 +56,7 @@ def order(selected):
 def validate_rendered(raw):
     # PyYAML safe parser, bounded before parsing; no constructors or execution.
     import yaml
-    if len(raw)>16*1024*1024:raise Blocked('RENDER_TOO_LARGE')
+    if len(raw)>MAX_RENDER_BYTES:raise Blocked('RENDER_TOO_LARGE')
     try: docs=list(yaml.safe_load_all(raw))
     except (ValueError,yaml.YAMLError):raise Blocked('RENDER_YAML_INVALID') from None
     if len(docs)>3000:raise Blocked('RENDER_RESOURCE_LIMIT')
@@ -153,7 +175,7 @@ class Addons:
                 meta=CATALOG[item];ns=meta['namespace']
                 self.apply_objects([manifest('Namespace',ns)])
                 if meta.get('manifest'):
-                    raw=pathlib.Path(self.d.assets.get('manifests',item)).read_bytes();validate_rendered(raw)
+                    raw=read_manifest(self.d.assets.get('manifests',item));validate_rendered(raw)
                     self.d.command('kubectl',['apply','--server-side','--field-manager=werftkern','-f','-'],data=raw,timeout=300)
                     for crd in ('keycloaks.k8s.keycloak.org','keycloakrealmimports.k8s.keycloak.org'):
                         self.d.command('kubectl',['wait','--for=condition=Established','crd/'+crd,'--timeout=180s'],timeout=200)

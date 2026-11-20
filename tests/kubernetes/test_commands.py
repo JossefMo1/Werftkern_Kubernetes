@@ -4,7 +4,7 @@ from unittest.mock import patch
 from test_backend import plan,node,identity,KEY,IMG,TEMPLATE,FakeAssets,FakeDriver
 from werftops.common import Blocked,atomic,canonical,fingerprint,write_json,read_json
 from werftops.kube_driver import Driver
-from werftops.kube_addons import Addons
+from werftops.kube_addons import Addons, MAX_RENDER_BYTES, read_manifest
 from werftops.kube_lifecycle import Lifecycle
 from werftops.kube_cloudscale import CloudScale
 from werftops.kube_machines import Machines
@@ -66,6 +66,13 @@ class AddonExecutionTests(unittest.TestCase):
     def test_identity_change_is_not_silently_skipped_by_realm_import(self):
         write_json(self.d.root/'identity-state.json',{'configuration':'other'})
         with self.assertRaisesRegex(Blocked,'REALM_IMPORT_NOT'):self.a.identity(identity(),{},self.d.root/'journal.json')
+
+    def test_manifest_payload_limit_is_checked_before_read(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'manifest.yaml'
+            with p.open('wb') as manifest: manifest.truncate(MAX_RENDER_BYTES+1)
+            with self.assertRaisesRegex(Blocked,'^RENDER_TOO_LARGE$'):
+                read_manifest(p)
 
 class CloudAPI:
     credential_fingerprint='c'*64
