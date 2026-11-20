@@ -82,6 +82,19 @@ jobs:
         run: bash scripts/test-agent-compat.sh
       - name: Build unsigned experimental package (not a public release)
         run: bash scripts/build-deb.sh
+      - name: Smoke-test extracted native package command wrapper
+        run: |
+          set -euo pipefail
+          package="dist/werftkern_0.2.0~dev4_amd64.deb"
+          root="$RUNNER_TEMP/werftkern-package-root"
+          rm -rf "$root"
+          mkdir -p "$root"
+          dpkg-deb --extract "$package" "$root"
+          test -x "$root/usr/bin/werft"
+          test -x "$root/usr/bin/werft-ops"
+          test -f "$root/usr/lib/werftkern/ops/werftops/__main__.py"
+          "$root/usr/bin/werft-ops" --help > "$RUNNER_TEMP/werft-ops-help.txt"
+          grep -q -- "native-bootstrap" "$RUNNER_TEMP/werft-ops-help.txt"
       - name: Actual previous verifier authenticates target package (ephemeral test signature only)
         if: env.WERFT_COMPAT_BASE_AVAILABLE == 'true'
         run: python3 tests/integration/verify_upgrade_package.py --previous-binary evidence/agent-compat/werft-dev3 --package dist/werftkern_0.2.0~dev4_amd64.deb --evidence evidence/package-predecessor-check.json

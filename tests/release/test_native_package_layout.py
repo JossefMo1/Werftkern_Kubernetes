@@ -1,5 +1,10 @@
 import importlib.util
 import pathlib
+import shutil
+import stat
+import subprocess
+import sys
+import tempfile
 import unittest
 
 SCRIPT = pathlib.Path(__file__).parents[2] / "scripts" / "check-native-package-layout.py"
@@ -18,6 +23,28 @@ class NativePackageLayoutTests(unittest.TestCase):
         ]
         report = MODULE.validate_listing(listing)
         self.assertEqual(report["status"], "passed")
+
+    def test_wrapper_runs_from_extracted_package_root(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            wrapper = root / "usr" / "bin" / "werft-ops"
+            wrapper.parent.mkdir(parents=True)
+            shutil.copyfile(pathlib.Path(__file__).parents[2] / "scripts" / "werft-ops", wrapper)
+            wrapper.chmod(wrapper.stat().st_mode | stat.S_IXUSR)
+            package = root / "usr" / "lib" / "werftkern" / "ops" / "werftops"
+            package.mkdir(parents=True)
+            (package / "__init__.py").write_text("")
+            (package / "__main__.py").write_text("print('package-wrapper-ok')\n")
+
+            result = subprocess.run(
+                [sys.executable, str(wrapper)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "package-wrapper-ok")
 
     def test_accepts_required_dependencies(self):
         report = MODULE.validate_dependencies(
