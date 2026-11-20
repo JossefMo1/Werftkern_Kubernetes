@@ -10,8 +10,8 @@ für diese Artefakte `false`.
 
 Ein Testrelease enthält:
 
-- `werftkern_0.2.0~dev4_amd64.deb` für den getrennten Native-Runtime-Pfad,
-- `werftkern-kubernetes_0.1.0~dev3_all.deb` für den getrennten Kubernetes-Manager,
+- `werftkern_0.2.0.dev4_amd64.deb` für den getrennten Native-Runtime-Pfad,
+- `werftkern-kubernetes_0.1.0.dev3_all.deb` für den getrennten Kubernetes-Manager,
 - `werftkern-test-kit-<tag>.tar.gz` mit den passenden Runbooks, Inventaren und
   E2E-Skripten,
 - `release-manifest.json` mit Commitbindung und Paket-Hashes sowie `SHA256SUMS`.
@@ -24,7 +24,7 @@ sha256sum -c SHA256SUMS
 cat release-manifest.json
 ```
 
-Die Pakete sind unsignierte Entwicklungsartefakte. Der Hash schützt vor
+Die Release-Assets verwenden für GitHub kompatible Dateinamen (Versions-Tilde als Punkt); die lokale Paketversion bleibt davon unberührt. Die Pakete sind unsignierte Entwicklungsartefakte. Der Hash schützt vor
 Übertragungsfehlern, ersetzt aber keine Signatur-, Herkunfts- oder
 Schwachstellenprüfung.
 
@@ -35,12 +35,12 @@ manuell auf sechs Hosts. Das Paket enthält `werft-ops`; der Koordinator übertr
 das exakt geprüfte Paket selbst:
 
 ```bash
-sudo apt install ./werftkern_0.2.0~dev4_amd64.deb
+sudo apt install ./werftkern_0.2.0.dev4_amd64.deb
 cp examples/native-inventory-3m-3w.json /root/native-inventory.json
 # Namen, IPs, sshUser, /etc/hosts und /root/.ssh/known_hosts anpassen.
 sudo werft-ops native-bootstrap \
   --inventory /root/native-inventory.json \
-  --package /root/werftkern_0.2.0~dev4_amd64.deb \
+  --package /root/werftkern_0.2.0.dev4_amd64.deb \
   --journal /root/werft-native-bootstrap.json --check-only
 sudo werft-ops native-bootstrap \
   --inventory /root/native-inventory.json \
