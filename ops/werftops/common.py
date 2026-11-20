@@ -1,6 +1,6 @@
 """Small fail-closed building blocks. Host paths are trusted administrator inputs."""
 from __future__ import annotations
-import contextlib, fcntl, hashlib, json, os, pathlib, re, stat, subprocess, tempfile, signal
+import contextlib, fcntl, hashlib, json, os, pathlib, re, signal, stat, subprocess, tempfile, threading, time
 
 class Blocked(RuntimeError):
     pass
@@ -91,35 +91,100 @@ def lock(path):
         yield
     finally: os.close(fd)
 
-def run(argv, *, data=None, timeout=120, env=None, stdout=None, cwd=None):
-    """Never run shell=True; raw command output may contain secrets, so hide errors."""
-    try:
-        child = subprocess.Popen(argv, stdin=subprocess.PIPE if data is not None else subprocess.DEVNULL,
-                                 stdout=stdout or subprocess.PIPE, stderr=subprocess.PIPE,
-                                 env=env, cwd=cwd, start_new_session=True)
-    except OSError:
-        raise Blocked("COMMAND_UNAVAILABLE:"+pathlib.Path(argv[0]).name) from None
-    try:
-        output, _ = child.communicate(input=data, timeout=timeout)
-    except subprocess.TimeoutExpired:
-        # The process group is created for this invocation, never an operator PID.
-        # Do not leave pgBackRest helpers writing after a timed-out invocation.
+def run(argv, *, data=None, timeout=120, env=None, stdout=None, cwd=None, max_output=16*1024*1024):
+    """Run one owned process with bounded captured output and stable errors.
+
+    Never run shell=True; raw command output may contain secrets, so hide errors.
+    Reader threads continuously drain both pipes, preventing a child that emits
+    concurrently on stdout and stderr from deadlocking while output is bounded.
+    """
+    if type(max_output) is not int or max_output < 1:
+        raise Blocked("COMMAND_OUTPUT_LIMIT_INVALID")
+    capture_stdout = stdout is None
+    stdout_chunks = []
+    stderr_chunks = []
+    overflow = threading.Event()
+    readers = []
+
+    def drain(stream, chunks):
+        total = 0
+        try:
+            while True:
+                chunk = stream.read(65536)
+                if not chunk:
+                    return
+                if total <= max_output:
+                    remaining = max_output + 1 - total
+                    chunks.append(chunk[:remaining])
+                total += len(chunk)
+                if total > max_output:
+                    overflow.set()
+        finally:
+            stream.close()
+
+    def stop_owned(child):
         try: os.killpg(child.pid, signal.SIGTERM)
         except ProcessLookupError: pass
-        try: child.communicate(timeout=5)
+        try: child.wait(timeout=5)
         except subprocess.TimeoutExpired:
             try: os.killpg(child.pid, signal.SIGKILL)
             except ProcessLookupError: pass
-            child.communicate()
-        raise Blocked("COMMAND_TIMEOUT:"+pathlib.Path(argv[0]).name) from None
-    except BaseException:
-        try: os.killpg(child.pid, signal.SIGKILL)
-        except ProcessLookupError: pass
-        child.communicate()
+            child.wait()
+
+    try:
+        child = subprocess.Popen(argv, stdin=subprocess.PIPE if data is not None else subprocess.DEVNULL,
+                                 stdout=stdout if stdout is not None else subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
+                                 env=env, cwd=cwd, start_new_session=True)
+    except OSError:
+        raise Blocked("COMMAND_UNAVAILABLE:"+pathlib.Path(argv[0]).name) from None
+
+    if capture_stdout:
+        readers.append(threading.Thread(target=drain, args=(child.stdout, stdout_chunks), daemon=True))
+    readers.append(threading.Thread(target=drain, args=(child.stderr, stderr_chunks), daemon=True))
+    for reader in readers: reader.start()
+
+    def feed_stdin():
+        try:
+            child.stdin.write(data)
+            child.stdin.close()
+        except (BrokenPipeError, OSError):
+            try: child.stdin.close()
+            except OSError: pass
+
+    feeder = None
+    if data is not None:
+        feeder = threading.Thread(target=feed_stdin, daemon=True)
+        feeder.start()
+
+    try:
+        deadline = time.monotonic() + timeout
+        while child.poll() is None:
+            if overflow.is_set():
+                stop_owned(child)
+                raise Blocked("COMMAND_OUTPUT_TOO_LARGE")
+            if time.monotonic() >= deadline:
+                stop_owned(child)
+                raise Blocked("COMMAND_TIMEOUT:"+pathlib.Path(argv[0]).name)
+            time.sleep(0.01)
+    except Blocked:
+        if child.poll() is None: stop_owned(child)
+        for reader in readers: reader.join(timeout=5)
+        if feeder is not None: feeder.join(timeout=5)
         raise
+    except BaseException:
+        if child.poll() is None: stop_owned(child)
+        for reader in readers: reader.join(timeout=5)
+        if feeder is not None: feeder.join(timeout=5)
+        raise
+
+    for reader in readers: reader.join(timeout=5)
+    if feeder is not None: feeder.join(timeout=5)
+    if overflow.is_set():
+        raise Blocked("COMMAND_OUTPUT_TOO_LARGE")
     if child.returncode:
         raise Blocked("COMMAND_FAILED:"+pathlib.Path(argv[0]).name)
-    return output or b""
+    return b"".join(stdout_chunks) if capture_stdout else b""
 
 def host_preflight():
     if os.geteuid() != 0:

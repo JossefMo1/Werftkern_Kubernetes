@@ -14,6 +14,9 @@ class CommonTests(unittest.TestCase):
   with self.assertRaises(Blocked) as err:run([sys.executable,'-c',"import sys;sys.stderr.write('secret');sys.exit(2)"])
   self.assertNotIn('secret',str(err.exception))
   with self.assertRaisesRegex(Blocked,'UNAVAILABLE'):run(['/does/not/exist'])
+ def test_output_limit_terminates_owned_process_and_hides_output(self):
+  with self.assertRaisesRegex(Blocked,'^COMMAND_OUTPUT_TOO_LARGE$'):
+   run([sys.executable,'-c',"import sys;sys.stdout.write('x'*100000);sys.stderr.write('y'*100000)"],max_output=4096)
  def test_json_rejects_duplicates_nan_and_infinity(self):
   with tempfile.TemporaryDirectory() as d:
    p=pathlib.Path(d)/'in.json'
