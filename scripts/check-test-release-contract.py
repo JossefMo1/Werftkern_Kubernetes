@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 
@@ -43,6 +44,8 @@ NATIVE_AUTO_FRAGMENTS = (
     "--journal /root/werft-native-bootstrap.json --check-only",
 )
 WORKFLOW = Path(".github/workflows/test-release.yml")
+TRACKER = Path("release/production-tracker.json")
+RUNBOOK_TAG = re.compile(r"(?m)^TAG=(v[^\\n]+)$")
 
 
 def validate(root: Path) -> list[str]:
@@ -50,6 +53,16 @@ def validate(root: Path) -> list[str]:
     root = root.resolve()
 
     documents: dict[Path, str] = {}
+    tracker_path = root / TRACKER
+    try:
+        tracker = json.loads(tracker_path.read_text())
+        tracker_tag = tracker.get("candidate", {}).get("tag")
+        if not isinstance(tracker_tag, str) or not tracker_tag:
+            problems.append(f"TRACKER_CANDIDATE_TAG_INVALID:{TRACKER}")
+            tracker_tag = None
+    except (OSError, json.JSONDecodeError, AttributeError):
+        problems.append(f"TRACKER_MISSING:{TRACKER}")
+        tracker_tag = None
     for relative in DOCUMENTS:
         path = root / relative
         try:
@@ -68,6 +81,19 @@ def validate(root: Path) -> list[str]:
             for fragment in RELEASE_DOWNLOAD_FRAGMENTS + NATIVE_AUTO_FRAGMENTS:
                 if fragment not in content:
                     problems.append(f"DOCUMENT_INSTRUCTIONS_MISSING:{relative}:{fragment}")
+
+    runbook = documents.get(Path("docs/TEST-RELEASE-DE.md"), "")
+    if tracker_tag:
+        match = RUNBOOK_TAG.search(runbook)
+        if not match:
+            problems.append("DOCUMENT_TAG_MISSING:docs/TEST-RELEASE-DE.md")
+        elif match.group(1) != tracker_tag:
+            problems.append(
+                "DOCUMENT_TAG_MISMATCH:docs/TEST-RELEASE-DE.md:"
+                + match.group(1)
+                + "!="
+                + tracker_tag
+            )
 
     workflow_path = root / WORKFLOW
     try:
