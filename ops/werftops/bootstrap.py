@@ -1,12 +1,37 @@
 """Install a hash-pinned package and host kit over previously verified SSH."""
 from __future__ import annotations
-import ipaddress, pathlib, re, shlex
-from .common import Blocked, digest_file, name, read_json, run, sha
+import ipaddress, os, pathlib, re, shlex, stat
+from .common import Blocked, digest_file, name, private_read, read_json, run, sha
+
+MAX_PACKAGE_BYTES = 128 * 1024 * 1024
+
+def _read_payload(path, limit=MAX_PACKAGE_BYTES):
+    """Read one regular, non-symlink payload without unbounded allocation."""
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError:
+        raise Blocked("PACKAGE_PAYLOAD_UNREADABLE") from None
+    with os.fdopen(fd, "rb") as f:
+        try:
+            st = os.fstat(f.fileno())
+            if not stat.S_ISREG(st.st_mode) or st.st_size > limit:
+                raise Blocked("PACKAGE_PAYLOAD_TOO_LARGE")
+            raw = f.read(limit + 1)
+        except OSError:
+            raise Blocked("PACKAGE_PAYLOAD_UNREADABLE") from None
+    if len(raw) > limit:
+        raise Blocked("PACKAGE_PAYLOAD_TOO_LARGE")
+    return raw
 
 def commands(spec, package, kit, known_hosts):
     if set(spec)!={"name","address","sshUser","packageSha256"}: raise Blocked("BOOTSTRAP_SCHEMA_INVALID")
     name(spec["name"]);ipaddress.IPv4Address(spec["address"])
     if not re.fullmatch(r"[a-z_][a-z0-9_-]{0,30}",spec["sshUser"]): raise Blocked("SSH_USER_INVALID")
+    try:
+        if not pathlib.Path(package).is_file() or pathlib.Path(package).stat().st_size > MAX_PACKAGE_BYTES:
+            raise Blocked("PACKAGE_PAYLOAD_TOO_LARGE")
+    except OSError:
+        raise Blocked("PACKAGE_PAYLOAD_UNREADABLE") from None
     if digest_file(package)!=sha(spec["packageSha256"]): raise Blocked("PACKAGE_CHECKSUM_MISMATCH")
     hk=read_json(kit,private=True)
     if hk.get("host",{}).get("name")!=spec["name"]: raise Blocked("HOST_KIT_MISMATCH")
@@ -24,7 +49,7 @@ def install(spec, package, kit, known_hosts, confirm, runner=run):
     # Sudo requires preconfigured noninteractive privilege. No passwords are copied.
     runner(["ssh",*opts,target,"sudo -n install -d -m 0700 "+shlex.quote(remote)])
     for source,dest in ((package,"runtime.deb"),(kit,"host.kit.json")):
-        with open(source,"rb") as f: raw=f.read()
+        raw = _read_payload(source) if source == package else private_read(source)
         cmd="sudo -n sh -c "+shlex.quote("umask 077; cat > "+remote+"/"+dest)
         runner(["ssh",*opts,target,cmd],data=raw,timeout=600)
     script=f"set -eu; cd {shlex.quote(remote)}; printf '%s  %s\\n' {shlex.quote(spec['packageSha256'])} runtime.deb {shlex.quote(khash)} host.kit.json | sha256sum -c -; DEBIAN_FRONTEND=noninteractive apt-get install -y ./runtime.deb; werft ha install --kit host.kit.json --confirm-host {shlex.quote(spec['name'])}"

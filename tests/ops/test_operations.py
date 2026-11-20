@@ -123,6 +123,19 @@ class FileTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p=pathlib.Path(d)/'j';p.write_text('{"a":1,"a":2}')
             with self.assertRaises(Blocked):read_json(p)
+
+    def test_bootstrap_rejects_oversized_package_before_remote_action(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=pathlib.Path(d);package=root/'runtime.deb'
+            with package.open('wb') as payload: payload.truncate(128*1024*1024+1)
+            kit=root/'host.kit.json';write_json(kit,{'host':{'name':'node-one'}})
+            known=root/'known_hosts';known.write_text('node-one ssh-ed25519 AAAA\n');known.chmod(0o600)
+            spec={'name':'node-one','address':'192.0.2.10','sshUser':'root',
+                  'packageSha256':bootstrap.sha(bootstrap.digest_file(package))}
+            calls=[]
+            with self.assertRaisesRegex(Blocked,'^PACKAGE_PAYLOAD_TOO_LARGE$'):
+                bootstrap.install(spec,package,kit,known,'node-one',lambda *a,**kw:calls.append((a,kw)))
+            self.assertEqual(calls,[])
     def test_existing_backup_not_replaced(self):
         with tempfile.TemporaryDirectory() as d:
             p=pathlib.Path(d)/'j';write_json(p,{'original':True},exclusive=True)
