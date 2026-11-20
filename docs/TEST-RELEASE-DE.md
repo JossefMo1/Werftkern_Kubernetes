@@ -16,12 +16,27 @@ Ein Testrelease enthält:
   E2E-Skripten,
 - `release-manifest.json` mit Commitbindung und Paket-Hashes sowie `SHA256SUMS`.
 
-Lade die Dateien ausschließlich aus dem GitHub-Release herunter und prüfe vor
-der Installation:
+Lade alle fünf Release-Assets ausschließlich aus dem GitHub-Release herunter.
+`release-manifest.json` gehört absichtlich zum Prüfumfang von `SHA256SUMS`; wenn
+diese Datei fehlt, ist die Hashprüfung unvollständig.
+
+Für dieses Release kannst du die Dateien so herunterladen und anschließend das
+Test-Kit entpacken:
 
 ```bash
+TAG=v0.2.0-dev.4-test.5
+BASE="https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/${TAG}"
+
+wget \
+  "${BASE}/werftkern_0.2.0.dev4_amd64.deb" \
+  "${BASE}/werftkern-kubernetes_0.1.0.dev3_all.deb" \
+  "${BASE}/werftkern-test-kit-${TAG}.tar.gz" \
+  "${BASE}/release-manifest.json" \
+  "${BASE}/SHA256SUMS"
+
 sha256sum -c SHA256SUMS
 cat release-manifest.json
+tar -xzf "werftkern-test-kit-${TAG}.tar.gz"
 ```
 
 Die Release-Assets verwenden für GitHub kompatible Dateinamen (Versions-Tilde als Punkt); die lokale Paketversion bleibt davon unberührt. Die Pakete sind unsignierte Entwicklungsartefakte. Der Hash schützt vor
