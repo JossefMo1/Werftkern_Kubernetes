@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-19T23:02:00Z",
+  "updatedAt": "2026-11-20T00:02:00Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "beafaf72b68cade261a827809488769af08b65d6",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/38",
-    "summary": "Release evidence parser now rejects duplicate JSON keys before gate evaluation; no live gate was claimed."
+    "commit": "84188a4b4ebd7a34f561873dfadc73cc0d8b6308",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/40",
+    "summary": "Registry auth, manifest, index and config JSON responses now reject duplicate keys and non-object payloads before digest/runtime evaluation; no live gate was claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
