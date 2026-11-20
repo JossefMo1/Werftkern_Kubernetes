@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T19:04:11Z",
+  "updatedAt": "2026-11-20T21:04:57Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "c2d164fa4c864d4804f4de6bf04942e11ec6507e",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/101",
-    "summary": "Merged the native package-install preflight documentation and published immutable test15 from the exact merged source; CI and package evidence passed while live qualification remains open."
+    "commit": "a6c0ba3823fe1a2cc8f36d1a0ff1e35b29cbc545",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/104",
+    "summary": "Merged PR #103 and follow-up #104: the public test-release runbook is bound to the current immutable test15 candidate and the tracker/tag parser is line-bounded. Exact-head CI and source audit passed; live qualification remains open."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -170,7 +170,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.15",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7050589715",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
