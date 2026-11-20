@@ -1,0 +1,30 @@
+{
+  "format": "werftkern-kubernetes/v1",
+  "name": "werft-lab-3m-3w",
+  "profile": "ha",
+  "version": "v1.37.2+k0s.1",
+  "apiEndpoint": "api.example.invalid",
+  "podCIDR": "10.244.0.0/16",
+  "serviceCIDR": "10.96.0.0/12",
+  "sshKeyPath": "/root/.ssh/werft-lab",
+  "backupRecipient": "REPLACE_WITH_YOUR_REAL_AGE_RECIPIENT",
+  "haControlPlane": {"mode": "external"},
+  "hosts": [
+    {"name": "master-1", "role": "controller", "address": "10.20.0.10", "user": "root", "port": 22, "hostKey": "REPLACE_WITH_VERIFIED_ED25519_HOST_PUBLIC_KEY"},
+    {"name": "master-2", "role": "controller", "address": "10.20.0.11", "user": "root", "port": 22, "hostKey": "REPLACE_WITH_VERIFIED_ED25519_HOST_PUBLIC_KEY"},
+    {"name": "master-3", "role": "controller", "address": "10.20.0.12", "user": "root", "port": 22, "hostKey": "REPLACE_WITH_VERIFIED_ED25519_HOST_PUBLIC_KEY"},
+    {"name": "worker-1", "role": "worker", "address": "10.20.0.20", "user": "root", "port": 22, "pool": "default", "hostKey": "REPLACE_WITH_VERIFIED_ED25519_HOST_PUBLIC_KEY"},
+    {"name": "worker-2", "role": "worker", "address": "10.20.0.21", "user": "root", "port": 22, "pool": "default", "hostKey": "REPLACE_WITH_VERIFIED_ED25519_HOST_PUBLIC_KEY"},
+    {"name": "worker-3", "role": "worker", "address": "10.20.0.22", "user": "root", "port": 22, "pool": "default", "hostKey": "REPLACE_WITH_VERIFIED_ED25519_HOST_PUBLIC_KEY"}
+  ],
+  "repair": {
+    "enabled": false,
+    "unhealthySeconds": 600,
+    "observations": 3,
+    "minHealthyWorkers": 2,
+    "maxUnhealthyPercent": 40,
+    "maxPerDay": 1,
+    "cooldownSeconds": 600,
+    "acceptDeleteAndCosts": false
+  }
+}
