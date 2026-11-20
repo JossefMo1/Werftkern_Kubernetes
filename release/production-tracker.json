@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T12:47:00Z",
+  "updatedAt": "2026-11-20T13:10:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "8543aef5442ca674ea3c7d14e416781131291ba6",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/80",
-    "summary": "Aligned all test-release and Kubernetes runbook package names with the GitHub-visible assets and published immutable v0.2.0-dev.4-test.5. Both source/package build and idempotent rerun workflows are green; live qualification remains open."
+    "commit": "6454b63478cb0a6971a72def44d01f7ec2559dbf",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/82",
+    "summary": "Added a fail-closed CI contract for immutable test-release filenames, basename-based SHA256SUMS and publish globs; regression tests are green. Live qualification gates remain open."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -66,7 +66,10 @@
         "release manifest: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.5/release-manifest.json",
         "SHA256SUMS: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.5/SHA256SUMS",
         "build workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44737991671",
-        "idempotent rerun workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44737995917"
+        "idempotent rerun workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44737995917",
+        "scripts/check-test-release-contract.py",
+        "tests/release/test_test_release_contract.py",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44741332960"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
