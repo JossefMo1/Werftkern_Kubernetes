@@ -53,6 +53,26 @@ class TestReleaseContract(unittest.TestCase):
         path.write_text(content)
         self.assertIn("CHECKSUMS_MUST_USE_BASENAMES", CONTRACT.validate(root))
 
+    def test_download_instructions_require_manifest(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.DOCUMENTS[0]
+        content = path.read_text().replace(
+            '  "${BASE}/release-manifest.json" \\\n',
+            "",
+        )
+        path.write_text(content)
+        self.assertTrue(
+            any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
+        )
+
+    def test_native_instructions_require_auto_discovery(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.DOCUMENTS[0]
+        path.write_text(path.read_text().replace("--auto-discover", "--inventory"))
+        self.assertTrue(
+            any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
+        )
+
     def test_publish_glob_must_not_use_dist_tarballs(self):
         root = self.make_fixture()
         path = root / CONTRACT.WORKFLOW

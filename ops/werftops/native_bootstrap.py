@@ -17,6 +17,7 @@ import os
 import pathlib
 import re
 import shlex
+import socket
 import stat
 from typing import Callable
 
@@ -40,6 +41,7 @@ MAX_INVENTORY_BYTES = 512 * 1024
 MAX_HOSTS_FILE_BYTES = 1 * 1024 * 1024
 MAX_KNOWN_HOSTS_BYTES = 1 * 1024 * 1024
 MAX_REMOTE_JSON_BYTES = 256 * 1024
+MAX_DISCOVERY_CANDIDATES = 64
 REMOTE_SENTINEL = "WERFTKERN_NATIVE_PREFLIGHT_V1"
 
 
@@ -101,6 +103,140 @@ def _private_ipv4(value: object) -> str:
     return value
 
 
+def _resolve_private_ipv4(host: str) -> set[str]:
+    """Resolve a hostname without accepting public or ambiguous addresses."""
+    try:
+        answers = socket.getaddrinfo(host, None, socket.AF_INET, socket.SOCK_STREAM)
+    except OSError:
+        return set()
+    addresses: set[str] = set()
+    for answer in answers:
+        try:
+            address = ipaddress.IPv4Address(answer[4][0])
+        except (IndexError, ValueError):
+            continue
+        if address.is_private and not address.is_loopback and not address.is_link_local and not address.is_unspecified:
+            addresses.add(str(address))
+    return addresses
+
+
+def _known_host_token(value: str) -> tuple[str, int] | None:
+    """Return the connect host and port for one non-pattern known_hosts token."""
+    if not value or value.startswith("|") or value.startswith("!") or "*" in value or "?" in value:
+        return None
+    if value.startswith("["):
+        close = value.find("]:")
+        if close < 0:
+            return None
+        host, raw_port = value[1:close], value[close + 2:]
+        try:
+            port = int(raw_port)
+        except ValueError:
+            return None
+        if not 1 <= port <= 65535:
+            return None
+        return host, port
+    if ":" in value:
+        # Unbracketed IPv6 and host:port forms are not accepted by this IPv4-only
+        # discovery path. They remain valid inputs for other SSH tooling.
+        return None
+    return value, 22
+
+
+def _known_hosts_candidates(path: pathlib.Path) -> list[dict]:
+    """Extract private, host-key-trusted SSH endpoints from known_hosts.
+
+    Hashed names, wildcards and certificate-authority-only lines cannot be used
+    to derive a safe endpoint and are deliberately ignored. A hostname is only
+    accepted when local name resolution produces a private IPv4 address.
+    """
+    raw = _regular(path, MAX_KNOWN_HOSTS_BYTES).decode("utf-8", "strict")
+    candidates: dict[tuple[str, int], dict] = {}
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        fields = line.split()
+        if not fields:
+            continue
+        host_field_index = 1 if fields[0].startswith("@") else 0
+        if len(fields) <= host_field_index:
+            continue
+        if fields[0].startswith("@"):
+            continue
+        for raw_token in fields[host_field_index].split(","):
+            parsed = _known_host_token(raw_token)
+            if parsed is None:
+                continue
+            host, port = parsed
+            try:
+                literal = ipaddress.IPv4Address(host)
+                addresses = {str(literal)} if literal.is_private and not literal.is_loopback and not literal.is_link_local else set()
+            except ValueError:
+                addresses = _resolve_private_ipv4(host)
+            for address in addresses:
+                key = (address, port)
+                candidate = candidates.setdefault(key, {
+                    "address": address,
+                    "sshPort": port,
+                    "sshHosts": [],
+                    "aliases": [],
+                })
+                if host not in candidate["sshHosts"]:
+                    candidate["sshHosts"].append(host)
+                if host not in candidate["aliases"]:
+                    candidate["aliases"].append(host)
+    result = list(candidates.values())
+    if len(result) > MAX_DISCOVERY_CANDIDATES:
+        raise Blocked("AUTO_DISCOVERY_CANDIDATE_LIMIT_EXCEEDED")
+    return result
+
+
+def _short_host(value: object) -> str:
+    if not isinstance(value, str):
+        return ""
+    return value.rstrip(".").lower().split(".", 1)[0]
+
+
+def _role_hint(values: list[str]) -> str | None:
+    text = "-".join(values).lower().replace("_", "-").replace(".", "-")
+    controller = re.search(r"(^|-)master(-|$)|(^|-)control(?:ler)?(-|$)|(^|-)cp(-|$)", text)
+    worker = re.search(r"(^|-)worker(-|$)|(^|-)compute(-|$)|(^|-)node(-|$)", text)
+    if controller and not worker:
+        return "controller"
+    if worker and not controller:
+        return "worker"
+    return None
+
+
+def _candidate_matches(candidate: dict, desired: str) -> bool:
+    wanted = _short_host(desired)
+    values = list(candidate.get("aliases", []))
+    if candidate.get("observedHostname"):
+        values.append(candidate["observedHostname"])
+    return any(value == desired or _short_host(value) == wanted for value in values)
+
+
+def _default_inventory(known_hosts: str, ssh_user: str, ssh_port: int) -> dict:
+    return {
+        "format": FORMAT,
+        "name": "werft-lab-3m-3w",
+        "hostsFile": "/etc/hosts",
+        "knownHostsFile": known_hosts,
+        "sshUser": ssh_user,
+        "sshPort": ssh_port,
+        "autoDiscover": True,
+        "hosts": [
+            {"name": "master-1", "role": "controller"},
+            {"name": "master-2", "role": "controller"},
+            {"name": "master-3", "role": "controller"},
+            {"name": "worker-1", "role": "worker", "podCidr": "10.88.11.0/24"},
+            {"name": "worker-2", "role": "worker", "podCidr": "10.88.12.0/24"},
+            {"name": "worker-3", "role": "worker", "podCidr": "10.88.13.0/24"},
+        ],
+    }
+
+
 def _port(value: object) -> int:
     if value is None:
         return 22
@@ -109,17 +245,23 @@ def _port(value: object) -> int:
     return value
 
 
-def _resolve_inventory(raw: dict, inventory_path: pathlib.Path) -> tuple[dict, dict, dict[str, str]]:
+def _resolve_inventory(raw: dict, inventory_path: pathlib.Path, *, auto_discover: bool = False) -> tuple[dict, dict, dict[str, str]]:
     if not isinstance(raw, dict) or raw.get("format") != FORMAT:
         raise Blocked("NATIVE_INVENTORY_SCHEMA_INVALID")
-    allowed = {"format", "name", "hostsFile", "knownHostsFile", "sshUser", "sshPort", "hosts"}
+    auto_discover = auto_discover or raw.get("autoDiscover") is True
+    if "autoDiscover" in raw and type(raw["autoDiscover"]) is not bool:
+        raise Blocked("NATIVE_INVENTORY_SCHEMA_INVALID")
+    allowed = {"format", "name", "hostsFile", "knownHostsFile", "sshUser", "sshPort", "autoDiscover", "hosts"}
     if set(raw) - allowed or not isinstance(raw.get("name"), str):
         raise Blocked("NATIVE_INVENTORY_SCHEMA_INVALID")
     name(raw["name"])
     hosts_path = pathlib.Path(raw.get("hostsFile", "/etc/hosts"))
     if not hosts_path.is_absolute():
         hosts_path = inventory_path.parent / hosts_path
-    mapping = _hosts_file(hosts_path)
+    if auto_discover:
+        mapping = _hosts_file(hosts_path) if hosts_path.exists() else {}
+    else:
+        mapping = _hosts_file(hosts_path)
     global_user = raw.get("sshUser", "root")
     if not isinstance(global_user, str) or not re.fullmatch(r"[a-z_][a-z0-9_-]{0,30}", global_user):
         raise Blocked("SSH_USER_INVALID")
@@ -135,7 +277,7 @@ def _resolve_inventory(raw: dict, inventory_path: pathlib.Path) -> tuple[dict, d
     for item in hosts:
         if not isinstance(item, dict):
             raise Blocked("NATIVE_INVENTORY_HOST_INVALID")
-        allowed_host = {"name", "address", "role", "sshUser", "sshPort", "podCidr", "expectedHostname"}
+        allowed_host = {"name", "address", "role", "sshUser", "sshPort", "sshHost", "podCidr", "expectedHostname"}
         if set(item) - allowed_host:
             raise Blocked("NATIVE_INVENTORY_HOST_INVALID")
         host_name = item.get("name")
@@ -149,8 +291,14 @@ def _resolve_inventory(raw: dict, inventory_path: pathlib.Path) -> tuple[dict, d
         addr = item.get("address")
         if addr is None:
             addr = mapping.get(host_name)
+        if addr is None and auto_discover:
+            resolved = _resolve_private_ipv4(host_name)
+            if len(resolved) == 1:
+                addr = next(iter(resolved))
+        if addr is None:
+            raise Blocked("HOST_ADDRESS_REQUIRED")
         addr = _private_ipv4(addr)
-        if mapping.get(host_name) != addr:
+        if not auto_discover and mapping.get(host_name) != addr:
             raise Blocked("HOSTS_FILE_ADDRESS_MISMATCH")
         if addr in seen_addresses:
             raise Blocked("NATIVE_INVENTORY_DUPLICATE_ADDRESS")
@@ -162,6 +310,10 @@ def _resolve_inventory(raw: dict, inventory_path: pathlib.Path) -> tuple[dict, d
         expected = item.get("expectedHostname")
         if expected is not None:
             name(expected)
+        ssh_host = item.get("sshHost")
+        if ssh_host is not None:
+            if not isinstance(ssh_host, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,252}", ssh_host):
+                raise Blocked("SSH_HOST_INVALID")
         pod = item.get("podCidr")
         if role == "worker":
             workers += 1
@@ -177,6 +329,7 @@ def _resolve_inventory(raw: dict, inventory_path: pathlib.Path) -> tuple[dict, d
             "role": role,
             "sshUser": user,
             "sshPort": port,
+            "sshHost": ssh_host or addr,
             **({"podCidr": pod} if pod is not None else {}),
             **({"expectedHostname": expected} if expected is not None else {}),
         })
@@ -185,6 +338,8 @@ def _resolve_inventory(raw: dict, inventory_path: pathlib.Path) -> tuple[dict, d
     if workers < 1:
         raise Blocked("AT_LEAST_ONE_WORKER_REQUIRED")
     known_hosts = raw.get("knownHostsFile")
+    if known_hosts is None and auto_discover:
+        known_hosts = "/root/.ssh/known_hosts"
     if not isinstance(known_hosts, str):
         raise Blocked("KNOWN_HOSTS_FILE_REQUIRED")
     known_path = pathlib.Path(known_hosts)
@@ -219,7 +374,7 @@ def _ssh_options(spec: dict, known_hosts: pathlib.Path) -> list[str]:
 
 
 def _target(spec: dict) -> str:
-    return spec["sshUser"] + "@" + spec["address"]
+    return spec["sshUser"] + "@" + spec.get("sshHost", spec["address"])
 
 
 def _parse_probe(raw: bytes) -> dict:
@@ -324,7 +479,8 @@ def _kits(topology: dict, directory: pathlib.Path, runner: Callable) -> dict[str
 def _host_spec(host: dict, package_sha: str) -> dict:
     return {
         "name": host["name"], "address": host["address"], "sshUser": host["sshUser"],
-        "sshPort": host["sshPort"], "packageSha256": package_sha,
+        "sshPort": host["sshPort"], "sshHost": host.get("sshHost", host["address"]),
+        "packageSha256": package_sha,
     }
 
 
@@ -351,19 +507,155 @@ def _seed_host(hosts: list[dict]) -> dict:
     return controllers[0]
 
 
-def apply(inventory_path: str | os.PathLike[str], package_path: str | os.PathLike[str],
+def _auto_discover_inventory(raw: dict, known_hosts: pathlib.Path, runner: Callable) -> dict:
+    """Resolve a role profile from trusted SSH endpoints without manual IP edits.
+
+    ``known_hosts`` is the trust boundary. Discovery may inspect and probe only
+    endpoints represented there; it never performs TOFU or a blind network scan.
+    Profile names are matched to trusted aliases/remote hostnames first. If the
+    names are not present, unambiguous master/worker naming hints are accepted
+    only when they produce the exact requested role counts.
+    """
+    if not isinstance(raw, dict) or not isinstance(raw.get("hosts"), list):
+        raise Blocked("NATIVE_INVENTORY_HOSTS_REQUIRED")
+    candidates = _known_hosts_candidates(known_hosts)
+    if not candidates:
+        raise Blocked("AUTO_DISCOVERY_NO_TRUSTED_HOSTS")
+    global_user = raw.get("sshUser", "ubuntu")
+    if not isinstance(global_user, str) or not re.fullmatch(r"[a-z_][a-z0-9_-]{0,30}", global_user):
+        raise Blocked("SSH_USER_INVALID")
+    global_port = _port(raw.get("sshPort"))
+
+    assigned: dict[int, dict] = {}
+    used: set[int] = set()
+    for index, item in enumerate(raw["hosts"]):
+        if not isinstance(item, dict) or not isinstance(item.get("name"), str):
+            raise Blocked("NATIVE_INVENTORY_HOST_INVALID")
+        matches = [
+            candidate_index for candidate_index, candidate in enumerate(candidates)
+            if candidate_index not in used and _candidate_matches(candidate, item["name"])
+        ]
+        if len(matches) > 1:
+            raise Blocked("AUTO_DISCOVERY_NAME_AMBIGUOUS:" + item["name"])
+        if len(matches) == 1:
+            candidate_index = matches[0]
+            assigned[index] = candidates[candidate_index]
+            used.add(candidate_index)
+
+    # If trusted entries contain only IPs, use the remote hostname returned by
+    # the read-only preflight to map them to the role profile.
+    for candidate_index, candidate in enumerate(candidates):
+        if candidate_index in used:
+            continue
+        probe_spec = {
+            "name": "discovery",
+            "address": candidate["address"],
+            "sshHost": candidate["sshHosts"][0],
+            "sshUser": global_user,
+            "sshPort": candidate["sshPort"] or global_port,
+        }
+        try:
+            observed = probe(probe_spec, known_hosts, runner)
+        except Blocked:
+            continue
+        candidate["observedHostname"] = observed["hostname"]
+
+    for index, item in enumerate(raw["hosts"]):
+        if index in assigned:
+            continue
+        matches = [
+            candidate_index for candidate_index, candidate in enumerate(candidates)
+            if candidate_index not in used and _candidate_matches(candidate, item["name"])
+        ]
+        if len(matches) > 1:
+            raise Blocked("AUTO_DISCOVERY_NAME_AMBIGUOUS:" + item["name"])
+        if len(matches) == 1:
+            candidate_index = matches[0]
+            assigned[index] = candidates[candidate_index]
+            used.add(candidate_index)
+
+    remaining_by_role: dict[str, list[int]] = {"controller": [], "worker": []}
+    for index, item in enumerate(raw["hosts"]):
+        if index not in assigned:
+            role = item.get("role") if isinstance(item, dict) else None
+            if role not in remaining_by_role:
+                raise Blocked("NATIVE_INVENTORY_ROLE_INVALID")
+            remaining_by_role[role].append(index)
+    candidates_by_role: dict[str, list[int]] = {"controller": [], "worker": []}
+    for candidate_index, candidate in enumerate(candidates):
+        if candidate_index in used:
+            continue
+        hint = _role_hint(list(candidate.get("aliases", [])) + ([candidate["observedHostname"]] if candidate.get("observedHostname") else []))
+        if hint is not None:
+            candidates_by_role[hint].append(candidate_index)
+    for role in ("controller", "worker"):
+        slots = remaining_by_role[role]
+        available = candidates_by_role[role]
+        if not slots:
+            continue
+        if len(available) != len(slots):
+            raise Blocked("AUTO_DISCOVERY_ROLE_MAPPING_AMBIGUOUS:" + role)
+        available.sort(key=lambda i: (candidates[i]["address"], candidates[i]["sshHosts"][0]))
+        for index, candidate_index in zip(sorted(slots, key=lambda i: raw["hosts"][i]["name"]), available):
+            assigned[index] = candidates[candidate_index]
+            used.add(candidate_index)
+
+    if len(assigned) != len(raw["hosts"]):
+        raise Blocked("AUTO_DISCOVERY_HOST_MAPPING_AMBIGUOUS")
+
+    discovered_hosts = []
+    for index, item in enumerate(raw["hosts"]):
+        candidate = assigned[index]
+        updated = dict(item)
+        updated["address"] = candidate["address"]
+        if "sshPort" not in updated and "sshPort" not in raw:
+            updated["sshPort"] = candidate["sshPort"] or global_port
+        updated["sshHost"] = next(
+            (alias for alias in candidate["sshHosts"] if _short_host(alias) == _short_host(item["name"])),
+            candidate["sshHosts"][0],
+        )
+        discovered_hosts.append(updated)
+    result = dict(raw)
+    result["autoDiscover"] = True
+    result["hosts"] = discovered_hosts
+    return result
+
+
+def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.PathLike[str],
           journal_path: str | os.PathLike[str], *, check_only: bool = False,
           known_hosts_override: str | os.PathLike[str] | None = None,
+          auto_discover: bool = False, auto_ssh_user: str = "ubuntu", auto_ssh_port: int = 22,
           runner: Callable = run) -> dict:
-    inventory_file = pathlib.Path(inventory_path).resolve(strict=True)
     package = pathlib.Path(package_path).resolve(strict=True)
     journal_file = pathlib.Path(journal_path).resolve()
     if not package.is_file() or package.is_symlink() or package.stat().st_size > bootstrap.MAX_PACKAGE_BYTES:
         raise Blocked("PACKAGE_PAYLOAD_UNREADABLE")
-    raw = read_json(inventory_file)
+    generated_inventory = journal_file.with_name(journal_file.stem + ".inventory.json")
+    if auto_discover and inventory_path is None:
+        inventory_file = generated_inventory
+        raw = _default_inventory(
+            str(pathlib.Path(known_hosts_override or "/root/.ssh/known_hosts").resolve()),
+            auto_ssh_user,
+            _port(auto_ssh_port),
+        )
+    else:
+        if inventory_path is None:
+            raise Blocked("NATIVE_INVENTORY_REQUIRED")
+        inventory_file = pathlib.Path(inventory_path).resolve(strict=True)
+        raw = read_json(inventory_file)
     if known_hosts_override is not None:
         raw["knownHostsFile"] = str(pathlib.Path(known_hosts_override).resolve())
-    inventory, topology, _ = _resolve_inventory(raw, inventory_file)
+    auto_mode = auto_discover or (isinstance(raw, dict) and raw.get("autoDiscover") is True)
+    known_path_value = raw.get("knownHostsFile", "/root/.ssh/known_hosts") if isinstance(raw, dict) else "/root/.ssh/known_hosts"
+    known_path = pathlib.Path(known_path_value).resolve()
+    if auto_mode:
+        if generated_inventory.exists():
+            raw = read_json(generated_inventory, private=True)
+        else:
+            raw = _auto_discover_inventory(raw, known_path, runner)
+            write_json(generated_inventory, raw, exclusive=True)
+        inventory_file = generated_inventory
+    inventory, topology, _ = _resolve_inventory(raw, inventory_file, auto_discover=auto_mode)
     known_hosts = pathlib.Path(inventory["knownHostsFile"])
     binding = _binding(inventory, topology, package, known_hosts)
     package_sha = binding["packageSha256"]

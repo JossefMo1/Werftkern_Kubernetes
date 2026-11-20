@@ -191,6 +191,84 @@ class NativeBootstrapTests(unittest.TestCase):
                 b"package=absent\ndocker=missing\netcd=missing\n"
             )
 
+    def auto_profile(self, root):
+        known = root / "known_hosts"
+        addresses = [
+            "10.87.0.1", "10.87.0.2", "10.87.0.3",
+            "10.87.0.11", "10.87.0.12", "10.87.0.13",
+        ]
+        known.write_text("".join(f"{address} ssh-ed25519 AAAA\n" for address in addresses), encoding="utf-8")
+        raw = {
+            "format": "werftkern-native-inventory/v1",
+            "name": "lab",
+            "hostsFile": str(root / "does-not-exist"),
+            "knownHostsFile": str(known),
+            "sshUser": "ubuntu",
+            "autoDiscover": True,
+            "hosts": [
+                {"name": "master-1", "role": "controller"},
+                {"name": "master-2", "role": "controller"},
+                {"name": "master-3", "role": "controller"},
+                {"name": "worker-1", "role": "worker", "podCidr": "10.88.11.0/24"},
+                {"name": "worker-2", "role": "worker", "podCidr": "10.88.12.0/24"},
+                {"name": "worker-3", "role": "worker", "podCidr": "10.88.13.0/24"},
+            ],
+        }
+        return raw, known
+
+    def discovery_runner(self, names):
+        def run(args, **kwargs):
+            if args and args[0] == "ssh":
+                target = next(value for value in args if value.startswith("ubuntu@"))
+                address = target.rsplit("@", 1)[1]
+                return ("WERFTKERN_NATIVE_PREFLIGHT_V1\n"
+                        f"hostname={names[address]}\n"
+                        "os=ubuntu:24.04\n"
+                        "cgroup=v2\n"
+                        "config=absent\n"
+                        "incomplete=absent\n"
+                        "data=absent\n"
+                        "package=absent\n"
+                        "docker=missing\n"
+                        "etcd=missing\n").encode()
+            raise AssertionError(args)
+        return run
+
+    def test_auto_discovery_maps_trusted_ip_endpoints_to_remote_hostnames(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            raw, known = self.auto_profile(root)
+            names = {
+                "10.87.0.1": "master-1", "10.87.0.2": "master-2", "10.87.0.3": "master-3",
+                "10.87.0.11": "worker-1", "10.87.0.12": "worker-2", "10.87.0.13": "worker-3",
+            }
+            discovered = native_bootstrap._auto_discover_inventory(
+                raw, known, self.discovery_runner(names)
+            )
+            self.assertEqual(
+                [host["address"] for host in discovered["hosts"]],
+                list(names),
+            )
+            self.assertEqual(
+                [host["sshHost"] for host in discovered["hosts"]],
+                list(names),
+            )
+            resolved, _, _ = native_bootstrap._resolve_inventory(
+                discovered, root / "profile.json", auto_discover=True
+            )
+            self.assertEqual(resolved["hosts"][0]["address"], "10.87.0.1")
+
+    def test_auto_discovery_blocks_ambiguous_role_mapping(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            raw, known = self.auto_profile(root)
+            raw["hosts"] = [dict(host, name="node-" + str(index + 1)) for index, host in enumerate(raw["hosts"])]
+            names = {address: "host" for address in (
+                "10.87.0.1", "10.87.0.2", "10.87.0.3", "10.87.0.11", "10.87.0.12", "10.87.0.13"
+            )}
+            with self.assertRaisesRegex(Blocked, "^AUTO_DISCOVERY_ROLE_MAPPING_AMBIGUOUS:controller$"):
+                native_bootstrap._auto_discover_inventory(raw, known, self.discovery_runner(names))
+
 
 if __name__ == "__main__":
     unittest.main()
