@@ -47,9 +47,11 @@ Schwachstellenprüfung.
 
 Installiere das Native-Paket nur auf dem Admin-/Managementhost, kopiere es nicht
 manuell auf sechs Hosts. Das Paket enthält `werft-ops`; der Koordinator überträgt
-das exakt geprüfte Paket selbst. Die automatische Discovery benötigt keine manuell gepflegten IP- oder
+das exakt geprüfte Paket selbst. Der Post-Install-Schritt prüft beide
+Kommandos. Wenn `apt` die Installation nicht erfolgreich abschließt, darf der
+Bootstrap nicht fortgesetzt werden. Die automatische Discovery benötigt keine manuell gepflegten IP- oder
 Hostname-Einträge in `/etc/hosts`. Sie liest ausschließlich bereits
-vertrauenswürdige SSH-Endpunkte aus `/root/.ssh/known_hosts), ordnet sie über
+vertrauenswürdige SSH-Endpunkte aus `/root/.ssh/known_hosts`, ordnet sie über
 Alias- und read-only Remote-Hostname-Probes eindeutig den Controller-/Worker-
 Rollen zu und ergänzt daraus das Inventar. Eine vorhandene `/etc/hosts`-
 Zuordnung wird nur auf Konsistenz geprüft. Der Preflight prüft beide
@@ -68,6 +70,8 @@ manuelle Inventaränderung:
 ```bash
 sudo apt-get update
 sudo apt install --reinstall ./werftkern_0.2.0.dev4_amd64.deb
+command -v werft-ops
+sudo werft-ops --help >/dev/null
 
 # Optional: logisches 3m/3w-Profil aus dem Test-Kit; es enthält keine IPs.
 sudo werft-ops native-bootstrap \
@@ -85,11 +89,11 @@ sudo werft-ops native-bootstrap \
 sudo werft-ops native-bootstrap \
   --auto-discover \
   --package "$PWD/werftkern_0.2.0.dev4_amd64.deb" \
-  --journal /root/werft-native-bootstrap-test8.json --check-only
+  --journal /root/werft-native-bootstrap-test9.json --check-only
 sudo werft-ops native-bootstrap \
   --auto-discover \
   --package "$PWD/werftkern_0.2.0.dev4_amd64.deb" \
-  --journal /root/werft-native-bootstrap-test8.json
+  --journal /root/werft-native-bootstrap-test9.json
 ```
 
 `--check-only` schreibt nur den lokalen Journal-/HA-Kit-Zustand und verändert
