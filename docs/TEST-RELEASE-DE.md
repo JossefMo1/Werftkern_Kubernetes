@@ -68,6 +68,20 @@ manuelle Inventaränderung:
 ```bash
 sudo apt-get update
 sudo apt install --reinstall ./werftkern_0.2.0.dev4_amd64.deb
+
+# Optional: logisches 3m/3w-Profil aus dem Test-Kit; es enthält keine IPs.
+sudo werft-ops native-bootstrap \
+  --auto-discover \
+  --inventory examples/native-inventory-3m-3w.json \
+  --package /root/werftkern_0.2.0.dev4_amd64.deb \
+  --journal /root/werft-native-bootstrap.json --check-only
+sudo werft-ops native-bootstrap \
+  --auto-discover \
+  --inventory examples/native-inventory-3m-3w.json \
+  --package /root/werftkern_0.2.0.dev4_amd64.deb \
+  --journal /root/werft-native-bootstrap.json
+
+# Ohne Inventardatei wird das eingebaute 3m/3w-Profil verwendet.
 sudo werft-ops native-bootstrap \
   --auto-discover \
   --package "$PWD/werftkern_0.2.0.dev4_amd64.deb" \
