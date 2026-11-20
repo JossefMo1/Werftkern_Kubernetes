@@ -48,8 +48,9 @@ Schwachstellenprüfung.
 Installiere das Native-Paket nur auf dem Admin-/Managementhost, kopiere es nicht
 manuell auf sechs Hosts. Das Paket enthält `werft-ops`; der Koordinator überträgt
 das exakt geprüfte Paket selbst. Der Post-Install-Schritt prüft beide
-Kommandos. Wenn `apt` die Installation nicht erfolgreich abschließt, darf der
-Bootstrap nicht fortgesetzt werden. Die automatische Discovery benötigt keine manuell gepflegten IP- oder
+Kommandos. Das Paket fordert außerdem `openssh-client` an und prüft
+`ssh` im Post-Install-Schritt. Wenn `apt` die Installation nicht erfolgreich
+abschließt, darf der Bootstrap nicht fortgesetzt werden. Die automatische Discovery benötigt keine manuell gepflegten IP- oder
 Hostname-Einträge in `/etc/hosts`. Sie liest ausschließlich bereits
 vertrauenswürdige SSH-Endpunkte aus `/root/.ssh/known_hosts`, ordnet sie über
 Alias- und read-only Remote-Hostname-Probes eindeutig den Controller-/Worker-
@@ -71,6 +72,7 @@ manuelle Inventaränderung:
 sudo apt-get update
 sudo apt install --reinstall ./werftkern_0.2.0.dev4_amd64.deb
 command -v werft-ops
+command -v ssh
 sudo werft-ops --help >/dev/null
 
 # Optional: logisches 3m/3w-Profil aus dem Test-Kit; es enthält keine IPs.
