@@ -23,6 +23,18 @@ class ProductionTrackerTests(unittest.TestCase):
         self.assertFalse(self.tracker["productionReady"])
         self.assertEqual(self.tracker["nextAction"]["status"], "blocked-external")
         self.assertTrue(self.tracker["nextAction"]["blockers"])
+        self.assertEqual(self.tracker["decision"]["status"], "no-go")
+        self.assertEqual(self.tracker["decision"]["reasonCode"], "NO_REAL_LINUX_TEST_AUTHORIZED")
+
+    def test_missing_no_go_decision_is_rejected(self):
+        changed = copy.deepcopy(self.tracker)
+        del changed["decision"]
+        self.assertIn("TRACKER_DECISION_MISSING", TRACKER.validate(changed))
+
+    def test_production_decision_cannot_be_changed_without_live_basis(self):
+        changed = copy.deepcopy(self.tracker)
+        changed["decision"]["status"] = "go"
+        self.assertIn("TRACKER_DECISION_NOT_NO_GO", TRACKER.validate(changed))
 
     def test_duplicate_json_keys_are_rejected(self):
         with self.assertRaises(ValueError):
