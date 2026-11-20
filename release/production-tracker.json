@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T10:11:54Z",
+  "updatedAt": "2026-11-20T10:27:02Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "da99d8289cb72d91ab95d86ec62254f43273c888",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/62",
-    "summary": "Native SSH worker preflight now bounds remote agent.json and release trust material reads with O_NOFOLLOW regular-file checks before parsing or hashing; unsafe or oversized input fails closed. No live or production gate is claimed."
+    "commit": "c67283b293818ed9897435c38615beca2c8ccb83",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/66",
+    "summary": "Native SSH worker rollout now bounds local package, manifest and signature reads, rejects local symlinks/non-regular inputs, and compares existing remote payloads through O_NOFOLLOW descriptor reads. No live or production gate is claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
