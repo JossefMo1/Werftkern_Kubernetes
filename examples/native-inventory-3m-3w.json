@@ -1,0 +1,15 @@
+{
+  "format": "werftkern-native-inventory/v1",
+  "name": "werft-lab-3m-3w",
+  "hostsFile": "/etc/hosts",
+  "knownHostsFile": "/root/.ssh/known_hosts",
+  "sshUser": "ubuntu",
+  "hosts": [
+    {"name": "master-1", "role": "controller"},
+    {"name": "master-2", "role": "controller"},
+    {"name": "master-3", "role": "controller"},
+    {"name": "worker-1", "role": "worker", "podCidr": "10.88.11.0/24"},
+    {"name": "worker-2", "role": "worker", "podCidr": "10.88.12.0/24"},
+    {"name": "worker-3", "role": "worker", "podCidr": "10.88.13.0/24"}
+  ]
+}

@@ -47,3 +47,11 @@ Der SSH-Bootstrap überträgt ein gehashtes Paket und Kit, verwendet `sudo -n` u
 `werft ha install` aus. Das vorausgesetzte sichere SSH-Vertrauen und ein eventuell
 benötigtes WireGuard-Bootstrap werden nicht heimlich durch unsichere Defaults ersetzt.
 Hashprüfung beim Transfer ist kein Ersatz für eine vertrauenswürdig signierte Release.
+
+Für eine bereits vorhandene Umgebung mit drei Native-Controllern und mindestens
+einem Worker ist `werft-ops native-bootstrap` der koordinierte Pfad. Er liest ein
+explizites Inventar, gleicht die Hostnamen mit einer vertrauenswürdigen Hosts-Datei
+ab, prüft alle SSH-Ziele vor der ersten Mutation und setzt über ein gebundenes
+Journal fort. Siehe [NATIVE-BOOTSTRAP-DE.md](NATIVE-BOOTSTRAP-DE.md) und
+`examples/native-inventory-3m-3w.json`. Dieser Pfad bleibt experimentell und
+führt keine Produktionsqualifikation durch.

@@ -24,9 +24,13 @@ def _read_payload(path, limit=MAX_PACKAGE_BYTES):
     return raw
 
 def commands(spec, package, kit, known_hosts):
-    if set(spec)!={"name","address","sshUser","packageSha256"}: raise Blocked("BOOTSTRAP_SCHEMA_INVALID")
+    required={"name","address","sshUser","packageSha256"}
+    if not isinstance(spec,dict) or not required.issubset(spec) or set(spec)-required-{"sshPort"}:
+        raise Blocked("BOOTSTRAP_SCHEMA_INVALID")
     name(spec["name"]);ipaddress.IPv4Address(spec["address"])
     if not re.fullmatch(r"[a-z_][a-z0-9_-]{0,30}",spec["sshUser"]): raise Blocked("SSH_USER_INVALID")
+    port=spec.get("sshPort",22)
+    if type(port) is not int or not 1 <= port <= 65535: raise Blocked("SSH_PORT_INVALID")
     try:
         if not pathlib.Path(package).is_file() or pathlib.Path(package).stat().st_size > MAX_PACKAGE_BYTES:
             raise Blocked("PACKAGE_PAYLOAD_TOO_LARGE")
@@ -36,7 +40,7 @@ def commands(spec, package, kit, known_hosts):
     hk=read_json(kit,private=True)
     if hk.get("host",{}).get("name")!=spec["name"]: raise Blocked("HOST_KIT_MISMATCH")
     target=spec["sshUser"]+"@"+spec["address"]
-    options=["-o","BatchMode=yes","-o","StrictHostKeyChecking=yes","-o","UserKnownHostsFile="+str(pathlib.Path(known_hosts).resolve()),"-o","ConnectTimeout=10"]
+    options=["-F","/dev/null","-p",str(port),"-o","BatchMode=yes","-o","StrictHostKeyChecking=yes","-o","UserKnownHostsFile="+str(pathlib.Path(known_hosts).resolve()),"-o","ConnectTimeout=10"]
     if not pathlib.Path(known_hosts).is_file(): raise Blocked("OUT_OF_BAND_VERIFIED_KNOWN_HOSTS_REQUIRED")
     # Root-owned staging directory created by sudo, not a predictable writable /tmp path.
     remote="/var/lib/werftkern/bootstrap-"+spec["packageSha256"][:16]
