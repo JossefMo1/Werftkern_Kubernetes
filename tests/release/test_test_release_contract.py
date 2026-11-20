@@ -21,7 +21,7 @@ class TestReleaseContract(unittest.TestCase):
     def make_fixture(self):
         temp = tempfile.TemporaryDirectory()
         root = Path(temp.name)
-        for relative in CONTRACT.DOCUMENTS + (CONTRACT.WORKFLOW,):
+        for relative in CONTRACT.DOCUMENTS + (CONTRACT.WORKFLOW, CONTRACT.TRACKER):
             source = ROOT / relative
             target = root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -102,6 +102,19 @@ class TestReleaseContract(unittest.TestCase):
             "dist/*.deb dist/*.tar.gz",
         ))
         self.assertIn("PUBLISH_MUST_NOT_USE_DIST_TARBALL_GLOB", CONTRACT.validate(root))
+
+    def test_runbook_tag_must_match_tracker_candidate(self):
+        root = self.make_fixture()
+        tracker = root / CONTRACT.TRACKER
+        content = tracker.read_text().replace(
+            '"tag": "v0.2.0-dev.4-test.15"',
+            '"tag": "v0.2.0-dev.4-test.14"',
+        )
+        tracker.write_text(content)
+        self.assertIn(
+            "DOCUMENT_TAG_MISMATCH:docs/TEST-RELEASE-DE.md:v0.2.0-dev.4-test.15!=v0.2.0-dev.4-test.14",
+            CONTRACT.validate(root),
+        )
 
 
 if __name__ == "__main__":
