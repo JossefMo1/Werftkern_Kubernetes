@@ -24,7 +24,7 @@ Für dieses Release kannst du die Dateien so herunterladen und anschließend das
 Test-Kit entpacken:
 
 ```bash
-TAG=v0.2.0-dev.4-test.11
+TAG=v0.2.0-dev.4-test.14
 BASE="https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/${TAG}"
 
 wget \
@@ -71,6 +71,11 @@ manuelle Inventaränderung:
 ```bash
 sudo apt-get update
 sudo apt install --reinstall ./werftkern_0.2.0.dev4_amd64.deb
+test -x /usr/bin/werft-ops || {
+  echo "werft-ops fehlt: apt hat das Native-Paket nicht vollständig installiert." >&2
+  dpkg-query -W -f='Status: ${Status}\n' werftkern 2>/dev/null || true
+  exit 1
+}
 command -v werft-ops
 command -v ssh
 sudo werft-ops --help >/dev/null
@@ -91,11 +96,11 @@ sudo werft-ops native-bootstrap \
 sudo werft-ops native-bootstrap \
   --auto-discover \
   --package "$PWD/werftkern_0.2.0.dev4_amd64.deb" \
-  --journal /root/werft-native-bootstrap-test11.json --check-only
+  --journal /root/werft-native-bootstrap-test14.json --check-only
 sudo werft-ops native-bootstrap \
   --auto-discover \
   --package "$PWD/werftkern_0.2.0.dev4_amd64.deb" \
-  --journal /root/werft-native-bootstrap-test11.json
+  --journal /root/werft-native-bootstrap-test14.json
 ```
 
 `--check-only` schreibt nur den lokalen Journal-/HA-Kit-Zustand und verändert
@@ -178,3 +183,4 @@ Backups und Hostkeys gelten die Datenschutz- und Geheimnisregeln aus
   bei Änderungen den Hash neu berechnen.
 - SSH-/Hostkey-Fehler: IP, DNS, Port, Benutzer, `known_hosts` und Schlüssel
   prüfen. Hostkeys nicht per `ssh-keyscan` ungeprüft übernehmen.
+- `werft-ops: command not found`: die Paketinstallation wurde nicht abgeschlossen. Nicht mit `native-bootstrap` fortfahren; zuerst `sudo apt install --reinstall ./werftkern_0.2.0.dev4_amd64.deb` erfolgreich beenden und den `/usr/bin/werft-ops`-Check wiederholen.
