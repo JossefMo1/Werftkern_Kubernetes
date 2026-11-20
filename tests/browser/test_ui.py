@@ -23,7 +23,13 @@ window.fetch=async(path,options={})=>{
 '''
 checks=[]
 with sync_playwright() as p:
- browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox'])
+ try:
+  browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox'])
+ except Exception as e:
+  result={'status':'blocked','reason':'BROWSER_LAUNCH_FAILED','errorType':type(e).__name__,'mode':'real Chromium, in-memory DOM and fetch fixture, no browser network','api':'synthetic UI-test data, not a live cluster','browserTransportQualification':'not tested here; browser process could not be started'}
+  (out/'browser-test.json').write_text(json.dumps(result,indent=2)+'\n')
+  print(json.dumps(result))
+  raise SystemExit(2)
  page=browser.new_page(viewport={'width':1440,'height':1000},device_scale_factor=1)
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
  html=(assets/'index.html').read_text();html=re.sub(r'<link[^>]*>', '', html);html=re.sub(r'<script[^>]*>.*?</script>', '',html)

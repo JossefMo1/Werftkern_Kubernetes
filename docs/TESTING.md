@@ -24,6 +24,12 @@ python3 -m unittest discover -s tests/release -v
 python3 tests/browser/test_ui.py
 ```
 
+Der Browserlauf erzeugt bei fehlendem Playwright-/Chromium-Prozess einen
+maschinenlesbaren `evidence/browser-test.json`-Nachweis mit `status: blocked`
+und beendet sich mit Exit-Code 2. Das ist kein bestandener Browser- oder
+Transportnachweis; der Lauf muss in einer dafür freigegebenen Umgebung
+wiederholt werden.
+
 Archive tests use real files, AES-GCM and hashes. Ingress tests use real local HTTPS and
 HTTP. `TestVolumeArchiveCLIPhysicalRestoreAfterLostAcknowledgment` is root-only and uses
 real filesystem/CLI/mTLS/Unix HTTP with explicit Docker and etcd fixtures. It skips on
