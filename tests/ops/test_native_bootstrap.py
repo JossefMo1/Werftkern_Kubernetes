@@ -322,7 +322,7 @@ class NativeBootstrapTests(unittest.TestCase):
             names = {address: "host" for address in (
                 "10.87.0.1", "10.87.0.2", "10.87.0.3", "10.87.0.11", "10.87.0.12", "10.87.0.13"
             )}
-            with self.assertRaisesRegex(Blocked, "^AUTO_DISCOVERY_ROLE_MAPPING_AMBIGUOUS:controller$"):
+            with self.assertRaisesRegex(Blocked, "^AUTO_DISCOVERY_HOSTS_NAME_MISSING:node-1$"):
                 native_bootstrap._auto_discover_inventory(raw, known, self.discovery_runner(names))
 
 
