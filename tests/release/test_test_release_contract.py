@@ -112,7 +112,7 @@ class TestReleaseContract(unittest.TestCase):
         )
         tracker.write_text(content)
         self.assertIn(
-            "DOCUMENT_TAG_MISMATCH:docs/TEST-RELEASE-DE.md:v0.2.0-dev.4-test.15!=v0.2.0-dev.4-test.14",
+            "DOCUMENT_TAG_MISMATCH:docs/TEST-RELEASE-DE.md:v0.2.0-dev.4-test.16!=v0.2.0-dev.4-test.14",
             CONTRACT.validate(root),
         )
 
