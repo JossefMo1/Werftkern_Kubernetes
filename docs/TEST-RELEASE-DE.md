@@ -44,7 +44,7 @@ sudo werft-ops native-bootstrap \
   --journal /root/werft-native-bootstrap.json --check-only
 sudo werft-ops native-bootstrap \
   --inventory /root/native-inventory.json \
-  --package /root/werftkern_0.2.0~dev4_amd64.deb \
+  --package /root/werftkern_0.2.0.dev4_amd64.deb \
   --journal /root/werft-native-bootstrap.json
 ```
 
@@ -72,7 +72,7 @@ Für einen echten Lauf brauchst du daher:
 Beginne mit den Vorlagen aus dem Test-Kit:
 
 ```bash
-sudo apt install ./werftkern-kubernetes_0.1.0~dev3_all.deb
+sudo apt install ./werftkern-kubernetes_0.1.0.dev3_all.deb
 install -d -m 700 /etc/werftkern/kubernetes/lab /var/lib/werftkern/kubernetes/lab
 cp examples/kubernetes/cluster-3m-3w.example.json /root/cluster-3m-3w.json
 cp examples/kubernetes/assets-core.example.json /root/assets.json

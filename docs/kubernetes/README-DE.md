@@ -47,7 +47,7 @@ Diese Freigaben werden nicht pauschal öffentlich geöffnet.
 ## Installation und erste Befehle
 
 ```bash
-sudo apt install ./werftkern-kubernetes_0.1.0~dev3_all.deb
+sudo apt install ./werftkern-kubernetes_0.1.0.dev3_all.deb
 werft-kube version
 werft-kube --help
 ```
