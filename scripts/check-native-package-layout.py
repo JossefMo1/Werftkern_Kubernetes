@@ -24,6 +24,10 @@ REQUIRED_EXECUTABLES = (
     "/usr/bin/werft",
     "/usr/bin/werft-ops",
 )
+REQUIRED_DEPENDENCIES = (
+    "openssh-client",
+    "python3",
+)
 
 
 def _normalise_path(raw: str) -> str:
@@ -72,6 +76,27 @@ def validate_listing(lines: Iterable[str]) -> dict[str, object]:
     }
 
 
+def parse_dependencies(raw: str) -> set[str]:
+    names: set[str] = set()
+    for clause in raw.split(","):
+        for alternative in clause.split("|"):
+            name = alternative.strip().split("(", 1)[0].strip().split(" ", 1)[0]
+            if name:
+                names.add(name)
+    return names
+
+
+def validate_dependencies(raw: str) -> dict[str, object]:
+    dependencies = parse_dependencies(raw)
+    missing = [name for name in REQUIRED_DEPENDENCIES if name not in dependencies]
+    if missing:
+        raise ValueError("native package dependencies invalid: missing=" + ",".join(missing))
+    return {
+        "status": "passed",
+        "requiredDependencies": list(REQUIRED_DEPENDENCIES),
+    }
+
+
 def check_package(package: pathlib.Path) -> dict[str, object]:
     if not package.is_file():
         raise ValueError(f"package does not exist: {package}")
@@ -81,7 +106,15 @@ def check_package(package: pathlib.Path) -> dict[str, object]:
         capture_output=True,
         text=True,
     )
-    return validate_listing(result.stdout.splitlines())
+    metadata = subprocess.run(
+        ["dpkg-deb", "-f", str(package), "Depends"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    report = validate_listing(result.stdout.splitlines())
+    report["dependencies"] = validate_dependencies(metadata.stdout)
+    return report
 
 
 def main(argv: list[str] | None = None) -> int:

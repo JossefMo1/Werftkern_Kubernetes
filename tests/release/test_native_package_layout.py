@@ -19,6 +19,16 @@ class NativePackageLayoutTests(unittest.TestCase):
         report = MODULE.validate_listing(listing)
         self.assertEqual(report["status"], "passed")
 
+    def test_accepts_required_dependencies(self):
+        report = MODULE.validate_dependencies(
+            "ca-certificates, openssh-client (>= 1:9), python3, docker.io | docker-ce"
+        )
+        self.assertEqual(report["status"], "passed")
+
+    def test_rejects_missing_ssh_dependency(self):
+        with self.assertRaisesRegex(ValueError, "missing=openssh-client"):
+            MODULE.validate_dependencies("ca-certificates, python3")
+
     def test_rejects_missing_wrapper(self):
         listing = [
             "-rwxr-xr-x root/root 123 2026-01-01 00:00 ./usr/bin/werft",

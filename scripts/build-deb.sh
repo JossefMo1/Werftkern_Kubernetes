@@ -36,7 +36,7 @@ Section: admin
 Priority: optional
 Architecture: amd64
 Maintainer: Werftkern Development
-Depends: ca-certificates, adduser, systemd, docker.io | docker-ce, etcd-server (>= 3.4), python3
+Depends: ca-certificates, adduser, systemd, openssh-client, docker.io | docker-ce, etcd-server (>= 3.4), python3
 Description: Experimental standalone Werftkern container orchestrator
  Native scheduler, etcd persistence, mTLS, node agent and local dashboard.
  Target: Ubuntu 24.04 LTS amd64. Not production-qualified; no Kubernetes API.
