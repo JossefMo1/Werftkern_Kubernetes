@@ -448,7 +448,10 @@ if command -v etcd >/dev/null 2>&1; then printf 'etcd=present\\n'; else printf '
 
 
 def _probe_endpoints(spec: dict, known_hosts: pathlib.Path, runner: Callable = run) -> tuple[list[dict[str, str]], dict]:
-    """Probe both the trusted hostname and its resolved IP endpoint."""
+    """Probe both endpoints and bind the observed host identity to the profile.
+
+    This covers the trusted hostname and its resolved IP endpoint.
+    """
     endpoints = []
     for endpoint in (spec.get("sshHost", spec["address"]), spec["address"]):
         if endpoint not in endpoints:
@@ -463,6 +466,9 @@ def _probe_endpoints(spec: dict, known_hosts: pathlib.Path, runner: Callable = r
         observations.append({"endpoint": endpoint, "hostname": observed["hostname"]})
     if len({_short_host(item["hostname"]) for item in observations}) != 1:
         raise Blocked("REMOTE_HOSTNAME_ENDPOINT_MISMATCH")
+    expected = spec.get("expectedHostname") or spec.get("name")
+    if expected and _host_key(observations[0]["hostname"]) != _host_key(expected):
+        raise Blocked("REMOTE_HOSTNAME_PROFILE_MISMATCH")
     return observations, parsed[0]
 
 def _remote_json(spec: dict, known_hosts: pathlib.Path, path: str, runner: Callable = run) -> dict:

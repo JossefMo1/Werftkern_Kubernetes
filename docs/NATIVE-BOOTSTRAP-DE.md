@@ -19,7 +19,10 @@ Plausibilitätsprüfung verwendet, ist aber im Auto-Modus nicht erforderlich.
 2. Jeder Host wird vor der ersten Mutation zweimal mit `BatchMode`,
    `StrictHostKeyChecking=yes`, einer festen `known_hosts`-Datei und `sudo -n`
    geprüft: einmal über den Hostnamen und einmal über die aufgelöste IP. Der
-   gemeldete Remote-Hostname muss bei beiden Verbindungen identisch sein.
+   gemeldete Remote-Hostname muss bei beiden Verbindungen identisch sein
+   und zum erwarteten Profilnamen (oder zu `expectedHostname`) passen. Eine
+   veraltete oder vertauschte `/etc/hosts`-Zuordnung wird dadurch vor jeder
+   Host-Mutation mit `REMOTE_HOSTNAME_PROFILE_MISMATCH` blockiert.
 3. Jeder Host muss Ubuntu 24.04, systemd und cgroup v2 melden. Hostname,
    Paket-/Konfigurationszustand und unterbrochene HA-Installationen werden
    protokolliert.
