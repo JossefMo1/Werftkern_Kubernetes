@@ -3,6 +3,7 @@ import pathlib
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "ops"))
 
@@ -400,6 +401,26 @@ class NativeBootstrapTests(unittest.TestCase):
             )}
             with self.assertRaisesRegex(Blocked, "^AUTO_DISCOVERY_ROLE_MAPPING_AMBIGUOUS:controller$"):
                 native_bootstrap._auto_discover_inventory(raw, known, self.discovery_runner(names))
+
+
+    def test_apply_blocks_before_journal_when_local_ssh_is_missing(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            inv, _ = self.inventory(root)
+            package = root / "runtime.deb"
+            package.write_bytes(b"fixture-package")
+            journal = root / "journal.json"
+            with patch("werftops.native_bootstrap.shutil.which", return_value=None):
+                with self.assertRaisesRegex(Blocked, "^LOCAL_SSH_REQUIRED$"):
+                    native_bootstrap.apply(
+                        inv,
+                        package,
+                        journal,
+                        check_only=True,
+                        runner=self.fake_runner(root),
+                    )
+            self.assertFalse(journal.exists())
+            self.assertFalse(journal.with_name("journal.inventory.json").exists())
 
 
 if __name__ == "__main__":

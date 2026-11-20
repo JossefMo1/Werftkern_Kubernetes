@@ -26,6 +26,9 @@ Plausibilitätsprüfung verwendet, ist aber im Auto-Modus nicht erforderlich.
 3. Jeder Host muss Ubuntu 24.04, systemd und cgroup v2 melden. Hostname,
    Paket-/Konfigurationszustand und unterbrochene HA-Installationen werden
    protokolliert.
+   Zusätzlich muss der lokale Adminhost den `ssh`-Client bereitstellen. Fehlt er,
+   bricht `native-bootstrap` vor Journal- oder HA-Kit-Erzeugung mit
+   `LOCAL_SSH_REQUIRED` ab.
 4. Der Orchestrator erzeugt genau ein gemeinsames HA-Kit-Set und bindet den
    unveränderten Paket-Hash, die Inventar-, Topologie- und `known_hosts`-Hashes
    in ein privates Journal.

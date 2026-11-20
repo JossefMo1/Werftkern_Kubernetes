@@ -17,6 +17,7 @@ import os
 import pathlib
 import re
 import shlex
+import shutil
 import socket
 import stat
 from typing import Callable
@@ -43,6 +44,12 @@ MAX_KNOWN_HOSTS_BYTES = 1 * 1024 * 1024
 MAX_REMOTE_JSON_BYTES = 256 * 1024
 MAX_DISCOVERY_CANDIDATES = 64
 REMOTE_SENTINEL = "WERFTKERN_NATIVE_PREFLIGHT_V1"
+
+
+def _require_local_ssh() -> None:
+    """Fail before local journal/HA-kit mutation when ssh is unavailable."""
+    if shutil.which("ssh") is None:
+        raise Blocked("LOCAL_SSH_REQUIRED")
 
 
 def _regular(path: pathlib.Path, limit: int, *, private: bool = False) -> bytes:
@@ -706,6 +713,7 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
     journal_file = pathlib.Path(journal_path).resolve()
     if not package.is_file() or package.is_symlink() or package.stat().st_size > bootstrap.MAX_PACKAGE_BYTES:
         raise Blocked("PACKAGE_PAYLOAD_UNREADABLE")
+    _require_local_ssh()
     generated_inventory = journal_file.with_name(journal_file.stem + ".inventory.json")
     if auto_discover and inventory_path is None:
         inventory_file = generated_inventory
