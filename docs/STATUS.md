@@ -50,6 +50,10 @@ The later [production qualification review](validation/PRODUCTION-READINESS-2026
 records a successful exact-commit single-host Ubuntu test. Multi-host, Kubernetes,
 database recovery and signed production acceptance remain unqualified.
 
+## Current immutable lab candidate
+
+The latest immutable experimental candidate is [`v0.2.0-dev.4-test.16`](https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.16), built from source commit `bcdad0f9abd6a873391cd5d2d1e0141c99de9022`. Its Native, Kubernetes-package and source-audit workflows passed; the Native real-etcd job passed, while VM/PITR jobs were skipped. The release is unsigned and remains a lab artifact only: it does not qualify installation, HA, recovery, Kubernetes lifecycle, supply-chain or production readiness. The machine-readable tracker records the exact asset digests and open gates.
+
 ## Implemented in this increment
 
 Owned sequential worker rollout, separately authorized node maintenance reads and drain,
