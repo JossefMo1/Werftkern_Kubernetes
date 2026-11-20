@@ -66,10 +66,10 @@
         "v0.2.0-dev.4-test.15 release: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.15",
         "release manifest: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.15/release-manifest.json",
         "SHA256SUMS: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.15/SHA256SUMS",
-        "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589759",
-        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589698",
-        "Kubernetes package workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589633",
-        "source audit workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589858",
+        "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304884",
+        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304889",
+        "Kubernetes package workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304882",
+        "source audit workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304885",
         "scripts/check-native-package-layout.py",
         "scripts/check-test-release-contract.py",
         "tests/release/test_native_package_layout.py",
@@ -113,8 +113,8 @@
       "evidence": [
         "tests/e2e/ubuntu-vm.sh",
         "candidate v0.2.0-dev.4-test.15: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.15",
-        "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589759",
-        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589698"
+        "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304884",
+        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304889"
       ],
       "blockers": [
         "No expressly authorized disposable Ubuntu VM and candidate package are configured."
