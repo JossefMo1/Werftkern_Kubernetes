@@ -34,7 +34,7 @@ class NativePackageLayoutTests(unittest.TestCase):
             package = root / "usr" / "lib" / "werftkern" / "ops" / "werftops"
             package.mkdir(parents=True)
             (package / "__init__.py").write_text("")
-            (package / "__main__.py").write_text("print('package-wrapper-ok')\\n")
+            (package / "__main__.py").write_text("print('package-wrapper-ok')\n")
 
             result = subprocess.run(
                 [sys.executable, str(wrapper)],
