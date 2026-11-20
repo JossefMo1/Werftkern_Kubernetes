@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T04:57:38Z",
+  "updatedAt": "2026-11-20T05:52:12Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "c4e82d409bf083816074ce4db2488a0f70abae04",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/50",
-    "summary": "Native HA bootstrap now rejects Debian payloads over 128 MiB before any SSH mutation and reads accepted packages with O_NOFOLLOW and regular-file checks; regression coverage confirms oversized input is blocked fail-closed. No live or production gate is claimed."
+    "commit": "6e372976b3833ce29bd62640a2d9d92e8f0a9961",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/53",
+    "summary": "Reviewed Kubernetes manifest assets now use a 16 MiB bounded O_NOFOLLOW regular-file read before YAML parsing; oversized or unsafe input fails closed while digest and render checks remain enforced. No live or production gate is claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -93,7 +93,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7030858144",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7031702982",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
