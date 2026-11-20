@@ -182,6 +182,21 @@ class WireProjectionTests(unittest.TestCase):
    readiness.check(s,C,'',rollout.VERSION,2)
 
 class WorkerHostTests(unittest.TestCase):
+ def test_ssh_preflight_bounds_remote_metadata_reads(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);f=Fixture(root);calls=[]
+   expected=hashlib.sha256(b'public_key').hexdigest()
+   def runner(a,**kw):
+    calls.append(a)
+    return json.dumps({'nodeId':N,'instanceId':I,'clusterId':C,'address':'10.2.0.11','keySha':expected}).encode()
+   ssh=rollout.SSHWorkers(f.files['known_hosts'],f.files['public_key'],f.files['package'],f.files['manifest'],f.files['signature'],runner)
+   ssh.preflight(plan()['workers'][0],{'clusterId':C},{})
+   script=calls[0][-1]
+   self.assertIn('os.O_NOFOLLOW',script)
+   self.assertIn('f.read(limit+1)',script)
+   self.assertNotIn('.read_text()',script)
+   self.assertNotIn('k.read_bytes()',script)
+
  def case(self,fail):
   with tempfile.TemporaryDirectory() as d:
    root=pathlib.Path(d);cfg=root/'etc';cfg.mkdir();f=Fixture(root)
