@@ -35,6 +35,11 @@ RELEASE_DOWNLOAD_FRAGMENTS = (
     '"${BASE}/SHA256SUMS"',
     'tar -xzf "werftkern-test-kit-${TAG}.tar.gz"',
 )
+NATIVE_AUTO_FRAGMENTS = (
+    "--auto-discover",
+    "--inventory examples/native-inventory-3m-3w.json",
+    "--journal /root/werft-native-bootstrap.json --check-only",
+)
 WORKFLOW = Path(".github/workflows/test-release.yml")
 
 
@@ -58,9 +63,9 @@ def validate(root: Path) -> list[str]:
             if asset in content:
                 problems.append(f"LEGACY_ASSET_NAME:{relative}:{asset}")
         if relative == Path("docs/TEST-RELEASE-DE.md"):
-            for fragment in RELEASE_DOWNLOAD_FRAGMENTS:
+            for fragment in RELEASE_DOWNLOAD_FRAGMENTS + NATIVE_AUTO_FRAGMENTS:
                 if fragment not in content:
-                    problems.append(f"DOWNLOAD_INSTRUCTIONS_MISSING:{relative}:{fragment}")
+                    problems.append(f"DOCUMENT_INSTRUCTIONS_MISSING:{relative}:{fragment}")
 
     workflow_path = root / WORKFLOW
     try:
