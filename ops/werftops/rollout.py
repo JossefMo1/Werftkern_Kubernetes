@@ -268,12 +268,25 @@ class SSHWorkers:
     def _ssh(self,w,argv,**kwargs):
         return self.runner(['ssh',*self.opts,w['sshUser']+'@'+w['address'],shlex.join(argv)],**kwargs)
     def preflight(self,w,p,m):
-        code="""import json,pathlib,hashlib,os
-b=pathlib.Path('/etc/werftkern');a=json.loads((b/'agent.json').read_text())
+        code="""import json,pathlib,hashlib,os,stat
+def read(path,limit):
+ fd=None
+ try:
+  fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+  s=os.fstat(fd)
+  if not stat.S_ISREG(s.st_mode) or s.st_size>limit:raise ValueError()
+  with os.fdopen(fd,'rb') as f:
+   fd=None;b=f.read(limit+1)
+  if len(b)>limit:raise ValueError()
+  return b
+ except (OSError,ValueError):raise SystemExit(4)
+ finally:
+  if fd is not None:os.close(fd)
+b=pathlib.Path('/etc/werftkern');a=json.loads(read(b/'agent.json',65536))
 if (b/'control.json').exists():raise SystemExit(2)
 k=b/'trust/releases.pem';s=k.lstat()
 if not k.is_file() or k.is_symlink() or s.st_uid!=0 or s.st_mode&0o022:raise SystemExit(3)
-print(json.dumps({'nodeId':a['nodeId'],'instanceId':a['instanceId'],'clusterId':a['client']['clusterId'],'address':a['address'],'keySha':hashlib.sha256(k.read_bytes()).hexdigest()}))"""
+print(json.dumps({'nodeId':a['nodeId'],'instanceId':a['instanceId'],'clusterId':a['client']['clusterId'],'address':a['address'],'keySha':hashlib.sha256(read(k,262144)).hexdigest()}))"""
         o=json.loads(self._ssh(w,['sudo','-n','python3','-I','-c',code]))
         if o.get('nodeId')!=w['nodeId'] or o.get('address')!=w['address'] or o.get('clusterId')!=p['clusterId'] or o.get('keySha')!=digest_file(self.key):
             raise Blocked('REMOTE_IDENTITY_OR_TRUST_MISMATCH')
