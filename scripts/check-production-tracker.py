@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import datetime
 from pathlib import Path
 import sys
 
@@ -36,6 +37,28 @@ def validate(tracker: dict) -> list[str]:
         problems.append("TRACKER_SCHEMA_INVALID")
     if tracker.get("status") != "active-not-production-ready" or tracker.get("productionReady") is not False:
         problems.append("TRACKER_CANNOT_CLAIM_PRODUCTION")
+    decision = tracker.get("decision")
+    if not isinstance(decision, dict):
+        problems.append("TRACKER_DECISION_MISSING")
+    else:
+        if decision.get("status") != "no-go":
+            problems.append("TRACKER_DECISION_NOT_NO_GO")
+        if decision.get("scope") != "full-masterplan":
+            problems.append("TRACKER_DECISION_SCOPE_INVALID")
+        if decision.get("reasonCode") != "NO_REAL_LINUX_TEST_AUTHORIZED":
+            problems.append("TRACKER_DECISION_REASON_INVALID")
+        try:
+            datetime.datetime.fromisoformat(decision["decidedAt"].replace("Z", "+00:00"))
+        except (KeyError, TypeError, ValueError):
+            problems.append("TRACKER_DECISION_TIME_INVALID")
+        if not isinstance(decision.get("basis"), list) or not all(
+            isinstance(value, str) and value for value in decision.get("basis", [])
+        ):
+            problems.append("TRACKER_DECISION_BASIS_INVALID")
+        if not isinstance(decision.get("blockingGates"), list) or not all(
+            isinstance(value, str) and value for value in decision.get("blockingGates", [])
+        ):
+            problems.append("TRACKER_DECISION_GATES_INVALID")
     sources = tracker.get("sources")
     if sources != {
         "productionScope": "release/production-scope.json",
