@@ -73,6 +73,14 @@ class TestReleaseContract(unittest.TestCase):
             any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
         )
 
+    def test_native_instructions_require_installed_cli_check(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.DOCUMENTS[0]
+        path.write_text(path.read_text().replace("test -x /usr/bin/werft-ops || {", "command -v werft-ops"))
+        self.assertTrue(
+            any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
+        )
+
     def test_release_notes_must_be_normalized_to_actual_tag(self):
         root = self.make_fixture()
         path = root / CONTRACT.WORKFLOW
