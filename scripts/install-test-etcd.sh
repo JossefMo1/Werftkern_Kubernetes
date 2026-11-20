@@ -6,8 +6,10 @@ cd "$(dirname "$0")/.."
 target="${1:?Usage: install-test-etcd.sh NEW_ABSOLUTE_DIRECTORY}"
 [[ "$target" = /* && ! -e "$target" ]] || { echo 'New absolute target directory required' >&2; exit 2; }
 [[ "$(uname -s)" = Linux && "$(uname -m)" = x86_64 ]] || { echo 'Linux amd64 test host required' >&2; exit 2; }
-url="$(python3 -c 'import json;print(json.load(open("tests/runtime/etcd-tool.json"))["url"])')"
-hash="$(python3 -c 'import json;print(json.load(open("tests/runtime/etcd-tool.json"))["sha256"])')"
+metadata="$(python3 scripts/check-test-dependency.py tests/runtime/etcd-tool.json)"
+url="${metadata%%$'\n'*}"
+hash="${metadata#*$'\n'}"
+[[ "$url" != "$metadata" && "$hash" =~ ^[0-9a-f]{64}$ ]] || { echo 'Test dependency metadata output invalid' >&2; exit 2; }
 stage="$(mktemp -d)"; trap 'rm -rf "$stage"' EXIT
 curl --proto '=https' --tlsv1.2 --fail --show-error --location --max-time 120 "$url" -o "$stage/etcd.tar.gz"
 printf '%s  %s\n' "$hash" "$stage/etcd.tar.gz" | sha256sum --check --strict
