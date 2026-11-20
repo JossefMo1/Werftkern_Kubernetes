@@ -2,7 +2,28 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T10:04:23Z",
+  "updatedAt": "2026-11-20T10:11:54Z",
+  "decision": {
+    "status": "no-go",
+    "decidedAt": "2026-11-20T10:11:54Z",
+    "scope": "full-masterplan",
+    "reasonCode": "NO_REAL_LINUX_TEST_AUTHORIZED",
+    "basis": [
+      "The required real Linux installation, restart, uninstall/reinstall and upgrade/rollback evidence is not available for this run.",
+      "Local unit, fixture, static and CI evidence cannot substitute for the live qualification gates.",
+      "Kubernetes lifecycle, HA/partition, restore-on-new-host, load/soak and independent security gates also remain unverified."
+    ],
+    "blockingGates": [
+      "ubuntu-install-e2e",
+      "upgrade-rollback",
+      "restore-new-host",
+      "multi-node-network",
+      "ha-partition",
+      "load-soak",
+      "independent-security",
+      "maintainer-approval"
+    ]
+  },
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
