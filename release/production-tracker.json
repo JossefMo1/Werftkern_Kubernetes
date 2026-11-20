@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T02:00:00Z",
+  "updatedAt": "2026-11-20T03:01:42Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "d497aa9677484ea6dd7ff1fab8b176403bd8caa0",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/44",
-    "summary": "Remote Hetzner and Kubernetes JSON responses now reject duplicate object keys and non-finite numbers before interpretation; regression tests and all required CI workflows passed. No live gate or production readiness was claimed."
+    "commit": "dbaa9de36968dbebd4bdbdbf8404f70f571e2f72",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/46",
+    "summary": "Owned external commands now drain stdout/stderr continuously and terminate on a bounded 16 MiB capture limit; regression coverage and all required CI workflows passed. No live gate or production readiness was claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
