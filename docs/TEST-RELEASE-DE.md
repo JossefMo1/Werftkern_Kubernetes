@@ -1,5 +1,8 @@
 # Experimentelles Werftkern-Testrelease
 
+Der Test-Build `v0.2.0-dev.4-test.7` stammt aus dem gemergten Native-Preflight-Fix
+und enthält die Hosts-Datei-/Hostname-/IP-Prüfung als fail-closed Laborpfad.
+
 Dieses Dokument gilt für den Download eines `-test.N`-Releases. Es ist ein
 reproduzierbar gebautes Ubuntu-amd64-Laborartefakt für Wegwerf-VMs. Es ist **keine
 Produktionsfreigabe**, kein Supportvertrag und kein Nachweis für HA, Upgrade,
