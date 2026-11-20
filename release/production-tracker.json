@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T10:27:02Z",
+  "updatedAt": "2026-11-20T10:46:09Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "c67283b293818ed9897435c38615beca2c8ccb83",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/66",
-    "summary": "Native SSH worker rollout now bounds local package, manifest and signature reads, rejects local symlinks/non-regular inputs, and compares existing remote payloads through O_NOFOLLOW descriptor reads. No live or production gate is claimed."
+    "commit": "811b7f4800ab326c4a60b4898fa1ade4de5c2cb7",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/68",
+    "summary": "Disposable Ubuntu E2E now binds checkout SHA, package BUILD-INFO, package digest and workflow identity; a successful manual real-vm run can provide candidate-bound single-host evidence. No live run or production gate is claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
