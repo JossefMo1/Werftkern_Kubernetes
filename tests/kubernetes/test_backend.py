@@ -169,6 +169,21 @@ class ContractTests(unittest.TestCase):
                 'users':[{'name':'x','user':{'exec':{'command':'anything'}}}]})
             with self.assertRaises(Blocked):KubeHTTP(p)
 
+class KubeHTTPResponseTests(unittest.TestCase):
+    def api(self, raw):
+        class Opener:
+            def open(self, request, timeout): return io.BytesIO(raw)
+        api=object.__new__(KubeHTTP)
+        api.base='https://api.example.invalid:6443'
+        api.opener=Opener()
+        return api
+    def test_ambiguous_json_is_blocked_before_kubernetes_interpretation(self):
+        for raw, reason in [(b'{"items":[],"items":[]}', 'DUPLICATE_JSON_KEY'),
+                            (b'{"items":[Infinity]}', 'NON_FINITE_JSON_NUMBER')]:
+            with self.subTest(reason=reason):
+                with self.assertRaisesRegex(Blocked, '^'+reason+'$'):
+                    self.api(raw).call('GET','/api/v1/nodes')
+
 class LifecycleTests(unittest.TestCase):
     def setUp(self):self.tmp=tempfile.TemporaryDirectory();self.d=FakeDriver(self.tmp.name);self.life=Lifecycle(self.d)
     def tearDown(self):self.tmp.cleanup()

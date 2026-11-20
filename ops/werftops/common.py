@@ -31,7 +31,18 @@ def private_read(path, limit=4*1024*1024):
 
 def read_json(path, private=False):
     raw = private_read(path) if private else pathlib.Path(path).read_bytes()
-    if len(raw) > 4*1024*1024:
+    return parse_json(raw)
+
+def parse_json(raw, limit=4*1024*1024):
+    """Parse JSON while rejecting ambiguous object keys and non-finite numbers.
+
+    ``ValueError`` remains the signal for malformed JSON so callers can map an
+    invalid remote response to their existing fail-closed error.  Security
+    relevant ambiguities are raised as ``Blocked`` and must not be retried.
+    """
+    if not isinstance(raw, (bytes, bytearray, str)):
+        raise ValueError("JSON_INPUT_INVALID")
+    if len(raw) > limit:
         raise Blocked("JSON_TOO_LARGE")
     def unique(pairs):
         result = {}
