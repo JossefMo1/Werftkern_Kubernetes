@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T16:16:24Z",
+  "updatedAt": "2026-11-20T17:01:06Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "1d169a491ff95208bba88a3e5aa6536a2f77bf29",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/93",
-    "summary": "Recorded the immutable test10 package evidence. A follow-up test11 candidate now carries the exact updated quickstart and is tracked separately; all live production gates remain open."
+    "commit": "1b01cd7ca80e9bd8c70ce40a1f2b21d2708c395c",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/95",
+    "summary": "Merged Native auto-discovery profile-hostname binding: dual SSH preflight now rejects stale or swapped /etc/hosts mappings; CI passed and live qualification remains open."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Run the exact v0.2.0-dev.4-test.11 candidate on the disposable Ubuntu admin/masters/workers lab, capture hashes and redacted journals, then execute Kubernetes E2E only with explicitly approved assets."
+    "nextStep": "Build a new immutable test release from the merged source before live execution; until then, test11 remains the prior candidate and must not be used as evidence for the profile-hostname fix."
   },
   "workstreams": [
     {
@@ -206,5 +206,11 @@
       "workflowRun": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769120566",
       "note": "Valid immutable package candidate from the merged SSH-dependency change; test11 supersedes it for the corrected release-note/download instructions."
     }
-  ]
+  ],
+  "postCandidateSource": {
+    "commit": "1b01cd7ca80e9bd8c70ce40a1f2b21d2708c395c",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/95",
+    "summary": "This source fix landed after the immutable v0.2.0-dev.4-test.11 candidate; test11 does not contain the fix.",
+    "requiresNewTestRelease": true
+  }
 }
