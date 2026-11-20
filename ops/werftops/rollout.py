@@ -16,10 +16,51 @@ import shlex
 import stat
 import time
 from . import readiness, upgrade
-from .common import Blocked, canonical, digest_file, fingerprint, lock, read_json, run, write_json
+from .common import Blocked, canonical, fingerprint, lock, read_json, run, write_json
 
 VERSION = '0.2.0-dev.4'
 ROOT = pathlib.Path('/var/lib/werftkern')
+MAX_ROLLOUT_PACKAGE_BYTES = 128 * 1024 * 1024
+MAX_ROLLOUT_MANIFEST_BYTES = 4 * 1024 * 1024
+MAX_ROLLOUT_SIGNATURE_BYTES = 1 * 1024 * 1024
+MAX_ROLLOUT_TRUST_BYTES = 16 * 1024
+MAX_ROLLOUT_KNOWN_HOSTS_BYTES = 1 * 1024 * 1024
+
+
+def _read_rollout_input(path, limit):
+    """Read one rollout input from a descriptor-bound regular file."""
+    if type(limit) is not int or limit < 1:
+        raise Blocked('ROLLOUT_INPUT_LIMIT_INVALID')
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+    if hasattr(os, 'O_CLOEXEC'):
+        flags |= os.O_CLOEXEC
+    try:
+        fd = os.open(path, flags)
+    except OSError:
+        raise Blocked('ROLLOUT_INPUT_UNREADABLE') from None
+    try:
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode) or st.st_size > limit:
+            raise Blocked('ROLLOUT_INPUT_TOO_LARGE_OR_NOT_REGULAR')
+        with os.fdopen(fd, 'rb') as stream:
+            fd = None
+            raw = stream.read(limit + 1)
+    except (Blocked, OSError):
+        raise Blocked('ROLLOUT_INPUT_UNREADABLE') from None
+    finally:
+        if fd is not None:
+            os.close(fd)
+    if len(raw) > limit:
+        raise Blocked('ROLLOUT_INPUT_TOO_LARGE_OR_NOT_REGULAR')
+    return raw
+
+
+def _validate_rollout_input(path, limit):
+    _read_rollout_input(path, limit)
+
+
+def _digest_rollout_input(path, limit):
+    return hashlib.sha256(_read_rollout_input(path, limit)).hexdigest()
 
 def validate(plan):
     if not isinstance(plan, dict) or set(plan) != {'format','clusterId','operationId','workers','drainTimeoutSeconds','observationSeconds'} or plan['format'] != 'werftkern-worker-rollout/v1':
@@ -114,13 +155,21 @@ def apply(plan, journal_path, package, manifest, signature, public_key, known_ho
           runner=run, remote=None, sleeper=time.sleep, monotonic=time.monotonic):
     plan_hash=validate(plan)
     if confirm!=plan_hash: raise Blocked('EXACT_ROLLOUT_PLAN_CONFIRMATION_REQUIRED')
+    for path, limit in ((package, MAX_ROLLOUT_PACKAGE_BYTES),
+                        (manifest, MAX_ROLLOUT_MANIFEST_BYTES),
+                        (signature, MAX_ROLLOUT_SIGNATURE_BYTES),
+                        (public_key, MAX_ROLLOUT_TRUST_BYTES),
+                        (known_hosts, MAX_ROLLOUT_KNOWN_HOSTS_BYTES)):
+        _validate_rollout_input(path, limit)
     m=upgrade.verify(package,manifest,signature,public_key,runner)
     if m.get('version')!=VERSION or m.get('stateSchema')!=2:
         raise Blocked('COORDINATOR_TARGET_RELEASE_REQUIRED')
     # Bind all supplied files; do not allow changing host trust on resume.
-    binding=fingerprint({'plan':plan,'release':m,'manifest':digest_file(manifest),
-                         'signature':digest_file(signature),'key':digest_file(public_key),
-                         'knownHosts':digest_file(known_hosts)})
+    binding=fingerprint({'plan':plan,'release':m,
+                         'manifest':_digest_rollout_input(manifest, MAX_ROLLOUT_MANIFEST_BYTES),
+                         'signature':_digest_rollout_input(signature, MAX_ROLLOUT_SIGNATURE_BYTES),
+                         'key':_digest_rollout_input(public_key, MAX_ROLLOUT_TRUST_BYTES),
+                         'knownHosts':_digest_rollout_input(known_hosts, MAX_ROLLOUT_KNOWN_HOSTS_BYTES)})
     remote=remote or SSHWorkers(known_hosts,public_key,package,manifest,signature,runner)
     path=pathlib.Path(journal_path)
     with lock(ROOT/'update.lock'):
@@ -257,6 +306,9 @@ class SSHWorkers:
         self.runner=runner;self.key=pathlib.Path(public_key);self.package=pathlib.Path(package)
         self.manifest=pathlib.Path(manifest);self.signature=pathlib.Path(signature)
         self.hosts=pathlib.Path(known_hosts).resolve(strict=True)
+        _validate_rollout_input(self.package, MAX_ROLLOUT_PACKAGE_BYTES)
+        _validate_rollout_input(self.manifest, MAX_ROLLOUT_MANIFEST_BYTES)
+        _validate_rollout_input(self.signature, MAX_ROLLOUT_SIGNATURE_BYTES)
         for p in (pathlib.Path(known_hosts),self.key):
             s=p.lstat()
             if not stat.S_ISREG(s.st_mode) or s.st_mode&0o022 or s.st_uid!=os.geteuid():
@@ -288,7 +340,7 @@ k=b/'trust/releases.pem';s=k.lstat()
 if not k.is_file() or k.is_symlink() or s.st_uid!=0 or s.st_mode&0o022:raise SystemExit(3)
 print(json.dumps({'nodeId':a['nodeId'],'instanceId':a['instanceId'],'clusterId':a['client']['clusterId'],'address':a['address'],'keySha':hashlib.sha256(read(k,262144)).hexdigest()}))"""
         o=json.loads(self._ssh(w,['sudo','-n','python3','-I','-c',code]))
-        if o.get('nodeId')!=w['nodeId'] or o.get('address')!=w['address'] or o.get('clusterId')!=p['clusterId'] or o.get('keySha')!=digest_file(self.key):
+        if o.get('nodeId')!=w['nodeId'] or o.get('address')!=w['address'] or o.get('clusterId')!=p['clusterId'] or o.get('keySha')!=_digest_rollout_input(self.key, MAX_ROLLOUT_TRUST_BYTES):
             raise Blocked('REMOTE_IDENTITY_OR_TRUST_MISMATCH')
     def _home(self,p):return '/var/lib/werftkern/worker-updates/'+p['operationId']+'/stage'
     def install(self,w,p,m):
@@ -296,24 +348,40 @@ print(json.dumps({'nodeId':a['nodeId'],'instanceId':a['instanceId'],'clusterId':
         # A root-owned staging helper, no /tmp race and no overwrite of divergent
         # payloads. Temporary files can remain after crash, never authorize install.
         upload="""import sys,pathlib,os,stat,hashlib,tempfile
-p=pathlib.Path(sys.argv[1]);expected=sys.argv[2]
+p=pathlib.Path(sys.argv[1]);expected=sys.argv[2];limit=128*1024*1024
 for d in reversed(p.parent.parents):
  if d.exists() and (d.is_symlink() or not d.is_dir() or d.stat().st_mode&0o022 or d.stat().st_uid!=0):raise SystemExit(2)
 p.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
 if p.parent.is_symlink() or p.parent.stat().st_uid!=0 or p.parent.stat().st_mode&0o077:raise SystemExit(3)
-b=sys.stdin.buffer.read(128*1024*1024+1)
-if len(b)>128*1024*1024 or hashlib.sha256(b).hexdigest()!=expected:raise SystemExit(4)
-if p.exists():
- if p.is_symlink() or p.stat().st_uid!=0 or not p.is_file() or hashlib.sha256(p.read_bytes()).hexdigest()!=expected:raise SystemExit(5)
+def existing(path):
+ fd=None
+ try:
+  fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+  s=os.fstat(fd)
+  if not stat.S_ISREG(s.st_mode) or s.st_size>limit or s.st_uid!=0 or s.st_mode&0o077:raise ValueError()
+  with os.fdopen(fd,'rb') as f:
+   fd=None;b=f.read(limit+1)
+  if len(b)>limit:return None
+  return b
+ except (OSError,ValueError):return None
+ finally:
+  if fd is not None:os.close(fd)
+b=sys.stdin.buffer.read(limit+1)
+if len(b)>limit or hashlib.sha256(b).hexdigest()!=expected:raise SystemExit(4)
+if os.path.lexists(p):
+ if existing(p)!=b:raise SystemExit(5)
 else:
  fd,n=tempfile.mkstemp(dir=p.parent)
  with os.fdopen(fd,'wb') as f:f.write(b);f.flush();os.fsync(f.fileno())
  os.link(n,p);os.unlink(n)
  fd=os.open(p.parent,os.O_DIRECTORY);os.fsync(fd);os.close(fd)
 """
-        for src,dest in ((self.package,'runtime.deb'),(self.manifest,'release.json'),(self.signature,'release.sig')):
-            if src.stat().st_size>128*1024*1024:raise Blocked('PACKAGE_PAYLOAD_TOO_LARGE')
-            self._ssh(w,['sudo','-n','python3','-I','-c',upload,home+'/'+dest,digest_file(src)],data=src.read_bytes(),timeout=600)
+        for src,dest,limit in ((self.package,'runtime.deb',MAX_ROLLOUT_PACKAGE_BYTES),
+                               (self.manifest,'release.json',MAX_ROLLOUT_MANIFEST_BYTES),
+                               (self.signature,'release.sig',MAX_ROLLOUT_SIGNATURE_BYTES)):
+            data=_read_rollout_input(src,limit)
+            self._ssh(w,['sudo','-n','python3','-I','-c',upload,home+'/'+dest,
+                         hashlib.sha256(data).hexdigest()],data=data,timeout=600)
         # Existing installed verifier authenticates the full target before ANY
         # helper from the package executes. Trust key is never uploaded here.
         self._ssh(w,['sudo','-n','/usr/bin/werft','release','verify','--package',home+'/runtime.deb',
