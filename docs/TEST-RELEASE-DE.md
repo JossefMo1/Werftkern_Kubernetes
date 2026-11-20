@@ -24,7 +24,7 @@ Für dieses Release kannst du die Dateien so herunterladen und anschließend das
 Test-Kit entpacken:
 
 ```bash
-TAG=v0.2.0-dev.4-test.9
+TAG=v0.2.0-dev.4-test.10
 BASE="https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/${TAG}"
 
 wget \
@@ -91,11 +91,11 @@ sudo werft-ops native-bootstrap \
 sudo werft-ops native-bootstrap \
   --auto-discover \
   --package "$PWD/werftkern_0.2.0.dev4_amd64.deb" \
-  --journal /root/werft-native-bootstrap-test9.json --check-only
+  --journal /root/werft-native-bootstrap-test10.json --check-only
 sudo werft-ops native-bootstrap \
   --auto-discover \
   --package "$PWD/werftkern_0.2.0.dev4_amd64.deb" \
-  --journal /root/werft-native-bootstrap-test9.json
+  --journal /root/werft-native-bootstrap-test10.json
 ```
 
 `--check-only` schreibt nur den lokalen Journal-/HA-Kit-Zustand und verändert
