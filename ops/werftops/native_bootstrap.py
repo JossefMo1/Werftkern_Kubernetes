@@ -257,7 +257,11 @@ printf 'cgroup=v2\\n'
 if test -f /etc/werftkern/ha-host.json; then printf 'config=present\\n'; else printf 'config=absent\\n'; fi
 if test -f /etc/werftkern/ha-installing.json; then printf 'incomplete=present\\n'; else printf 'incomplete=absent\\n'; fi
 if test -e /var/lib/werftkern/etcd/member || test -e /var/lib/werftkern/agent/journal.json; then printf 'data=present\\n'; else printf 'data=absent\\n'; fi
-if dpkg-query -W -f='${Status}|${Version}' werftkern 2>/dev/null; then printf '\\n'; else printf 'package=absent\\n'; fi
+if dpkg-query -W -f='${Status}' werftkern 2>/dev/null | grep -q '^install ok installed$'; then
+  printf 'package=present\\n'
+else
+  printf 'package=absent\\n'
+fi
 if command -v docker >/dev/null 2>&1; then printf 'docker=present\\n'; else printf 'docker=missing\\n'; fi
 if command -v etcd >/dev/null 2>&1; then printf 'etcd=present\\n'; else printf 'etcd=missing\\n'; fi
 """

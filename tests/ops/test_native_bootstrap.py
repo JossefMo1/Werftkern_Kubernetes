@@ -11,6 +11,23 @@ from werftops.common import Blocked, read_json, write_json
 
 
 class NativeBootstrapTests(unittest.TestCase):
+    def test_probe_parser_accepts_installed_package_marker(self):
+        parsed = native_bootstrap._parse_probe(
+            b"\n".join([
+                native_bootstrap.REMOTE_SENTINEL.encode(),
+                b"hostname=master-1",
+                b"os=ubuntu:24.04",
+                b"cgroup=v2",
+                b"config=absent",
+                b"incomplete=absent",
+                b"data=absent",
+                b"package=present",
+                b"docker=present",
+                b"etcd=present",
+            ])
+        )
+        self.assertEqual(parsed["package"], "present")
+
     def inventory(self, root):
         hosts = root / "hosts"
         hosts.write_text(
