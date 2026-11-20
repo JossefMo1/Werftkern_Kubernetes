@@ -45,7 +45,7 @@ NATIVE_AUTO_FRAGMENTS = (
 )
 WORKFLOW = Path(".github/workflows/test-release.yml")
 TRACKER = Path("release/production-tracker.json")
-RUNBOOK_TAG = re.compile(r"(?m)^TAG=(v[^\\n]+)$")
+RUNBOOK_TAG = re.compile(r"(?m)^TAG=(v[^\n]+)$")
 
 
 def validate(root: Path) -> list[str]:

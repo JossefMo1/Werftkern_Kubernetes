@@ -116,6 +116,13 @@ class TestReleaseContract(unittest.TestCase):
             CONTRACT.validate(root),
         )
 
+    def test_runbook_tag_parser_is_line_bounded(self):
+        match = CONTRACT.RUNBOOK_TAG.search(
+            "TAG=v0.2.0-dev.4-test.15\nNEXT=value"
+        )
+        self.assertIsNotNone(match)
+        self.assertEqual(match.group(1), "v0.2.0-dev.4-test.15")
+
 
 if __name__ == "__main__":
     unittest.main()
