@@ -7,7 +7,7 @@ from werftops.kube_driver import Driver
 from werftops.kube_addons import Addons, MAX_RENDER_BYTES, read_manifest
 from werftops.kube_lifecycle import Lifecycle
 from werftops.kube_cloudscale import CloudScale
-from werftops.kube_machines import Machines
+from werftops.kube_machines import Machines, MAX_SSH_PUBLIC_KEY_BYTES
 from werftops.cloud import Ambiguous
 
 class ToolAssets(FakeAssets):
@@ -105,6 +105,17 @@ class MachineExecutionTests(unittest.TestCase):
         h=self.create();payload=next(c[2] for c in self.api.calls if c[0]=='POST')
         self.assertEqual(payload['public_net'],{'enable_ipv4':False,'enable_ipv6':False});self.assertIn('ssh_keys',payload['user_data'])
         self.assertEqual(h['hostKey'],KEY);self.assertEqual(h['serverId'],77)
+    def test_oversized_generated_public_key_is_blocked_before_provider_call(self):
+        def command(tool,args,**kw):
+            self.d.calls.append((tool,args))
+            kp=pathlib.Path(args[-1])
+            atomic(kp,b'not-real-private-key-FIXTURE')
+            atomic(kp.with_suffix('.pub'),b'x'*(MAX_SSH_PUBLIC_KEY_BYTES+1))
+            return b''
+        self.d.command=command
+        with self.assertRaisesRegex(Blocked,'^SSH_PUBLIC_KEY_INVALID$'):
+            self.create()
+        self.assertFalse(any(c[0]=='POST' for c in self.api.calls))
     def test_lost_create_ack_adopts_only_matching_owned_server(self):
         self.api.lose=True
         with self.assertRaises(Ambiguous):self.create()
