@@ -4,19 +4,21 @@ Der vorhandene Einzelhost-Befehl `werft-ops bootstrap` installiert ein Paket
 und ein bereits erzeugtes HA-Kit über zuvor geprüfte SSH-Verbindungen. Der
 Orchestrator `werft-ops native-bootstrap` bündelt diesen Schritt für ein
 Inventar mit drei Controllern und mindestens einem Worker. Der bevorzugte
-`--auto-discover`-Modus benötigt keine manuell eingetragenen IP-Adressen oder
-Hostnamen: Er verwendet ausschließlich bereits vertrauenswürdige SSH-Endpunkte
-aus `known_hosts`, prüft sie read-only und erzeugt daraus ein gebundenes
-Inventar.
+`--auto-discover`-Modus benötigt keine manuell eingetragenen IP-Adressen. Er
+verwendet die logischen Hostnamen aus dem Rollenprofil, löst sie ausschließlich
+über die geprüfte `/etc/hosts`-Datei auf und akzeptiert nur Adressen, die als
+Host-Key-Endpunkt in `known_hosts` vertrauenswürdig hinterlegt sind.
 
 ## Was automatisch geprüft wird
 
 1. Die Inventardatei und die angegebene Hosts-Datei werden strikt validiert.
-   Jeder Name muss auf genau eine private IPv4-Adresse zeigen. Rollen werden
-   nicht aus Namen erraten; sie stehen ausdrücklich im Inventar.
-2. Alle Hosts werden vor der ersten Mutation mit `BatchMode`,
-   `StrictHostKeyChecking=yes`, einer festen `known_hosts`-Datei und
-   `sudo -n` geprüft.
+   Jeder Profilname muss auf genau eine private IPv4-Adresse zeigen. Diese
+   Adresse muss außerdem mit einem exakten Eintrag in `known_hosts` übereinstimmen.
+   Rollen werden nicht aus Namen erraten; sie stehen ausdrücklich im Inventar.
+2. Jeder Host wird vor der ersten Mutation zweimal mit `BatchMode`,
+   `StrictHostKeyChecking=yes`, einer festen `known_hosts`-Datei und `sudo -n`
+   geprüft: einmal über den Hostnamen und einmal über die aufgelöste IP. Der
+   gemeldete Remote-Hostname muss bei beiden Verbindungen identisch sein.
 3. Jeder Host muss Ubuntu 24.04, systemd und cgroup v2 melden. Hostname,
    Paket-/Konfigurationszustand und unterbrochene HA-Installationen werden
    protokolliert.
@@ -34,15 +36,15 @@ Inventar.
 
 Im Auto-Modus werden die folgenden Schritte automatisch ausgeführt:
 
-1. private IPv4-Endpunkte aus der geprüften `known_hosts`-Datei lesen;
-2. Hostnamen über die lokale Auflösung prüfen und IP-only-Einträge per SSH
-   anhand des tatsächlich gemeldeten Remote-Hostnamens zuordnen;
-3. jeden Kandidaten mit `StrictHostKeyChecking=yes`, `BatchMode` und
+1. logische Profilnamen aus der geprüften Hosts-Datei auf private IPv4-Adressen
+   abbilden;
+2. jede Adresse gegen einen exakten, vertrauenswürdigen `known_hosts`-Endpunkt
+   abgleichen;
+3. Hostnamen- und IP-Endpunkt mit `StrictHostKeyChecking=yes`, `BatchMode` und
    `sudo -n` auf Ubuntu 24.04, systemd und cgroup v2 prüfen;
-4. die Controller-/Worker-Rollen aus dem unveränderten Rollenprofil und den
-   eindeutigen Hostnamen ableiten;
+4. die Controller-/Worker-Rollen aus dem unveränderten Rollenprofil übernehmen;
 5. das automatisch erzeugte Inventar unter `<journal>.inventory.json` speichern
-   und gemeinsam mit `known_hosts`, Topologie und Paket-Hash im Journal binden.
+   und Hosts-Datei, `known_hosts`, Topologie und Paket-Hash im Journal binden.
 
 Es gibt kein blindes `ssh-keyscan`, kein Vertrauen auf unbekannte Schlüssel und
 kein unkontrolliertes Netzwerkscanning. Sind mehrere Hosts derselben Rolle nicht
