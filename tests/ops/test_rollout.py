@@ -197,6 +197,27 @@ class WorkerHostTests(unittest.TestCase):
    self.assertNotIn('.read_text()',script)
    self.assertNotIn('k.read_bytes()',script)
 
+ def test_ssh_inputs_are_bounded_and_remote_existing_payload_is_descriptor_bound(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);f=Fixture(root);calls=[]
+   def runner(a,**kw):
+    calls.append((a,kw))
+    return b'{}'
+   ssh=rollout.SSHWorkers(f.files['known_hosts'],f.files['public_key'],f.files['package'],f.files['manifest'],f.files['signature'],runner)
+   ssh.install(plan()['workers'][0],plan(),f.m)
+   upload_scripts=[a[-1] for a,_ in calls if 'stdin.buffer.read' in a[-1]]
+   self.assertEqual(len(upload_scripts),3)
+   for script in upload_scripts:
+    self.assertIn('os.O_NOFOLLOW',script)
+    self.assertIn('f.read(limit+1)',script)
+    self.assertNotIn('p.read_bytes()',script)
+
+ def test_ssh_input_symlinks_are_rejected_before_remote_mutation(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);f=Fixture(root);link=root/'manifest-link';link.symlink_to(f.files['manifest'])
+   with self.assertRaisesRegex(Blocked,'ROLLOUT_INPUT'):
+    rollout.SSHWorkers(f.files['known_hosts'],f.files['public_key'],f.files['package'],link,f.files['signature'])
+
  def case(self,fail):
   with tempfile.TemporaryDirectory() as d:
    root=pathlib.Path(d);cfg=root/'etc';cfg.mkdir();f=Fixture(root)
