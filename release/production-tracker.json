@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T14:59:30Z",
+  "updatedAt": "2026-11-20T16:05:26Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "37bbc6ecd589cc586fd01ed604b9c3ef158d9687",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/90",
-    "summary": "Merged the native package command contract: the build validates /usr/bin/werft and /usr/bin/werft-ops, post-install fails closed when either is missing, and the test-release runbook verifies command availability before bootstrap. Required CI is green; live qualification remains open."
+    "commit": "50c978541997e46db31cd65942c7a1fd7d9cbd08",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/92",
+    "summary": "Merged the native package SSH dependency contract: openssh-client is declared, package metadata is validated, post-install fails closed when ssh is unavailable, and the test-release instructions verify the command. CI is green; live qualification remains open."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -62,22 +62,25 @@
         "artifact-commit-digest-identity"
       ],
       "evidence": [
-        "v0.2.0-dev.4-test.9 release: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.9",
-        "release manifest: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.9/release-manifest.json",
-        "SHA256SUMS: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.9/SHA256SUMS",
+        "v0.2.0-dev.4-test.10 release: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.10",
+        "release manifest: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.10/release-manifest.json",
+        "SHA256SUMS: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.10/SHA256SUMS",
         "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44758238970",
         "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44758238937",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/90",
         "scripts/check-native-package-layout.py",
         "scripts/check-test-release-contract.py",
         "tests/release/test_native_package_layout.py",
-        "tests/release/test_test_release_contract.py"
+        "tests/release/test_test_release_contract.py",
+        "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769157800",
+        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769157963",
+        "Kubernetes package workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769158006"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Run the exact v0.2.0-dev.4-test.9 candidate on the disposable Ubuntu admin/masters/workers lab, capture hashes and redacted journals, then execute Kubernetes E2E only with explicitly approved assets."
+      "nextStep": "Run the exact v0.2.0-dev.4-test.10 candidate on the disposable Ubuntu admin/masters/workers lab, capture hashes and redacted journals, then execute Kubernetes E2E only with explicitly approved assets."
     },
     {
       "id": "E2E-K01",
@@ -110,13 +113,15 @@
       ],
       "evidence": [
         "tests/e2e/ubuntu-vm.sh",
-        "candidate v0.2.0-dev.4-test.9: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.9",
-        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44758238937"
+        "candidate v0.2.0-dev.4-test.10: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.10",
+        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44758238937",
+        "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769157800",
+        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769157963"
       ],
       "blockers": [
         "No expressly authorized disposable Ubuntu VM and candidate package are configured."
       ],
-      "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with the exact v0.2.0-dev.4-test.9 package."
+      "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with the exact v0.2.0-dev.4-test.10 package."
     },
     {
       "id": "E2E-H01",
@@ -167,7 +172,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.9",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.10",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -175,14 +180,23 @@
     ]
   },
   "candidate": {
-    "tag": "v0.2.0-dev.4-test.9",
-    "sourceCommit": "37bbc6ecd589cc586fd01ed604b9c3ef158d9687",
-    "release": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.9",
-    "workflowRun": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44758238970",
-    "nativeWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44758238937",
+    "tag": "v0.2.0-dev.4-test.10",
+    "sourceCommit": "82a4d20519c87b694b743916ed59054e67530241",
+    "release": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.10",
+    "workflowRun": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769157800",
+    "nativeWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769157963",
+    "kubernetesWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769158006",
+    "sourceAuditWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44769157938",
     "rerunWorkflow": null,
-    "manifest": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.9/release-manifest.json",
-    "checksums": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.9/SHA256SUMS",
+    "manifest": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.10/release-manifest.json",
+    "checksums": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.10/SHA256SUMS",
+    "artifacts": {
+      "release-manifest.json": "sha256:995119dc4b83d56f47a0af7819148d6249a0b7c0dd7eccfc0d4f4837cb963046",
+      "SHA256SUMS": "sha256:72b32cae92ba563e7564fb17ce660817a17ce593b19096092ad01a7e055b0907",
+      "werftkern_0.2.0.dev4_amd64.deb": "sha256:2a0c0af1345fec55ef1f8d15dcb3265cf4995ed655495cf2bbe02cc9879a4945",
+      "werftkern-kubernetes_0.1.0.dev3_all.deb": "sha256:1f575fa4d54c16ecad2bd26d414197f61fcbb7e561aa87fadfa2653eb780665b",
+      "werftkern-test-kit-v0.2.0-dev.4-test.10.tar.gz": "sha256:53fd6c893586fc52ea986223a9f274dbf9531e6676bc3ef1a723792b59e3caf6"
+    },
     "productionReady": false,
     "qualification": "not-production-qualified"
   }
