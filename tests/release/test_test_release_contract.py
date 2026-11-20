@@ -107,7 +107,7 @@ class TestReleaseContract(unittest.TestCase):
         root = self.make_fixture()
         tracker = root / CONTRACT.TRACKER
         content = tracker.read_text().replace(
-            '"tag": "v0.2.0-dev.4-test.15"',
+            '"tag": "v0.2.0-dev.4-test.16"',
             '"tag": "v0.2.0-dev.4-test.14"',
         )
         tracker.write_text(content)
