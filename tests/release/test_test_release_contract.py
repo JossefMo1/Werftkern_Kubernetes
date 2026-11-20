@@ -73,6 +73,19 @@ class TestReleaseContract(unittest.TestCase):
             any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
         )
 
+    def test_release_notes_must_be_normalized_to_actual_tag(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.WORKFLOW
+        content = path.read_text().replace(
+            'release_notes="$PWD/.test-release-notes.md"',
+            'release_notes="$PWD/notes.md"',
+        )
+        path.write_text(content)
+        self.assertIn(
+            'WORKFLOW_CONTRACT_MISSING:release_notes="$PWD/.test-release-notes.md"',
+            CONTRACT.validate(root),
+        )
+
     def test_publish_glob_must_not_use_dist_tarballs(self):
         root = self.make_fixture()
         path = root / CONTRACT.WORKFLOW
