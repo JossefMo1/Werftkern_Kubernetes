@@ -332,6 +332,37 @@ class NativeBootstrapTests(unittest.TestCase):
             self.assertEqual([item["endpoint"] for item in observations], seen)
             self.assertEqual(parsed["hostname"], "master-1")
 
+    def test_dual_endpoint_preflight_rejects_profile_hostname_mismatch(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            raw, known = self.auto_profile(root)
+            spec = {
+                "name": "master-1",
+                "address": "10.87.0.1",
+                "sshHost": "master-1",
+                "sshUser": "ubuntu",
+                "sshPort": 22,
+            }
+
+            def runner(args, **kwargs):
+                if args and args[0] == "ssh":
+                    return (
+                        "WERFTKERN_NATIVE_PREFLIGHT_V1\n"
+                        "hostname=master-2\n"
+                        "os=ubuntu:24.04\n"
+                        "cgroup=v2\n"
+                        "config=absent\n"
+                        "incomplete=absent\n"
+                        "data=absent\n"
+                        "package=absent\n"
+                        "docker=missing\n"
+                        "etcd=missing\n"
+                    ).encode()
+                raise AssertionError(args)
+
+            with self.assertRaisesRegex(Blocked, "^REMOTE_HOSTNAME_PROFILE_MISMATCH$"):
+                native_bootstrap._probe_endpoints(spec, known, runner)
+
     def test_auto_discovery_allows_missing_hosts_file_names(self):
         with tempfile.TemporaryDirectory() as d:
             root = pathlib.Path(d)
