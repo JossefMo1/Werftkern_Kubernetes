@@ -1,6 +1,12 @@
 #!/bin/sh
 set -eu
 if [ "$1" = configure ]; then
+  for command in /usr/bin/werft /usr/bin/werft-ops; do
+    if [ ! -x "$command" ]; then
+      printf 'Werftkern package is incomplete: missing executable %s\n' "$command" >&2
+      exit 1
+    fi
+  done
   if ! getent passwd wk-runtime >/dev/null; then
     adduser --system --group --home /nonexistent --no-create-home --disabled-login wk-runtime
   fi
