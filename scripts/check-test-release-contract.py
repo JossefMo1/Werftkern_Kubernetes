@@ -28,6 +28,13 @@ DOCUMENT_ASSETS = {
     Path("docs/TEST-RELEASE-DE.md"): EXPECTED_ASSETS,
     Path("docs/kubernetes/README-DE.md"): ("werftkern-kubernetes_0.1.0.dev3_all.deb",),
 }
+RELEASE_DOWNLOAD_FRAGMENTS = (
+    'BASE="https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/${TAG}"',
+    "wget \\\n",
+    '"${BASE}/release-manifest.json"',
+    '"${BASE}/SHA256SUMS"',
+    'tar -xzf "werftkern-test-kit-${TAG}.tar.gz"',
+)
 WORKFLOW = Path(".github/workflows/test-release.yml")
 
 
@@ -50,6 +57,10 @@ def validate(root: Path) -> list[str]:
         for asset in LEGACY_ASSETS:
             if asset in content:
                 problems.append(f"LEGACY_ASSET_NAME:{relative}:{asset}")
+        if relative == Path("docs/TEST-RELEASE-DE.md"):
+            for fragment in RELEASE_DOWNLOAD_FRAGMENTS:
+                if fragment not in content:
+                    problems.append(f"DOWNLOAD_INSTRUCTIONS_MISSING:{relative}:{fragment}")
 
     workflow_path = root / WORKFLOW
     try:
