@@ -4,11 +4,35 @@ Deleting a VM is irreversible. Only dedicated, explicitly tagged Kubernetes
 workers with the persisted provider identity are eligible for replacement.
 """
 from __future__ import annotations
-import copy, decimal, pathlib, time, urllib.parse
+import copy, decimal, os, pathlib, stat, time, urllib.parse
 from .cloud import Hetzner,Ambiguous
 from .common import Blocked, atomic, canonical, fingerprint, private_read, read_json, write_json
 from .kube_provider_identity import identity, assert_identity
 from .kube_spec import fields,name,integer,private_ip,host_key
+
+MAX_SSH_PUBLIC_KEY_BYTES = 16 * 1024
+
+def _read_generated_public_key(path, limit=MAX_SSH_PUBLIC_KEY_BYTES):
+    """Read the ssh-keygen output without trusting an unbounded local file."""
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError:
+        raise Blocked('SSH_PUBLIC_KEY_UNREADABLE') from None
+    with os.fdopen(fd, 'rb') as f:
+        try:
+            st = os.fstat(f.fileno())
+            if (not stat.S_ISREG(st.st_mode) or st.st_uid != os.geteuid() or
+                    st.st_mode & 0o022 or st.st_size > limit):
+                raise Blocked('SSH_PUBLIC_KEY_INVALID')
+            raw = f.read(limit + 1)
+        except OSError:
+            raise Blocked('SSH_PUBLIC_KEY_UNREADABLE') from None
+    if len(raw) > limit:
+        raise Blocked('SSH_PUBLIC_KEY_INVALID')
+    try:
+        return raw.decode()
+    except UnicodeDecodeError:
+        raise Blocked('SSH_PUBLIC_KEY_INVALID') from None
 
 class Machines:
     def __init__(self,api,driver):self.api=api;self.d=driver
@@ -55,7 +79,7 @@ class Machines:
         if not j.get('hostKey'):
             if kp.exists():raise Blocked('PARTIAL_SSH_KEY_REQUIRES_REVIEW')
             self.d.command('ssh-keygen',['-q','-t','ed25519','-N','','-f',kp])
-            key=' '.join((kp.with_suffix('.pub')).read_text().split()[:2]);host_key(key)
+            key=' '.join(_read_generated_public_key(kp.with_suffix('.pub')).split()[:2]);host_key(key)
             j['hostKey']=key;save()
         matches=self.api.call('GET','/servers?'+urllib.parse.urlencode({'name':target,'per_page':50}))['servers']
         if len(matches)>1:raise Blocked('CLOUD_NAME_AMBIGUOUS')
