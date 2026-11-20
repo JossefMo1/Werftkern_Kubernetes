@@ -5,7 +5,7 @@ writer backend; a persistent Kubernetes ConfigMap lock excludes other operations
 """
 from __future__ import annotations
 import base64, contextlib, copy, http.client, json, os, pathlib, re, shlex, ssl, tempfile, time, urllib.error, urllib.parse, urllib.request
-from .common import Blocked, atomic, canonical, private_read, run, write_json, read_json
+from .common import Blocked, atomic, canonical, parse_json, private_read, run, write_json, read_json
 from .kube_spec import fields, private_ip, domain, version, render, known_hosts
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -49,7 +49,7 @@ class KubeHTTP:
             with self.opener.open(req,timeout=15) as r:
                 raw=r.read(16*1024*1024+1)
                 if len(raw)>16*1024*1024:raise Blocked('KUBE_RESPONSE_TOO_LARGE')
-                return json.loads(raw) if raw and raw[:1] in (b'{',b'[') else raw.decode()
+                return parse_json(raw, limit=16*1024*1024) if raw and raw[:1] in (b'{',b'[') else raw.decode()
         except urllib.error.HTTPError as e:
             if e.code==404 and notfound:return None
             raise Blocked('KUBE_HTTP_'+str(e.code)) from None

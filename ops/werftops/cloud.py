@@ -4,8 +4,8 @@ No provider calls run during import or planning. The live CLI never accepts an
 arbitrary API URL, redirects, embedded tokens, free-form cloud-init, or deletes.
 """
 from __future__ import annotations
-import http.client, ipaddress, json, pathlib, time, urllib.error, urllib.parse, urllib.request
-from .common import Blocked, canonical, fingerprint, lock, name, private_read, read_json, write_json
+import http.client, ipaddress, pathlib, time, urllib.error, urllib.parse, urllib.request
+from .common import Blocked, canonical, fingerprint, lock, name, parse_json, private_read, read_json, write_json
 
 class Ambiguous(Blocked): pass
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -29,7 +29,7 @@ class Hetzner:
             with self.opener.open(request,timeout=30) as resp:
                 raw=resp.read(4*1024*1024+1)
                 if len(raw)>4*1024*1024: raise Blocked("PROVIDER_RESPONSE_TOO_LARGE")
-                result=json.loads(raw)
+                result=parse_json(raw, limit=4*1024*1024)
                 if not isinstance(result,dict): raise Ambiguous("PROVIDER_RESPONSE_INVALID")
                 # An absent/malformed inventory is not proof that a paid resource
                 # does not exist. Validate before callers consider a create.

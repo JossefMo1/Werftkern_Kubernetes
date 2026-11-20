@@ -12,6 +12,19 @@ class HetznerResponseTests(unittest.TestCase):
         api.token='non-secret-test-fixture'
         api.opener=Opener()
         return api
+    def raw_adapter(self, raw):
+        class Opener:
+            def open(self, request, timeout):return io.BytesIO(raw)
+        api=object.__new__(cloud.Hetzner)
+        api.token='non-secret-test-fixture'
+        api.opener=Opener()
+        return api
+    def test_ambiguous_json_is_blocked_before_provider_interpretation(self):
+        for raw, reason in [(b'{"servers":[],"servers":[]}', 'DUPLICATE_JSON_KEY'),
+                            (b'{"servers":[NaN]}', 'NON_FINITE_JSON_NUMBER')]:
+            with self.subTest(reason=reason):
+                with self.assertRaisesRegex(Blocked, '^'+reason+'$'):
+                    self.raw_adapter(raw).call('GET','/servers?name=node-one')
     def test_non_object_responses_are_secret_safe_failures(self):
         for method,path in [('GET','/servers?name=node-one'),('POST','/servers')]:
             for response in [None,[],True,'sensitive-provider-response']:
