@@ -99,18 +99,27 @@ jobs:
           manager="$(find dist -maxdepth 1 -type f -name 'werftkern-kubernetes_*.deb' -print -quit)"
           test -s "$native"
           test -s "$manager"
-          native_sha="$(sha256sum "$native" | awk '{print $1}')"
-          manager_sha="$(sha256sum "$manager" | awk '{print $1}')"
+          release_dir="$PWD/release-assets"
+          rm -rf "$release_dir"
+          mkdir -p "$release_dir"
+          # GitHub normalizes '~' in release asset names to '.', so publish
+          # normalized names and generate checksums against those exact names.
+          native_release_name="$(basename "$native" | tr '~' '.')"
+          manager_release_name="$(basename "$manager" | tr '~' '.')"
+          cp "$native" "$release_dir/$native_release_name"
+          cp "$manager" "$release_dir/$manager_release_name"
+          native_sha="$(sha256sum "$release_dir/$native_release_name" | awk '{print $1}')"
+          manager_sha="$(sha256sum "$release_dir/$manager_release_name" | awk '{print $1}')"
           jq -n \
             --arg format 'werftkern-test-release/v1' \
             --arg tag "$tag" \
             --arg commit "$SOURCE_SHA" \
-            --arg native "$(basename "$native")" \
+            --arg native "$native_release_name" \
             --arg nativeSha "$native_sha" \
-            --arg manager "$(basename "$manager")" \
+            --arg manager "$manager_release_name" \
             --arg managerSha "$manager_sha" \
             '{format:$format,tag:$tag,sourceCommit:$commit,productionReady:false,qualification:"not-production-qualified",scope:"Ubuntu amd64 package and disposable lab test kit",artifacts:{native:{name:$native,sha256:$nativeSha},kubernetesManager:{name:$manager,sha256:$managerSha}}}' \
-            > dist/release-manifest.json
+            > "$release_dir/release-manifest.json"
 
           kit="$(mktemp -d)"
           trap 'rm -rf "$kit"' EXIT
@@ -124,14 +133,17 @@ jobs:
           install -D -m 0755 tests/e2e/kubernetes-real.sh "$kit/tests/e2e/kubernetes-real.sh"
           install -D -m 0755 scripts/check-e2e-k01-preflight.py "$kit/scripts/check-e2e-k01-preflight.py"
           tar --sort=name --mtime='UTC 2026-01-01' --owner=0 --group=0 --numeric-owner \
-            -czf "dist/werftkern-test-kit-${tag}.tar.gz" -C "$kit" .
-          sha256sum dist/*.deb dist/*.tar.gz dist/release-manifest.json > dist/SHA256SUMS
+            -czf "release-assets/werftkern-test-kit-${tag}.tar.gz" -C "$kit" .
+          (
+            cd "$release_dir"
+            sha256sum *.deb *.tar.gz release-manifest.json > SHA256SUMS
+          )
 
       - name: Upload the exact candidate as an Actions artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: werftkern-test-release-${{ github.sha }}
-          path: dist/
+          path: release-assets/
           if-no-files-found: error
 
       - name: Publish the prerelease assets to GitHub
@@ -165,7 +177,7 @@ jobs:
           if [ "$EVENT_NAME" = push ] && [ "${GITHUB_REF_TYPE:-}" = tag ]; then
             gh release create "$tag" --verify-tag --title "Werftkern $tag (experimental test release)" \
               --notes-file docs/TEST-RELEASE-DE.md --prerelease --latest=false \
-              dist/*.deb dist/*.tar.gz dist/release-manifest.json dist/SHA256SUMS
+              release-assets/*.deb release-assets/*.tar.gz release-assets/release-manifest.json release-assets/SHA256SUMS
           else
             gh release create "$tag" --target "$GITHUB_SHA" \
               --title "Werftkern $tag (experimental test release)" \
