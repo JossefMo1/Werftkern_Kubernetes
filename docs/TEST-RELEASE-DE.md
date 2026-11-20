@@ -24,7 +24,7 @@ Für dieses Release kannst du die Dateien so herunterladen und anschließend das
 Test-Kit entpacken:
 
 ```bash
-TAG=v0.2.0-dev.4-test.8
+TAG=v0.2.0-dev.4-test.9
 BASE="https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/${TAG}"
 
 wget \
