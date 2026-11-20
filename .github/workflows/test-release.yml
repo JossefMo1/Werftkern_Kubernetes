@@ -182,6 +182,6 @@ jobs:
             gh release create "$tag" --target "$GITHUB_SHA" \
               --title "Werftkern $tag (experimental test release)" \
               --notes-file docs/TEST-RELEASE-DE.md --prerelease --latest=false \
-              dist/*.deb dist/*.tar.gz dist/release-manifest.json dist/SHA256SUMS
+              release-assets/*.deb release-assets/*.tar.gz release-assets/release-manifest.json release-assets/SHA256SUMS
           fi
 
