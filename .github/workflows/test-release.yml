@@ -1,0 +1,153 @@
+name: Build downloadable experimental test release
+
+# This workflow deliberately creates only a prerelease whose tag contains
+# "-test.". It is a convenient, hash-bound lab artifact, not a production
+# release and not a qualification gate.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Experimental tag, for example v0.2.0-dev.4-test.1'
+        required: true
+        default: v0.2.0-dev.4-test.1
+        type: string
+      publish:
+        description: 'Create a GitHub prerelease with the packages and test kit'
+        required: true
+        default: true
+        type: boolean
+  push:
+    tags:
+      - 'v*-test.*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: werftkern-test-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out the exact candidate source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install package-test dependency
+        run: sudo apt-get update && sudo apt-get install -y python3-yaml
+
+      - name: Install the pinned Go toolchain
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.4'
+          cache: false
+
+      - name: Run source and contract checks before packaging
+        shell: bash
+        run: |
+          set -euo pipefail
+          go test -race -count=1 ./...
+          go vet ./...
+          python3 -m unittest discover -s tests/ops -q
+          PYTHONPATH=ops python3 -m unittest discover -s tests/kubernetes -q
+          python3 -m unittest discover -s tests/release -q
+          python3 -m compileall -q ops tests
+          python3 scripts/check-public-source.py
+          python3 scripts/check-production-scope.py
+          python3 scripts/check-kubernetes-target.py
+          python3 scripts/check-production-tracker.py
+          node --check internal/dashboard/assets/app.js
+          bash -n scripts/build-deb.sh scripts/build-kubernetes-deb.sh tests/e2e/kubernetes-real.sh
+
+      - name: Build the native Ubuntu package
+        run: bash scripts/build-deb.sh
+
+      - name: Build the Kubernetes manager Ubuntu package
+        run: bash scripts/build-kubernetes-deb.sh
+
+      - name: Create a release manifest and reproducible test kit
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          tag="$REF_NAME"
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then tag="$INPUT_TAG"; fi
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-dev\.[0-9]+)?-test\.[0-9]+$ ]]; then
+            echo "Unsupported test tag: $tag" >&2
+            exit 1
+          fi
+          native="$(find dist -maxdepth 1 -type f -name 'werftkern_*.deb' -print -quit)"
+          manager="$(find dist -maxdepth 1 -type f -name 'werftkern-kubernetes_*.deb' -print -quit)"
+          test -s "$native"
+          test -s "$manager"
+          native_sha="$(sha256sum "$native" | awk '{print $1}')"
+          manager_sha="$(sha256sum "$manager" | awk '{print $1}')"
+          jq -n \
+            --arg format 'werftkern-test-release/v1' \
+            --arg tag "$tag" \
+            --arg commit "$SOURCE_SHA" \
+            --arg native "$(basename "$native")" \
+            --arg nativeSha "$native_sha" \
+            --arg manager "$(basename "$manager")" \
+            --arg managerSha "$manager_sha" \
+            '{format:$format,tag:$tag,sourceCommit:$commit,productionReady:false,qualification:"not-production-qualified",scope:"Ubuntu amd64 package and disposable lab test kit",artifacts:{native:{name:$native,sha256:$nativeSha},kubernetesManager:{name:$manager,sha256:$managerSha}}}' \
+            > dist/release-manifest.json
+
+          kit="$(mktemp -d)"
+          trap 'rm -rf "$kit"' EXIT
+          install -D -m 0644 docs/TEST-RELEASE-DE.md "$kit/README-DE.md"
+          install -D -m 0644 docs/NATIVE-BOOTSTRAP-DE.md "$kit/docs/NATIVE-BOOTSTRAP-DE.md"
+          install -D -m 0644 docs/kubernetes/README-DE.md "$kit/docs/kubernetes/README-DE.md"
+          install -D -m 0644 examples/native-inventory-3m-3w.json "$kit/examples/native-inventory-3m-3w.json"
+          install -D -m 0644 examples/kubernetes/cluster-3m-3w.example.json "$kit/examples/kubernetes/cluster-3m-3w.example.json"
+          install -D -m 0644 examples/kubernetes/assets-core.example.json "$kit/examples/kubernetes/assets-core.example.json"
+          cp -a examples/kubernetes/*.json "$kit/examples/kubernetes/"
+          install -D -m 0755 tests/e2e/kubernetes-real.sh "$kit/tests/e2e/kubernetes-real.sh"
+          install -D -m 0755 scripts/check-e2e-k01-preflight.py "$kit/scripts/check-e2e-k01-preflight.py"
+          tar --sort=name --mtime='UTC 2026-01-01' --owner=0 --group=0 --numeric-owner \
+            -czf "dist/werftkern-test-kit-${tag}.tar.gz" -C "$kit" .
+          sha256sum dist/*.deb dist/*.tar.gz dist/release-manifest.json > dist/SHA256SUMS
+
+      - name: Upload the exact candidate as an Actions artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: werftkern-test-release-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+
+      - name: Publish the prerelease assets to GitHub
+        if: github.event_name == 'push' || inputs.publish
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          tag="$REF_NAME"
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then tag="$INPUT_TAG"; fi
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists; refusing to replace it."
+            exit 1
+          fi
+          if [ "$EVENT_NAME" = push ]; then
+            gh release create "$tag" --verify-tag --title "Werftkern $tag (experimental test release)" \
+              --notes-file docs/TEST-RELEASE-DE.md --prerelease --latest=false \
+              dist/*.deb dist/*.tar.gz dist/release-manifest.json dist/SHA256SUMS
+          else
+            gh release create "$tag" --target "$GITHUB_SHA" \
+              --title "Werftkern $tag (experimental test release)" \
+              --notes-file docs/TEST-RELEASE-DE.md --prerelease --latest=false \
+              dist/*.deb dist/*.tar.gz dist/release-manifest.json dist/SHA256SUMS
+          fi
