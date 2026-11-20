@@ -3,7 +3,11 @@
 Der vorhandene Einzelhost-Befehl `werft-ops bootstrap` installiert ein Paket
 und ein bereits erzeugtes HA-Kit über zuvor geprüfte SSH-Verbindungen. Der
 Orchestrator `werft-ops native-bootstrap` bündelt diesen Schritt für ein
-Inventar mit drei Controllern und mindestens einem Worker.
+Inventar mit drei Controllern und mindestens einem Worker. Der bevorzugte
+`--auto-discover`-Modus benötigt keine manuell eingetragenen IP-Adressen oder
+Hostnamen: Er verwendet ausschließlich bereits vertrauenswürdige SSH-Endpunkte
+aus `known_hosts`, prüft sie read-only und erzeugt daraus ein gebundenes
+Inventar.
 
 ## Was automatisch geprüft wird
 
@@ -26,39 +30,71 @@ Inventar mit drei Controllern und mindestens einem Worker.
 6. Nach dem Staging wird der Seed initialisiert und `health --all --json`
    sowie `status --json` werden gegen die erwartete Cluster-ID geprüft.
 
-## Inventar
+## Automatische Host-Erkennung
+
+Im Auto-Modus werden die folgenden Schritte automatisch ausgeführt:
+
+1. private IPv4-Endpunkte aus der geprüften `known_hosts`-Datei lesen;
+2. Hostnamen über die lokale Auflösung prüfen und IP-only-Einträge per SSH
+   anhand des tatsächlich gemeldeten Remote-Hostnamens zuordnen;
+3. jeden Kandidaten mit `StrictHostKeyChecking=yes`, `BatchMode` und
+   `sudo -n` auf Ubuntu 24.04, systemd und cgroup v2 prüfen;
+4. die Controller-/Worker-Rollen aus dem unveränderten Rollenprofil und den
+   eindeutigen Hostnamen ableiten;
+5. das automatisch erzeugte Inventar unter `<journal>.inventory.json` speichern
+   und gemeinsam mit `known_hosts`, Topologie und Paket-Hash im Journal binden.
+
+Es gibt kein blindes `ssh-keyscan`, kein Vertrauen auf unbekannte Schlüssel und
+kein unkontrolliertes Netzwerkscanning. Sind mehrere Hosts derselben Rolle nicht
+eindeutig zuordenbar, blockiert Werftkern mit einem klaren Fehler statt zufällig
+IP-Adressen oder Rollen zu wählen.
+
+## Rollenprofil und manuelles Inventar
 
 `examples/native-inventory-3m-3w.json` zeigt die Struktur für drei
-controller-only Master und drei Worker. Die Adressen werden aus
-`hostsFile` aufgelöst; optionale `address`-Werte müssen exakt mit der Datei
-übereinstimmen. Die `known_hosts`-Datei muss vor dem Lauf über einen
-vertrauenswürdigen Kanal gepflegt werden. Die Software führt kein blindes
-`ssh-keyscan` und keine Passwortkopie aus.
+controller-only Master und drei Worker. Das Profil enthält im Auto-Modus nur
+logische Hostnamen und Rollen; Adressen und SSH-Ziele werden automatisch
+ergänzt. Die `known_hosts`-Datei muss vor dem Lauf über einen vertrauenswürdigen
+Kanal gepflegt werden. Für streng manuelle Läufe können weiterhin `hostsFile`
+und explizite `address`-Werte verwendet werden.
 
 ## Ausführung
 
-Zuerst nur prüfen:
+Automatischer Lauf mit dem mitgelieferten 3-Controller-/3-Worker-Profil:
 
 ```sh
 sudo werft-ops native-bootstrap \
-  --inventory /root/native-inventory.json \
-  --package /root/werftkern_0.2.0~dev4_amd64.deb \
+  --auto-discover \
+  --inventory examples/native-inventory-3m-3w.json \
+  --package /root/werftkern_0.2.0.dev4_amd64.deb \
   --journal /root/werft-native-bootstrap.json \
   --check-only
 ```
 
-Nach der Prüfung denselben Befehl ohne `--check-only` wiederholen:
+Wenn kein Profil angegeben wird, verwendet `--auto-discover` automatisch ein
+eingebautes 3m/3w-Profil mit dem SSH-Benutzer `ubuntu`:
 
 ```sh
 sudo werft-ops native-bootstrap \
-  --inventory /root/native-inventory.json \
-  --package /root/werftkern_0.2.0~dev4_amd64.deb \
+  --auto-discover \
+  --package /root/werftkern_0.2.0.dev4_amd64.deb \
+  --journal /root/werft-native-bootstrap.json \
+  --check-only
+```
+
+Nach erfolgreicher Prüfung denselben Befehl ohne `--check-only` wiederholen:
+
+```sh
+sudo werft-ops native-bootstrap \
+  --auto-discover \
+  --inventory examples/native-inventory-3m-3w.json \
+  --package /root/werftkern_0.2.0.dev4_amd64.deb \
   --journal /root/werft-native-bootstrap.json
 ```
 
-Ein Wiederaufruf verwendet dasselbe Journal. Inventar, Hosts-Datei,
-`known_hosts` oder Paket dürfen nach dem ersten Lauf nicht ausgetauscht
-werden. Unklare Remote-Ergebnisse werden zur manuellen Prüfung angehalten.
+Ein Wiederaufruf verwendet dasselbe Journal und dasselbe automatisch erzeugte
+Inventar. Inventar, `known_hosts` oder Paket dürfen nach dem ersten Lauf nicht
+ausgetauscht werden. Unklare Remote-Ergebnisse werden zur Prüfung angehalten.
 
 Das Paket bleibt ein unsigniertes Laborpaket. Der Befehl ist eine
 Bootstrap-/E2E-Hilfe und setzt weder `productionReady` noch irgendein
