@@ -107,12 +107,12 @@ class TestReleaseContract(unittest.TestCase):
         root = self.make_fixture()
         tracker = root / CONTRACT.TRACKER
         content = tracker.read_text().replace(
-            '"tag": "v0.2.0-dev.4-test.16"',
+            '"tag": "v0.2.0-dev.4-test.17"',
             '"tag": "v0.2.0-dev.4-test.14"',
         )
         tracker.write_text(content)
         self.assertIn(
-            "DOCUMENT_TAG_MISMATCH:docs/TEST-RELEASE-DE.md:v0.2.0-dev.4-test.16!=v0.2.0-dev.4-test.14",
+            "DOCUMENT_TAG_MISMATCH:docs/TEST-RELEASE-DE.md:v0.2.0-dev.4-test.17!=v0.2.0-dev.4-test.14",
             CONTRACT.validate(root),
         )
 
