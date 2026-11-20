@@ -24,6 +24,10 @@ DOCUMENTS = (
     Path("docs/TEST-RELEASE-DE.md"),
     Path("docs/kubernetes/README-DE.md"),
 )
+DOCUMENT_ASSETS = {
+    Path("docs/TEST-RELEASE-DE.md"): EXPECTED_ASSETS,
+    Path("docs/kubernetes/README-DE.md"): ("werftkern-kubernetes_0.1.0.dev3_all.deb",),
+}
 WORKFLOW = Path(".github/workflows/test-release.yml")
 
 
@@ -40,7 +44,7 @@ def validate(root: Path) -> list[str]:
             problems.append(f"DOCUMENT_MISSING:{relative}")
             continue
         documents[relative] = content
-        for asset in EXPECTED_ASSETS:
+        for asset in DOCUMENT_ASSETS[relative]:
             if asset not in content:
                 problems.append(f"DOCUMENT_ASSET_MISSING:{relative}:{asset}")
         for asset in LEGACY_ASSETS:
