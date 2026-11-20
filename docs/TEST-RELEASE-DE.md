@@ -47,18 +47,20 @@ Schwachstellenprüfung.
 
 Installiere das Native-Paket nur auf dem Admin-/Managementhost, kopiere es nicht
 manuell auf sechs Hosts. Das Paket enthält `werft-ops`; der Koordinator überträgt
-das exakt geprüfte Paket selbst:
+das exakt geprüfte Paket selbst. Die automatische Discovery verwendet die bereits
+geprüfte `/root/.ssh/known_hosts`-Datei und ergänzt IPs, SSH-Ziele und Remote-
+Hostnamen ohne manuelle Inventaränderung:
 
 ```bash
 sudo apt install ./werftkern_0.2.0.dev4_amd64.deb
-cp examples/native-inventory-3m-3w.json /root/native-inventory.json
-# Namen, IPs, sshUser, /etc/hosts und /root/.ssh/known_hosts anpassen.
 sudo werft-ops native-bootstrap \
-  --inventory /root/native-inventory.json \
+  --auto-discover \
+  --inventory examples/native-inventory-3m-3w.json \
   --package /root/werftkern_0.2.0.dev4_amd64.deb \
   --journal /root/werft-native-bootstrap.json --check-only
 sudo werft-ops native-bootstrap \
-  --inventory /root/native-inventory.json \
+  --auto-discover \
+  --inventory examples/native-inventory-3m-3w.json \
   --package /root/werftkern_0.2.0.dev4_amd64.deb \
   --journal /root/werft-native-bootstrap.json
 ```
