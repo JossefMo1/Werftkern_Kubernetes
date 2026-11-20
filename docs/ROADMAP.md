@@ -8,6 +8,8 @@ not completion and does not remove the item from this masterplan; the current
 Native qualification contract still treats all 52 entries as blocking.
 `release/production-scope.json` is checked against the complete inventory.
 
+The current immutable lab candidate is [`v0.2.0-dev.4-test.16`](https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.16), sourced from `bcdad0f9abd6a873391cd5d2d1e0141c99de9022`. This candidate updates evidence only; it does not remove any K20 requirement or change the no-go production decision.
+
 ## K20-001 — Review-Baseline und Ausführungspfade verifizieren
 
 **partial**. Separate Alpha neu gebaut/getestet; private C#-DI nicht erneut ausgeführt.
