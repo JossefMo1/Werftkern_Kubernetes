@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T21:04:57Z",
+  "updatedAt": "2026-11-20T21:58:21Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "a6c0ba3823fe1a2cc8f36d1a0ff1e35b29cbc545",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/104",
-    "summary": "Merged PR #103 and follow-up #104: the public test-release runbook is bound to the current immutable test15 candidate and the tracker/tag parser is line-bounded. Exact-head CI and source audit passed; live qualification remains open."
+    "commit": "8f9cc302d26e27b47cf32157e314c8362e064c6d",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/106",
+    "summary": "Merged PR #106: packaged werft-ops now resolves its Python modules relative to the installed wrapper prefix. The release test suite and Native CI extract the unsigned .deb and execute werft-ops --help; exact-head Native (including real-etcd), Kubernetes and source-audit checks passed. The immutable test15 candidate and productionReady:false status remain unchanged."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -73,13 +73,15 @@
         "scripts/check-native-package-layout.py",
         "scripts/check-test-release-contract.py",
         "tests/release/test_native_package_layout.py",
-        "tests/release/test_test_release_contract.py"
+        "tests/release/test_test_release_contract.py",
+        "scripts/werft-ops",
+        "native main workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44824879923"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Run the exact v0.2.0-dev.4-test.15 candidate on the disposable Ubuntu admin/masters/workers lab, capture hashes and redacted journals, then execute Kubernetes E2E only with explicitly approved assets."
+      "nextStep": "Run the exact v0.2.0-dev.4-test.15 candidate on the disposable Ubuntu admin/masters/workers lab; the CI wrapper smoke now covers package extraction but cannot replace live install, restart, uninstall/reinstall or multi-host evidence."
     },
     {
       "id": "E2E-K01",
@@ -114,12 +116,13 @@
         "tests/e2e/ubuntu-vm.sh",
         "candidate v0.2.0-dev.4-test.15: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.15",
         "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304884",
-        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304889"
+        "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304889",
+        "CI package extraction/wrapper smoke: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44824879923"
       ],
       "blockers": [
         "No expressly authorized disposable Ubuntu VM and candidate package are configured."
       ],
-      "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with the exact v0.2.0-dev.4-test.15 package."
+      "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with the exact v0.2.0-dev.4-test.15 package; CI package extraction is only a preflight and not live installation evidence."
     },
     {
       "id": "E2E-H01",
@@ -170,7 +173,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7050589715",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7051642437",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
