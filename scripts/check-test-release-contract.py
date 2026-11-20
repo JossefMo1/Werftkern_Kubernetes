@@ -79,6 +79,10 @@ def validate(root: Path) -> list[str]:
         'manager_release_name="$(basename "$manager" | tr \'~\' \'.\')"',
         "sha256sum *.deb *.tar.gz release-manifest.json > SHA256SUMS",
         "release-assets/*.deb release-assets/*.tar.gz release-assets/release-manifest.json release-assets/SHA256SUMS",
+        'release_notes="$PWD/.test-release-notes.md"',
+        'docs/TEST-RELEASE-DE.md > "$release_notes"',
+        'install -D -m 0644 "$release_notes" "$kit/README-DE.md"',
+        "--notes-file .test-release-notes.md",
     )
     for fragment in required_workflow_fragments:
         if fragment not in workflow:
