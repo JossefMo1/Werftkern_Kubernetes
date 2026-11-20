@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T01:12:00Z",
+  "updatedAt": "2026-11-20T02:00:00Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "8e05df752dd488cb6ed46aee13980720135617f1",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/42",
-    "summary": "The disposable etcd CI dependency now rejects ambiguous metadata and enforces the pinned version, architecture, URL, digest and non-qualification scope; no live gate was claimed."
+    "commit": "d497aa9677484ea6dd7ff1fab8b176403bd8caa0",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/44",
+    "summary": "Remote Hetzner and Kubernetes JSON responses now reject duplicate object keys and non-finite numbers before interpretation; regression tests and all required CI workflows passed. No live gate or production readiness was claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
