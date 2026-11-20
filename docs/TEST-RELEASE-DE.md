@@ -24,7 +24,7 @@ Für dieses Release kannst du die Dateien so herunterladen und anschließend das
 Test-Kit entpacken:
 
 ```bash
-TAG=v0.2.0-dev.4-test.5
+TAG=v0.2.0-dev.4-test.7
 BASE="https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/${TAG}"
 
 wget \
@@ -47,9 +47,30 @@ Schwachstellenprüfung.
 
 Installiere das Native-Paket nur auf dem Admin-/Managementhost, kopiere es nicht
 manuell auf sechs Hosts. Das Paket enthält `werft-ops`; der Koordinator überträgt
-das exakt geprüfte Paket selbst. Die automatische Discovery verwendet die bereits
-geprüfte `/root/.ssh/known_hosts`-Datei und ergänzt IPs, SSH-Ziele und Remote-
-Hostnamen ohne manuelle Inventaränderung:
+das exakt geprüfte Paket selbst. Die automatische Discovery verwendet `/etc/hosts` als verbindliche Zuordnung
+von logischem Namen zu privater IPv4-Adresse. Jede Zuordnung muss zusätzlich in
+`/root/.ssh/known_hosts` mit verifiziertem Hostkey für **Hostname und IP**
+vorliegen. Der Preflight prüft beide SSH-Endpunkte (Hostname und IP), vergleicht
+den Remote-Hostnamen und schreibt die Beobachtungen ins Journal. Eine fehlende,
+mehrdeutige oder nicht vertrauenswürdige Zuordnung blockiert fail-closed.
+
+Beispiel für die benötigten Einträge (mit deinen echten Adressen ersetzen):
+
+```text
+10.2.10.61 master-1
+10.2.10.62 master-2
+10.2.10.63 master-3
+10.2.10.64 worker-1
+10.2.10.65 worker-2
+10.2.10.66 worker-3
+```
+
+Lege anschließend für jeden Namen **und** jede IP einen bereits geprüften
+Hostkey-Eintrag in `known_hosts` ab. Verwende nicht `ssh-keyscan` als
+Vertrauensentscheidung.
+
+Die automatische Discovery ergänzt IPs, SSH-Ziele und Remote-Hostnamen ohne
+manuelle Inventaränderung:
 
 ```bash
 sudo apt install ./werftkern_0.2.0.dev4_amd64.deb
