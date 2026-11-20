@@ -89,12 +89,12 @@ sudo werft-ops native-bootstrap \
 Für ein vorbereitetes Root-SSH-Labor den globalen Benutzer explizit setzen:
 
 ```sh
-sudo werft-ops native-bootstrap \\
-  --auto-discover \\
-  --inventory examples/native-inventory-3m-3w.json \\
-  --ssh-user root \\
-  --package /root/werftkern_0.2.0.dev4_amd64.deb \\
-  --journal /root/werft-native-bootstrap.json \\
+sudo werft-ops native-bootstrap \
+  --auto-discover \
+  --inventory examples/native-inventory-3m-3w.json \
+  --ssh-user root \
+  --package /root/werftkern_0.2.0.dev4_amd64.deb \
+  --journal /root/werft-native-bootstrap.json \
   --check-only
 ```
 
