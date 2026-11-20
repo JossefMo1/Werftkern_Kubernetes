@@ -61,6 +61,7 @@ jobs:
           python3 -m unittest discover -s tests/release -q
           python3 -m compileall -q ops tests
           python3 scripts/check-public-source.py
+          python3 scripts/check-test-release-contract.py
           python3 scripts/check-production-scope.py
           python3 scripts/check-kubernetes-target.py
           python3 scripts/check-production-tracker.py
