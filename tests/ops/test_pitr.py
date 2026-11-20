@@ -40,6 +40,18 @@ class PITRTests(unittest.TestCase):
     raise Blocked('SIMULATED_INTERRUPTION')
    with self.assertRaises(Blocked):pitr.restore(file,'shop',LABEL,TIME,target,SYSID,journal,'shop:'+str(target),runner)
    self.assertEqual(read_json(journal,True)['phase'],'restore-intent')
+ def test_restore_rejects_oversized_pg_version_marker(self):
+  with tempfile.TemporaryDirectory() as d,mock.patch.object(pitr,'owned_actor',lambda:None):
+   root=pathlib.Path(d);file=self.config(root);target=root/'restored';journal=root/'j'
+   def runner(a,**kw):
+    if a[-1]=='info':return json.dumps(info()).encode()
+    if a[-1]=='restore':
+     (target/'PG_VERSION').write_bytes(b'17\n'+b'X'*pitr.PG_VERSION_MAX_BYTES)
+     (target/'recovery.signal').touch()
+    return b''
+   with self.assertRaisesRegex(Blocked,'PITR_RECOVERY_FILES_MISSING'):
+    pitr.restore(file,'shop',LABEL,TIME,target,SYSID,journal,'shop:'+str(target),runner)
+   self.assertEqual(read_json(journal,True)['phase'],'restore-intent')
  def test_wrong_database_and_early_timestamp_block_before_restore(self):
   with tempfile.TemporaryDirectory() as d,mock.patch.object(pitr,'owned_actor',lambda:None):
    root=pathlib.Path(d);file=self.config(root);target=root/'new';j=root/'j';calls=[]

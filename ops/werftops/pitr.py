@@ -10,6 +10,7 @@ from .common import Blocked, atomic, canonical, digest_file, fingerprint, lock, 
 
 UTC=datetime.timezone.utc
 LABEL=re.compile(r'^\d{8}-\d{6}F(?:_\d{8}-\d{6}[DI])?$')
+PG_VERSION_MAX_BYTES=64
 
 def owned_actor():
     if pwd.getpwuid(os.geteuid()).pw_name!='postgres':raise Blocked('RUN_AS_POSTGRES_OS_ACCOUNT')
@@ -20,6 +21,33 @@ def path_value(raw):
     if '..' in p.parts or str(p)!=raw or str(p)=='/':raise Blocked('PITR_PATH_INVALID')
     if any(x.is_symlink() for x in [p,*p.parents]):raise Blocked('PITR_SYMLINK_PATH_FORBIDDEN')
     return p
+
+def _read_pg_version(path):
+    """Read the restore marker without following links or unbounded reads."""
+    flags=os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK
+    if hasattr(os,'O_CLOEXEC'): flags|=os.O_CLOEXEC
+    try:
+        fd=os.open(path,flags)
+    except OSError:
+        raise Blocked('PITR_RECOVERY_FILES_INVALID') from None
+    try:
+        st=os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode) or st.st_size>PG_VERSION_MAX_BYTES:
+            raise Blocked('PITR_RECOVERY_FILES_INVALID')
+        with os.fdopen(fd,'rb') as stream:
+            fd=None
+            raw=stream.read(PG_VERSION_MAX_BYTES+1)
+    except (Blocked,OSError):
+        raise Blocked('PITR_RECOVERY_FILES_INVALID') from None
+    finally:
+        if fd is not None:
+            os.close(fd)
+    if len(raw)>PG_VERSION_MAX_BYTES:
+        raise Blocked('PITR_RECOVERY_FILES_INVALID')
+    try:
+        return raw.decode().strip()
+    except UnicodeDecodeError:
+        raise Blocked('PITR_RECOVERY_FILES_INVALID') from None
 
 def independent(a,b):
     return a!=b and a not in b.parents and b not in a.parents
@@ -151,7 +179,11 @@ def restore(file,scope,label,when,target,expected_system_id,journal,confirm,runn
         write_json(journal,record,exclusive=True)
         target.mkdir(mode=0o700);ts.mkdir(mode=0o700)
         runner(command(file,scope,'--set='+label,'--type=time','--target='+t.isoformat(),'--target-action=pause','--target-timeline=latest','--archive-mode=off','--recovery-option=hot_standby=on','--recovery-option=primary_conninfo=','--recovery-option=primary_slot_name=','--pg1-path='+str(target),'--tablespace-map-all='+str(ts),'restore'),timeout=7200,env=environment())
-        if not (target/'PG_VERSION').is_file() or (target/'PG_VERSION').read_text().strip()!='17' or not (target/'recovery.signal').is_file():raise Blocked('PITR_RECOVERY_FILES_MISSING')
+        try:
+            version=_read_pg_version(target/'PG_VERSION')
+        except Blocked:
+            raise Blocked('PITR_RECOVERY_FILES_MISSING') from None
+        if version!='17' or not (target/'recovery.signal').is_file():raise Blocked('PITR_RECOVERY_FILES_MISSING')
         record['phase']='files-restored-wal-replay-required';write_json(journal,record)
         return record
 
