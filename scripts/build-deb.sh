@@ -50,6 +50,7 @@ pathlib.Path('build/BUILD-INFO.json').write_text(json.dumps({'version':'0.2.0-de
 PY
 install -m 0644 build/BUILD-INFO.json "$stage/usr/share/werftkern/"
 dpkg-deb --root-owner-group --build "$stage" 'dist/werftkern_0.2.0~dev4_amd64.deb'
+python3 scripts/check-native-package-layout.py 'dist/werftkern_0.2.0~dev4_amd64.deb'
 cp build/BUILD-INFO.json dist/BUILD-INFO.json
 cp build/demo.workload.json dist/demo.workload.json
 sha256sum 'dist/werftkern_0.2.0~dev4_amd64.deb' > dist/SHA256SUMS
