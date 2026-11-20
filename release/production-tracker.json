@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T07:55:59Z",
+  "updatedAt": "2026-11-20T08:56:13Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "46a88658abe87bf25f41aa7a9a8fc36d3423af73",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/57",
-    "summary": "Generated SSH public-key files now use an O_NOFOLLOW, current-user regular-file read with a 16 KiB bound before cloud-init embedding; unsafe or oversized input fails closed before provider creation. No live or production gate is claimed."
+    "commit": "bd86e33ac1e7d85ba413c7a9aa09d656b865f1ee",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/59",
+    "summary": "PITR restore now reads the generated PG_VERSION marker with O_NOFOLLOW, regular-file validation and a 64-byte bound; oversized or invalid output fails closed before readiness is recorded. No live or production gate is claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -93,7 +93,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7033793343",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7034962887",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
