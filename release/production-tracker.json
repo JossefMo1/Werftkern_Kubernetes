@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T22:08:13Z",
+  "updatedAt": "2026-11-20T22:20:04Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "8f9cc302d26e27b47cf32157e314c8362e064c6d",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/106",
-    "summary": "Merged PR #106: packaged werft-ops now resolves its Python modules relative to the installed wrapper prefix. The release test suite and Native CI extract the unsigned .deb and execute werft-ops --help; exact-head Native (including real-etcd), Kubernetes and source-audit checks passed. The immutable test15 candidate and productionReady:false status remain unchanged."
+    "commit": "4b156724a33cc01c8a75d0dd0281c264f79b0d8d",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/108",
+    "summary": "Merged PR #108: recorded the immutable v0.2.0-dev.4-test.16 candidate, exact source commit, artifact digests and explicit non-production gates after the wrapper smoke fix from PR #106. Post-merge Native (including real-etcd), Kubernetes and source-audit checks passed; VM/PITR jobs remained skipped and productionReady:false remains unchanged."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -80,7 +80,10 @@
         "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44826148073",
         "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44826148240",
         "Kubernetes package workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44826148045",
-        "source audit workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44826148271"
+        "source audit workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44826148271",
+        "post-merge native workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44827594748",
+        "post-merge Kubernetes workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44827594673",
+        "post-merge source audit workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44827594301"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
@@ -178,7 +181,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7051642437",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7051994175",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
