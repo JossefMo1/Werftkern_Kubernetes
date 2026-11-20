@@ -1,6 +1,6 @@
 from __future__ import annotations
 import argparse, json, sys
-from . import bootstrap, cloud, network, postgres, upgrade, database_ha, pitr, rollout, worker_upgrade
+from . import bootstrap, cloud, network, postgres, upgrade, database_ha, pitr, rollout, worker_upgrade, native_bootstrap
 from .common import Blocked, read_json
 
 def main(argv=None):
@@ -14,6 +14,12 @@ def main(argv=None):
     a=cs.add_parser("plan");a.add_argument("--file",required=True)
     a=cs.add_parser("apply");a.add_argument("--file",required=True);a.add_argument("--journal",required=True);a.add_argument("--token-file",required=True);a.add_argument("--confirm-plan",required=True);a.add_argument("--accept-costs",action="store_true",required=True)
     b=sub.add_parser("bootstrap");b.add_argument("--host",required=True);b.add_argument("--package",required=True);b.add_argument("--kit",required=True);b.add_argument("--known-hosts",required=True);b.add_argument("--confirm-host",required=True)
+    nb=sub.add_parser("native-bootstrap", help="Native-HA-Inventar prüfen und sicher fortsetzen")
+    nb.add_argument("--inventory", required=True)
+    nb.add_argument("--package", required=True)
+    nb.add_argument("--known-hosts", help="Override für known_hosts; sonst Inventarwert")
+    nb.add_argument("--journal", required=True)
+    nb.add_argument("--check-only", action="store_true")
     g=sub.add_parser("postgres");gs=g.add_subparsers(dest="action",required=True)
     for action in ("backup","restore"):
         a=gs.add_parser(action);a.add_argument("--config",required=True);a.add_argument("--passfile",required=True);a.add_argument("--archive",required=True)
@@ -69,6 +75,14 @@ def main(argv=None):
         if args.action=="plan":result={"planSHA256":cloud.validate(plan),"vmCount":len(plan["servers"]),"costs":"not quoted; owner approval required", "mutations":False}
         else:result=cloud.apply(plan,args.journal,args.confirm_plan,args.accept_costs,cloud.Hetzner(args.token_file))
     elif args.command=="bootstrap":bootstrap.install(read_json(args.host),args.package,args.kit,args.known_hosts,args.confirm_host)
+    elif args.command=="native-bootstrap":
+        # ``known-hosts`` is an explicit operator override, never an implicit
+        # TOFU/ssh-keyscan path.
+        result = native_bootstrap.apply(
+            args.inventory, args.package, args.journal,
+            check_only=args.check_only,
+            known_hosts_override=args.known_hosts,
+        )
     elif args.command=="postgres":
         config=read_json(args.config,private=True)
         if args.action=="backup":result=postgres.backup(config,args.passfile,args.archive)

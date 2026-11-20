@@ -63,6 +63,15 @@ persistent local journal, real TLS and OS processes. The Docker endpoint and etc
 were fixtures. This is stronger than changing a version string, but NOT real container,
 Ubuntu, SSH, hardware, quorum or production upgrade evidence.
 
+The new `werft-ops native-bootstrap` coordinator now covers the intended
+three-controller/worker bootstrap flow in code: it resolves an explicit
+inventory against a trusted hosts file, performs fail-closed SSH/Ubuntu/systemd/
+cgroup-v2 preflight on every target, generates one bound HA kit set, installs
+the unchanged package through the existing SSH bootstrap primitive, and resumes
+from a private journal without overwriting foreign or incomplete state. The
+coordinator has fixture tests only; no real six-host run was executed in this
+authoring environment, so this does not close any live qualification gate.
+
 All controllers must already be dev.4 before a dev.3 worker wave starts. General mixed
 versions, old controllers accepting new agents, automated controller waves and the
 historical dev.2→dev.3 edge are not supported by this compatibility test. Active pinned

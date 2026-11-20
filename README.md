@@ -84,6 +84,26 @@ basic wizard does not configure complete HA, network trust or cloud operations.
 Existing installations require the [schema migration](docs/SCHEMA-MIGRATION.md)
 and [upgrade guidance](docs/UPGRADE.md); do not upgrade one controller in isolation.
 
+For an already prepared Native lab with three controllers and workers, use the
+fail-closed coordinator instead of repeating per-host commands:
+
+```sh
+sudo werft-ops native-bootstrap \
+  --inventory /root/native-inventory.json \
+  --package /root/werftkern_0.2.0~dev4_amd64.deb \
+  --journal /root/werft-native-bootstrap.json \
+  --check-only
+sudo werft-ops native-bootstrap \
+  --inventory /root/native-inventory.json \
+  --package /root/werftkern_0.2.0~dev4_amd64.deb \
+  --journal /root/werft-native-bootstrap.json
+```
+
+The inventory resolves names through a trusted hosts file, verifies SSH and
+Ubuntu prerequisites on every target, distributes the per-host HA kits and
+resumes from its private journal. See the [Native bootstrap guide](docs/NATIVE-BOOTSTRAP-DE.md).
+This remains an unsigned, non-production-qualified lab path.
+
 ### Kubernetes manager
 
 ```sh
