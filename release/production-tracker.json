@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T10:50:17Z",
+  "updatedAt": "2026-11-20T11:32:16Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "811b7f4800ab326c4a60b4898fa1ade4de5c2cb7",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/68",
-    "summary": "Disposable Ubuntu E2E now binds checkout SHA, package BUILD-INFO, package digest and workflow identity; a successful manual real-vm run can provide candidate-bound single-host evidence. No live run or production gate is claimed."
+    "commit": "beb44f0da3aff1553ca6c6bb2725d03ca15adab7",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/71",
+    "summary": "Merged the fail-closed native multi-host bootstrap coordinator: trusted hosts-file resolution, strict SSH/Ubuntu preflight, shared HA kits, package-bound journal, safe resume/skip and no qualification claim."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -57,9 +57,14 @@
       "priority": "P0",
       "status": "prepared",
       "scope": "candidate identity and reproducible build",
-      "requiredGateFamilies": ["reproducible-clean-build", "artifact-commit-digest-identity"],
+      "requiredGateFamilies": [
+        "reproducible-clean-build",
+        "artifact-commit-digest-identity"
+      ],
       "evidence": [],
-      "blockers": ["No immutable release candidate is selected."],
+      "blockers": [
+        "No immutable release candidate is selected."
+      ],
       "nextStep": "Create one candidate-bound build and artifact inventory before any production gate can pass."
     },
     {
@@ -67,9 +72,19 @@
       "priority": "P0",
       "status": "blocked-external",
       "scope": "k0s hcloud CSI provision/attach/mount/expansion and cleanup",
-      "requiredGateFamilies": ["ubuntu-k0s-e2e", "cloud-e2e"],
-      "evidence": ["release/hcloud-csi-image-lock.json", "release/hcloud-csi-security-policy.json", "scripts/check-e2e-k01-preflight.py", "tests/release/test_e2e_k01_preflight.py"],
-      "blockers": ["No expressly authorized disposable k0s/Hetzner lab or credentials are configured."],
+      "requiredGateFamilies": [
+        "ubuntu-k0s-e2e",
+        "cloud-e2e"
+      ],
+      "evidence": [
+        "release/hcloud-csi-image-lock.json",
+        "release/hcloud-csi-security-policy.json",
+        "scripts/check-e2e-k01-preflight.py",
+        "tests/release/test_e2e_k01_preflight.py"
+      ],
+      "blockers": [
+        "No expressly authorized disposable k0s/Hetzner lab or credentials are configured."
+      ],
       "nextStep": "Execute the E2E-K01 preflight only after disposable infrastructure is explicitly configured."
     },
     {
@@ -77,9 +92,16 @@
       "priority": "P0",
       "status": "blocked-external",
       "scope": "fresh Ubuntu install, restart, uninstall and reinstall",
-      "requiredGateFamilies": ["ubuntu-install-e2e", "install-uninstall-reinstall"],
-      "evidence": ["tests/e2e/ubuntu-vm.sh"],
-      "blockers": ["No expressly authorized disposable Ubuntu VM and candidate package are configured."],
+      "requiredGateFamilies": [
+        "ubuntu-install-e2e",
+        "install-uninstall-reinstall"
+      ],
+      "evidence": [
+        "tests/e2e/ubuntu-vm.sh"
+      ],
+      "blockers": [
+        "No expressly authorized disposable Ubuntu VM and candidate package are configured."
+      ],
       "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with an exact candidate package."
     },
     {
@@ -87,9 +109,15 @@
       "priority": "P1",
       "status": "not-started",
       "scope": "multi-host, quorum, partition and restart behavior",
-      "requiredGateFamilies": ["multi-node-network", "ha-partition", "multi-host-ha-partition-and-restart"],
+      "requiredGateFamilies": [
+        "multi-node-network",
+        "ha-partition",
+        "multi-host-ha-partition-and-restart"
+      ],
       "evidence": [],
-      "blockers": ["Requires successful basic native and Kubernetes live paths plus a disposable multi-host topology."],
+      "blockers": [
+        "Requires successful basic native and Kubernetes live paths plus a disposable multi-host topology."
+      ],
       "nextStep": "Prepare only after E2E-K01 and E2E-N01 have candidate-bound live evidence."
     },
     {
@@ -97,9 +125,14 @@
       "priority": "P2",
       "status": "not-started",
       "scope": "load, soak and fault limits",
-      "requiredGateFamilies": ["load-soak", "load-soak-and-fault-limits"],
+      "requiredGateFamilies": [
+        "load-soak",
+        "load-soak-and-fault-limits"
+      ],
       "evidence": [],
-      "blockers": ["Requires stable candidate-bound live lifecycle and recovery paths."],
+      "blockers": [
+        "Requires stable candidate-bound live lifecycle and recovery paths."
+      ],
       "nextStep": "Define measured workloads and ceilings after the live topology is qualified."
     },
     {
@@ -107,14 +140,20 @@
       "priority": "P2",
       "status": "not-started",
       "scope": "release candidate, feedback, independent review and Go/No-Go",
-      "requiredGateFamilies": ["published-rc-and-user-feedback", "independent-review-where-required", "final-go-no-go"],
+      "requiredGateFamilies": [
+        "published-rc-and-user-feedback",
+        "independent-review-where-required",
+        "final-go-no-go"
+      ],
       "evidence": [],
-      "blockers": ["All prerequisite technical, security and operational gates remain open."],
+      "blockers": [
+        "All prerequisite technical, security and operational gates remain open."
+      ],
       "nextStep": "Do not create a stable tag before every required exact-candidate gate is evidenced."
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7037628009",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7038472200",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
