@@ -67,6 +67,12 @@ ergänzt. Die `known_hosts`-Datei muss vor dem Lauf über einen vertrauenswürdi
 Kanal gepflegt werden. Für streng manuelle Läufe können weiterhin `hostsFile`
 und explizite `address`-Werte verwendet werden.
 
+Der globale SSH-Benutzer kann für ein vorhandenes Profil mit `--ssh-user`
+überschrieben werden. Das ist nützlich, wenn die Schlüssel auf dem Adminhost
+für `root` verteilt wurden; explizite `sshUser`-Werte pro Host bleiben
+unverändert. Der gewählte Benutzer wird im automatisch erzeugten Inventar
+gebunden und darf bei einem Resume nicht wechseln.
+
 ## Ausführung
 
 Automatischer Lauf mit dem mitgelieferten 3-Controller-/3-Worker-Profil:
@@ -75,6 +81,18 @@ Automatischer Lauf mit dem mitgelieferten 3-Controller-/3-Worker-Profil:
 sudo werft-ops native-bootstrap \
   --auto-discover \
   --inventory examples/native-inventory-3m-3w.json \
+  --package /root/werftkern_0.2.0.dev4_amd64.deb \
+  --journal /root/werft-native-bootstrap.json \
+  --check-only
+```
+
+Für ein vorbereitetes Root-SSH-Labor den globalen Benutzer explizit setzen:
+
+```sh
+sudo werft-ops native-bootstrap \
+  --auto-discover \
+  --inventory examples/native-inventory-3m-3w.json \
+  --ssh-user root \
   --package /root/werftkern_0.2.0.dev4_amd64.deb \
   --journal /root/werft-native-bootstrap.json \
   --check-only

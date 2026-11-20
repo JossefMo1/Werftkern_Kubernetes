@@ -21,7 +21,7 @@ def main(argv=None):
     nb.add_argument("--journal", required=True)
     nb.add_argument("--check-only", action="store_true")
     nb.add_argument("--auto-discover", action="store_true", help="Verifizierte Hosts aus known_hosts automatisch auflösen")
-    nb.add_argument("--ssh-user", default="ubuntu", help="SSH-Benutzer für automatische Discovery")
+    nb.add_argument("--ssh-user", default=None, help="Globaler SSH-Benutzer für Auto-Discovery; ohne Angabe übernimmt das Profil ubuntu")
     nb.add_argument("--ssh-port", default=22, type=int, help="SSH-Port für automatische Discovery")
     g=sub.add_parser("postgres");gs=g.add_subparsers(dest="action",required=True)
     for action in ("backup","restore"):

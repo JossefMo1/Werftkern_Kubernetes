@@ -707,7 +707,7 @@ def _auto_discover_inventory(raw: dict, known_hosts: pathlib.Path, runner: Calla
 def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.PathLike[str],
           journal_path: str | os.PathLike[str], *, check_only: bool = False,
           known_hosts_override: str | os.PathLike[str] | None = None,
-          auto_discover: bool = False, auto_ssh_user: str = "ubuntu", auto_ssh_port: int = 22,
+          auto_discover: bool = False, auto_ssh_user: str | None = None, auto_ssh_port: int = 22,
           runner: Callable = run) -> dict:
     package = pathlib.Path(package_path).resolve(strict=True)
     journal_file = pathlib.Path(journal_path).resolve()
@@ -715,11 +715,16 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
         raise Blocked("PACKAGE_PAYLOAD_UNREADABLE")
     _require_local_ssh()
     generated_inventory = journal_file.with_name(journal_file.stem + ".inventory.json")
+    if auto_ssh_user is not None and (
+        not isinstance(auto_ssh_user, str)
+        or not re.fullmatch(r"[a-z_][a-z0-9_-]{0,30}", auto_ssh_user)
+    ):
+        raise Blocked("SSH_USER_INVALID")
     if auto_discover and inventory_path is None:
         inventory_file = generated_inventory
         raw = _default_inventory(
             str(pathlib.Path(known_hosts_override or "/root/.ssh/known_hosts").resolve()),
-            auto_ssh_user,
+            "ubuntu" if auto_ssh_user is None else auto_ssh_user,
             _port(auto_ssh_port),
         )
     else:
@@ -730,6 +735,10 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
     if known_hosts_override is not None:
         raw["knownHostsFile"] = str(pathlib.Path(known_hosts_override).resolve())
     auto_mode = auto_discover or (isinstance(raw, dict) and raw.get("autoDiscover") is True)
+    if auto_mode and auto_ssh_user is not None and isinstance(raw, dict) and inventory_path is not None:
+        # An explicit CLI value is a deliberate global override for a profile's
+        # default user. Per-host sshUser values remain explicit exceptions.
+        raw["sshUser"] = auto_ssh_user
     known_path_value = raw.get("knownHostsFile", "/root/.ssh/known_hosts") if isinstance(raw, dict) else "/root/.ssh/known_hosts"
     hosts_path_value = raw.get("hostsFile", "/etc/hosts") if isinstance(raw, dict) else "/etc/hosts"
     known_path = pathlib.Path(known_path_value)
@@ -750,6 +759,8 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
                     or pathlib.Path(stored_known_hosts).resolve() != known_path.resolve()
                 ):
                     raise Blocked("AUTO_DISCOVERY_KNOWN_HOSTS_CHANGED")
+            if auto_ssh_user is not None and replayed.get("sshUser") != auto_ssh_user:
+                raise Blocked("AUTO_DISCOVERY_SSH_USER_CHANGED")
             raw = replayed
         else:
             raw = _auto_discover_inventory(raw, known_path, runner, hosts_path)
