@@ -426,16 +426,16 @@ class NativeBootstrapTests(unittest.TestCase):
                     endpoint = target.rsplit("@", 1)[1]
                     hostname = names.get(endpoint, endpoint)
                     return (
-                        "WERFTKERN_NATIVE_PREFLIGHT_V1\\n"
-                        f"hostname={hostname}\\n"
-                        "os=ubuntu:24.04\\n"
-                        "cgroup=v2\\n"
-                        "config=absent\\n"
-                        "incomplete=absent\\n"
-                        "data=absent\\n"
-                        "package=absent\\n"
-                        "docker=missing\\n"
-                        "etcd=missing\\n"
+                        "WERFTKERN_NATIVE_PREFLIGHT_V1\n"
+                        f"hostname={hostname}\n"
+                        "os=ubuntu:24.04\n"
+                        "cgroup=v2\n"
+                        "config=absent\n"
+                        "incomplete=absent\n"
+                        "data=absent\n"
+                        "package=absent\n"
+                        "docker=missing\n"
+                        "etcd=missing\n"
                     ).encode()
                 raise AssertionError(args)
 
