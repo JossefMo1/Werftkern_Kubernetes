@@ -2,17 +2,26 @@
 
 `ubuntu-vm.sh` läuft nur als root und mit `WERFT_DISPOSABLE_VM=1` auf einer frischen,
 wegwerfbaren Ubuntu-24.04-amd64-VM mit systemd/cgroup v2. Bestehende Cluster werden abgewiesen.
+Für einen verwertbaren Nachweis müssen Quell-Commit und Paket identisch gebunden sein:
+`WERFT_CANDIDATE_COMMIT` muss der vollständige SHA des ausgecheckten Quellstands sein;
+das Skript prüft ihn zusätzlich gegen `BUILD-INFO.json` im Debian-Paket.
 Die Umgebung benötigt vertrauenswürdige Ubuntu-Paketquellen mit `docker.io` und `etcd-server`.
 
 ```bash
-sudo env WERFT_DISPOSABLE_VM=1 bash tests/e2e/ubuntu-vm.sh \
-  "$PWD/dist/werftkern_0.2.0~dev2_amd64.deb"
+sudo env WERFT_DISPOSABLE_VM=1 \
+  WERFT_CANDIDATE_COMMIT="$(git rev-parse HEAD)" \
+  WERFT_CANDIDATE_RUN_ID=manual \
+  WERFT_CANDIDATE_WORKFLOW=manual \
+  bash tests/e2e/ubuntu-vm.sh \
+  "$PWD/dist/werftkern_0.2.0~dev4_amd64.deb"
 ```
 
 Der Test installiert echte Pakete, startet echte Dienste, lädt das mitgelieferte Image,
 prüft Container-Sicherheitsoptionen und HTTP, startet Controller/Agent/etcd neu,
 prüft unveränderte Container-IDs beim Service-Neustart, skaliert, rollt zurück und löscht.
-Der Ergebnisdatensatz entsteht ausschließlich auf der tatsächlich ausführenden VM.
+Der Ergebnisdatensatz entsteht ausschließlich auf der tatsächlich ausführenden VM und
+enthält Commit-, Workflow-, Paketnamen- und SHA-256-Identität. Ein ungebundener oder
+signierter/qualifizierter Fremdbaustein wird abgewiesen.
 Ein abgebrochener Test bleibt fehlgeschlagen. Keine Erfolgsdatei wird vorab mitgeliefert.
 Bei Fehlschlag bleiben Schlüssel und Daten zur Diagnose erhalten. VM danach bewusst entsorgen.
 

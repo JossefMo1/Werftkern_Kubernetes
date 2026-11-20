@@ -9,18 +9,47 @@ source /etc/os-release
 [[ "$ID" == ubuntu && "$VERSION_ID" == 24.04 && "$(uname -m)" == x86_64 ]] || { echo 'Unsupported test host' >&2; exit 65; }
 [[ -d /run/systemd/system && -e /sys/fs/cgroup/cgroup.controllers ]] || { echo 'systemd / cgroup v2 required' >&2; exit 65; }
 [[ ! -e /etc/werftkern/setup.json ]] || { echo 'Existing cluster: refusing destructive reuse' >&2; exit 65; }
-package="$(realpath "${1:?Path to .deb required}")"
+command -v dpkg-deb >/dev/null || { echo 'dpkg-deb is required' >&2; exit 65; }
+command -v git >/dev/null || { echo 'git is required for candidate binding' >&2; exit 65; }
+candidate_commit="${WERFT_CANDIDATE_COMMIT:-}"
+[[ "$candidate_commit" =~ ^[0-9a-f]{40}$ ]] || { echo 'WERFT_CANDIDATE_COMMIT must be a full source SHA' >&2; exit 66; }
+checkout_commit="$(git -c safe.directory="$PWD" rev-parse HEAD 2>/dev/null || true)"
+[[ "$checkout_commit" == "$candidate_commit" ]] || { echo 'Source checkout does not match WERFT_CANDIDATE_COMMIT' >&2; exit 66; }
+candidate_run_id="${WERFT_CANDIDATE_RUN_ID:-}"
+candidate_workflow="${WERFT_CANDIDATE_WORKFLOW:-}"
+package_arg="${1:?Path to .deb required}"
+[[ ! -L "$package_arg" ]] || { echo 'Package path must not be a symlink' >&2; exit 66; }
+package="$(realpath "$package_arg")"
+[[ -f "$package" ]] || { echo 'Package path is not a regular file' >&2; exit 66; }
+package_sha256="$(sha256sum "$package" | awk '{print $1}')"
+package_name="$(basename "$package")"
+metadata_dir="$(mktemp -d /var/tmp/werftkern-package-metadata.XXXXXX)"
+dpkg-deb --extract "$package" "$metadata_dir"
+build_info="$metadata_dir/usr/share/werftkern/BUILD-INFO.json"
+[[ -f "$build_info" && ! -L "$build_info" ]] || { echo 'Package BUILD-INFO.json is missing' >&2; exit 66; }
+python3 - "$build_info" "$candidate_commit" <<'PY'
+import json, pathlib, sys
+
+info = json.loads(pathlib.Path(sys.argv[1]).read_text())
+if info.get("commit") != sys.argv[2]:
+    raise SystemExit("Package BUILD-INFO commit does not match candidate SHA")
+if info.get("qualified") is not False or info.get("signed") is not False:
+    raise SystemExit("Only unsigned, explicitly unqualified lab packages are accepted")
+PY
 out="${WERFT_EVIDENCE_DIR:-/var/tmp/werftkern-e2e}"
 mkdir -p "$out"; chmod 0700 "$out"
 start="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 export TEST_EVIDENCE_DIR="$out" TEST_START="$start"
+export CANDIDATE_COMMIT="$candidate_commit" CANDIDATE_RUN_ID="$candidate_run_id"
+export CANDIDATE_WORKFLOW="$candidate_workflow" CHECKOUT_COMMIT="$checkout_commit"
+export PACKAGE_SHA256="$package_sha256" PACKAGE_NAME="$package_name"
 stage=installation
 result() {
   code=$?
   EXIT_CODE="$code" TEST_STAGE="$stage" python3 - <<'PY'
 import datetime,json,os,pathlib
 p=pathlib.Path(os.environ['TEST_EVIDENCE_DIR'])/'ubuntu-vm-result.json'
-p.write_text(json.dumps({'suite':'real-ubuntu-docker-etcd-single-node-e2e','stage':os.environ['TEST_STAGE'],'startedAt':os.environ['TEST_START'],'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'exitCode':int(os.environ['EXIT_CODE']),'status':'passed' if os.environ['EXIT_CODE']=='0' else 'failed','note':'This record is generated only on the machine actually executing the test. It does not certify HA or multi-node networking.'},indent=2)+'\n')
+p.write_text(json.dumps({'suite':'real-ubuntu-docker-etcd-single-node-e2e','stage':os.environ['TEST_STAGE'],'startedAt':os.environ['TEST_START'],'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'exitCode':int(os.environ['EXIT_CODE']),'status':'passed' if os.environ['EXIT_CODE']=='0' else 'failed','candidate':{'sourceCommit':os.environ.get('CANDIDATE_COMMIT',''),'checkoutCommit':os.environ.get('CHECKOUT_COMMIT',''),'workflowRunId':os.environ.get('CANDIDATE_RUN_ID',''),'workflow':os.environ.get('CANDIDATE_WORKFLOW',''),'packageName':os.environ.get('PACKAGE_NAME',''),'packageSha256':os.environ.get('PACKAGE_SHA256','')},'note':'This record is generated only on the machine actually executing the test. It does not certify HA or multi-node networking.'},indent=2)+'\n')
 PY
   if [[ "$code" != 0 ]]; then
     printf 'FAILED at stage %s: leave the disposable VM for inspection. No automatic wipe of keys/data.\n' "$stage" >&2

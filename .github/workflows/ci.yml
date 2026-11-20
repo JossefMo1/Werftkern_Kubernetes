@@ -28,6 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # verified release reference, 2026-09-27.0.1
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # verified release reference, 2026-09-24
@@ -132,15 +133,27 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # verified release reference, 2026-09-27.0.1
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # verified release reference, 2026-09-28.0.2
         with:
           name: experimental-source-validation-and-deb
           path: artifacts
       - name: Explicit disposable-runner package qualification
         run: |
+          set -euo pipefail
           package="$(find "$PWD/artifacts" -name '*.deb' -print -quit)"
-          sudo env WERFT_DISPOSABLE_VM=1 bash tests/e2e/ubuntu-vm.sh "$package"
+          test -n "$package"
+          test "$(find "$PWD/artifacts" -name '*.deb' -type f | wc -l)" -eq 1
+          mkdir -p vm-evidence
+          package_sha256="$(sha256sum "$package" | awk '{print $1}')"
+          printf '%s\n' "{\"sourceCommit\":\"$GITHUB_SHA\",\"workflowRunId\":\"$GITHUB_RUN_ID\",\"workflow\":\"$GITHUB_WORKFLOW\",\"packageName\":\"$(basename "$package")\",\"packageSha256\":\"$package_sha256\"}" > vm-evidence/candidate-package.json
+          sudo env WERFT_DISPOSABLE_VM=1 \
+            WERFT_CANDIDATE_COMMIT="$GITHUB_SHA" \
+            WERFT_CANDIDATE_RUN_ID="$GITHUB_RUN_ID" \
+            WERFT_CANDIDATE_WORKFLOW="$GITHUB_WORKFLOW" \
+            bash tests/e2e/ubuntu-vm.sh "$package"
       - name: Make only non-secret test results readable
         if: always()
         run: |
@@ -151,6 +164,18 @@ jobs:
               sudo cp "/var/tmp/werftkern-e2e/$f" vm-evidence/
             fi
           done
+          test -s vm-evidence/candidate-package.json
+          test -s vm-evidence/ubuntu-vm-result.json
+          python3 - vm-evidence/candidate-package.json vm-evidence/ubuntu-vm-result.json <<'PY'
+          import json, pathlib, sys
+
+          expected = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          result = json.loads(pathlib.Path(sys.argv[2]).read_text())
+          candidate = result.get("candidate", {})
+          for key in ("sourceCommit", "workflowRunId", "workflow", "packageName", "packageSha256"):
+              assert candidate.get(key) == expected[key], f"candidate binding mismatch: {key}"
+          assert result["status"] == "passed"
+          PY
           sudo chown -R "$(id -u):$(id -g)" vm-evidence
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # verified release reference, 2026-09-27.0.2
         if: always()

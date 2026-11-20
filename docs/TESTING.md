@@ -63,7 +63,11 @@ GitHub CI has been prepared, not executed.
 ## Disposable Ubuntu installation
 
 ```sh
-sudo env WERFT_DISPOSABLE_VM=1 bash tests/e2e/ubuntu-vm.sh PATH_TO_DEB
+sudo env WERFT_DISPOSABLE_VM=1 \
+  WERFT_CANDIDATE_COMMIT="$(git rev-parse HEAD)" \
+  WERFT_CANDIDATE_RUN_ID=manual \
+  WERFT_CANDIDATE_WORKFLOW=manual \
+  bash tests/e2e/ubuntu-vm.sh PATH_TO_DEB
 ```
 
 Destructive to the disposable testhost; never use a customer or existing installation.
