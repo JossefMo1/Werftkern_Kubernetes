@@ -24,3 +24,8 @@ class CommonTests(unittest.TestCase):
     p.write_text(data)
     with self.assertRaises(Blocked):read_json(p)
    with self.assertRaises(ValueError):canonical({'a':float('nan')})
+ def test_public_json_is_rejected_before_unbounded_read(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=pathlib.Path(d)/'oversized.json'
+   with p.open('wb') as payload: payload.truncate(4*1024*1024+1)
+   with self.assertRaisesRegex(Blocked,'^FILE_TOO_LARGE$'):read_json(p)
