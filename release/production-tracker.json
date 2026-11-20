@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T10:00:40Z",
+  "updatedAt": "2026-11-20T10:04:23Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
