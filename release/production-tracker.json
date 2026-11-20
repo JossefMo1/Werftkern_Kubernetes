@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T11:32:16Z",
+  "updatedAt": "2026-11-20T12:11:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "beb44f0da3aff1553ca6c6bb2725d03ca15adab7",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/71",
-    "summary": "Merged the fail-closed native multi-host bootstrap coordinator: trusted hosts-file resolution, strict SSH/Ubuntu preflight, shared HA kits, package-bound journal, safe resume/skip and no qualification claim."
+    "commit": "552127294720440295e58433f147e72b4a5abd5f",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/75",
+    "summary": "Merged idempotent experimental test-release publishing and published the immutable v0.2.0-dev.4-test.2 package/test-kit candidate. Source and packaging checks were green; live qualification remains open."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -42,7 +42,7 @@
     "summary": "Run the exact hcloud CSI render on an explicitly authorized disposable k0s lab and collect candidate-bound lifecycle evidence.",
     "blockers": [
       "No expressly authorized disposable k0s/Hetzner lab or credentials are configured.",
-      "No immutable release-candidate package/artifact set is selected for a full production gate run."
+      "The candidate package exists, but no live Ubuntu installation, Kubernetes lifecycle, HA, recovery or upgrade evidence has been collected."
     ],
     "successCriteria": [
       "Exact render hash, pod admission/start and container contexts are recorded without exposing secrets.",
@@ -55,17 +55,24 @@
     {
       "id": "E2E-00",
       "priority": "P0",
-      "status": "prepared",
+      "status": "in-progress",
       "scope": "candidate identity and reproducible build",
       "requiredGateFamilies": [
         "reproducible-clean-build",
         "artifact-commit-digest-identity"
       ],
-      "evidence": [],
-      "blockers": [
-        "No immutable release candidate is selected."
+      "evidence": [
+        "v0.2.0-dev.4-test.2 release: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.2",
+        "release manifest: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.2/release-manifest.json",
+        "SHA256SUMS: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.2/SHA256SUMS",
+        "build workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44733068871",
+        "idempotent rerun workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44733072663"
       ],
-      "nextStep": "Create one candidate-bound build and artifact inventory before any production gate can pass."
+      "blockers": [
+        "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
+        "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
+      ],
+      "nextStep": "Run the exact candidate on the disposable Ubuntu admin/masters/workers lab, capture hashes and redacted journals, then execute Kubernetes E2E only with explicitly approved assets."
     },
     {
       "id": "E2E-K01",
@@ -97,12 +104,13 @@
         "install-uninstall-reinstall"
       ],
       "evidence": [
-        "tests/e2e/ubuntu-vm.sh"
+        "tests/e2e/ubuntu-vm.sh",
+        "candidate v0.2.0-dev.4-test.2: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.2"
       ],
       "blockers": [
         "No expressly authorized disposable Ubuntu VM and candidate package are configured."
       ],
-      "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with an exact candidate package."
+      "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with the exact v0.2.0-dev.4-test.2 package."
     },
     {
       "id": "E2E-H01",
@@ -153,11 +161,22 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7038472200",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.2",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
       "Keep Native Runtime and Kubernetes manager evidence separate."
     ]
+  },
+  "candidate": {
+    "tag": "v0.2.0-dev.4-test.2",
+    "sourceCommit": "552127294720440295e58433f147e72b4a5abd5f",
+    "release": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.2",
+    "workflowRun": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44733068871",
+    "rerunWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44733072663",
+    "manifest": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.2/release-manifest.json",
+    "checksums": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.2/SHA256SUMS",
+    "productionReady": false,
+    "qualification": "not-production-qualified"
   }
 }
