@@ -1,0 +1,17 @@
+{
+  "format": "werftkern-kube-assets/v1",
+  "tools": {
+    "ssh": {"path": "/usr/bin/ssh", "version": "REPLACE_WITH_VERIFIED_OPENSSH_VERSION", "sha256": "REPLACE_WITH_VERIFIED_SHA256"},
+    "ssh-keygen": {"path": "/usr/bin/ssh-keygen", "version": "REPLACE_WITH_VERIFIED_OPENSSH_VERSION", "sha256": "REPLACE_WITH_VERIFIED_SHA256"},
+    "k0sctl": {"path": "/opt/werftkern/reviewed/bin/k0sctl", "version": "v0.33.1", "sha256": "bd5cd9125c93d8d30c33f7b2f3693fed0d74140a248d433dad74f2b7015295b5"},
+    "kubectl": {"path": "/opt/werftkern/reviewed/bin/kubectl", "version": "v1.37.2", "sha256": "c04487523e7aa7d1493f7808174c899db93d7a9cf57531420cd76b9bd415f8f4"},
+    "age": {"path": "/opt/werftkern/reviewed/bin/age", "version": "REPLACE_WITH_VERIFIED_VERSION", "sha256": "REPLACE_WITH_VERIFIED_SHA256"}
+  },
+  "k0s": {
+    "v1.37.2+k0s.1": {"path": "/opt/werftkern/reviewed/k0s", "version": "v1.37.2+k0s.1", "sha256": "4770cf89ff45e43292819f6e3a02a25a453bc750c777f6f7ad2de335f3f41df5"}
+  },
+  "upgradeEdges": [],
+  "charts": {},
+  "manifests": {},
+  "images": {}
+}
