@@ -29,8 +29,28 @@ def private_read(path, limit=4*1024*1024):
             raise Blocked("FILE_TOO_LARGE")
         return raw
 
+def bounded_read(path, limit=4*1024*1024):
+    """Read a non-private regular file without an unbounded allocation.
+
+    Public JSON inputs may intentionally use normal file permissions (and may
+    be symlinks), so this does not apply the ownership/mode checks from
+    ``private_read``.  The descriptor is opened before checking its metadata,
+    which keeps the size decision tied to the bytes that are actually read.
+    """
+    if type(limit) is not int or limit < 1:
+        raise Blocked("FILE_READ_LIMIT_INVALID")
+    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+    with os.fdopen(fd, "rb") as f:
+        s = os.fstat(f.fileno())
+        if not stat.S_ISREG(s.st_mode) or s.st_size > limit:
+            raise Blocked("FILE_TOO_LARGE")
+        raw = f.read(limit + 1)
+        if len(raw) > limit:
+            raise Blocked("FILE_TOO_LARGE")
+        return raw
+
 def read_json(path, private=False):
-    raw = private_read(path) if private else pathlib.Path(path).read_bytes()
+    raw = private_read(path) if private else bounded_read(path)
     return parse_json(raw)
 
 def parse_json(raw, limit=4*1024*1024):
