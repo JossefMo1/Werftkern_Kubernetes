@@ -24,6 +24,16 @@ bei einem echten, belegten Zustandswechsel aktualisiert.
 - Vor einem zerstörerischen Schritt: eindeutige Besitzmarkierung, Wiederanlauf- und
   sichere Aufräumprozedur. Nach einem Fehler bleiben Beweise und Sperren erhalten.
 
+## Expliziter No-Go ohne reale Linux-Prüfung
+
+Wenn keine ausdrücklich autorisierte, entbehrliche Linux-VM für Installation,
+Neustart, Deinstallation/Wiederinstallation und Upgrade/Rollback ausgeführt wird,
+bleibt die Production-Entscheidung **No-Go**. Lokale Unit-, Fixture-, statische
+und CI-Ergebnisse dürfen diese Nachweise nicht ersetzen. In diesem Fall werden die
+fehlenden Gate-IDs, die Einschränkung und der nächste sichere Schritt im
+`release/production-tracker.json` festgehalten; ein stabiler Tag oder
+`productionReady=true` ist nicht zulässig.
+
 ## Reihenfolge der End-to-End-Qualifikation
 
 | Priorität | E2E-ID | Pfad | Mindestnachweis vor „passed“ | Aktueller Zustand |
