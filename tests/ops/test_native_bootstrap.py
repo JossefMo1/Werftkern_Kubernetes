@@ -403,6 +403,78 @@ class NativeBootstrapTests(unittest.TestCase):
                 native_bootstrap._auto_discover_inventory(raw, known, self.discovery_runner(names))
 
 
+    def test_auto_discovery_cli_ssh_user_override_is_bound_and_used(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            raw, known = self.auto_profile(root)
+            profile = root / "profile.json"
+            write_json(profile, raw)
+            package = root / "runtime.deb"
+            package.write_bytes(b"fixture-package")
+            journal = root / "journal.json"
+            names = {
+                "10.87.0.1": "master-1", "10.87.0.2": "master-2", "10.87.0.3": "master-3",
+                "10.87.0.11": "worker-1", "10.87.0.12": "worker-2", "10.87.0.13": "worker-3",
+            }
+            prepare_runner = self.fake_runner(root)
+            seen = []
+
+            def discovery_runner(args, **kwargs):
+                if args and args[0] == "ssh":
+                    target = next(value for value in args if value.startswith("root@"))
+                    seen.append(target)
+                    endpoint = target.rsplit("@", 1)[1]
+                    hostname = names.get(endpoint, endpoint)
+                    return (
+                        "WERFTKERN_NATIVE_PREFLIGHT_V1\\n"
+                        f"hostname={hostname}\\n"
+                        "os=ubuntu:24.04\\n"
+                        "cgroup=v2\\n"
+                        "config=absent\\n"
+                        "incomplete=absent\\n"
+                        "data=absent\\n"
+                        "package=absent\\n"
+                        "docker=missing\\n"
+                        "etcd=missing\\n"
+                    ).encode()
+                raise AssertionError(args)
+
+            def runner(args, **kwargs):
+                if args[:3] == ["werft", "ha", "prepare"]:
+                    return prepare_runner(args, **kwargs)
+                return discovery_runner(args, **kwargs)
+
+            with patch("werftops.native_bootstrap.shutil.which", return_value="/usr/bin/ssh"):
+                native_bootstrap.apply(
+                    profile,
+                    package,
+                    journal,
+                    check_only=True,
+                    known_hosts_override=known,
+                    auto_discover=True,
+                    auto_ssh_user="root",
+                    runner=runner,
+                )
+                generated = read_json(
+                    journal.with_name("journal.inventory.json"), private=True
+                )
+                self.assertEqual(generated["sshUser"], "root")
+                self.assertTrue(seen)
+                self.assertTrue(all(target.startswith("root@") for target in seen))
+                with self.assertRaisesRegex(
+                    Blocked, "^AUTO_DISCOVERY_SSH_USER_CHANGED$"
+                ):
+                    native_bootstrap.apply(
+                        profile,
+                        package,
+                        journal,
+                        check_only=True,
+                        known_hosts_override=known,
+                        auto_discover=True,
+                        auto_ssh_user="ubuntu",
+                        runner=runner,
+                    )
+
     def test_auto_discovery_rejects_changed_known_hosts_on_resume(self):
         with tempfile.TemporaryDirectory() as d:
             root = pathlib.Path(d)
