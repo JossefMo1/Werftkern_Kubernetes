@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T03:53:59Z",
+  "updatedAt": "2026-11-20T04:54:09Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "3710a06ff730f69463e549b7933c39d677d54dae",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/48",
-    "summary": "Browser DOM tests now emit a sanitized BLOCKED result with exit code 2 when Chromium cannot start; the prerequisite failure is explicit and no browser transport or production gate is claimed."
+    "commit": "c4e82d409bf083816074ce4db2488a0f70abae04",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/50",
+    "summary": "Native HA bootstrap now rejects Debian payloads over 128 MiB before any SSH mutation and reads accepted packages with O_NOFOLLOW and regular-file checks; regression coverage confirms oversized input is blocked fail-closed. No live or production gate is claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
