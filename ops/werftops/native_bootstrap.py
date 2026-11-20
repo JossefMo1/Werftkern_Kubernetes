@@ -600,12 +600,14 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
         raw["knownHostsFile"] = str(pathlib.Path(known_hosts_override).resolve())
     auto_mode = auto_discover or (isinstance(raw, dict) and raw.get("autoDiscover") is True)
     known_path_value = raw.get("knownHostsFile", "/root/.ssh/known_hosts") if isinstance(raw, dict) else "/root/.ssh/known_hosts"
+    hosts_path_value = raw.get("hostsFile", "/etc/hosts") if isinstance(raw, dict) else "/etc/hosts"
     known_path = pathlib.Path(known_path_value).resolve()
+    hosts_path = pathlib.Path(hosts_path_value).resolve()
     if auto_mode:
         if generated_inventory.exists():
             raw = read_json(generated_inventory, private=True)
         else:
-            raw = _auto_discover_inventory(raw, known_path, runner)
+            raw = _auto_discover_inventory(raw, known_path, runner, hosts_path)
             write_json(generated_inventory, raw, exclusive=True)
         inventory_file = generated_inventory
     inventory, topology, _ = _resolve_inventory(raw, inventory_file, auto_discover=auto_mode)
@@ -642,11 +644,17 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
                 if n.get("phase") == "preflight":
                     continue
                 spec = _host_spec(host, package_sha)
-                state, observed = _probe_state(spec, known_hosts, expected_cluster, runner)
+                if auto_mode:
+                    endpoint_observations, observed = _probe_endpoints(spec, known_hosts, runner)
+                else:
+                    endpoint = spec.get("sshHost", spec["address"])
+                    observed = probe(spec, known_hosts, runner)
+                    endpoint_observations = [{"endpoint": endpoint, "hostname": observed["hostname"]}]
+                state, observed = _probe_state(spec, known_hosts, expected_cluster, runner, observed=observed)
                 expected_hostname = host.get("expectedHostname")
                 if expected_hostname is not None and observed.get("hostname") != expected_hostname:
                     raise Blocked("REMOTE_HOSTNAME_MISMATCH")
-                n.update({"phase": "preflight", "hostname": observed["hostname"], "remoteState": state})
+                n.update({"phase": "preflight", "hostname": observed["hostname"], "remoteState": state, "sshEndpoints": endpoint_observations})
                 write_json(journal_file, journal)
             journal["phase"] = "staging"
             write_json(journal_file, journal)
