@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T17:56:29Z",
+  "updatedAt": "2026-11-20T19:04:11Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "6bacf1b6e343fee1e22344bb31f21fb4115bf5d3",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/99",
-    "summary": "Merged the local-ssh preflight fix and published immutable test14 from the exact merged source; CI and package evidence passed while live qualification remains open."
+    "commit": "c2d164fa4c864d4804f4de6bf04942e11ec6507e",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/101",
+    "summary": "Merged the native package-install preflight documentation and published immutable test15 from the exact merged source; CI and package evidence passed while live qualification remains open."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Run the exact v0.2.0-dev.4-test.14 candidate on the disposable Ubuntu admin/masters/workers lab, capture hashes and redacted journals, then execute Kubernetes E2E only with explicitly approved assets."
+    "nextStep": "Run the exact v0.2.0-dev.4-test.15 candidate on the disposable Ubuntu admin/masters/workers lab, capture hashes and redacted journals, then execute Kubernetes E2E only with explicitly approved assets."
   },
   "workstreams": [
     {
@@ -63,9 +63,9 @@
         "artifact-commit-digest-identity"
       ],
       "evidence": [
-        "v0.2.0-dev.4-test.14 release: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.14",
-        "release manifest: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.14/release-manifest.json",
-        "SHA256SUMS: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.14/SHA256SUMS",
+        "v0.2.0-dev.4-test.15 release: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.15",
+        "release manifest: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.15/release-manifest.json",
+        "SHA256SUMS: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.15/SHA256SUMS",
         "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589759",
         "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589698",
         "Kubernetes package workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589633",
@@ -79,7 +79,7 @@
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Run the exact v0.2.0-dev.4-test.14 candidate on the disposable Ubuntu admin/masters/workers lab, capture hashes and redacted journals, then execute Kubernetes E2E only with explicitly approved assets."
+      "nextStep": "Run the exact v0.2.0-dev.4-test.15 candidate on the disposable Ubuntu admin/masters/workers lab, capture hashes and redacted journals, then execute Kubernetes E2E only with explicitly approved assets."
     },
     {
       "id": "E2E-K01",
@@ -112,14 +112,14 @@
       ],
       "evidence": [
         "tests/e2e/ubuntu-vm.sh",
-        "candidate v0.2.0-dev.4-test.14: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.14",
+        "candidate v0.2.0-dev.4-test.15: https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.15",
         "test-release workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589759",
         "native package/source workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589698"
       ],
       "blockers": [
         "No expressly authorized disposable Ubuntu VM and candidate package are configured."
       ],
-      "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with the exact v0.2.0-dev.4-test.14 package."
+      "nextStep": "Run the existing root-only script on a fresh disposable Ubuntu VM with the exact v0.2.0-dev.4-test.15 package."
     },
     {
       "id": "E2E-H01",
@@ -170,7 +170,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.14",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.15",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -178,28 +178,35 @@
     ]
   },
   "candidate": {
-    "tag": "v0.2.0-dev.4-test.14",
-    "sourceCommit": "6bacf1b6e343fee1e22344bb31f21fb4115bf5d3",
-    "tagRef": "refs/tags/v0.2.0-dev.4-test.14",
-    "release": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.14",
-    "workflowRun": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589759",
-    "nativeWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589698",
-    "kubernetesWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589633",
-    "sourceAuditWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589858",
+    "tag": "v0.2.0-dev.4-test.15",
+    "sourceCommit": "c2d164fa4c864d4804f4de6bf04942e11ec6507e",
+    "tagRef": "refs/tags/v0.2.0-dev.4-test.15",
+    "release": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.15",
+    "workflowRun": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304884",
+    "nativeWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304889",
+    "kubernetesWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304882",
+    "sourceAuditWorkflow": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44798304885",
     "rerunWorkflow": null,
-    "manifest": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.14/release-manifest.json",
-    "checksums": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.14/SHA256SUMS",
+    "manifest": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.15/release-manifest.json",
+    "checksums": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/v0.2.0-dev.4-test.15/SHA256SUMS",
     "artifacts": {
-      "release-manifest.json": "sha256:983e2c977fb821fb4b40babc2735e2059f3b4fc9cee48dc70bf15bf55834256f",
-      "SHA256SUMS": "sha256:b19211287247becc3047ee1b1cfc0edcb94fa0291ce391256d37a8a4436dad16",
-      "werftkern_0.2.0.dev4_amd64.deb": "sha256:be19fe0577702a4a73d9561d63be53bbe93164873b97067a944f9175d659b305",
-      "werftkern-kubernetes_0.1.0.dev3_all.deb": "sha256:b00cce5ba731b61067171841d15349ab34a9a6c3722f3a88427486d3e260a133",
-      "werftkern-test-kit-v0.2.0-dev.4-test.14.tar.gz": "sha256:07976211de2df1d2fe9761fc0a77385d3c18fc4e45352c0221715826c0c79202"
+      "release-manifest.json": "sha256:5f6ad17cf107b4cfe104d17f193a71722f26a85fe6681608f7eb930f4780d74b",
+      "SHA256SUMS": "sha256:a38e48f761c464d6b9ca9a22e13b3d039c6a0891d7902ada8cd0d991f3eadabb",
+      "werftkern_0.2.0.dev4_amd64.deb": "sha256:38e0f17da99a3dd1afe5b748e16857aadee26cdc5deca01ce11867648c9b213b",
+      "werftkern-kubernetes_0.1.0.dev3_all.deb": "sha256:293bb4c8504981a2fef6bbcf6f2f1feac704712c1cb3d74e9a926eb0ad97910c",
+      "werftkern-test-kit-v0.2.0-dev.4-test.15.tar.gz": "sha256:c405ce925e6af0cd6ad09f80f24698e59ec5f247714d1a21102dca08303d41b5"
     },
     "productionReady": false,
     "qualification": "not-production-qualified"
   },
   "previousCandidates": [
+    {
+      "tag": "v0.2.0-dev.4-test.14",
+      "sourceCommit": "6bacf1b6e343fee1e22344bb31f21fb4115bf5d3",
+      "release": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.14",
+      "workflowRun": "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44787589759",
+      "note": "Immutable candidate built from the exact PR #99 source and superseded by test15, which includes the corrected native package-install preflight documentation from PR #101."
+    },
     {
       "tag": "v0.2.0-dev.4-test.13",
       "sourceCommit": "d722cb18a6b8e392dbd9b92096e72e942023e925",
