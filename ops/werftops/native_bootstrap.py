@@ -549,7 +549,8 @@ def _auto_discover_inventory(raw: dict, known_hosts: pathlib.Path, runner: Calla
         if address is None:
             raise Blocked("AUTO_DISCOVERY_HOSTS_NAME_MISSING:" + host_name)
         address = _private_ipv4(address)
-        matches = [candidate_index for candidate_index, candidate in enumerate(candidates) if candidate_index not in used and candidate["address"] == address and candidate["sshPort"] == global_port]
+        wanted_port = _port(item.get("sshPort", global_port))
+        matches = [candidate_index for candidate_index, candidate in enumerate(candidates) if candidate_index not in used and candidate["address"] == address and candidate["sshPort"] == wanted_port]
         if len(matches) == 0:
             raise Blocked("AUTO_DISCOVERY_HOSTS_ADDRESS_NOT_TRUSTED:" + host_name)
         if len(matches) > 1:
@@ -564,7 +565,7 @@ def _auto_discover_inventory(raw: dict, known_hosts: pathlib.Path, runner: Calla
         candidate = assigned[index]
         updated = dict(item)
         updated["address"] = candidate["address"]
-        if "sshPort" not in updated and "sshPort" not in raw:
+        if "sshPort" not in updated:
             updated["sshPort"] = candidate["sshPort"] or global_port
         updated["sshHost"] = next((alias for alias in candidate["sshHosts"] if _short_host(alias) == _short_host(item["name"])), candidate["sshHosts"][0])
         discovered_hosts.append(updated)
@@ -601,8 +602,14 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
     auto_mode = auto_discover or (isinstance(raw, dict) and raw.get("autoDiscover") is True)
     known_path_value = raw.get("knownHostsFile", "/root/.ssh/known_hosts") if isinstance(raw, dict) else "/root/.ssh/known_hosts"
     hosts_path_value = raw.get("hostsFile", "/etc/hosts") if isinstance(raw, dict) else "/etc/hosts"
-    known_path = pathlib.Path(known_path_value).resolve()
-    hosts_path = pathlib.Path(hosts_path_value).resolve()
+    known_path = pathlib.Path(known_path_value)
+    hosts_path = pathlib.Path(hosts_path_value)
+    if not known_path.is_absolute():
+        known_path = inventory_file.parent / known_path
+    if not hosts_path.is_absolute():
+        hosts_path = inventory_file.parent / hosts_path
+    known_path = known_path.resolve()
+    hosts_path = hosts_path.resolve()
     if auto_mode:
         if generated_inventory.exists():
             raw = read_json(generated_inventory, private=True)
