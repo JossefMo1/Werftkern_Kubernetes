@@ -412,7 +412,17 @@ class NativeBootstrapTests(unittest.TestCase):
             package = root / "runtime.deb"
             package.write_bytes(b"fixture-package")
             journal = root / "journal.json"
-            runner = self.fake_runner(root)
+            names = {
+                "10.87.0.1": "master-1", "10.87.0.2": "master-2", "10.87.0.3": "master-3",
+                "10.87.0.11": "worker-1", "10.87.0.12": "worker-2", "10.87.0.13": "worker-3",
+            }
+            prepare_runner = self.fake_runner(root)
+            discovery_runner = self.discovery_runner(names)
+
+            def runner(args, **kwargs):
+                if args[:3] == ["werft", "ha", "prepare"]:
+                    return prepare_runner(args, **kwargs)
+                return discovery_runner(args, **kwargs)
 
             with patch("werftops.native_bootstrap.shutil.which", return_value="/usr/bin/ssh"):
                 native_bootstrap.apply(
