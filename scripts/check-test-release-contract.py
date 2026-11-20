@@ -36,6 +36,8 @@ RELEASE_DOWNLOAD_FRAGMENTS = (
     'tar -xzf "werftkern-test-kit-${TAG}.tar.gz"',
 )
 NATIVE_AUTO_FRAGMENTS = (
+    "test -x /usr/bin/werft-ops || {",
+    "dpkg-query -W -f='Status: \${Status}\\n' werftkern",
     "--auto-discover",
     "--inventory examples/native-inventory-3m-3w.json",
     "--journal /root/werft-native-bootstrap.json --check-only",
