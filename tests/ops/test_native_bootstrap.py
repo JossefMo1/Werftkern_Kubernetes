@@ -403,6 +403,42 @@ class NativeBootstrapTests(unittest.TestCase):
                 native_bootstrap._auto_discover_inventory(raw, known, self.discovery_runner(names))
 
 
+    def test_auto_discovery_rejects_changed_known_hosts_on_resume(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            raw, known = self.auto_profile(root)
+            profile = root / "profile.json"
+            write_json(profile, raw)
+            package = root / "runtime.deb"
+            package.write_bytes(b"fixture-package")
+            journal = root / "journal.json"
+            runner = self.fake_runner(root)
+
+            with patch("werftops.native_bootstrap.shutil.which", return_value="/usr/bin/ssh"):
+                native_bootstrap.apply(
+                    profile,
+                    package,
+                    journal,
+                    check_only=True,
+                    known_hosts_override=known,
+                    auto_discover=True,
+                    runner=runner,
+                )
+                alternate = root / "alternate_known_hosts"
+                alternate.write_text(known.read_text(encoding="utf-8"), encoding="utf-8")
+                with self.assertRaisesRegex(
+                    Blocked, "^AUTO_DISCOVERY_KNOWN_HOSTS_CHANGED$"
+                ):
+                    native_bootstrap.apply(
+                        profile,
+                        package,
+                        journal,
+                        check_only=True,
+                        known_hosts_override=alternate,
+                        auto_discover=True,
+                        runner=runner,
+                    )
+
     def test_apply_blocks_before_journal_when_local_ssh_is_missing(self):
         with tempfile.TemporaryDirectory() as d:
             root = pathlib.Path(d)
