@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-20T03:01:42Z",
+  "updatedAt": "2026-11-20T03:53:59Z",
   "sources": {
     "productionScope": "release/production-scope.json",
     "nativeQualification": "release/qualification.json",
@@ -10,9 +10,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "dbaa9de36968dbebd4bdbdbf8404f70f571e2f72",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/46",
-    "summary": "Owned external commands now drain stdout/stderr continuously and terminate on a bounded 16 MiB capture limit; regression coverage and all required CI workflows passed. No live gate or production readiness was claimed."
+    "commit": "3710a06ff730f69463e549b7933c39d677d54dae",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/48",
+    "summary": "Browser DOM tests now emit a sanitized BLOCKED result with exit code 2 when Chromium cannot start; the prerequisite failure is explicit and no browser transport or production gate is claimed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
