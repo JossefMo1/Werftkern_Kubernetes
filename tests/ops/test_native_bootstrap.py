@@ -198,12 +198,12 @@ class NativeBootstrapTests(unittest.TestCase):
             ("worker-1", "10.87.0.11"), ("worker-2", "10.87.0.12"), ("worker-3", "10.87.0.13"),
         ]
         known.write_text(
-            "".join(f"{name} ssh-ed25519 AAAA\\n{address} ssh-ed25519 AAAA\\n" for name, address in pairs),
+            "".join(f"{name} ssh-ed25519 AAAA\n{address} ssh-ed25519 AAAA\n" for name, address in pairs),
             encoding="utf-8",
         )
         hosts = root / "hosts"
         hosts.write_text(
-            "".join(f"{address} {name}\\n" for name, address in pairs),
+            "".join(f"{address} {name}\n" for name, address in pairs),
             encoding="utf-8",
         )
         raw = {
@@ -287,16 +287,16 @@ class NativeBootstrapTests(unittest.TestCase):
                     seen.append(endpoint)
                     hostname = names.get(endpoint, endpoint)
                     return (
-                        "WERFTKERN_NATIVE_PREFLIGHT_V1\\n"
-                        f"hostname={hostname}\\n"
-                        "os=ubuntu:24.04\\n"
-                        "cgroup=v2\\n"
-                        "config=absent\\n"
-                        "incomplete=absent\\n"
-                        "data=absent\\n"
-                        "package=absent\\n"
-                        "docker=missing\\n"
-                        "etcd=missing\\n"
+                        "WERFTKERN_NATIVE_PREFLIGHT_V1\n"
+                        f"hostname={hostname}\n"
+                        "os=ubuntu:24.04\n"
+                        "cgroup=v2\n"
+                        "config=absent\n"
+                        "incomplete=absent\n"
+                        "data=absent\n"
+                        "package=absent\n"
+                        "docker=missing\n"
+                        "etcd=missing\n"
                     ).encode()
                 raise AssertionError(args)
 
@@ -310,7 +310,7 @@ class NativeBootstrapTests(unittest.TestCase):
             root = pathlib.Path(d)
             raw, known = self.auto_profile(root)
             hosts = root / "hosts"
-            hosts.write_text("10.87.0.1 master-1\\n", encoding="utf-8")
+            hosts.write_text("10.87.0.1 master-1\n", encoding="utf-8")
             with self.assertRaisesRegex(Blocked, "^AUTO_DISCOVERY_HOSTS_NAME_MISSING:master-2$"):
                 native_bootstrap._auto_discover_inventory(raw, known, self.discovery_runner({}))
 
