@@ -19,6 +19,8 @@ on:
   push:
     tags:
       - 'v*-test.*'
+    branches:
+      - 'release-test/**'
 
 permissions:
   contents: write
@@ -81,7 +83,14 @@ jobs:
         run: |
           set -euo pipefail
           tag="$REF_NAME"
-          if [ "$EVENT_NAME" = workflow_dispatch ]; then tag="$INPUT_TAG"; fi
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+            tag="$INPUT_TAG"
+          elif [ "${GITHUB_REF_TYPE:-}" = branch ]; then
+            case "$REF_NAME" in
+              release-test/*) tag="${REF_NAME#release-test/}" ;;
+              *) echo "Unexpected release branch: $REF_NAME" >&2; exit 1 ;;
+            esac
+          fi
           if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-dev\.[0-9]+)?-test\.[0-9]+$ ]]; then
             echo "Unsupported test tag: $tag" >&2
             exit 1
@@ -136,12 +145,19 @@ jobs:
         run: |
           set -euo pipefail
           tag="$REF_NAME"
-          if [ "$EVENT_NAME" = workflow_dispatch ]; then tag="$INPUT_TAG"; fi
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+            tag="$INPUT_TAG"
+          elif [ "${GITHUB_REF_TYPE:-}" = branch ]; then
+            case "$REF_NAME" in
+              release-test/*) tag="${REF_NAME#release-test/}" ;;
+              *) echo "Unexpected release branch: $REF_NAME" >&2; exit 1 ;;
+            esac
+          fi
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Release $tag already exists; refusing to replace it."
             exit 1
           fi
-          if [ "$EVENT_NAME" = push ]; then
+          if [ "$EVENT_NAME" = push ] && [ "${GITHUB_REF_TYPE:-}" = tag ]; then
             gh release create "$tag" --verify-tag --title "Werftkern $tag (experimental test release)" \
               --notes-file docs/TEST-RELEASE-DE.md --prerelease --latest=false \
               dist/*.deb dist/*.tar.gz dist/release-manifest.json dist/SHA256SUMS
