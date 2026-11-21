@@ -60,9 +60,24 @@ func (d *Docker) raw(ctx context.Context, method, path string, body io.Reader) (
 	return resp, nil
 }
 func apiNumber(v string) (int, error) {
-	var major, minor int
-	_, e := fmt.Sscanf(v, "%d.%d", &major, &minor)
-	if e != nil || major != 1 {
+	// Docker reports API versions as the exact canonical form "1.<minor>".
+	// fmt.Sscanf accepts trailing data (for example "1.51garbage"), which
+	// could make an untrusted /version response select an API that was never
+	// actually advertised. Validate the complete token before parsing it.
+	if !strings.HasPrefix(v, "1.") {
+		return 0, errors.New("ENGINE_API_UNSUPPORTED")
+	}
+	minorText := strings.TrimPrefix(v, "1.")
+	if minorText == "" {
+		return 0, errors.New("ENGINE_API_UNSUPPORTED")
+	}
+	for _, r := range minorText {
+		if r < '0' || r > '9' {
+			return 0, errors.New("ENGINE_API_UNSUPPORTED")
+		}
+	}
+	minor, e := strconv.Atoi(minorText)
+	if e != nil || strconv.Itoa(minor) != minorText {
 		return 0, errors.New("ENGINE_API_UNSUPPORTED")
 	}
 	return minor, nil
