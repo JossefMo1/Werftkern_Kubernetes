@@ -64,5 +64,11 @@ func ValidateClient(c Client) error {
 	if e != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || strings.Trim(u.Path, "/") != "" || !model.ValidID(c.ClusterID) {
 		return errors.New("CLIENT_CONFIGURATION_INVALID")
 	}
+	if port := u.Port(); port != "" {
+		n, e := strconv.Atoi(port)
+		if e != nil || n < 1 || n > 65535 {
+			return errors.New("CLIENT_CONFIGURATION_INVALID")
+		}
+	}
 	return nil
 }
