@@ -60,8 +60,41 @@ class RunTests(unittest.TestCase):
             item=tarfile.TarInfo('serverversion.json');item.size=len(b)
             tf.addfile(item,io.BytesIO(b))
         self.d.archive=out.getvalue()
-        with self.assertRaisesRegex(Blocked,'^SERVER_VERSION_INVALID
+        with self.assertRaisesRegex(Blocked,'^SERVER_VERSION_INVALID        (self.d.root/'conformance/proof/results.tar.gz').write_bytes(b'changed')
+        with self.assertRaisesRegex(Blocked,'ARCHIVE_CHANGED'):self.c.collect('proof')
+    def test_foreign_namespace_not_adopted(self):
+        self.d.namespaces['werft-test-proof']={'metadata':{'uid':'foreign'}}
+        with self.assertRaises(Blocked):self.c.start('proof','quick',False)
+        self.assertEqual(self.d.run_count,0)
+    def test_changed_namespace_uid_rejected(self):
+        self.c.start('proof','quick',False);self.d.namespaces['werft-test-proof']['metadata']['uid']='replacement'
+        with self.assertRaises(Blocked):self.c.collect('proof')
+    def test_no_real_smoke_without_explicit_disposable_ack(self):
+        with self.assertRaises(Blocked):Acceptance(self.d,{'plan':plan(),'clusterUID':'cluster-uid'}).run('yes')
+        self.assertEqual(self.d.calls,[])
+
+if __name__=='__main__':unittest.main()
+):
+            self.c.collect('proof')
+
+    def test_changed_archive_rejected(self):
         self.c.start('proof','certified-conformance',True);self.c.collect('proof')
+        (self.d.root/'conformance/proof/results.tar.gz').write_bytes(b'changed')
+        with self.assertRaisesRegex(Blocked,'ARCHIVE_CHANGED'):self.c.collect('proof')
+    def test_foreign_namespace_not_adopted(self):
+        self.d.namespaces['werft-test-proof']={'metadata':{'uid':'foreign'}}
+        with self.assertRaises(Blocked):self.c.start('proof','quick',False)
+        self.assertEqual(self.d.run_count,0)
+    def test_changed_namespace_uid_rejected(self):
+        self.c.start('proof','quick',False);self.d.namespaces['werft-test-proof']['metadata']['uid']='replacement'
+        with self.assertRaises(Blocked):self.c.collect('proof')
+    def test_no_real_smoke_without_explicit_disposable_ack(self):
+        with self.assertRaises(Blocked):Acceptance(self.d,{'plan':plan(),'clusterUID':'cluster-uid'}).run('yes')
+        self.assertEqual(self.d.calls,[])
+
+if __name__=='__main__':unittest.main()
+):
+            self.c.collect('proof')
         (self.d.root/'conformance/proof/results.tar.gz').write_bytes(b'changed')
         with self.assertRaisesRegex(Blocked,'ARCHIVE_CHANGED'):self.c.collect('proof')
     def test_foreign_namespace_not_adopted(self):
