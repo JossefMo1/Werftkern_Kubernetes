@@ -165,6 +165,8 @@ def verify(candidate_path,trust_path,trust_sha256,now=None):
         fields(s['environment'],('kind','identities'))
         if s['environment']['kind']!=GATES[gate][1] or not isinstance(s['environment']['identities'],list) or not s['environment']['identities']:
             raise Blocked('REAL_OR_EXTERNAL_EVIDENCE_REQUIRED')
+        if any(not isinstance(identity,str) or not identity.strip() for identity in s['environment']['identities']):
+            raise Blocked('EVIDENCE_IDENTITIES_INVALID')
         if not isinstance(s['evidence'],list) or not s['evidence']:raise Blocked('RAW_EVIDENCE_REQUIRED')
         for material in s['evidence']:bounded_file(root,material)
         if gate=='supply-chain':validate_supply_documents(root,s.get('documents',{}),c)
