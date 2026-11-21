@@ -110,6 +110,13 @@ class EvidenceTests(unittest.TestCase):
                     self.check()
                 self.assertEqual(str(error.exception),reason)
 
+    def test_trust_keys_must_be_a_nonempty_list(self):
+        self.t['keys']=None
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'TRUST_KEYS_REQUIRED')
+
     def test_high_vulnerability_blocks_even_if_signed(self):
         self.gate('supply-chain');self.statements['supply-chain']['documents']['vulnerabilities']=self.document('trivy.json',{'SchemaVersion':2,'Results':[{'Target':'x','Vulnerabilities':[{'Severity':'HIGH'}]}]});self.save()
         with self.assertRaisesRegex(Blocked,'VULNERABILITY'):self.check()
