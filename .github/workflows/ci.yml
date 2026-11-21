@@ -101,7 +101,11 @@ jobs:
           package="$GITHUB_WORKSPACE/dist/werftkern_0.2.0~dev4_amd64.deb"
           test -f "$package"
           cleanup() {
-            sudo apt-get remove -y werftkern >/dev/null 2>&1 || true
+            sudo apt-get remove -y werftkern >/dev/null
+            test "$(dpkg-query -W -f='${Status}' werftkern 2>/dev/null || true)" != "install ok installed"
+            hash -r
+            ! command -v werft-ops
+            ! command -v werft
           }
           trap cleanup EXIT
           sudo apt-get update

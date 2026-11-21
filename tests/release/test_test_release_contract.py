@@ -21,7 +21,7 @@ class TestReleaseContract(unittest.TestCase):
     def make_fixture(self):
         temp = tempfile.TemporaryDirectory()
         root = Path(temp.name)
-        for relative in CONTRACT.DOCUMENTS + (CONTRACT.WORKFLOW, CONTRACT.KUBERNETES_WORKFLOW, CONTRACT.TRACKER):
+        for relative in CONTRACT.DOCUMENTS + (CONTRACT.WORKFLOW, CONTRACT.NATIVE_WORKFLOW, CONTRACT.KUBERNETES_WORKFLOW, CONTRACT.TRACKER):
             source = ROOT / relative
             target = root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -99,6 +99,50 @@ class TestReleaseContract(unittest.TestCase):
         path.write_text(content)
         self.assertIn(
             "KUBERNETES_WORKFLOW_CONTRACT_MISSING:test \"$(command -v werft-kube)\" = \"/usr/bin/werft-kube\"",
+            CONTRACT.validate(root),
+        )
+
+    def test_native_instructions_require_uninstall_check(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.DOCUMENTS[0]
+        path.write_text(
+            path.read_text().replace(
+                "sudo apt-get remove -y werftkern",
+                "sudo apt-get purge -y werftkern",
+            )
+        )
+        self.assertTrue(
+            any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
+        )
+
+    def test_native_instructions_require_hash_reset(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.DOCUMENTS[0]
+        path.write_text(path.read_text().replace("hash -r", "hash -s"))
+        self.assertTrue(
+            any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
+        )
+
+    def test_native_workflow_requires_uninstall_cleanup(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.NATIVE_WORKFLOW
+        path.write_text(
+            path.read_text().replace(
+                "sudo apt-get remove -y werftkern >/dev/null",
+                "sudo apt-get purge -y werftkern >/dev/null",
+            )
+        )
+        self.assertIn(
+            "NATIVE_WORKFLOW_CONTRACT_MISSING:sudo apt-get remove -y werftkern >/dev/null",
+            CONTRACT.validate(root),
+        )
+
+    def test_native_workflow_requires_hash_reset(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.NATIVE_WORKFLOW
+        path.write_text(path.read_text().replace("hash -r", "hash -s"))
+        self.assertIn(
+            "NATIVE_WORKFLOW_CONTRACT_MISSING:hash -r",
             CONTRACT.validate(root),
         )
 
