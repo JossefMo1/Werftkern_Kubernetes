@@ -138,7 +138,11 @@ def verify(candidate_path,trust_path,trust_sha256,now=None):
     keys={}
     for k in t['keys']:
         fields(k,('id','publicKey','roles','organization','validFrom','validUntil'));name(k['id'])
-        if k['id'] in keys or not isinstance(k['roles'],list) or not k['roles'] or not k['organization']:raise Blocked('TRUST_KEY_INVALID')
+        if (k['id'] in keys or
+            not isinstance(k['roles'],list) or not k['roles'] or
+            any(not isinstance(role,str) or not role.strip() for role in k['roles']) or
+            not isinstance(k['organization'],str) or not k['organization'].strip()):
+            raise Blocked('TRUST_KEY_INVALID')
         keys[k['id']]=k
     now=now or dt.datetime.now(dt.timezone.utc)
     if not isinstance(c['evidence'],list) or len(c['evidence'])>30:raise Blocked('EVIDENCE_INVENTORY_INVALID')
