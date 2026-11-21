@@ -66,11 +66,14 @@ unbekannten Schlüssel hinzu und verwendet kein blindes `ssh-keyscan` als
 Vertrauensentscheidung.
 
 Die automatische Discovery ergänzt IPs, SSH-Ziele und Remote-Hostnamen ohne
-manuelle Inventaränderung:
+manuelle Inventaränderung. `werft-ops` wird erst durch die Paketinstallation
+bereitgestellt; ein Aufruf davor darf daher noch mit `command not found`
+scheitern. Erst die erfolgreiche Installation und die folgenden Pfadprüfungen
+bestätigen, dass der Adminhost bereit ist:
 
 ```bash
 sudo apt-get update
-sudo apt install --reinstall ./werftkern_0.2.0.dev4_amd64.deb
+sudo apt-get install --reinstall ./werftkern_0.2.0.dev4_amd64.deb
 test -x /usr/bin/werft-ops || {
   echo "werft-ops fehlt: apt hat das Native-Paket nicht vollständig installiert." >&2
   dpkg-query -W -f='Status: ${Status}\n' werftkern 2>/dev/null || true
