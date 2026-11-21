@@ -252,3 +252,8 @@ PR #162 merged at [2ad8daeb](https://github.com/JossefMo1/Werftkern_Kubernetes/c
 
 PR #164 merged at [552a9aeb](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/552a9aeb46097d703300475ff21c87ecbffa282c). The Kubernetes conformance evidence parser now validates archived `serverversion.json` and `gitVersion` before comparison, returning stable blocked reasons for malformed evidence. Post-merge automated checks passed; real-VM/PITR remain skipped because no authorized disposable lab is configured. Test17 is unchanged and `productionReady=false` remains the honest status. The next evidence-bearing step is a new immutable candidate from this package-bearing main commit, followed by an expressly authorized disposable Ubuntu/k0s run.
 
+## Code handoff — PR #166 (2026-11-21)
+
+PR [#166](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/166) merged at [e88b667](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e88b6679829be356710cc88a35e090093054ec8b). The Kubernetes evidence verifier now fails closed for malformed top-level and nested SBOM, vulnerability-scan and provenance documents, with regression tests and green post-merge checks.
+
+The next evidence step is a new immutable candidate built from `e88b667`. The existing `v0.2.0-dev.4-test.17` candidate remains unchanged and unqualified. Live Ubuntu/k0s, recovery, HA, load/soak, supply-chain signing/provenance and independent-review gates remain open until reproduced on authorized disposable infrastructure.
