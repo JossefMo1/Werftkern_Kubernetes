@@ -38,6 +38,7 @@ jobs:
           cleanup() {
             sudo apt-get remove -y werftkern-kubernetes >/dev/null
             test "$(dpkg-query -W -f='${Status}' werftkern-kubernetes 2>/dev/null || true)" != "install ok installed"
+            hash -r
             ! command -v werft-kube
           }
           trap cleanup EXIT
