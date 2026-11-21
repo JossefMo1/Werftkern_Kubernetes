@@ -10,7 +10,7 @@ Native qualification contract still treats all 52 entries as blocking.
 
 The current immutable lab candidate is [`v0.2.0-dev.4-test.17`](https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.17), sourced from `28efa7518e171a618d4dcf9ff3aba58cddaf3296`. This candidate includes the auto-discovery known-hosts replay guard; it does not remove any K20 requirement or change the no-go production decision.
 
-Main now contains [PR #120](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/120), merged at `463b56938287658308db92881a956bca8881867d`. It extends the prepared auto-discovery guard from path binding to exact hosts-file byte binding and rejects changed content or legacy unbound journals before resume. Test17 remains immutable and does not contain this change; publish a new candidate before using the updated package. No K20 requirement is removed and the production decision remains no-go.
+Main contains [PR #122](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/122), merged at `c95511a5f1e1c8ca6aa909b3e69bb21558b00634`. It retains PR #120's exact hosts-file byte binding and adds an apt/dpkg package-install smoke test that verifies the installed command paths and help output before cleanup. Test17 remains immutable and does not contain this change; publish a new candidate before using the updated package. No K20 requirement is removed and the production decision remains no-go.
 
 ## K20-001 — Review-Baseline und Ausführungspfade verifizieren
 
