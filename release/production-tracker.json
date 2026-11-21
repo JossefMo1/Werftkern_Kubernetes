@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-21T00:12:00Z",
+  "updatedAt": "2026-11-21T00:34:14.537Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "fced8125428c6af0cc4b150e29dfffa11c8ac4b8",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/116",
-    "summary": "Merged PR #116: synchronized the tracker, status and roadmap after PR #115. Main now contains the root SSH auto-discovery override from PR #115 plus the explicit note that immutable test17 does not contain it. Post-merge CI passed; real-vm/real-pitr remain skipped and productionReady:false is unchanged."
+    "commit": "27570b06762c5d6d67e8919cb97474c1fd0cc78f",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/118",
+    "summary": "Merged PR #118: native-bootstrap now accepts an explicit --hosts-file path for prepared auto-discovery labs, binds it in the generated inventory and rejects a changed path on resume. Main post-merge Native (including real-etcd), Kubernetes contracts/package and source-audit checks passed; real-vm/real-pitr remain skipped and productionReady:false is unchanged."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Publish the next immutable test candidate from the exact current main commit fced8125428c6af0cc4b150e29dfffa11c8ac4b8 (including PR #115 code from a05dd90fbece0464b110f51d994a28ba1db6d292), then run that candidate on the disposable Ubuntu admin/masters/workers lab with --ssh-user root; execute Kubernetes E2E only with explicitly approved assets."
+    "nextStep": "Publish the next immutable test candidate from the exact current main commit 27570b06762c5d6d67e8919cb97474c1fd0cc78f (including PR #115's --ssh-user root override and PR #118's --hosts-file binding), then run that candidate on the disposable Ubuntu admin/masters/workers lab with --ssh-user root and an explicit --hosts-file; execute Kubernetes E2E only with explicitly approved assets."
   },
   "workstreams": [
     {
@@ -95,13 +95,17 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44832451430",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44832451400",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44832451415",
-        "Tag v0.2.0-dev.4-test.17 target verified as 28efa7518e171a618d4dcf9ff3aba58cddaf3296"
+        "Tag v0.2.0-dev.4-test.17 target verified as 28efa7518e171a618d4dcf9ff3aba58cddaf3296",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/118",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44844302665",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44844302813",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44844302755"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Publish a new immutable candidate from exact main commit fced8125428c6af0cc4b150e29dfffa11c8ac4b8, then capture exact package/source evidence; test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296."
+      "nextStep": "Publish a new immutable candidate from exact main commit 27570b06762c5d6d67e8919cb97474c1fd0cc78f, then capture exact package/source evidence; test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296."
     },
     {
       "id": "E2E-K01",
@@ -145,7 +149,7 @@
       "blockers": [
         "No expressly authorized disposable Ubuntu VM and candidate package are configured."
       ],
-      "nextStep": "Publish the next immutable candidate from exact main commit fced8125428c6af0cc4b150e29dfffa11c8ac4b8, then run the existing root-only script on a fresh disposable Ubuntu VM with the exact package; CI package extraction is only a preflight and not live installation evidence."
+      "nextStep": "Publish the next immutable candidate from exact main commit 27570b06762c5d6d67e8919cb97474c1fd0cc78f, then run the existing root-only script on a fresh disposable Ubuntu VM with the exact package and explicit --hosts-file; CI package extraction is only a preflight and not live installation evidence."
     },
     {
       "id": "E2E-H01",
@@ -225,12 +229,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "fced8125428c6af0cc4b150e29dfffa11c8ac4b8",
+      "commit": "27570b06762c5d6d67e8919cb97474c1fd0cc78f",
       "codeCommit": "a05dd90fbece0464b110f51d994a28ba1db6d292",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/115",
       "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/116",
-      "summary": "Main contains PR #115's root SSH auto-discovery override and PR #116's documentation/tracker synchronization; v0.2.0-dev.4-test.17 remains immutable and does not contain this main state.",
-      "nextCandidateRequired": true
+      "summary": "Main contains PR #115's --ssh-user root override, PR #116/117 qualification synchronization and PR #118's bound --hosts-file override; v0.2.0-dev.4-test.17 remains immutable and does not contain this main state.",
+      "nextCandidateRequired": true,
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/118"
     }
   },
   "previousCandidates": [
