@@ -73,6 +73,13 @@ für `root` verteilt wurden; explizite `sshUser`-Werte pro Host bleiben
 unverändert. Der gewählte Benutzer wird im automatisch erzeugten Inventar
 gebunden und darf bei einem Resume nicht wechseln.
 
+Die lokale Hosts-Datei kann mit `--hosts-file /pfad/zur/hosts` explizit
+vorgegeben werden. Das ist nützlich, wenn die sieben Labor-VMs in einer
+separaten Datei statt in `/etc/hosts` gepflegt werden. Im Auto-Modus wird der
+Pfad im erzeugten Inventar und Journal gebunden; ein anderer Pfad bei einem
+Resume wird mit `AUTO_DISCOVERY_HOSTS_FILE_CHANGED` abgewiesen. Die Datei wird
+nur gelesen, nicht verändert.
+
 ## Ausführung
 
 Automatischer Lauf mit dem mitgelieferten 3-Controller-/3-Worker-Profil:
@@ -93,6 +100,7 @@ sudo werft-ops native-bootstrap \
   --auto-discover \
   --inventory examples/native-inventory-3m-3w.json \
   --ssh-user root \
+  --hosts-file /etc/hosts \
   --package /root/werftkern_0.2.0.dev4_amd64.deb \
   --journal /root/werft-native-bootstrap.json \
   --check-only

@@ -18,6 +18,7 @@ def main(argv=None):
     nb.add_argument("--inventory", help="Rollenprofil; im Auto-Modus optional")
     nb.add_argument("--package", required=True)
     nb.add_argument("--known-hosts", help="Override für known_hosts; sonst Inventarwert")
+    nb.add_argument("--hosts-file", help="Override für die lokale Hosts-Datei; wird im Auto-Modus gebunden")
     nb.add_argument("--journal", required=True)
     nb.add_argument("--check-only", action="store_true")
     nb.add_argument("--auto-discover", action="store_true", help="Verifizierte Hosts aus known_hosts automatisch auflösen")
@@ -87,6 +88,7 @@ def main(argv=None):
             args.inventory, args.package, args.journal,
             check_only=args.check_only,
             known_hosts_override=args.known_hosts,
+            hosts_file_override=args.hosts_file,
             auto_discover=args.auto_discover,
             auto_ssh_user=args.ssh_user,
             auto_ssh_port=args.ssh_port,
