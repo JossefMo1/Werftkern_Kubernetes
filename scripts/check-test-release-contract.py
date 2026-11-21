@@ -48,6 +48,9 @@ KUBERNETES_INSTALL_FRAGMENTS = (
     "dpkg-query -W -f='Status: ${Status}\\n' werftkern-kubernetes",
     "command -v werft-kube",
     "werft-kube version",
+    "sudo apt-get remove -y werftkern-kubernetes",
+    "hash -r",
+    "! command -v werft-kube",
 )
 WORKFLOW = Path(".github/workflows/test-release.yml")
 KUBERNETES_WORKFLOW = Path(".github/workflows/kubernetes-backend.yml")
@@ -122,6 +125,10 @@ def validate(root: Path) -> list[str]:
         'test "$(command -v werft-kube)" = "/usr/bin/werft-kube"',
         "werft-kube version >",
         'grep -q \'"productionReady": false\'',
+        'sudo apt-get remove -y werftkern-kubernetes >/dev/null',
+        "test \"$(dpkg-query -W -f='${Status}' werftkern-kubernetes 2>/dev/null || true)\" != \"install ok installed\"",
+        "hash -r",
+        "! command -v werft-kube",
     )
     for fragment in required_kubernetes_workflow_fragments:
         if fragment not in kubernetes_workflow:

@@ -36,7 +36,10 @@ jobs:
           package="$GITHUB_WORKSPACE/dist/werftkern-kubernetes_0.1.0~dev3_all.deb"
           test -f "$package"
           cleanup() {
-            sudo apt-get remove -y werftkern-kubernetes >/dev/null 2>&1 || true
+            sudo apt-get remove -y werftkern-kubernetes >/dev/null
+            test "$(dpkg-query -W -f='${Status}' werftkern-kubernetes 2>/dev/null || true)" != "install ok installed"
+            hash -r
+            ! command -v werft-kube
           }
           trap cleanup EXIT
           sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package"
