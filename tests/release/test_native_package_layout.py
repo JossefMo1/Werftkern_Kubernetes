@@ -12,9 +12,15 @@ SPEC = importlib.util.spec_from_file_location("check_native_package_layout", SCR
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+POSTINST = pathlib.Path(__file__).parents[2] / "packaging" / "postinst"
 
 
 class NativePackageLayoutTests(unittest.TestCase):
+    def test_postinst_smokes_both_installed_entrypoints(self):
+        content = POSTINST.read_text()
+        self.assertIn("/usr/bin/werft --help", content)
+        self.assertIn("/usr/bin/werft-ops --help", content)
+
     def test_accepts_required_files_and_executables(self):
         listing = [
             "-rwxr-xr-x root/root 123 2026-01-01 00:00 ./usr/bin/werft",
