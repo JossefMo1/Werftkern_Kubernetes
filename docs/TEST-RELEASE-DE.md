@@ -141,6 +141,16 @@ test "$(dpkg-query -W -f='Status: ${Status}\n' werftkern-kubernetes)" = "install
 test "$(command -v werft-kube)" = "/usr/bin/werft-kube"
 werft-kube version
 
+# Saubere Entfernung des Managers prüfen.
+sudo apt-get remove -y werftkern-kubernetes
+test "$(dpkg-query -W -f='Status: ${Status}\\n' werftkern-kubernetes 2>/dev/null || true)" != "install ok installed"
+! command -v werft-kube
+
+# Für den weiteren Labortest wieder installieren.
+sudo apt-get install --reinstall ./werftkern-kubernetes_0.1.0.dev3_all.deb
+test "$(dpkg-query -W -f='Status: ${Status}\\n' werftkern-kubernetes)" = "install ok installed"
+test "$(command -v werft-kube)" = "/usr/bin/werft-kube"
+
 install -d -m 700 /etc/werftkern/kubernetes/lab /var/lib/werftkern/kubernetes/lab
 cp examples/kubernetes/cluster-3m-3w.example.json /root/cluster-3m-3w.json
 cp examples/kubernetes/assets-core.example.json /root/assets.json
