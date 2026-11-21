@@ -95,6 +95,24 @@ jobs:
           test -f "$root/usr/lib/werftkern/ops/werftops/__main__.py"
           "$root/usr/bin/werft-ops" --help > "$RUNNER_TEMP/werft-ops-help.txt"
           grep -q -- "native-bootstrap" "$RUNNER_TEMP/werft-ops-help.txt"
+      - name: Smoke-test native package after apt installation
+        run: |
+          set -euo pipefail
+          package="$GITHUB_WORKSPACE/dist/werftkern_0.2.0~dev4_amd64.deb"
+          test -f "$package"
+          cleanup() {
+            sudo apt-get remove -y werftkern >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          sudo apt-get update
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package"
+          test "$(dpkg-query -W -f='${Status}' werftkern)" = "install ok installed"
+          test "$(command -v werft-ops)" = "/usr/bin/werft-ops"
+          test "$(command -v werft)" = "/usr/bin/werft"
+          werft-ops --help > "$RUNNER_TEMP/werft-ops-installed-help.txt"
+          grep -q -- "native-bootstrap" "$RUNNER_TEMP/werft-ops-installed-help.txt"
+          werft --help > "$RUNNER_TEMP/werft-installed-help.txt"
+
       - name: Actual previous verifier authenticates target package (ephemeral test signature only)
         if: env.WERFT_COMPAT_BASE_AVAILABLE == 'true'
         run: python3 tests/integration/verify_upgrade_package.py --previous-binary evidence/agent-compat/werft-dev3 --package dist/werftkern_0.2.0~dev4_amd64.deb --evidence evidence/package-predecessor-check.json
