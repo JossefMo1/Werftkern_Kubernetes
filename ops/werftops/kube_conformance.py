@@ -37,7 +37,13 @@ def archive_version(file):
             if i>200000 or budget>4*1024**3:raise Blocked('SONOBUOY_ARCHIVE_LIMIT')
             if pathlib.PurePosixPath(m.name).name=='serverversion.json':
                 if not m.isfile() or m.size>1024*1024:raise Blocked('SERVER_VERSION_ARCHIVE_ENTRY_INVALID')
-                found.append(json.load(tf.extractfile(m)).get('gitVersion'))
+                try:
+                    document = json.load(tf.extractfile(m))
+                except (AttributeError, OSError, TypeError, ValueError):
+                    raise Blocked('SERVER_VERSION_JSON_INVALID') from None
+                if not isinstance(document, dict) or not isinstance(document.get('gitVersion'), str) or not document['gitVersion']:
+                    raise Blocked('SERVER_VERSION_INVALID')
+                found.append(document['gitVersion'])
     if len(found)!=1:raise Blocked('EXACTLY_ONE_SERVER_VERSION_REQUIRED_IN_ARCHIVE')
     return found[0]
 

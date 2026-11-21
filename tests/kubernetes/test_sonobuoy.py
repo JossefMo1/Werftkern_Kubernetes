@@ -52,6 +52,17 @@ class RunTests(unittest.TestCase):
         self.c.start('proof','certified-conformance',True);r=self.c.collect('proof')
         self.assertFalse(r['cncfCertified']);self.assertFalse(r['fullInventoryVerified']);self.assertFalse(r['productionReady'])
         self.assertTrue((self.d.root/'conformance/proof/results.tar.gz').exists())
+    def test_missing_server_version_is_blocked_without_traceback(self):
+        self.c.start('proof','certified-conformance',True)
+        out=io.BytesIO()
+        with tarfile.open(fileobj=out,mode='w:gz') as tf:
+            b=canonical({'unexpected':'value'})
+            item=tarfile.TarInfo('serverversion.json');item.size=len(b)
+            tf.addfile(item,io.BytesIO(b))
+        self.d.archive=out.getvalue()
+        with self.assertRaises(Blocked) as ctx:
+            self.c.collect('proof')
+        self.assertEqual(str(ctx.exception),'SERVER_VERSION_INVALID')
     def test_changed_archive_rejected(self):
         self.c.start('proof','certified-conformance',True);self.c.collect('proof')
         (self.d.root/'conformance/proof/results.tar.gz').write_bytes(b'changed')
