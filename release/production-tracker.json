@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-21T16:04:09Z",
+  "updatedAt": "2026-11-21T16:55:20Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "9403d55e2deae30f4c99e889a56cfffbafb0390b",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/158",
-    "summary": "Merged PR #158: the Native werft-ops launcher now requires both werftops/__init__.py and werftops/__main__.py before selecting installed or source-tree modules and returns exit 78 for incomplete package trees. This is a Native packaging/error-handling guard; productionReady remains false and no live qualification gate is closed."
+    "commit": "a04b0b4c9db7f4f0aa5e408446b45cb5fe25dd1a",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/160",
+    "summary": "Merged PR #160: werft-kube plan now rejects valid JSON values that are not objects before format dispatch and returns the stable KUBE_PLAN_OBJECT_REQUIRED block (exit 2) instead of an uncaught traceback. This is a Kubernetes-manager CLI error-handling guard; productionReady remains false and no live qualification gate is closed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Publish the next immutable candidate from exact package-bearing code commit d2e9543384e1bb4f8a3544800b2fcf051f2d8708 (including PR #143 Native postinst smoke checks, PR #148 uninstall-retention contract and PR #140 Native port validation). Main now also contains test-only PR #152 and PR #154, the fail-closed wrapper fixes in PR #156 and PR #158, and documentation-only handoffs; these do not qualify live Ubuntu/k0s execution. Execute the candidate only on an expressly authorized disposable Ubuntu/k0s lab with --ssh-user root, explicit hosts file and approved assets; live VM/PITR and all other production gates remain required."
+    "nextStep": "Publish a new immutable candidate from the current package-bearing Main state after PR #160 (merge commit a04b0b4c9db7f4f0aa5e408446b45cb5fe25dd1a); test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #160. Execute the candidate only on an expressly authorized disposable Ubuntu/k0s lab with --ssh-user root, explicit hosts file and approved assets; live VM/PITR and all other production gates remain required."
   },
   "workstreams": [
     {
@@ -147,7 +147,9 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44922207166",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44922207111",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44922207108",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7065351998"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7065351998",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/160",
+        "Post-merge Main commit verified as a04b0b4c9db7f4f0aa5e408446b45cb5fe25dd1a"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
