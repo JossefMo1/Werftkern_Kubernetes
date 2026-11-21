@@ -31,7 +31,10 @@ Plausibilitätsprüfung verwendet, ist aber im Auto-Modus nicht erforderlich.
    `LOCAL_SSH_REQUIRED` ab.
 4. Der Orchestrator erzeugt genau ein gemeinsames HA-Kit-Set und bindet den
    unveränderten Paket-Hash, die Inventar-, Topologie- und `known_hosts`-Hashes
-   in ein privates Journal.
+   sowie den exakten Byte-Hash der Hosts-Datei in ein privates Journal.
+   Fehlt die optionale Datei im Auto-Modus, wird dieser Zustand ebenfalls
+   gebunden. Eine Änderung an den Bytes (auch bei gleicher Zuordnung) blockiert
+   den Resume mit `AUTO_DISCOVERY_HOSTS_FILE_CONTENT_CHANGED`.
 5. Bereits konfigurierte Hosts desselben Cluster-IDs werden übersprungen.
    Ein fremder Cluster, vorhandene Daten ohne Konfiguration oder ein
    `ha-installing.json` blockieren. Es gibt kein Überschreiben und keinen
@@ -75,10 +78,11 @@ gebunden und darf bei einem Resume nicht wechseln.
 
 Die lokale Hosts-Datei kann mit `--hosts-file /pfad/zur/hosts` explizit
 vorgegeben werden. Das ist nützlich, wenn die sieben Labor-VMs in einer
-separaten Datei statt in `/etc/hosts` gepflegt werden. Im Auto-Modus wird der
-Pfad im erzeugten Inventar und Journal gebunden; ein anderer Pfad bei einem
-Resume wird mit `AUTO_DISCOVERY_HOSTS_FILE_CHANGED` abgewiesen. Die Datei wird
-nur gelesen, nicht verändert.
+separaten Datei statt in `/etc/hosts` gepflegt werden. Im Auto-Modus werden
+Pfad und exakte Bytes im erzeugten Inventar/Journaling berücksichtigt; ein
+anderer Pfad wird mit `AUTO_DISCOVERY_HOSTS_FILE_CHANGED`, eine inhaltliche
+Änderung mit `AUTO_DISCOVERY_HOSTS_FILE_CONTENT_CHANGED` abgewiesen. Die Datei
+wird nur gelesen, nicht verändert.
 
 ## Ausführung
 

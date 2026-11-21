@@ -570,6 +570,59 @@ class NativeBootstrapTests(unittest.TestCase):
                         runner=runner,
                     )
 
+    def test_auto_discovery_rejects_changed_hosts_file_content_on_resume(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            raw, known = self.auto_profile(root)
+            profile = root / "profile.json"
+            write_json(profile, raw)
+            package = root / "runtime.deb"
+            package.write_bytes(b"fixture-package")
+            journal = root / "journal.json"
+            names = {
+                "10.87.0.1": "master-1", "10.87.0.2": "master-2", "10.87.0.3": "master-3",
+                "10.87.0.11": "worker-1", "10.87.0.12": "worker-2", "10.87.0.13": "worker-3",
+            }
+            prepare_runner = self.fake_runner(root)
+            discovery_runner = self.discovery_runner(names)
+
+            def runner(args, **kwargs):
+                if args[:3] == ["werft", "ha", "prepare"]:
+                    return prepare_runner(args, **kwargs)
+                return discovery_runner(args, **kwargs)
+
+            hosts_file = pathlib.Path(raw["hostsFile"])
+            with patch("werftops.native_bootstrap.shutil.which", return_value="/usr/bin/ssh"):
+                native_bootstrap.apply(
+                    profile,
+                    package,
+                    journal,
+                    check_only=True,
+                    known_hosts_override=known,
+                    hosts_file_override=hosts_file,
+                    auto_discover=True,
+                    runner=runner,
+                )
+                # A comment preserves the parsed mapping while changing the
+                # exact bytes that must be trusted on resume.
+                hosts_file.write_text(
+                    hosts_file.read_text(encoding="utf-8") + "# changed after preflight\\n",
+                    encoding="utf-8",
+                )
+                with self.assertRaisesRegex(
+                    Blocked, "^AUTO_DISCOVERY_HOSTS_FILE_CONTENT_CHANGED$"
+                ):
+                    native_bootstrap.apply(
+                        profile,
+                        package,
+                        journal,
+                        check_only=True,
+                        known_hosts_override=known,
+                        hosts_file_override=hosts_file,
+                        auto_discover=True,
+                        runner=runner,
+                    )
+
     def test_apply_blocks_before_journal_when_local_ssh_is_missing(self):
         with tempfile.TemporaryDirectory() as d:
             root = pathlib.Path(d)

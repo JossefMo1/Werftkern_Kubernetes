@@ -537,17 +537,38 @@ def _host_spec(host: dict, package_sha: str) -> dict:
     }
 
 
-def _binding(inventory: dict, topology: dict, package: pathlib.Path, known_hosts: pathlib.Path) -> dict:
-    return {
+def _binding(
+    inventory: dict,
+    topology: dict,
+    package: pathlib.Path,
+    known_hosts: pathlib.Path,
+    hosts_file: pathlib.Path,
+) -> dict:
+    binding = {
         "inventory": fingerprint(inventory),
         "topology": fingerprint(topology),
         "packageSha256": digest_file(package),
         "knownHostsSha256": digest_file(known_hosts),
+        # Keep the exact hosts-file bytes bound to the journal. In auto mode
+        # the file is optional, so an absent file is represented explicitly.
+        "hostsFileSha256": digest_file(hosts_file) if hosts_file.exists() else None,
     }
+    return binding
 
 
 def _validate_journal(journal: dict, binding: dict, hosts: list[dict]) -> None:
-    if journal.get("format") != JOURNAL_FORMAT or journal.get("binding") != binding:
+    if journal.get("format") != JOURNAL_FORMAT:
+        raise Blocked("NATIVE_BOOTSTRAP_REPLAY_CONFLICT")
+    previous = journal.get("binding")
+    if not isinstance(previous, dict):
+        raise Blocked("NATIVE_BOOTSTRAP_REPLAY_CONFLICT")
+    if "hostsFileSha256" not in previous:
+        # Journals created before hosts-file content binding must not be
+        # resumed: their input bytes were not recorded.
+        raise Blocked("NATIVE_BOOTSTRAP_REPLAY_CONFLICT")
+    if previous.get("hostsFileSha256") != binding.get("hostsFileSha256"):
+        raise Blocked("AUTO_DISCOVERY_HOSTS_FILE_CONTENT_CHANGED")
+    if previous != binding:
         raise Blocked("NATIVE_BOOTSTRAP_REPLAY_CONFLICT")
     if not isinstance(journal.get("hosts"), dict) or set(journal["hosts"]) != {h["name"] for h in hosts}:
         raise Blocked("NATIVE_BOOTSTRAP_JOURNAL_HOST_SET_INVALID")
@@ -778,7 +799,7 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
         inventory_file = generated_inventory
     inventory, topology, _ = _resolve_inventory(raw, inventory_file, auto_discover=auto_mode)
     known_hosts = pathlib.Path(inventory["knownHostsFile"])
-    binding = _binding(inventory, topology, package, known_hosts)
+    binding = _binding(inventory, topology, package, known_hosts, hosts_path)
     package_sha = binding["packageSha256"]
     kits_dir = journal_file.parent / ("." + journal_file.stem + ".ha-kits")
     with lock(pathlib.Path(str(journal_file) + ".lock")):
