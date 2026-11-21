@@ -13,6 +13,15 @@ assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 POSTINST = pathlib.Path(__file__).parents[2] / "packaging" / "postinst"
+PRERM = pathlib.Path(__file__).parents[2] / "packaging" / "prerm"
+POSTRM = pathlib.Path(__file__).parents[2] / "packaging" / "postrm"
+NATIVE_SERVICES = (
+    "werftkern-dns.service",
+    "werftkern-discovery.service",
+    "werftkern-agent.service",
+    "werftkern-control.service",
+    "werftkern-etcd.service",
+)
 
 
 class NativePackageLayoutTests(unittest.TestCase):
@@ -20,6 +29,25 @@ class NativePackageLayoutTests(unittest.TestCase):
         content = POSTINST.read_text()
         self.assertIn("/usr/bin/werft --help", content)
         self.assertIn("/usr/bin/werft-ops --help", content)
+
+    def test_prerm_stops_and_disables_every_native_service(self):
+        content = PRERM.read_text()
+        self.assertIn("systemctl stop", content)
+        self.assertIn("systemctl disable", content)
+        self.assertIn("|| true", content)
+        for service in NATIVE_SERVICES:
+            self.assertIn(service, content)
+        self.assertIn("Managed containers and all persisted keys/data are retained", content)
+
+    def test_remove_scripts_never_delete_persisted_state_or_workloads(self):
+        for script in (PRERM, POSTRM):
+            content = script.read_text()
+            self.assertNotRegex(
+                content,
+                r"(?im)\\b(?:rm|shred)\\b[^\\n]*(?:/var/lib/werftkern|/etc/werftkern|/var/lib/docker)",
+            )
+            self.assertNotIn("find /var/lib/werftkern -delete", content)
+        self.assertIn("Never automatically delete identities, state or customer workloads", POSTRM.read_text())
 
     def test_accepts_required_files_and_executables(self):
         listing = [
