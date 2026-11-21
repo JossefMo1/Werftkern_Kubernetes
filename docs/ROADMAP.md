@@ -269,3 +269,10 @@ The next evidence step is a new immutable candidate built from `7b1408a`. The ex
 PR [#170](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/170) merged at [289c0f2](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/289c0f2c37e4ce011e2c1c4827a2646915c3b340). The Kubernetes evidence verifier now fails closed when signed environment identities are not non-empty strings, with regression coverage for `EVIDENCE_IDENTITIES_INVALID`.
 
 The next evidence step is a new immutable candidate built from `289c0f2`. The existing `v0.2.0-dev.4-test.17` candidate remains unchanged and unqualified. Live Ubuntu/k0s, recovery, HA, load/soak, signed supply-chain provenance and independent-review gates remain open until reproduced on authorized disposable infrastructure.
+
+
+## Code handoff — PR #172 (2026-11-21)
+
+[PR #172](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/172) merged as [77bdc1d](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/77bdc1d1af128f5c98fefec3f6720d74df01b3d7). The Kubernetes evidence verifier now fails closed when trust-policy key roles or organization metadata are not non-empty strings, preserving the stable `TRUST_KEY_INVALID` reason. Two regression tests cover malformed roles and organization values before gate authorization and trust-separation checks.
+
+Exact post-merge checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44959520639), [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44959520655), [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44959520708) and [private alpha audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44959717872). This is a code-quality/security-boundary handoff only: the immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and no live qualification gate was closed.
