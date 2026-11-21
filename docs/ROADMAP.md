@@ -248,3 +248,7 @@ PR #160 is merged at [a04b0b4](https://github.com/JossefMo1/Werftkern_Kubernetes
 ## Latest code handoff (2026-11-21, PR #162)
 
 PR #162 merged at [2ad8daeb](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2ad8daebed99f8ea2b6735f9f626e500666cd694). It hardens Kubernetes-manager wrapper resolution against incomplete Python package trees and adds a regression test for a missing package marker. Required automated checks passed; privileged real-VM/PITR jobs remain skipped. This does not alter component versions, the immutable test17 candidate, or any production qualification gate. The next evidence-bearing step remains an expressly authorized disposable Ubuntu/k0s run.
+## Latest code handoff (2026-11-21, PR #164)
+
+PR #164 merged at [552a9aeb](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/552a9aeb46097d703300475ff21c87ecbffa282c). The Kubernetes conformance evidence parser now validates archived `serverversion.json` and `gitVersion` before comparison, returning stable blocked reasons for malformed evidence. Post-merge automated checks passed; real-VM/PITR remain skipped because no authorized disposable lab is configured. Test17 is unchanged and `productionReady=false` remains the honest status. The next evidence-bearing step is a new immutable candidate from this package-bearing main commit, followed by an expressly authorized disposable Ubuntu/k0s run.
+
