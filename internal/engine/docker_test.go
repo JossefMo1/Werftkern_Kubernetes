@@ -215,6 +215,36 @@ func TestEngineNegotiationRejectsIncompatibleAPI(t *testing.T) {
 		t.Fatal("unsupported API accepted")
 	}
 }
+func TestAPINumberRequiresCanonicalCompleteVersion(t *testing.T) {
+	for _, tc := range []struct {
+		value string
+		minor int
+		ok bool
+	}{
+		{value: "1.41", minor: 41, ok: true},
+		{value: "1.51", minor: 51, ok: true},
+		{value: "1.051", ok: false},
+		{value: "1.51garbage", ok: false},
+		{value: "1.51.1", ok: false},
+		{value: "1.", ok: false},
+		{value: "2.51", ok: false},
+		{value: " 1.51", ok: false},
+	} {
+		t.Run(tc.value, func(t *testing.T) {
+			minor, err := apiNumber(tc.value)
+			if tc.ok {
+				if err != nil || minor != tc.minor {
+					t.Fatalf("minor=%d err=%v", minor, err)
+				}
+				return
+			}
+			if err == nil {
+				t.Fatalf("accepted malformed Docker API version %q", tc.value)
+			}
+		})
+	}
+}
+
 func TestEngineReadinessAndPrivatePortBinding(t *testing.T) {
 	f := dockerTest(t)
 	var listener net.Listener
