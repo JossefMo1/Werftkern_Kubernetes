@@ -307,7 +307,7 @@
       "commit": "e88b6679829be356710cc88a35e090093054ec8b",
       "codeCommit": "e88b6679829be356710cc88a35e090093054ec8b",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/166",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/165",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/167",
       "summary": "Main contains the Kubernetes supply-chain evidence document-shape guards and regression tests from PR #166. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
       "nextCandidateRequired": true,
       "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/166"
