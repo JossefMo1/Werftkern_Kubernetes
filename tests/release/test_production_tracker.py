@@ -26,6 +26,14 @@ class ProductionTrackerTests(unittest.TestCase):
         self.assertEqual(self.tracker["decision"]["status"], "no-go")
         self.assertEqual(self.tracker["decision"]["reasonCode"], "NO_REAL_LINUX_TEST_AUTHORIZED")
 
+    def test_status_documents_current_candidate_handoff(self):
+        status = (ROOT / "docs/STATUS.md").read_text()
+        candidate = self.tracker["candidate"]["mainAfterCandidate"]
+        self.assertIn(candidate["pullRequest"], status)
+        self.assertIn(candidate["codeCommit"], status)
+        self.assertIn(self.tracker["candidate"]["sourceCommit"], status)
+        self.assertIn("production decision remains no-go", status)
+
     def test_missing_no_go_decision_is_rejected(self):
         changed = copy.deepcopy(self.tracker)
         del changed["decision"]
