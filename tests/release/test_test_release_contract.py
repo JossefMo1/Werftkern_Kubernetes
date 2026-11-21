@@ -84,7 +84,7 @@ class TestReleaseContract(unittest.TestCase):
     def test_kubernetes_instructions_require_installed_cli_check(self):
         root = self.make_fixture()
         path = root / CONTRACT.DOCUMENTS[0]
-        path.write_text(path.read_text().replace("command -v werft-kube", "command -v werft-kube-missing"))
+        path.write_text(path.read_text().replace("command -v werft-kube", "command -v missing-cli"))
         self.assertTrue(
             any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
         )
