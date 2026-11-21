@@ -238,3 +238,8 @@ Container-Identitäten bleiben offen. Keine Produktionsfreigabe.
 
 **not-implemented-or-not-executed**. Externer Review, Kundenarbeit oder Freigabeentscheidung; nicht durch Code erzeugt.
 
+
+
+## Latest code handoff (2026-11-21)
+
+PR #160 is merged at [a04b0b4](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/a04b0b4c9db7f4f0aa5e408446b45cb5fe25dd1a). It hardens the Kubernetes-manager plan parser against valid non-object JSON and adds a regression test for the stable fail-closed response. This does not alter either component version, the immutable test17 candidate, or any production gate. Post-merge required checks passed; the privileged live jobs remain skipped. The next evidence-bearing step is an expressly authorized disposable Ubuntu/k0s run, not another readiness claim.
