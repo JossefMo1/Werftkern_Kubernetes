@@ -144,6 +144,7 @@ werft-kube version
 # Saubere Entfernung des Managers prüfen.
 sudo apt-get remove -y werftkern-kubernetes
 test "$(dpkg-query -W -f='Status: ${Status}\n' werftkern-kubernetes 2>/dev/null || true)" != "install ok installed"
+hash -r
 ! command -v werft-kube
 
 # Für den weiteren Labortest wieder installieren.
