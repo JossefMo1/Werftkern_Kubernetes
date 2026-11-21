@@ -83,6 +83,20 @@ command -v werft-ops
 command -v ssh
 sudo werft-ops --help >/dev/null
 
+# Saubere Entfernung des Native-Pakets prüfen.
+sudo apt-get remove -y werftkern
+test "$(dpkg-query -W -f='Status: ${Status}\\n' werftkern 2>/dev/null || true)" != "install ok installed"
+hash -r
+! command -v werft-ops
+! command -v werft
+
+# Für den weiteren Labortest wieder installieren.
+sudo apt-get install --reinstall ./werftkern_0.2.0.dev4_amd64.deb
+test "$(dpkg-query -W -f='Status: ${Status}\\n' werftkern)" = "install ok installed"
+test -x /usr/bin/werft-ops
+command -v werft-ops
+sudo werft-ops --help >/dev/null
+
 # Optional: logisches 3m/3w-Profil aus dem Test-Kit; es enthält keine IPs.
 sudo werft-ops native-bootstrap \
   --auto-discover \
