@@ -129,7 +129,7 @@ def validate(root: Path) -> list[str]:
 
     required_native_workflow_fragments = (
         "sudo apt-get remove -y werftkern >/dev/null",
-        'test "$(dpkg-query -W -f='${Status}' werftkern 2>/dev/null || true)" != "install ok installed"',
+        "test \"$(dpkg-query -W -f='${Status}' werftkern 2>/dev/null || true)\" != \"install ok installed\"",
         "hash -r",
         "! command -v werft-ops",
         "! command -v werft",
