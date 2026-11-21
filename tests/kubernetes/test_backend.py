@@ -168,6 +168,14 @@ class ContractTests(unittest.TestCase):
                 'clusters':[{'name':'x','cluster':{'server':'https://api.example.invalid:6443','insecure-skip-tls-verify':True}}],
                 'users':[{'name':'x','user':{'exec':{'command':'anything'}}}]})
             with self.assertRaises(Blocked):KubeHTTP(p)
+    def test_malformed_kubeconfig_port_is_rejected_without_value_error(self):
+        with tempfile.TemporaryDirectory() as td:
+            p=pathlib.Path(td)/'k.json';encoded=base64.b64encode(b'fixture').decode()
+            write_json(p,{'apiVersion':'v1','kind':'Config','current-context':'x','contexts':[{'name':'x','context':{'cluster':'x','user':'x'}}],
+                'clusters':[{'name':'x','cluster':{'server':'https://api.example.invalid:not-a-port','certificate-authority-data':encoded}}],
+                'users':[{'name':'x','user':{'client-certificate-data':encoded,'client-key-data':encoded}}]})
+            with self.assertRaises(Blocked) as error:KubeHTTP(p)
+            self.assertEqual(str(error.exception),'KUBECONFIG_HTTPS_6443_REQUIRED')
 
 class KubeHTTPResponseTests(unittest.TestCase):
     def api(self, raw):
