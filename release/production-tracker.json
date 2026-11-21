@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Publish the next immutable candidate from exact main commit 0523f6ee5024c77c4a9390844459da5935fc4997; test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #125."
+    "nextStep": "Publish the next immutable candidate from exact current main commit 0523f6ee5024c77c4a9390844459da5935fc4997 (including PR #115's --ssh-user root override, PR #118's --hosts-file path binding, PR #120's hosts-file content binding, PR #122's native apt/dpkg installation smoke test, PR #123's tracker synchronization and PR #125's Kubernetes apt/dpkg installation smoke test), then run that candidate on the disposable Ubuntu admin/masters/workers lab with --ssh-user root and an explicit --hosts-file; execute Kubernetes E2E only with explicitly approved assets."
   },
   "workstreams": [
     {
@@ -120,7 +120,7 @@
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Publish a new immutable candidate from exact main commit 0523f6ee5024c77c4a9390844459da5935fc4997; test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #125."
+      "nextStep": "Publish a new immutable candidate from exact main commit 0523f6ee5024c77c4a9390844459da5935fc4997 (including the bounded Native and Kubernetes apt/dpkg installation smoke tests); test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #125."
     },
     {
       "id": "E2E-K01",
