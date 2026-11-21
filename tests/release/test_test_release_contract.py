@@ -21,7 +21,7 @@ class TestReleaseContract(unittest.TestCase):
     def make_fixture(self):
         temp = tempfile.TemporaryDirectory()
         root = Path(temp.name)
-        for relative in CONTRACT.DOCUMENTS + (CONTRACT.WORKFLOW, CONTRACT.TRACKER):
+        for relative in CONTRACT.DOCUMENTS + (CONTRACT.WORKFLOW, CONTRACT.KUBERNETES_WORKFLOW, CONTRACT.TRACKER):
             source = ROOT / relative
             target = root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -79,6 +79,27 @@ class TestReleaseContract(unittest.TestCase):
         path.write_text(path.read_text().replace("test -x /usr/bin/werft-ops || {", "command -v werft-ops"))
         self.assertTrue(
             any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
+        )
+
+    def test_kubernetes_instructions_require_installed_cli_check(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.DOCUMENTS[0]
+        path.write_text(path.read_text().replace("command -v werft-kube", "command -v werft-kube-missing"))
+        self.assertTrue(
+            any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
+        )
+
+    def test_kubernetes_workflow_requires_apt_install_smoke(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.KUBERNETES_WORKFLOW
+        content = path.read_text().replace(
+            "test \"$(command -v werft-kube)\" = \"/usr/bin/werft-kube\"",
+            "test \"$(command -v werft-kube-missing)\" = \"/usr/bin/werft-kube\"",
+        )
+        path.write_text(content)
+        self.assertIn(
+            "KUBERNETES_WORKFLOW_CONTRACT_MISSING:test \"$(command -v werft-kube)\" = \"/usr/bin/werft-kube\"",
+            CONTRACT.validate(root),
         )
 
     def test_release_notes_must_be_normalized_to_actual_tag(self):
