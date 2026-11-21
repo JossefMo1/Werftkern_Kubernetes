@@ -54,7 +54,7 @@ database recovery and signed production acceptance remain unqualified.
 
 The latest immutable experimental candidate is [`v0.2.0-dev.4-test.17`](https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.17), built from source commit `28efa7518e171a618d4dcf9ff3aba58cddaf3296`. Its Native, Kubernetes-package and source-audit workflows passed; the Native real-etcd job passed, while VM/PITR jobs were skipped. The release includes the auto-discovery known-hosts replay guard, is unsigned and remains a lab artifact only: it does not qualify installation, HA, recovery, Kubernetes lifecycle, supply-chain or production readiness. The machine-readable tracker records the exact asset digests and open gates.
 
-Main has since merged [PR #115](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/115) at `a05dd90fbece0464b110f51d994a28ba1db6d292), adding the explicit `--ssh-user root` override for prepared auto-discovery labs and binding that value across resume. This merge is not part of test17; a new immutable candidate is required before live testing the updated package. The production decision remains no-go.
+Main now also contains [PR #118](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/118), merged at `27570b06762c5d6d67e8919cb97474c1fd0cc78f`. The Native auto-discovery path accepts an explicit `--hosts-file` override, binds the selected path in generated inventory state and rejects a changed path on resume. This merge is not part of test17; a new immutable candidate is required before live testing the updated package. The production decision remains no-go.
 
 ## Implemented in this increment
 
