@@ -20,8 +20,12 @@ class KubeHTTP:
         if ctx['name']!=c['current-context'] or ctx['context'].get('cluster')!=c['clusters'][0]['name'] or ctx['context'].get('user')!=c['users'][0]['name']:
             raise Blocked('KUBECONFIG_CONTEXT_MISMATCH')
         fields(cluster,('server','certificate-authority-data'));fields(user,('client-certificate-data','client-key-data'))
-        u=urllib.parse.urlsplit(cluster['server'])
-        if u.scheme!='https' or u.username or u.password or u.query or u.fragment or u.path not in ('','/') or u.port!=6443:
+        try:
+            u=urllib.parse.urlsplit(cluster['server'])
+            port=u.port
+        except (TypeError,ValueError):
+            raise Blocked('KUBECONFIG_HTTPS_6443_REQUIRED') from None
+        if u.scheme!='https' or u.username or u.password or u.query or u.fragment or u.path not in ('','/') or port!=6443:
             raise Blocked('KUBECONFIG_HTTPS_6443_REQUIRED')
         try: private_ip(u.hostname)
         except Blocked: domain(u.hostname)
