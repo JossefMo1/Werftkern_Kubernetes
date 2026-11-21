@@ -1,7 +1,11 @@
 import copy
 import importlib.util
 import json
+import os
 import pathlib
+import stat
+import subprocess
+import tempfile
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -11,6 +15,61 @@ SPEC.loader.exec_module(TARGET)
 
 
 class KubernetesTargetTests(unittest.TestCase):
+    def _materialize_wrapper(self, root):
+        wrapper = root / "usr/bin/werft-kube"
+        wrapper.parent.mkdir(parents=True)
+        content = (ROOT / "scripts/werft-kube").read_text().replace(
+            "installed=/usr/lib/werftkern-kubernetes/ops",
+            "installed=/werftkern-test-no-installed-modules",
+        )
+        wrapper.write_text(content)
+        wrapper.chmod(wrapper.stat().st_mode | stat.S_IXUSR)
+        return wrapper
+
+    def _wrapper_env(self):
+        return {
+            "PATH": os.environ["PATH"],
+            "PYTHONPATH": "",
+            "PYTHONNOUSERSITE": "1",
+        }
+
+    def test_kubernetes_wrapper_runs_from_extracted_package_root(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            wrapper = self._materialize_wrapper(root)
+            package = root / "usr/lib/werftkern-kubernetes/ops/werftops"
+            package.mkdir(parents=True)
+            (package / "__init__.py").write_text("")
+            (package / "kube_main.py").write_text(
+                "import sys\n"
+                "print('wrapper-ok:' + ' '.join(sys.argv[1:]))\n"
+            )
+            result = subprocess.run(
+                [str(wrapper), "version"],
+                cwd=root,
+                env=self._wrapper_env(),
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "wrapper-ok:version")
+
+    def test_kubernetes_wrapper_fails_closed_when_modules_are_missing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            wrapper = self._materialize_wrapper(root)
+            result = subprocess.run(
+                [str(wrapper), "version"],
+                cwd=root,
+                env=self._wrapper_env(),
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        self.assertEqual(result.returncode, 78)
+        self.assertIn("werft-kube: Python modules not found", result.stderr)
+
     def test_recovery_services_keep_root_boundary_and_systemd_sandbox(self):
         required = (
             "User=root",
