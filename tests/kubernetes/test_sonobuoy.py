@@ -60,8 +60,9 @@ class RunTests(unittest.TestCase):
             item=tarfile.TarInfo('serverversion.json');item.size=len(b)
             tf.addfile(item,io.BytesIO(b))
         self.d.archive=out.getvalue()
-        with self.assertRaisesRegex(Blocked,'^SERVER_VERSION_INVALID        (self.d.root/'conformance/proof/results.tar.gz').write_bytes(b'changed')
-        with self.assertRaisesRegex(Blocked,'ARCHIVE_CHANGED'):self.c.collect('proof')
+        with self.assertRaisesRegex(Blocked,'^SERVER_VERSION_INVALID$'):
+            self.c.collect('proof')
+
     def test_foreign_namespace_not_adopted(self):
         self.d.namespaces['werft-test-proof']={'metadata':{'uid':'foreign'}}
         with self.assertRaises(Blocked):self.c.start('proof','quick',False)
