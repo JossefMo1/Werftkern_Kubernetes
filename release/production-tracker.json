@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-21T02:04:08.778Z",
+  "updatedAt": "2026-11-21T03:12:16Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "c95511a5f1e1c8ca6aa909b3e69bb21558b00634",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/122",
-    "summary": "Merged PR #122: Native CI now installs the built .deb through apt/dpkg, verifies package status and both system commands plus help output, then removes the package. Post-merge Native (including real-etcd), Kubernetes contracts/package and source-audit checks passed; real-vm/real-pitr remain skipped and productionReady:false is unchanged."
+    "commit": "0523f6ee5024c77c4a9390844459da5935fc4997",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/125",
+    "summary": "Merged PR #125: Kubernetes CI now installs the built manager package through apt/dpkg, verifies the installed werft-kube entrypoint, version output and productionReady:false marker, and extends the release contract tests. Post-merge Kubernetes, Native (including real-etcd) and source-audit checks passed; real-vm/real-pitr remain skipped and productionReady:false is unchanged."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Publish the next immutable test candidate from the exact current main commit a28f01b37898275678cc7cfadc7a130c13e2c973 (including PR #115's --ssh-user root override, PR #118's --hosts-file path binding, PR #120's hosts-file content binding and PR #122's apt/dpkg installation smoke test and PR #123's tracker synchronization), then run that candidate on the disposable Ubuntu admin/masters/workers lab with --ssh-user root and an explicit --hosts-file; execute Kubernetes E2E only with explicitly approved assets."
+    "nextStep": "Publish the next immutable candidate from exact current main commit 0523f6ee5024c77c4a9390844459da5935fc4997 (including PR #115's --ssh-user root override, PR #118's --hosts-file path binding, PR #120's hosts-file content binding, PR #122's native apt/dpkg installation smoke test, PR #123's tracker synchronization and PR #125's Kubernetes apt/dpkg installation smoke test), then run that candidate on the disposable Ubuntu admin/masters/workers lab with --ssh-user root and an explicit --hosts-file; execute Kubernetes E2E only with explicitly approved assets."
   },
   "workstreams": [
     {
@@ -109,13 +109,18 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44852728557",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44852728553",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44852728586",
-        "Post-merge main commit verified as c95511a5f1e1c8ca6aa909b3e69bb21558b00634"
+        "Post-merge main commit verified as c95511a5f1e1c8ca6aa909b3e69bb21558b00634",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/125",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44859557036",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44859557131",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44859557121",
+        "Post-merge main commit verified as 0523f6ee5024c77c4a9390844459da5935fc4997"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Publish a new immutable candidate from exact main commit a28f01b37898275678cc7cfadc7a130c13e2c973; test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #122."
+      "nextStep": "Publish a new immutable candidate from exact main commit 0523f6ee5024c77c4a9390844459da5935fc4997 (including the bounded Native and Kubernetes apt/dpkg installation smoke tests); test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #125."
     },
     {
       "id": "E2E-K01",
@@ -159,7 +164,7 @@
       "blockers": [
         "No expressly authorized disposable Ubuntu VM and candidate package are configured."
       ],
-      "nextStep": "Publish the next immutable candidate from exact main commit a28f01b37898275678cc7cfadc7a130c13e2c973, then run the existing root-only script on a fresh disposable Ubuntu VM with the exact package, --ssh-user root and explicit --hosts-file; CI apt/dpkg smoke testing is only a preflight and not live installation evidence."
+      "nextStep": "Publish the next immutable candidate from exact main commit 0523f6ee5024c77c4a9390844459da5935fc4997, then run the existing root-only script on a fresh disposable Ubuntu VM with the exact package, --ssh-user root and explicit --hosts-file; CI apt/dpkg smoke testing is only a preflight and not live installation evidence."
     },
     {
       "id": "E2E-H01",
@@ -239,13 +244,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "a28f01b37898275678cc7cfadc7a130c13e2c973",
-      "codeCommit": "463b56938287658308db92881a956bca8881867d",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/122",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/123",
-      "summary": "Main contains PR #122's apt/dpkg installation smoke test and package-before-command quickstart clarification; PR #123 synchronizes this tracker and the status/roadmap documents at the current main commit. Runtime code remains the PR #120 tree at 463b56938287658308db92881a956bca8881867d; v0.2.0-dev.4-test.17 remains immutable and does not contain this main state.",
+      "commit": "0523f6ee5024c77c4a9390844459da5935fc4997",
+      "codeCommit": "0523f6ee5024c77c4a9390844459da5935fc4997",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/125",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/125",
+      "summary": "Main contains PR #125's Kubernetes apt/dpkg installation smoke test, installed CLI/version/production marker checks, release runbook update and contract regressions. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not contain this main state.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/123"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/125"
     }
   },
   "previousCandidates": [
