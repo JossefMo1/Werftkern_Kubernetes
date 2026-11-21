@@ -61,6 +61,7 @@ KUBERNETES_INSTALL_FRAGMENTS = (
     "! command -v werft-kube",
 )
 WORKFLOW = Path(".github/workflows/test-release.yml")
+NATIVE_WORKFLOW = Path(".github/workflows/ci.yml")
 KUBERNETES_WORKFLOW = Path(".github/workflows/kubernetes-backend.yml")
 TRACKER = Path("release/production-tracker.json")
 RUNBOOK_TAG = re.compile(r"(?m)^TAG=(v[^\n]+)$")
@@ -120,6 +121,13 @@ def validate(root: Path) -> list[str]:
         problems.append(f"WORKFLOW_MISSING:{WORKFLOW}")
         workflow = ""
 
+    native_workflow_path = root / NATIVE_WORKFLOW
+    try:
+        native_workflow = native_workflow_path.read_text()
+    except OSError:
+        problems.append(f"WORKFLOW_MISSING:{NATIVE_WORKFLOW}")
+        native_workflow = ""
+
     kubernetes_workflow_path = root / KUBERNETES_WORKFLOW
     try:
         kubernetes_workflow = kubernetes_workflow_path.read_text()
@@ -135,7 +143,7 @@ def validate(root: Path) -> list[str]:
         "! command -v werft",
     )
     for fragment in required_native_workflow_fragments:
-        if fragment not in workflow:
+        if fragment not in native_workflow:
             problems.append(f"NATIVE_WORKFLOW_CONTRACT_MISSING:{fragment}")
     required_kubernetes_workflow_fragments = (
         'package="$GITHUB_WORKSPACE/dist/werftkern-kubernetes_0.1.0~dev3_all.deb"',
