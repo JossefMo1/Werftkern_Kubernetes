@@ -133,6 +133,8 @@ def verify(candidate_path,trust_path,trust_sha256,now=None):
     fields(t,('format','keys','maxAgeDays'))
     if t['format']!='werftkern-evidence-trust/v1' or type(t['maxAgeDays']) is not int or not 1<=t['maxAgeDays']<=30:
         raise Blocked('TRUST_POLICY_INVALID')
+    if not isinstance(t['keys'],list) or not t['keys']:
+        raise Blocked('TRUST_KEYS_REQUIRED')
     keys={}
     for k in t['keys']:
         fields(k,('id','publicKey','roles','organization','validFrom','validUntil'));name(k['id'])
