@@ -70,6 +70,24 @@ class KubernetesTargetTests(unittest.TestCase):
         self.assertEqual(result.returncode, 78)
         self.assertIn("werft-kube: Python modules not found", result.stderr)
 
+    def test_kubernetes_wrapper_fails_closed_when_entrypoint_is_missing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            wrapper = self._materialize_wrapper(root)
+            package = root / "usr/lib/werftkern-kubernetes/ops/werftops"
+            package.mkdir(parents=True)
+            (package / "__init__.py").write_text("")
+            result = subprocess.run(
+                [str(wrapper), "version"],
+                cwd=root,
+                env=self._wrapper_env(),
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        self.assertEqual(result.returncode, 78)
+        self.assertIn("werft-kube: Python modules not found", result.stderr)
+
     def test_recovery_services_keep_root_boundary_and_systemd_sandbox(self):
         required = (
             "User=root",
