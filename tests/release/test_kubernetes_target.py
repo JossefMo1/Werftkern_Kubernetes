@@ -11,6 +11,36 @@ SPEC.loader.exec_module(TARGET)
 
 
 class KubernetesTargetTests(unittest.TestCase):
+    def test_recovery_services_keep_root_boundary_and_systemd_sandbox(self):
+        required = (
+            "User=root",
+            "UMask=0077",
+            "NoNewPrivileges=true",
+            "ProtectSystem=strict",
+            "ProtectHome=true",
+            "PrivateTmp=true",
+            "PrivateDevices=true",
+            "ProtectKernelTunables=true",
+            "ProtectKernelModules=true",
+            "ProtectControlGroups=true",
+            "RestrictSUIDSGID=true",
+            "RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6",
+            "CapabilityBoundingSet=",
+            "ReadWritePaths=/var/lib/werftkern/kubernetes/%i",
+        )
+        for filename in (
+            "werftkern-kube-repair@.service",
+            "werftkern-kube-recovery@.service",
+        ):
+            content = (ROOT / "packaging/kubernetes" / filename).read_text()
+            for directive in required:
+                self.assertIn(directive, content, f"{filename} missing {directive}")
+            self.assertIn("/usr/bin/werft-kube", content)
+            self.assertIn("--assets /etc/werftkern/kubernetes/%i/assets.json", content)
+            self.assertIn("--token-file /etc/werftkern/kubernetes/%i/provider-token", content)
+            self.assertNotIn("ExecStart=/bin/sh", content)
+            self.assertNotIn("ExecStart=/bin/bash", content)
+
     @classmethod
     def setUpClass(cls):
         cls.matrix = TARGET.parse_json((ROOT / "release/kubernetes-target-matrix.json").read_text())
