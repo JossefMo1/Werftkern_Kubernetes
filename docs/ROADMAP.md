@@ -243,3 +243,8 @@ Container-Identitäten bleiben offen. Keine Produktionsfreigabe.
 ## Latest code handoff (2026-11-21)
 
 PR #160 is merged at [a04b0b4](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/a04b0b4c9db7f4f0aa5e408446b45cb5fe25dd1a). It hardens the Kubernetes-manager plan parser against valid non-object JSON and adds a regression test for the stable fail-closed response. This does not alter either component version, the immutable test17 candidate, or any production gate. Post-merge required checks passed; the privileged live jobs remain skipped. The next evidence-bearing step is an expressly authorized disposable Ubuntu/k0s run, not another readiness claim.
+
+
+## Latest code handoff (2026-11-21, PR #162)
+
+PR #162 merged at [2ad8daeb](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2ad8daebed99f8ea2b6735f9f626e500666cd694). It hardens Kubernetes-manager wrapper resolution against incomplete Python package trees and adds a regression test for a missing package marker. Required automated checks passed; privileged real-VM/PITR jobs remain skipped. This does not alter component versions, the immutable test17 candidate, or any production qualification gate. The next evidence-bearing step remains an expressly authorized disposable Ubuntu/k0s run.
