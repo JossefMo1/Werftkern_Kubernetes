@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-21T07:05:10.138Z",
+  "updatedAt": "2026-11-21T07:58:41.573Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "5ed50f94a974b0211661453a39ba68c2ecaf814f",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/134",
-    "summary": "Merged PR #134: native Docker Engine API negotiation now rejects malformed or non-canonical 1.<minor> tokens instead of accepting a valid prefix. Table-driven regression coverage protects the fail-closed behavior. Post-merge Native, Kubernetes, source-audit and private-alpha checks passed; real-vm/real-pitr remain skipped and productionReady:false is unchanged."
+    "commit": "6113cdb85937ed4db4267678cda2d7f559e804a8",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/137",
+    "summary": "Merged PR #137: the Python/Kubernetes manager now converts malformed kubeconfig server values, including non-numeric ports, into the stable KUBECONFIG_HTTPS_6443_REQUIRED Blocked error before certificate loading. A local regression test covers the fail-closed contract. Post-merge qualification remains unchanged: productionReady:false and live VM/PITR, Kubernetes lifecycle, recovery, HA, load/soak, provenance/signing and independent security evidence are still open."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Publish the next immutable candidate from exact current main commit 5ed50f94a974b0211661453a39ba68c2ecaf814f (including PR #132's Native install contract checks and PR #134's strict Docker API-version parser), then run that candidate on the disposable Ubuntu admin/masters/workers lab with --ssh-user root and an explicit --hosts-file; execute Kubernetes E2E only with explicitly approved assets."
+    "nextStep": "Publish the next immutable candidate from exact current main code commit 6113cdb85937ed4db4267678cda2d7f559e804a8 (including PR #132 Native install contract checks, PR #134 strict Docker API-version parsing and PR #137 malformed kubeconfig-port handling), then run that candidate on the disposable Ubuntu admin/masters/workers lab with --ssh-user root and an explicit --hosts-file; execute Kubernetes E2E only with explicitly approved assets."
   },
   "workstreams": [
     {
@@ -269,13 +269,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "5ed50f94a974b0211661453a39ba68c2ecaf814f",
-      "codeCommit": "5ed50f94a974b0211661453a39ba68c2ecaf814f",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/134",
+      "commit": "6113cdb85937ed4db4267678cda2d7f559e804a8",
+      "codeCommit": "6113cdb85937ed4db4267678cda2d7f559e804a8",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/137",
       "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/132",
-      "summary": "Main contains PR #134's strict Docker API-version parser and regression coverage, while PR #132's Native package install contract checks remain included. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not contain this main state.",
+      "summary": "Main contains PR #137's Kubernetes kubeconfig-port fail-closed handling and regression coverage, while PR #132's Native package install contract checks and PR #134's strict Docker API-version parser remain included. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not contain this main state.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/134"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/137"
     }
   },
   "previousCandidates": [
