@@ -102,6 +102,33 @@ class TestReleaseContract(unittest.TestCase):
             CONTRACT.validate(root),
         )
 
+    def test_kubernetes_instructions_require_uninstall_check(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.DOCUMENTS[0]
+        path.write_text(
+            path.read_text().replace(
+                "sudo apt-get remove -y werftkern-kubernetes",
+                "sudo apt-get purge -y werftkern-kubernetes",
+            )
+        )
+        self.assertTrue(
+            any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
+        )
+
+    def test_kubernetes_workflow_requires_uninstall_cleanup(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.KUBERNETES_WORKFLOW
+        path.write_text(
+            path.read_text().replace(
+                "sudo apt-get remove -y werftkern-kubernetes >/dev/null",
+                "sudo apt-get purge -y werftkern-kubernetes >/dev/null",
+            )
+        )
+        self.assertIn(
+            "KUBERNETES_WORKFLOW_CONTRACT_MISSING:sudo apt-get remove -y werftkern-kubernetes >/dev/null",
+            CONTRACT.validate(root),
+        )
+
     def test_release_notes_must_be_normalized_to_actual_tag(self):
         root = self.make_fixture()
         path = root / CONTRACT.WORKFLOW
