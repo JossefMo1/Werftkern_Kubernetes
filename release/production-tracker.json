@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-21T05:58:42.151Z",
+  "updatedAt": "2026-11-21T07:01:43.364Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "43aa21142c8af5821761f52a705d7dd76c225cce",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/132",
-    "summary": "Merged PR #132: Native release-contract checks now require the exact apt/dpkg install path from ci.yml, both installed werft and werft-ops entrypoints, and the help/native-bootstrap smoke checks. Negative regression tests reject missing package and CLI fragments. Post-merge Native, Kubernetes and source-audit checks passed; real-vm/real-pitr remain skipped and productionReady:false is unchanged."
+    "commit": "5ed50f94a974b0211661453a39ba68c2ecaf814f",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/134",
+    "summary": "Merged PR #134: native Docker Engine API negotiation now rejects malformed or non-canonical 1.<minor> tokens instead of accepting a valid prefix. Table-driven regression coverage protects the fail-closed behavior. Post-merge Native, Kubernetes, source-audit and private-alpha checks passed; real-vm/real-pitr remain skipped and productionReady:false is unchanged."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Publish the next immutable candidate from exact current main commit 43aa21142c8af5821761f52a705d7dd76c225cce (including PR #115's --ssh-user root override, PR #118's --hosts-file path binding, PR #120's hosts-file content binding, PR #122's native apt/dpkg installation smoke test, PR #123's tracker synchronization, PR #125's Kubernetes apt/dpkg installation smoke test and PR #127's Kubernetes uninstall/reinstall smoke test and PR #129's Native uninstall/reinstall smoke test and PR #132's Native install contract checks), then run that candidate on the disposable Ubuntu admin/masters/workers lab with --ssh-user root and an explicit --hosts-file; execute Kubernetes E2E only with explicitly approved assets."
+    "nextStep": "Publish the next immutable candidate from exact current main commit 5ed50f94a974b0211661453a39ba68c2ecaf814f (including PR #132's Native install contract checks and PR #134's strict Docker API-version parser), then run that candidate on the disposable Ubuntu admin/masters/workers lab with --ssh-user root and an explicit --hosts-file; execute Kubernetes E2E only with explicitly approved assets."
   },
   "workstreams": [
     {
@@ -129,13 +129,19 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44873105339",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44873105340",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44873105343",
-        "Post-merge main commit verified as 43aa21142c8af5821761f52a705d7dd76c225cce"
+        "Post-merge main commit verified as 43aa21142c8af5821761f52a705d7dd76c225cce",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/134",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44878015355",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44878015246",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44878015296",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44878184640",
+        "Post-merge main commit verified as 5ed50f94a974b0211661453a39ba68c2ecaf814f"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Publish a new immutable candidate from exact main commit 43aa21142c8af5821761f52a705d7dd76c225cce; test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #132."
+      "nextStep": "Publish a new immutable candidate from exact main commit 5ed50f94a974b0211661453a39ba68c2ecaf814f; test17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #134."
     },
     {
       "id": "E2E-K01",
@@ -263,13 +269,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "43aa21142c8af5821761f52a705d7dd76c225cce",
-      "codeCommit": "43aa21142c8af5821761f52a705d7dd76c225cce",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/132",
+      "commit": "5ed50f94a974b0211661453a39ba68c2ecaf814f",
+      "codeCommit": "5ed50f94a974b0211661453a39ba68c2ecaf814f",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/134",
       "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/132",
-      "summary": "Main contains PR #132's Native package install contract checks, both CLI/help smoke assertions and release-contract regressions. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not contain this main state.",
+      "summary": "Main contains PR #134's strict Docker API-version parser and regression coverage, while PR #132's Native package install contract checks remain included. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not contain this main state.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/132"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/134"
     }
   },
   "previousCandidates": [
