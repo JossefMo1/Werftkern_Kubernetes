@@ -43,6 +43,14 @@ NATIVE_AUTO_FRAGMENTS = (
     "--inventory examples/native-inventory-3m-3w.json",
     "--journal /root/werft-native-bootstrap.json --check-only",
 )
+NATIVE_PACKAGE_LIFECYCLE_FRAGMENTS = (
+    "sudo apt-get remove -y werftkern",
+    "dpkg-query -W -f='Status: ${Status}\\n' werftkern 2>/dev/null || true",
+    "hash -r",
+    "! command -v werft-ops",
+    "! command -v werft",
+    "sudo apt-get install --reinstall ./werftkern_0.2.0.dev4_amd64.deb",
+)
 KUBERNETES_INSTALL_FRAGMENTS = (
     "sudo apt-get install --reinstall ./werftkern-kubernetes_0.1.0.dev3_all.deb",
     "dpkg-query -W -f='Status: ${Status}\\n' werftkern-kubernetes",
@@ -88,7 +96,7 @@ def validate(root: Path) -> list[str]:
             if asset in content:
                 problems.append(f"LEGACY_ASSET_NAME:{relative}:{asset}")
         if relative == Path("docs/TEST-RELEASE-DE.md"):
-            for fragment in RELEASE_DOWNLOAD_FRAGMENTS + NATIVE_AUTO_FRAGMENTS + KUBERNETES_INSTALL_FRAGMENTS:
+            for fragment in RELEASE_DOWNLOAD_FRAGMENTS + NATIVE_AUTO_FRAGMENTS + NATIVE_PACKAGE_LIFECYCLE_FRAGMENTS + KUBERNETES_INSTALL_FRAGMENTS:
                 if fragment not in content:
                     problems.append(f"DOCUMENT_INSTRUCTIONS_MISSING:{relative}:{fragment}")
 
@@ -119,6 +127,16 @@ def validate(root: Path) -> list[str]:
         problems.append(f"WORKFLOW_MISSING:{KUBERNETES_WORKFLOW}")
         kubernetes_workflow = ""
 
+    required_native_workflow_fragments = (
+        "sudo apt-get remove -y werftkern >/dev/null",
+        'test "$(dpkg-query -W -f='${Status}' werftkern 2>/dev/null || true)" != "install ok installed"',
+        "hash -r",
+        "! command -v werft-ops",
+        "! command -v werft",
+    )
+    for fragment in required_native_workflow_fragments:
+        if fragment not in workflow:
+            problems.append(f"NATIVE_WORKFLOW_CONTRACT_MISSING:{fragment}")
     required_kubernetes_workflow_fragments = (
         'package="$GITHUB_WORKSPACE/dist/werftkern-kubernetes_0.1.0~dev3_all.deb"',
         'sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package"',
