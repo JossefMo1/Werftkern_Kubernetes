@@ -61,6 +61,8 @@ def main(argv=None):
             return 0 if result['eligibleForReleaseReview'] else 3
         if a.cmd=='plan':
             v=read_json(a.file)
+            if not isinstance(v, dict):
+                raise Blocked('KUBE_PLAN_OBJECT_REQUIRED')
             validators={'werftkern-kube-fleet/v1':validate_blueprint,'werftkern-controller-recovery/v1':validate_controller_recovery,
                         'werftkern-data-restore/v1':validate_data_restore,'werftkern-stateful-recovery/v1':validate_stateful_recovery,'werftkern-recovery-policy/v1':validate_policy}
             digest=validators.get(v.get('format'),validate)(v)

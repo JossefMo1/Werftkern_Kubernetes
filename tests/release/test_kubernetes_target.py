@@ -1,3 +1,5 @@
+import contextlib
+import io
 import copy
 import importlib.util
 import json
@@ -5,6 +7,7 @@ import os
 import pathlib
 import stat
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -12,6 +15,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location("kubernetes_target", ROOT / "scripts/check-kubernetes-target.py")
 TARGET = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(TARGET)
+
+sys.path.insert(0, str(ROOT / "ops"))
+from werftops import kube_main as KUBE_MAIN
 
 
 class KubernetesTargetTests(unittest.TestCase):
@@ -117,6 +123,21 @@ class KubernetesTargetTests(unittest.TestCase):
             self.assertIn("--token-file /etc/werftkern/kubernetes/%i/provider-token", content)
             self.assertNotIn("ExecStart=/bin/sh", content)
             self.assertNotIn("ExecStart=/bin/bash", content)
+
+    def test_plan_rejects_non_object_json_without_traceback(self):
+        with tempfile.TemporaryDirectory() as temp:
+            plan = pathlib.Path(temp) / "plan.json"
+            plan.write_text("[1, 2, 3]")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                result = KUBE_MAIN.main(["plan", str(plan)])
+        self.assertEqual(result, 2)
+        self.assertEqual(
+            json.loads(stdout.getvalue()),
+            {"productionReady": False, "reason": "KUBE_PLAN_OBJECT_REQUIRED", "state": "BLOCKED"},
+        )
+        self.assertNotIn("Traceback", stderr.getvalue())
 
     @classmethod
     def setUpClass(cls):
