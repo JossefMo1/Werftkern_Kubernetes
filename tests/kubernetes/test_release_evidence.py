@@ -97,6 +97,19 @@ class EvidenceTests(unittest.TestCase):
     def test_untrusted_key_in_bundle(self):
         self.save();p=self.bundle/'trust.json';p.write_bytes(self.trustpath.read_bytes())
         with self.assertRaisesRegex(Blocked,'OUTSIDE'):verify(self.cp,p,digest_file(p),self.now)
+    def test_supply_documents_must_be_objects(self):
+        cases=[('sbom',[],'SBOM_DOCUMENT_INVALID'),
+                ('vulnerabilities',[],'VULNERABILITY_DOCUMENT_INVALID'),
+                ('provenance',[],'PROVENANCE_DOCUMENT_INVALID')]
+        for key,payload,reason in cases:
+            with self.subTest(key=key):
+                self.gate('supply-chain')
+                self.statements['supply-chain']['documents'][key]=self.document(key+'-invalid.json',payload)
+                self.save()
+                with self.assertRaises(Blocked) as error:
+                    self.check()
+                self.assertEqual(str(error.exception),reason)
+
     def test_high_vulnerability_blocks_even_if_signed(self):
         self.gate('supply-chain');self.statements['supply-chain']['documents']['vulnerabilities']=self.document('trivy.json',{'SchemaVersion':2,'Results':[{'Target':'x','Vulnerabilities':[{'Severity':'HIGH'}]}]});self.save()
         with self.assertRaisesRegex(Blocked,'VULNERABILITY'):self.check()

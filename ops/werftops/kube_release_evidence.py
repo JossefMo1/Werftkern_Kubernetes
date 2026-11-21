@@ -73,10 +73,14 @@ def verify_signature(statement,signature,key):
 def validate_supply_documents(root, documents, candidate):
     fields(documents,('sbom','vulnerabilities','provenance'))
     sbom=read_json(bounded_file(root,documents['sbom']))
+    if not isinstance(sbom,dict):
+        raise Blocked('SBOM_DOCUMENT_INVALID')
     if sbom.get('bomFormat')!='CycloneDX' or not isinstance(sbom.get('components'),list) or not sbom['components']:
         raise Blocked('NONEMPTY_CYCLONEDX_SBOM_REQUIRED')
     # Do not invent zero findings for a missing scan or silently ignore malformed records.
     scan=read_json(bounded_file(root,documents['vulnerabilities']))
+    if not isinstance(scan,dict):
+        raise Blocked('VULNERABILITY_DOCUMENT_INVALID')
     if scan.get('SchemaVersion')!=2 or not isinstance(scan.get('Results'),list) or not scan['Results']:
         raise Blocked('TRIVY_RESULT_REQUIRED')
     for result in scan['Results']:
@@ -88,17 +92,29 @@ def validate_supply_documents(root, documents, candidate):
                 raise Blocked('VULNERABILITY_SEVERITY_INVALID')
             if finding['Severity'] in ('HIGH','CRITICAL','UNKNOWN'):raise Blocked('UNRESOLVED_VULNERABILITY_BLOCKS_RELEASE')
     provenance=read_json(bounded_file(root,documents['provenance']))
+    if not isinstance(provenance,dict):
+        raise Blocked('PROVENANCE_DOCUMENT_INVALID')
     if provenance.get('_type')!='https://in-toto.io/Statement/v1' or provenance.get('predicateType')!='https://slsa.dev/provenance/v1':
         raise Blocked('IN_TOTO_SLSA_PROVENANCE_REQUIRED')
     if provenance.get('subject')!=[{'name':candidate['artifact']['path'],'digest':{'sha256':candidate['artifact']['sha256']}}]:
         raise Blocked('PROVENANCE_ARTIFACT_MISMATCH')
-    predicate=provenance.get('predicate',{});build=predicate.get('buildDefinition',{})
-    if predicate.get('runDetails',{}).get('builder',{}).get('id')!=candidate['builderId']:
+    predicate=provenance.get('predicate')
+    if not isinstance(predicate,dict):
+        raise Blocked('PROVENANCE_PREDICATE_INVALID')
+    run_details=predicate.get('runDetails')
+    if not isinstance(run_details,dict) or not isinstance(run_details.get('builder'),dict):
+        raise Blocked('PROVENANCE_RUN_DETAILS_INVALID')
+    if run_details['builder'].get('id')!=candidate['builderId']:
         raise Blocked('PROVENANCE_BUILDER_MISMATCH')
-    materials=build.get('resolvedDependencies',[])
-    if not any(m.get('uri')==candidate['sourceRepository'] and m.get('digest',{}).get('gitCommit')==candidate['sourceCommit'] for m in materials):
+    build=predicate.get('buildDefinition')
+    if not isinstance(build,dict):
+        raise Blocked('PROVENANCE_BUILD_DEFINITION_INVALID')
+    materials=build.get('resolvedDependencies')
+    if not isinstance(materials,list) or any(not isinstance(m,dict) or not isinstance(m.get('digest'),dict) for m in materials):
+        raise Blocked('PROVENANCE_DEPENDENCIES_INVALID')
+    if not any(m.get('uri')==candidate['sourceRepository'] and m['digest'].get('gitCommit')==candidate['sourceCommit'] for m in materials):
         raise Blocked('PROVENANCE_SOURCE_MISMATCH')
-    if not any(m.get('digest',{}).get('sha256')==candidate['assetsSHA256'] for m in materials):
+    if not any(m['digest'].get('sha256')==candidate['assetsSHA256'] for m in materials):
         raise Blocked('PROVENANCE_ASSET_LOCK_MISSING')
 
 
