@@ -43,7 +43,14 @@ NATIVE_AUTO_FRAGMENTS = (
     "--inventory examples/native-inventory-3m-3w.json",
     "--journal /root/werft-native-bootstrap.json --check-only",
 )
+KUBERNETES_INSTALL_FRAGMENTS = (
+    "sudo apt-get install --reinstall ./werftkern-kubernetes_0.1.0.dev3_all.deb",
+    "dpkg-query -W -f='Status: ${Status}\\n' werftkern-kubernetes",
+    "command -v werft-kube",
+    "werft-kube version",
+)
 WORKFLOW = Path(".github/workflows/test-release.yml")
+KUBERNETES_WORKFLOW = Path(".github/workflows/kubernetes-backend.yml")
 TRACKER = Path("release/production-tracker.json")
 RUNBOOK_TAG = re.compile(r"(?m)^TAG=(v[^\n]+)$")
 
@@ -78,7 +85,7 @@ def validate(root: Path) -> list[str]:
             if asset in content:
                 problems.append(f"LEGACY_ASSET_NAME:{relative}:{asset}")
         if relative == Path("docs/TEST-RELEASE-DE.md"):
-            for fragment in RELEASE_DOWNLOAD_FRAGMENTS + NATIVE_AUTO_FRAGMENTS:
+            for fragment in RELEASE_DOWNLOAD_FRAGMENTS + NATIVE_AUTO_FRAGMENTS + KUBERNETES_INSTALL_FRAGMENTS:
                 if fragment not in content:
                     problems.append(f"DOCUMENT_INSTRUCTIONS_MISSING:{relative}:{fragment}")
 
@@ -101,6 +108,24 @@ def validate(root: Path) -> list[str]:
     except OSError:
         problems.append(f"WORKFLOW_MISSING:{WORKFLOW}")
         workflow = ""
+
+    kubernetes_workflow_path = root / KUBERNETES_WORKFLOW
+    try:
+        kubernetes_workflow = kubernetes_workflow_path.read_text()
+    except OSError:
+        problems.append(f"WORKFLOW_MISSING:{KUBERNETES_WORKFLOW}")
+        kubernetes_workflow = ""
+
+    required_kubernetes_workflow_fragments = (
+        'package="$GITHUB_WORKSPACE/dist/werftkern-kubernetes_0.1.0~dev3_all.deb"',
+        'sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package"',
+        'test "$(command -v werft-kube)" = "/usr/bin/werft-kube"',
+        "werft-kube version >",
+        'grep -q \'"productionReady": false\'',
+    )
+    for fragment in required_kubernetes_workflow_fragments:
+        if fragment not in kubernetes_workflow:
+            problems.append(f"KUBERNETES_WORKFLOW_CONTRACT_MISSING:{fragment}")
 
     required_workflow_fragments = (
         'native_release_name="$(basename "$native" | tr \'~\' \'.\')"',

@@ -136,7 +136,11 @@ Für einen echten Lauf brauchst du daher:
 Beginne mit den Vorlagen aus dem Test-Kit:
 
 ```bash
-sudo apt install ./werftkern-kubernetes_0.1.0.dev3_all.deb
+sudo apt-get install --reinstall ./werftkern-kubernetes_0.1.0.dev3_all.deb
+test "$(dpkg-query -W -f='Status: ${Status}\n' werftkern-kubernetes)" = "install ok installed"
+test "$(command -v werft-kube)" = "/usr/bin/werft-kube"
+werft-kube version
+
 install -d -m 700 /etc/werftkern/kubernetes/lab /var/lib/werftkern/kubernetes/lab
 cp examples/kubernetes/cluster-3m-3w.example.json /root/cluster-3m-3w.json
 cp examples/kubernetes/assets-core.example.json /root/assets.json
