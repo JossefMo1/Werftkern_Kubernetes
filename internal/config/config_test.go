@@ -6,7 +6,7 @@ import (
 )
 
 func TestHTTPSClientContract(t *testing.T) {
-	for _, u := range []string{"http://127.0.0.1:7443", "https://" + "fixture-user:fixture-value" + "@host", "https://host/path", "https://host?q=secret", "https://host#x", "//host"} {
+	for _, u := range []string{"http://127.0.0.1:7443", "https://" + "fixture-user:fixture-value" + "@host", "https://host/path", "https://host?q=secret", "https://host#x", "https://host:0", "https://host:65536", "https://host:99999", "//host"} {
 		if ValidateClient(Client{Server: u, ClusterID: strings.Repeat("a", 32)}) == nil {
 			t.Fatal(u)
 		}
