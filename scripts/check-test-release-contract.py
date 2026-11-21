@@ -138,7 +138,7 @@ def validate(root: Path) -> list[str]:
     required_native_workflow_fragments = (
         'package="$GITHUB_WORKSPACE/dist/werftkern_0.2.0~dev4_amd64.deb"',
         'sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package"',
-        "test \"$(dpkg-query -W -f='${Status}' werftkern)\" = \"install ok installed\","
+        "test \"$(dpkg-query -W -f='${Status}' werftkern)\" = \"install ok installed\"",
         'test "$(command -v werft-ops)" = "/usr/bin/werft-ops"',
         'test "$(command -v werft)" = "/usr/bin/werft"',
         "werft-ops --help >",
