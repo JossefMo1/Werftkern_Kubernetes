@@ -123,6 +123,34 @@ class TestReleaseContract(unittest.TestCase):
             any(problem.startswith("DOCUMENT_INSTRUCTIONS_MISSING:") for problem in CONTRACT.validate(root))
         )
 
+    def test_native_workflow_requires_package_install_path(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.NATIVE_WORKFLOW
+        path.write_text(
+            path.read_text().replace(
+                'package="$GITHUB_WORKSPACE/dist/werftkern_0.2.0~dev4_amd64.deb"',
+                'package="$GITHUB_WORKSPACE/dist/missing.deb"',
+            )
+        )
+        self.assertIn(
+            'NATIVE_WORKFLOW_CONTRACT_MISSING:package="$GITHUB_WORKSPACE/dist/werftkern_0.2.0~dev4_amd64.deb"',
+            CONTRACT.validate(root),
+        )
+
+    def test_native_workflow_requires_installed_cli_checks(self):
+        root = self.make_fixture()
+        path = root / CONTRACT.NATIVE_WORKFLOW
+        path.write_text(
+            path.read_text().replace(
+                'test "$(command -v werft-ops)" = "/usr/bin/werft-ops"',
+                'test "$(command -v missing-cli)" = "/usr/bin/werft-ops"',
+            )
+        )
+        self.assertIn(
+            'NATIVE_WORKFLOW_CONTRACT_MISSING:test "$(command -v werft-ops)" = "/usr/bin/werft-ops"',
+            CONTRACT.validate(root),
+        )
+
     def test_native_workflow_requires_uninstall_cleanup(self):
         root = self.make_fixture()
         path = root / CONTRACT.NATIVE_WORKFLOW

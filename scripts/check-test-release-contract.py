@@ -136,6 +136,14 @@ def validate(root: Path) -> list[str]:
         kubernetes_workflow = ""
 
     required_native_workflow_fragments = (
+        'package="$GITHUB_WORKSPACE/dist/werftkern_0.2.0~dev4_amd64.deb"',
+        'sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package"',
+        "test \"$(dpkg-query -W -f='${Status}' werftkern)\" = \"install ok installed\"",
+        'test "$(command -v werft-ops)" = "/usr/bin/werft-ops"',
+        'test "$(command -v werft)" = "/usr/bin/werft"',
+        "werft-ops --help >",
+        'grep -q -- "native-bootstrap"',
+        "werft --help >",
         "sudo apt-get remove -y werftkern >/dev/null",
         "test \"$(dpkg-query -W -f='${Status}' werftkern 2>/dev/null || true)\" != \"install ok installed\"",
         "hash -r",
