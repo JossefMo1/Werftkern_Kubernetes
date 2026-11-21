@@ -707,6 +707,7 @@ def _auto_discover_inventory(raw: dict, known_hosts: pathlib.Path, runner: Calla
 def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.PathLike[str],
           journal_path: str | os.PathLike[str], *, check_only: bool = False,
           known_hosts_override: str | os.PathLike[str] | None = None,
+          hosts_file_override: str | os.PathLike[str] | None = None,
           auto_discover: bool = False, auto_ssh_user: str | None = None, auto_ssh_port: int = 22,
           runner: Callable = run) -> dict:
     package = pathlib.Path(package_path).resolve(strict=True)
@@ -734,6 +735,8 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
         raw = read_json(inventory_file)
     if known_hosts_override is not None:
         raw["knownHostsFile"] = str(pathlib.Path(known_hosts_override).resolve())
+    if hosts_file_override is not None:
+        raw["hostsFile"] = str(pathlib.Path(hosts_file_override).resolve())
     auto_mode = auto_discover or (isinstance(raw, dict) and raw.get("autoDiscover") is True)
     if auto_mode and auto_ssh_user is not None and isinstance(raw, dict) and inventory_path is not None:
         # An explicit CLI value is a deliberate global override for a profile's
@@ -759,6 +762,13 @@ def apply(inventory_path: str | os.PathLike[str] | None, package_path: str | os.
                     or pathlib.Path(stored_known_hosts).resolve() != known_path.resolve()
                 ):
                     raise Blocked("AUTO_DISCOVERY_KNOWN_HOSTS_CHANGED")
+            if hosts_file_override is not None:
+                stored_hosts_file = replayed.get("hostsFile")
+                if (
+                    not isinstance(stored_hosts_file, str)
+                    or pathlib.Path(stored_hosts_file).resolve() != hosts_path.resolve()
+                ):
+                    raise Blocked("AUTO_DISCOVERY_HOSTS_FILE_CHANGED")
             if auto_ssh_user is not None and replayed.get("sshUser") != auto_ssh_user:
                 raise Blocked("AUTO_DISCOVERY_SSH_USER_CHANGED")
             raw = replayed
