@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-21T14:04:31Z",
+  "updatedAt": "2026-11-21T15:04:49Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "3dcfce005d1585b19fc2c1095f06a82f608e36ac",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/154",
-    "summary": "Merged PR #154: Kubernetes-manager wrapper regression tests now cover staged package-root execution and the fail-closed exit-78 path when Python modules are missing. This is a packaging/diagnostic guard; productionReady remains false and no live qualification gate is closed."
+    "commit": "a1e0413233fa1b18f4281445e7cd96f4245f02d9",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/156",
+    "summary": "Merged PR #156: werft-kube now requires the concrete werftops/kube_main.py entrypoint before selecting installed, staged or source-tree modules and returns the documented exit-78 error for incomplete package trees. This is a Kubernetes-manager installation/error-handling guard; productionReady remains false and no live qualification gate is closed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Publish the next immutable candidate from exact package-bearing code commit d2e9543384e1bb4f8a3544800b2fcf051f2d8708 (including PR #143 Native postinst smoke checks, PR #148 uninstall-retention contract and PR #140 Native port validation). Main now also contains test-only PR #152 and PR #154 plus documentation-only handoffs; these do not qualify live Ubuntu/k0s execution. Execute the candidate only on an expressly authorized disposable Ubuntu/k0s lab with --ssh-user root, explicit hosts file and approved assets; live VM/PITR and all other production gates remain required."
+    "nextStep": "Publish the next immutable candidate from exact package-bearing code commit d2e9543384e1bb4f8a3544800b2fcf051f2d8708 (including PR #143 Native postinst smoke checks, PR #148 uninstall-retention contract and PR #140 Native port validation). Main now also contains test-only PR #152 and PR #154, the fail-closed wrapper fix in PR #156, and documentation-only handoffs; these do not qualify live Ubuntu/k0s execution. Execute the candidate only on an expressly authorized disposable Ubuntu/k0s lab with --ssh-user root, explicit hosts file and approved assets; live VM/PITR and all other production gates remain required."
   },
   "workstreams": [
     {
@@ -246,7 +246,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7063803729",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7064593584",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -275,13 +275,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "3dcfce005d1585b19fc2c1095f06a82f608e36ac",
+      "commit": "a1e0413233fa1b18f4281445e7cd96f4245f02d9",
       "codeCommit": "2ab2ebe5433b938925b4aebd57c84a7939d92a43",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/143",
       "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/132",
-      "summary": "Main contains PR #143's Native postinst smoke checks, PR #148's Native uninstall-retention contract, PR #152's Kubernetes recovery/repair systemd sandbox contract and PR #154's Kubernetes wrapper staged-package/fail-closed regression tests, together with PR #140's Native endpoint port-range validation, PR #137's Kubernetes kubeconfig-port fail-closed handling, PR #134's strict Docker API-version parser and PR #132's Native package-install contract checks. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main state.",
+      "summary": "Main contains PR #143's Native postinst smoke checks, PR #148's Native uninstall-retention contract, PR #152's Kubernetes recovery/repair systemd sandbox contract, PR #154's Kubernetes wrapper staged-package/fail-closed regression tests and PR #156's incomplete-entrypoint fail-closed wrapper guard, together with PR #140's Native endpoint port-range validation, PR #137's Kubernetes kubeconfig-port fail-closed handling, PR #134's strict Docker API-version parser and PR #132's Native package-install contract checks. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main state.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/154"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/156"
     }
   },
   "previousCandidates": [
