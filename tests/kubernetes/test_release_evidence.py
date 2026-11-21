@@ -117,6 +117,14 @@ class EvidenceTests(unittest.TestCase):
             self.check()
         self.assertEqual(str(error.exception),'TRUST_KEYS_REQUIRED')
 
+    def test_environment_identities_must_be_nonempty_strings(self):
+        self.gate('ubuntu-e2e')
+        self.statements['ubuntu-e2e']['environment']['identities']=[{}]
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'EVIDENCE_IDENTITIES_INVALID')
+
     def test_high_vulnerability_blocks_even_if_signed(self):
         self.gate('supply-chain');self.statements['supply-chain']['documents']['vulnerabilities']=self.document('trivy.json',{'SchemaVersion':2,'Results':[{'Target':'x','Vulnerabilities':[{'Severity':'HIGH'}]}]});self.save()
         with self.assertRaisesRegex(Blocked,'VULNERABILITY'):self.check()
