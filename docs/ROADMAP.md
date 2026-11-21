@@ -257,3 +257,9 @@ PR #164 merged at [552a9aeb](https://github.com/JossefMo1/Werftkern_Kubernetes/c
 PR [#166](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/166) merged at [e88b667](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e88b6679829be356710cc88a35e090093054ec8b). The Kubernetes evidence verifier now fails closed for malformed top-level and nested SBOM, vulnerability-scan and provenance documents, with regression tests and green post-merge checks.
 
 The next evidence step is a new immutable candidate built from `e88b667`. The existing `v0.2.0-dev.4-test.17` candidate remains unchanged and unqualified. Live Ubuntu/k0s, recovery, HA, load/soak, supply-chain signing/provenance and independent-review gates remain open until reproduced on authorized disposable infrastructure.
+
+## Code handoff — PR #168 (2026-11-21)
+
+PR [#168](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/168) merged at [7b1408a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/7b1408a38f830405af52da47143cffa6058068c9). The Kubernetes evidence verifier now fails closed when the trust-policy `keys` inventory is null, empty or not a list, with regression coverage for the stable `TRUST_KEYS_REQUIRED` result.
+
+The next evidence step is a new immutable candidate built from `7b1408a`. The existing `v0.2.0-dev.4-test.17` candidate remains unchanged and unqualified. Live Ubuntu/k0s, recovery, HA, load/soak, signed supply-chain provenance and independent-review gates remain open until reproduced on authorized disposable infrastructure.
