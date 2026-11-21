@@ -52,6 +52,33 @@ class RunTests(unittest.TestCase):
         self.c.start('proof','certified-conformance',True);r=self.c.collect('proof')
         self.assertFalse(r['cncfCertified']);self.assertFalse(r['fullInventoryVerified']);self.assertFalse(r['productionReady'])
         self.assertTrue((self.d.root/'conformance/proof/results.tar.gz').exists())
+    def test_missing_server_version_is_blocked_without_traceback(self):
+        self.c.start('proof','certified-conformance',True)
+        out=io.BytesIO()
+        with tarfile.open(fileobj=out,mode='w:gz') as tf:
+            b=canonical({'unexpected':'value'})
+            item=tarfile.TarInfo('serverversion.json');item.size=len(b)
+            tf.addfile(item,io.BytesIO(b))
+        self.d.archive=out.getvalue()
+        with self.assertRaisesRegex(Blocked,'^SERVER_VERSION_INVALID
+        self.c.start('proof','certified-conformance',True);self.c.collect('proof')
+        (self.d.root/'conformance/proof/results.tar.gz').write_bytes(b'changed')
+        with self.assertRaisesRegex(Blocked,'ARCHIVE_CHANGED'):self.c.collect('proof')
+    def test_foreign_namespace_not_adopted(self):
+        self.d.namespaces['werft-test-proof']={'metadata':{'uid':'foreign'}}
+        with self.assertRaises(Blocked):self.c.start('proof','quick',False)
+        self.assertEqual(self.d.run_count,0)
+    def test_changed_namespace_uid_rejected(self):
+        self.c.start('proof','quick',False);self.d.namespaces['werft-test-proof']['metadata']['uid']='replacement'
+        with self.assertRaises(Blocked):self.c.collect('proof')
+    def test_no_real_smoke_without_explicit_disposable_ack(self):
+        with self.assertRaises(Blocked):Acceptance(self.d,{'plan':plan(),'clusterUID':'cluster-uid'}).run('yes')
+        self.assertEqual(self.d.calls,[])
+
+if __name__=='__main__':unittest.main()
+):
+            self.c.collect('proof')
+
     def test_changed_archive_rejected(self):
         self.c.start('proof','certified-conformance',True);self.c.collect('proof')
         (self.d.root/'conformance/proof/results.tar.gz').write_bytes(b'changed')
