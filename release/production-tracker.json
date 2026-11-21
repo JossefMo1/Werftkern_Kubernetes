@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-21T09:57:22.873Z",
+  "updatedAt": "2026-11-21T10:03:37.247Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -246,7 +246,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7060291373",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/issues/16#issuecomment-7060978091",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
