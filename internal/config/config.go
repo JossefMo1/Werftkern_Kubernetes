@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -63,6 +64,12 @@ func ValidateClient(c Client) error {
 	u, e := url.Parse(c.Server)
 	if e != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || strings.Trim(u.Path, "/") != "" || !model.ValidID(c.ClusterID) {
 		return errors.New("CLIENT_CONFIGURATION_INVALID")
+	}
+	if port := u.Port(); port != "" {
+		n, e := strconv.Atoi(port)
+		if e != nil || n < 1 || n > 65535 {
+			return errors.New("CLIENT_CONFIGURATION_INVALID")
+		}
 	}
 	return nil
 }
