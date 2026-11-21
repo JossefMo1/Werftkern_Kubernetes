@@ -21,7 +21,7 @@ class TestReleaseContract(unittest.TestCase):
     def make_fixture(self):
         temp = tempfile.TemporaryDirectory()
         root = Path(temp.name)
-        for relative in CONTRACT.DOCUMENTS + (CONTRACT.WORKFLOW, CONTRACT.KUBERNETES_WORKFLOW, CONTRACT.TRACKER):
+        for relative in CONTRACT.DOCUMENTS + (CONTRACT.WORKFLOW, CONTRACT.NATIVE_WORKFLOW, CONTRACT.KUBERNETES_WORKFLOW, CONTRACT.TRACKER):
             source = ROOT / relative
             target = root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -125,7 +125,7 @@ class TestReleaseContract(unittest.TestCase):
 
     def test_native_workflow_requires_uninstall_cleanup(self):
         root = self.make_fixture()
-        path = root / CONTRACT.WORKFLOW
+        path = root / CONTRACT.NATIVE_WORKFLOW
         path.write_text(
             path.read_text().replace(
                 "sudo apt-get remove -y werftkern >/dev/null",
@@ -139,7 +139,7 @@ class TestReleaseContract(unittest.TestCase):
 
     def test_native_workflow_requires_hash_reset(self):
         root = self.make_fixture()
-        path = root / CONTRACT.WORKFLOW
+        path = root / CONTRACT.NATIVE_WORKFLOW
         path.write_text(path.read_text().replace("hash -r", "hash -s"))
         self.assertIn(
             "NATIVE_WORKFLOW_CONTRACT_MISSING:hash -r",
