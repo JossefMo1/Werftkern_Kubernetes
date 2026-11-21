@@ -80,6 +80,27 @@ class NativePackageLayoutTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.strip(), "package-wrapper-ok")
 
+    def test_wrapper_fails_closed_when_entrypoint_is_missing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            wrapper = root / "usr" / "bin" / "werft-ops"
+            wrapper.parent.mkdir(parents=True)
+            shutil.copyfile(pathlib.Path(__file__).parents[2] / "scripts" / "werft-ops", wrapper)
+            wrapper.chmod(wrapper.stat().st_mode | stat.S_IXUSR)
+            package = root / "usr" / "lib" / "werftkern" / "ops" / "werftops"
+            package.mkdir(parents=True)
+            (package / "__init__.py").write_text("")
+
+            result = subprocess.run(
+                [sys.executable, str(wrapper)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+        self.assertEqual(result.returncode, 78)
+        self.assertIn("werft-ops: Python modules not found", result.stderr)
+
     def test_accepts_required_dependencies(self):
         report = MODULE.validate_dependencies(
             "ca-certificates, openssh-client (>= 1:9), python3, docker.io | docker-ce"
