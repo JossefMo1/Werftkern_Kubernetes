@@ -62,6 +62,18 @@ class ProductionTrackerTests(unittest.TestCase):
         stream["blockers"] = []
         self.assertIn("TRACKER_BLOCKER_MISSING:E2E-K01", TRACKER.validate(changed))
 
+    def test_next_action_requires_nonempty_evidence_contract(self):
+        changed = copy.deepcopy(self.tracker)
+        changed["nextAction"]["blockers"] = []
+        changed["nextAction"]["successCriteria"] = []
+        self.assertIn("TRACKER_NEXT_ACTION_EVIDENCE_INVALID", TRACKER.validate(changed))
+
+    def test_workstream_requires_nonempty_gate_families(self):
+        changed = copy.deepcopy(self.tracker)
+        stream = next(item for item in changed["workstreams"] if item["id"] == "E2E-K01")
+        stream["requiredGateFamilies"] = []
+        self.assertIn("TRACKER_GATE_FAMILIES_INVALID:E2E-K01", TRACKER.validate(changed))
+
 
 if __name__ == "__main__":
     unittest.main()
