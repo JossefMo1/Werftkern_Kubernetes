@@ -26,6 +26,20 @@ func TestSignedReleaseExactBytesAndSchema(t *testing.T) {
 	if _, e := Verify(raw, sig, key, path); e != nil {
 		t.Fatal(e)
 	}
+	finalLink := filepath.Join(filepath.Dir(path), "pkg-link")
+	if err := os.Symlink(path, finalLink); err != nil {
+		t.Fatal(err)
+	}
+	if _, e := Verify(raw, sig, key, finalLink); e == nil {
+		t.Fatal("followed final package symlink")
+	}
+	parentLink := filepath.Join(filepath.Dir(path), "parent-link")
+	if err := os.Symlink(filepath.Dir(path), parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if _, e := Verify(raw, sig, key, filepath.Join(parentLink, "pkg")); e == nil {
+		t.Fatal("followed package parent symlink")
+	}
 	raw[0] = ' '
 	if _, e := Verify(raw, sig, key, path); e == nil {
 		t.Fatal("tampered manifest")

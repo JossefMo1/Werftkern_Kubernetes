@@ -62,6 +62,11 @@ func openTrusted(path string) (*os.File, error) {
 	return f, nil
 }
 
+// OpenRead opens a trusted regular file without following a final symlink. Parent components are validated as non-symlinks.
+func OpenRead(path string) (*os.File, error) {
+	return openTrusted(path)
+}
+
 func Write(path string, b []byte, mode os.FileMode) error {
 	d := filepath.Dir(path)
 	// Check existing components before creating directories so a symlinked
