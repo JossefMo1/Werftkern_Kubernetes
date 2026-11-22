@@ -139,6 +139,9 @@ func localStore() (config.Control, *store.Etcd, []byte, error) {
 	if e != nil {
 		return cc, nil, nil, e
 	}
+	if e = config.ValidateControl(cc); e != nil {
+		return cc, nil, nil, e
+	}
 	if cc.VaultKey == "" {
 		cc.VaultKey = cc.DataDir + "/vault.key"
 	}

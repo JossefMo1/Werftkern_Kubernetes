@@ -312,7 +312,7 @@ func controlCommand(ctx context.Context, args []string) error {
 	if e != nil {
 		return e
 	}
-	if e = config.ValidateClient(c.Client); e != nil {
+	if e = config.ValidateControl(c); e != nil {
 		return e
 	}
 	unlock, e := lock(c.DataDir + "/controller.lock")
