@@ -73,8 +73,12 @@ def validate(tracker: dict) -> list[str]:
     elif (
         next_action.get("priority") != "P0"
         or next_action.get("status") != "blocked-external"
-        or not all(isinstance(value, str) and value for value in next_action.get("blockers", []))
-        or not all(isinstance(value, str) and value for value in next_action.get("successCriteria", []))
+        or not isinstance(next_action.get("blockers"), list)
+        or not next_action["blockers"]
+        or not all(isinstance(value, str) and value for value in next_action["blockers"])
+        or not isinstance(next_action.get("successCriteria"), list)
+        or not next_action["successCriteria"]
+        or not all(isinstance(value, str) and value for value in next_action["successCriteria"])
         or not isinstance(next_action.get("safeRollback"), str)
     ):
         problems.append("TRACKER_NEXT_ACTION_EVIDENCE_INVALID")
@@ -90,7 +94,11 @@ def validate(tracker: dict) -> list[str]:
             continue
         if item.get("status") not in ALLOWED:
             problems.append("TRACKER_WORKSTREAM_STATUS_INVALID:" + str(item.get("id")))
-        if not all(isinstance(value, str) and value for value in item.get("requiredGateFamilies", [])):
+        if (
+            not isinstance(item.get("requiredGateFamilies"), list)
+            or not item["requiredGateFamilies"]
+            or not all(isinstance(value, str) and value for value in item["requiredGateFamilies"])
+        ):
             problems.append("TRACKER_GATE_FAMILIES_INVALID:" + str(item.get("id")))
         if item.get("status") == "passed":
             problems.append("TRACKER_CANNOT_CLOSE_E2E_WITHOUT_RELEASE_EVIDENCE:" + str(item.get("id")))
