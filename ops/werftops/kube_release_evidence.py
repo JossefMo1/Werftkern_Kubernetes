@@ -87,7 +87,9 @@ def validate_supply_documents(root, documents, candidate):
     if scan.get('SchemaVersion')!=2 or not isinstance(scan.get('Results'),list) or not scan['Results']:
         raise Blocked('TRIVY_RESULT_REQUIRED')
     for result in scan['Results']:
-        if not isinstance(result,dict) or not isinstance(result.get('Target'),str):raise Blocked('VULNERABILITY_RESULT_INVALID')
+        if (not isinstance(result,dict) or not isinstance(result.get('Target'),str) or
+            not result['Target'].strip()):
+            raise Blocked('VULNERABILITY_RESULT_INVALID')
         findings=result.get('Vulnerabilities',[]) or []
         if not isinstance(findings,list):raise Blocked('VULNERABILITY_RESULT_INVALID')
         for finding in findings:
