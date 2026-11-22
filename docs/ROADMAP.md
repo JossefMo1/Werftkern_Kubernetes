@@ -12,7 +12,7 @@ The Native Single-Host scope is defined by [PR #203](https://github.com/JossefMo
 
 The release-tracker handoff contract is enforced by [PR #204](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/204), merged at `83c06425600749418994d34a1f197d4ad64f6d50`; PR #205 synchronizes this roadmap with that code-bearing handoff. No qualification gate is closed by these bookkeeping changes.
 
-The next exact-candidate build is pinned to package-bearing Main code handoff `a0712700dab3cccce2eca8c43788b4cfd4452953`; documentation-only Main commits may have newer SHAs. No qualification gate is closed until the runner binds and verifies its own `GITHUB_SHA` and artifact digest.
+The next exact-candidate build is pinned to package-bearing Main code handoff `ec868d03299307b178e68fbbffabd8c211bda814`; documentation-only Main commits may have newer SHAs. No qualification gate is closed until the runner binds and verifies its own `GITHUB_SHA` and artifact digest. The current connector cannot dispatch `ci.yml`, so the live run remains blocked rather than implied.
 
 The current immutable lab candidate is [`v0.2.0-dev.4-test.17`](https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.17), sourced from `28efa7518e171a618d4dcf9ff3aba58cddaf3296`. This candidate includes the auto-discovery known-hosts replay guard; it does not remove any K20 requirement or change the no-go production decision.
 
@@ -21,7 +21,9 @@ Main contains [PR #122](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/1
 
 ## Latest code handoff (2026-11-22)
 
-[PR #215](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/215) merged as [a071270](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/a0712700dab3cccce2eca8c43788b4cfd4452953). Native `GET /v1/health` now authorizes node and gateway certificates against the persisted inventory and denies revoked or unenrolled identities; etcd-backed regressions cover both paths. Exact PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45057875882), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45057875904) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45057875923). Real-VM and real-PITR remained skipped. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; no gate is closed and the next candidate must be built from `a0712700dab3cccce2eca8c43788b4cfd4452953`.
+[PR #217](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/217) merged as [ec868d0](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/ec868d03299307b178e68fbbffabd8c211bda814). Native control startup, resume and local backup now validate both the control and etcd HTTPS endpoints, require matching cluster identities, and reject non-private or malformed listener addresses. Regression tests cover HTTP etcd, cluster-ID mismatch, public listeners and missing listener ports.
+
+Exact PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829562), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829580) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829544). Real-VM and real-PITR jobs remained skipped. This is a native security-boundary handoff only: the immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and no qualification gate was closed. The next candidate must be built from `ec868d03299307b178e68fbbffabd8c211bda814` before live evidence can cover this fix.
 
 ## K20-001 — Review-Baseline und Ausführungspfade verifizieren
 
