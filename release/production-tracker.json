@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T20:03:09.504Z",
+  "updatedAt": "2026-11-22T20:08:20.919Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -411,10 +411,10 @@
       "commit": "ec868d03299307b178e68fbbffabd8c211bda814",
       "codeCommit": "ec868d03299307b178e68fbbffabd8c211bda814",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/217",
-      "documentationPullRequest": "PENDING",
-      "summary": "Main now contains the native control endpoint hardening from PR #217. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this change.",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/218",
+      "summary": "Main contains the native control endpoint hardening from PR #217 plus the synchronized status and roadmap handoff from PR #218. The code-bearing handoff remains ec868d03299307b178e68fbbffabd8c211bda814; the immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include these changes.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/217"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/218"
     }
   },
   "previousCandidates": [
