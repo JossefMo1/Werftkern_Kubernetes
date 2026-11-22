@@ -73,7 +73,7 @@ func hb(h *harness) model.Heartbeat {
 func TestAPIRejectsCertificateOutsideInjectedClock(t *testing.T) {
 	h := makeHarness(t)
 	h.api.Now = func() time.Time { return time.Time{} }
-	if e := h.admin.State(context.Background()); e == nil || !strings.Contains(e.Error(), "ADMIN_IDENTITY_REQUIRED") {
+	if _, e := h.admin.State(context.Background()); e == nil || !strings.Contains(e.Error(), "ADMIN_IDENTITY_REQUIRED") {
 		t.Fatalf("expected certificate validity rejection, got %v", e)
 	}
 }
