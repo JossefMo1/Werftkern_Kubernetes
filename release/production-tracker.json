@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T15:00:00Z",
+  "updatedAt": "2026-11-22T15:12:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "f75845424286c1c8bed6c9ef17d2b172066e6309",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203",
-    "summary": "The official first production target is Native Single-Host. HA, Kubernetes production and site recovery remain deferred; no qualification gate is claimed closed."
+    "commit": "83c06425600749418994d34a1f197d4ad64f6d50",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/204",
+    "summary": "The tracker now enforces one unambiguous Main handoff commit for the Native Single-Host scope; no qualification gate is claimed closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -50,7 +50,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build a new immutable candidate from the merged scope branch, run ci.yml with run_real_vm_e2e=true and complete the remaining single-host gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build a new immutable candidate from Main merge commit 83c06425600749418994d34a1f197d4ad64f6d50, run ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -278,7 +278,7 @@
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Publish a new immutable candidate from current package-bearing Main merge commit a768d0e304bc7c28ca8f3da7732a179e504001e6, then run only on explicitly authorized disposable infrastructure."
+      "nextStep": "Publish a new immutable candidate from package-bearing Main merge commit 83c06425600749418994d34a1f197d4ad64f6d50, then run only on explicitly authorized disposable infrastructure."
     },
     {
       "id": "E2E-K01",
@@ -327,7 +327,7 @@
         "The exact candidate must be rebuilt from the current scoped main line.",
         "The ephemeral Ubuntu real-vm job has not yet been run for that candidate."
       ],
-      "nextStep": "Publish a new immutable candidate from current Main merge commit a768d0e304bc7c28ca8f3da7732a179e504001e6, then run the existing root-only script on a fresh disposable Ubuntu VM; CI checks do not replace live installation evidence."
+      "nextStep": "Publish a new immutable candidate from Main merge commit 83c06425600749418994d34a1f197d4ad64f6d50, then run the existing root-only script on the ephemeral Ubuntu 24.04 runner; CI checks do not replace live installation evidence."
     },
     {
       "id": "E2E-H01",
@@ -407,13 +407,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "f75845424286c1c8bed6c9ef17d2b172066e6309",
-      "codeCommit": "f75845424286c1c8bed6c9ef17d2b172066e6309",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203",
-      "summary": "Main contains the Native Single-Host scope contract from PR #203. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include the current scope change.",
+      "commit": "83c06425600749418994d34a1f197d4ad64f6d50",
+      "codeCommit": "83c06425600749418994d34a1f197d4ad64f6d50",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/204",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/205",
+      "summary": "Main contains the fail-closed tracker handoff contract and regression tests from PR #204. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/204"
     }
   },
   "previousCandidates": [
