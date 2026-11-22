@@ -134,10 +134,6 @@ func authorizeHealthIdentity(identity string, s *model.State) error {
 func (a *API) Handler() http.Handler {
 	m := http.NewServeMux()
 	m.HandleFunc("GET /v1/health", func(w http.ResponseWriter, r *http.Request) {
-		if a.identity(r) == "" {
-			failure(w, 403, "IDENTITY_REQUIRED")
-			return
-		}
 		identity := a.identity(r)
 		if identity == "" {
 			failure(w, 403, "IDENTITY_REQUIRED")
