@@ -154,6 +154,17 @@ class EvidenceTests(unittest.TestCase):
     def test_high_vulnerability_blocks_even_if_signed(self):
         self.gate('supply-chain');self.statements['supply-chain']['documents']['vulnerabilities']=self.document('trivy.json',{'SchemaVersion':2,'Results':[{'Target':'x','Vulnerabilities':[{'Severity':'HIGH'}]}]});self.save()
         with self.assertRaisesRegex(Blocked,'VULNERABILITY'):self.check()
+
+    def test_vulnerability_target_must_be_nonempty(self):
+        self.gate('supply-chain')
+        self.statements['supply-chain']['documents']['vulnerabilities']=self.document(
+            'trivy-empty-target.json',
+            {'SchemaVersion':2,'Results':[{'Target':'   ','Vulnerabilities':[]}]})
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'VULNERABILITY_RESULT_INVALID')
+
     def test_provenance_wrong_builder(self):
         self.gate('supply-chain');self.save();self.c['builderId']='changed-builder';write_json(self.cp,self.c)
         with self.assertRaisesRegex(Blocked,'BUILDER'):self.check()
