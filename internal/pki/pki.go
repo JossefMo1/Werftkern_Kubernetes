@@ -114,8 +114,8 @@ func Client(ca []byte, pair Pair) (*http.Client, error) {
 	return &http.Client{Transport: t, Timeout: 20 * time.Second, CheckRedirect: func(r *http.Request, via []*http.Request) error { return http.ErrUseLastResponse }}, nil
 }
 // readCredential reads PEM material through a no-follow, regular-file handle.
- // Private keys must be owner-only (0600) and owned by the effective user unless
- // the caller is root. Parent directories are checked for symlink traversal.
+// Private keys must be owner-only (0600) and owned by the effective user unless
+// the caller is root. Parent directories are checked for symlink traversal.
 func readCredential(path string, private bool) ([]byte, error) {
 	if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 		return nil, errors.New("CREDENTIAL_ABSOLUTE_PATH_REQUIRED")
