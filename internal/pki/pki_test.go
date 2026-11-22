@@ -5,6 +5,8 @@ import (
 	"crypto/x509"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
@@ -76,5 +78,51 @@ func TestInvalidPEMRejected(t *testing.T) {
 	}
 	if _, e := Client([]byte("bad"), Pair{}); e == nil {
 		t.Fatal("invalid client")
+	}
+}
+
+func TestClientFilesRejectsUnsafePrivateKeyFiles(t *testing.T) {
+	ca, err := CA("test", time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	leaf, err := Issue(ca, "admin", "cluster", nil, false, time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	caPath := filepath.Join(dir, "ca.crt")
+	certPath := filepath.Join(dir, "client.crt")
+	keyPath := filepath.Join(dir, "client.key")
+	for path, raw := range map[string][]byte{caPath: ca.Cert, certPath: leaf.Cert, keyPath: leaf.Key} {
+		if err := os.WriteFile(path, raw, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	client, err := ClientFiles(caPath, certPath, keyPath)
+	if err != nil {
+		t.Fatalf("valid credential files rejected: %v", err)
+	}
+	client.CloseIdleConnections()
+
+	if err := os.Chmod(keyPath, 0640); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := ClientFiles(caPath, certPath, keyPath); err == nil {
+		t.Fatal("group-readable private key accepted")
+	}
+
+	if err := os.Chmod(keyPath, 0600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(dir, "actual.key")
+	if err := os.Rename(keyPath, link); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(link, keyPath); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := ClientFiles(caPath, certPath, keyPath); err == nil {
+		t.Fatal("symlinked private key accepted")
 	}
 }

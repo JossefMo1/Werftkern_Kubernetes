@@ -9,10 +9,13 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"errors"
+	"io"
 	"math/big"
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
+	"syscall"
 	"time"
 )
 
@@ -110,19 +113,62 @@ func Client(ca []byte, pair Pair) (*http.Client, error) {
 	t := &http.Transport{TLSClientConfig: &tls.Config{MinVersion: tls.VersionTLS13, RootCAs: roots, Certificates: []tls.Certificate{cert}}, ResponseHeaderTimeout: 10 * time.Second, MaxIdleConns: 16, MaxIdleConnsPerHost: 8, IdleConnTimeout: 30 * time.Second}
 	return &http.Client{Transport: t, Timeout: 20 * time.Second, CheckRedirect: func(r *http.Request, via []*http.Request) error { return http.ErrUseLastResponse }}, nil
 }
+// readCredential reads PEM material through a no-follow, regular-file handle.
+// Private keys must be owner-only (0600) and owned by the effective user unless
+// the caller is root. Parent directories are checked for symlink traversal.
+func readCredential(path string, private bool) ([]byte, error) {
+	if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+		return nil, errors.New("CREDENTIAL_ABSOLUTE_PATH_REQUIRED")
+	}
+	for dir := filepath.Dir(path); ; dir = filepath.Dir(dir) {
+		st, e := os.Lstat(dir)
+		if e != nil || !st.IsDir() || st.Mode()&os.ModeSymlink != 0 {
+			return nil, errors.New("CREDENTIAL_PARENT_DIRECTORY_UNSAFE")
+		}
+		if dir == "/" {
+			break
+		}
+	}
+	f, e := os.OpenFile(path, os.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
+	if e != nil {
+		return nil, errors.New("CREDENTIAL_FILE_UNAVAILABLE")
+	}
+	defer f.Close()
+	st, e := f.Stat()
+	if e != nil || !st.Mode().IsRegular() || st.Size() > 64<<10 {
+		return nil, errors.New("REGULAR_CREDENTIAL_FILE_REQUIRED")
+	}
+	if private {
+		if st.Mode().Perm() != 0600 {
+			return nil, errors.New("PRIVATE_KEY_MODE_0600_REQUIRED")
+		}
+		owner, ok := st.Sys().(*syscall.Stat_t)
+		if !ok || (os.Geteuid() != 0 && owner.Uid != uint32(os.Geteuid())) {
+			return nil, errors.New("PRIVATE_KEY_OWNER_MISMATCH")
+		}
+	} else if st.Mode().Perm()&0022 != 0 {
+		return nil, errors.New("CREDENTIAL_FILE_MUST_NOT_BE_WRITABLE")
+	}
+	b, e := io.ReadAll(io.LimitReader(f, (64<<10)+1))
+	if e != nil || len(b) > 64<<10 {
+		return nil, errors.New("CREDENTIAL_FILE_READ_FAILED")
+	}
+	return b, nil
+}
+
 func ClientFiles(ca, cert, key string) (*http.Client, error) {
-	c, e := os.ReadFile(ca)
+	c, e := readCredential(ca, false)
 	if e != nil {
 		return nil, e
 	}
 	if cert == key {
 		return ClientBundle(c, cert)
 	}
-	b, e := os.ReadFile(cert)
+	b, e := readCredential(cert, false)
 	if e != nil {
 		return nil, e
 	}
-	k, e := os.ReadFile(key)
+	k, e := readCredential(key, true)
 	if e != nil {
 		return nil, e
 	}
