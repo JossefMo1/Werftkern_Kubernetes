@@ -322,3 +322,11 @@ This is a code-quality/security-boundary handoff only. The immutable `v0.2.0-dev
 Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44991036663), [Native runtime/package, including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44991036674) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44991036662). Real-VM and real-PITR jobs were skipped because no authorized disposable lab is configured.
 
 This is a code-quality/security-boundary handoff only. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false`, the decision remains `no-go`, and no live qualification gate was closed. A new immutable candidate is required before live evidence can cover this merge.
+
+## Code handoff — PR #187 (2026-11-22)
+
+[PR #187](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/187) merged at [1954916](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/19549167b5a18c1e741d1603aaa990a67e5bbb11). The Kubernetes SLSA-provenance parser now validates every `resolvedDependencies` material: URI must be a non-empty string, the digest object must be non-empty, and every digest value must be a non-empty string. Malformed materials fail closed with `PROVENANCE_DEPENDENCIES_INVALID`; a regression test covers empty URI/digest data.
+
+Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44995447185), [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44995447134) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44995447123). Real-VM and real-PITR were skipped because no authorized disposable lab is configured.
+
+This is a fail-closed evidence-shape hardening only. It does not establish signed provenance, vulnerability clearance or production qualification. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains `no-go`. Authorized disposable Ubuntu/k0s installation, upgrade/rollback, backup/restore, HA/partition, load/soak, signed provenance and independent review remain open.
