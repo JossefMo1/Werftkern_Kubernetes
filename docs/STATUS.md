@@ -5,8 +5,8 @@ Der offizielle erste Production-Scope ist jetzt **Native Single-Host Production*
 Der aktuelle Status bleibt **No-Go**, bis der exakte Native-Kandidat die Single-Host-Gates, Signierung, Runbooks und Go/No-Go-Prüfung bestanden hat. Die alten Full-Masterplan-Einträge darunter sind historische Nachweise; sie gelten nicht mehr als Pflichtumfang für den ersten Release.
 
 The scope decision is recorded in [PR #203](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203), merged at
-`f75845424286c1c8bed6c9ef17d2b172066e6309`. The current immutable candidate remains
-older and must not be treated as evidence for this changed scope.
+`f75845424286c1c8bed6c9ef17d2b172066e6309`. The current tagged candidate remains
+older and must not be treated as evidence for this changed scope; GitHub release metadata reports immutable=false and its assets are unsigned.
 
 The tracker contract is hardened by [PR #204](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/204), merged at
 `83c06425600749418994d34a1f197d4ad64f6d50`; the follow-up documentation synchronization is
@@ -20,7 +20,7 @@ The next live candidate must be built from package-bearing Main code handoff `ec
 
 [PR #217](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/217) merged as [ec868d0](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/ec868d03299307b178e68fbbffabd8c211bda814). Native control startup, resume and local backup now validate both the control and etcd HTTPS endpoints, require matching cluster identities, and reject non-private or malformed listener addresses. Regression tests cover HTTP etcd, cluster-ID mismatch, public listeners and missing listener ports.
 
-Exact PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829562), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829580) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829544). Real-VM and real-PITR jobs remained skipped. This is a native security-boundary handoff only: the immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and the release decision remains no-go. Build a new candidate from `ec868d03299307b178e68fbbffabd8c211bda814` before any live evidence can cover this fix.
+Exact PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829562), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829580) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829544). Real-VM and real-PITR jobs remained skipped. This is a native security-boundary handoff only: the tagged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; GitHub release metadata reports `immutable=false` and its assets are unsigned. `productionReady=false` and the release decision remains no-go. Build a new candidate from `ec868d03299307b178e68fbbffabd8c211bda814` before any live evidence can cover this fix.
 
 # Release status — 0.2.0-dev.4
 
