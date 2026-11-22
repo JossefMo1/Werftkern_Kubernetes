@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T18:59:56.071Z",
+  "updatedAt": "2026-11-22T20:03:09.504Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "a0712700dab3cccce2eca8c43788b4cfd4452953",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/215",
-    "summary": "Native API health metadata now requires an enrolled, non-revoked node or gateway identity; revoked node and gateway regressions protect the mTLS authorization boundary. No qualification gate is claimed closed."
+    "commit": "ec868d03299307b178e68fbbffabd8c211bda814",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/217",
+    "summary": "Native control startup, resume and local backup now validate both HTTPS client endpoints, matching etcd/control cluster identity and a private listener; regression tests cover HTTP etcd, identity mismatch and unsafe listeners. PR checks passed; no qualification gate is claimed closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,9 @@
     "status": "prepared",
     "summary": "Run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The immutable test.17 candidate is bound to an older commit and does not include the health authorization fix a0712700dab3cccce2eca8c43788b4cfd4452953.",
-      "Single-host backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not yet complete for one unchanged candidate."
+      "The immutable v0.2.0-dev.4-test.17 candidate is bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged health-authorization and control-endpoint hardening changes.",
+      "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not yet complete for one unchanged candidate.",
+      "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; do not treat that missing action as a passed gate."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -50,7 +51,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff a0712700dab3cccce2eca8c43788b4cfd4452953 (documentation-only Main commits may have newer SHAs; when dispatching from Main, record the runner-reported GITHUB_SHA), run ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff ec868d03299307b178e68fbbffabd8c211bda814, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -407,13 +408,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "a0712700dab3cccce2eca8c43788b4cfd4452953",
-      "codeCommit": "a0712700dab3cccce2eca8c43788b4cfd4452953",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/215",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/216",
-      "summary": "Main contains the health authorization fix and revoked-identity regressions from PR #215. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
+      "commit": "ec868d03299307b178e68fbbffabd8c211bda814",
+      "codeCommit": "ec868d03299307b178e68fbbffabd8c211bda814",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/217",
+      "documentationPullRequest": "PENDING",
+      "summary": "Main now contains the native control endpoint hardening from PR #217. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this change.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/215"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/217"
     }
   },
   "previousCandidates": [
