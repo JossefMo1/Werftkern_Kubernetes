@@ -120,6 +120,15 @@ class EvidenceTests(unittest.TestCase):
             self.check()
         self.assertEqual(str(error.exception),'SBOM_COMPONENT_INVALID')
 
+    def test_sbom_components_require_nonempty_names(self):
+        self.gate('supply-chain')
+        self.statements['supply-chain']['documents']['sbom']=self.document(
+            'sbom-missing-component-name.json',
+            {'bomFormat':'CycloneDX','components':[{}]})
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'SBOM_COMPONENT_INVALID')
 
     def test_trust_keys_must_be_a_nonempty_list(self):
         self.t['keys']=None
