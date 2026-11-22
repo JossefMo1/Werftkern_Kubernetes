@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T09:56:53.930Z",
+  "updatedAt": "2026-11-22T10:56:51.967Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "e66082608f67f4f51d996f86afc1ce94652b455d",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/193",
-    "summary": "Merged PR #193: Kubernetes evidence verification now rejects candidate builderId values with leading or trailing whitespace using stable BUILD_IDENTITY_REQUIRED handling. Regression coverage and exact PR checks passed; productionReady remains false and no live qualification gate is closed."
+    "commit": "c58735426626ee71dc9755fc3a38a6c7edb6c740",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/195",
+    "summary": "Merged PR #195: Kubernetes evidence verification now rejects trust-policy organization identifiers with leading or trailing whitespace using stable TRUST_KEY_INVALID handling. Regression coverage and exact PR checks passed; productionReady remains false and no live qualification gate is closed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Publish a new immutable candidate from current package-bearing Main merge commit e66082608f67f4f51d996f86afc1ce94652b455d; v0.2.0-dev.4-test.17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #193. Execute only on an expressly authorized disposable Ubuntu/k0s lab with --ssh-user root, explicit hosts file and approved assets; live VM/PITR and all other production gates remain required."
+    "nextStep": "Publish a new immutable candidate from current package-bearing Main merge commit c58735426626ee71dc9755fc3a38a6c7edb6c740; v0.2.0-dev.4-test.17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #195. Execute only on an expressly authorized disposable Ubuntu/k0s lab with --ssh-user root, explicit hosts file and approved assets; live VM/PITR and all other production gates remain required."
   },
   "workstreams": [
     {
@@ -252,13 +252,18 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e66082608f67f4f51d996f86afc1ce94652b455d",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45009520825",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45009520832",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45009520854"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45009520854",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/195",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/c58735426626ee71dc9755fc3a38a6c7edb6c740",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45014532273",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45014532243",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45014532236"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Publish a new immutable candidate from current package-bearing Main merge commit e66082608f67f4f51d996f86afc1ce94652b455d, then run only on explicitly authorized disposable infrastructure."
+      "nextStep": "Publish a new immutable candidate from current package-bearing Main merge commit c58735426626ee71dc9755fc3a38a6c7edb6c740, then run only on explicitly authorized disposable infrastructure."
     },
     {
       "id": "E2E-K01",
@@ -306,7 +311,7 @@
       "blockers": [
         "No expressly authorized disposable Ubuntu VM and candidate package are configured."
       ],
-      "nextStep": "Publish a new immutable candidate from current Main merge commit e66082608f67f4f51d996f86afc1ce94652b455d, then run the existing root-only script on a fresh disposable Ubuntu VM with the exact package, --ssh-user root and explicit --hosts-file; CI checks do not replace live installation evidence."
+      "nextStep": "Publish a new immutable candidate from current Main merge commit c58735426626ee71dc9755fc3a38a6c7edb6c740, then run the existing root-only script on a fresh disposable Ubuntu VM with the exact package, --ssh-user root and explicit --hosts-file; CI checks do not replace live installation evidence."
     },
     {
       "id": "E2E-H01",
@@ -386,13 +391,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "e66082608f67f4f51d996f86afc1ce94652b455d",
-      "codeCommit": "e66082608f67f4f51d996f86afc1ce94652b455d",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/193",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/194",
-      "summary": "Main contains the canonical builderId identity guard and regression test from PR #193. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
+      "commit": "c58735426626ee71dc9755fc3a38a6c7edb6c740",
+      "codeCommit": "c58735426626ee71dc9755fc3a38a6c7edb6c740",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/195",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/196",
+      "summary": "Main contains the canonical trust-policy organization guard and regression test from PR #195. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/193"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/195"
     }
   },
   "previousCandidates": [
