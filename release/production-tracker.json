@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T20:38:09.877Z",
+  "updatedAt": "2026-11-22T20:47:34.425Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "8c91dfb86c1b519b1240161626c9edf72541b58b",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/222",
-    "summary": "Native mTLS credential loading now rejects relative paths, parent/final symlinks, non-regular or writable credential files, and private keys that are not mode 0600; regression tests cover valid files, group-readable keys and symlinks. PR #222 passed Native, Kubernetes and source/privacy checks; real-etcd passed, real-vm and real-PITR were skipped. No qualification gate is claimed closed."
+    "commit": "8e964f8f9f8b1cd15537d913911f030b646704fd",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/224",
+    "summary": "Native mTLS server credential loading now shares the hardened no-follow file boundary: relative paths, parent/final symlinks, non-regular or writable credential files and private keys not mode 0600 are rejected; regression tests cover valid, group-readable and symlinked server keys. PR #224 passed Native, Kubernetes and source/privacy checks; real-etcd passed, real-vm and real-PITR were skipped. No qualification gate is claimed closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate is bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged health-authorization, control-endpoint and mTLS credential-file hardening changes.",
+      "The tagged v0.2.0-dev.4-test.17 candidate is bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged health-authorization, control-endpoint and client/server mTLS credential-file hardening changes.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not yet complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; do not treat that missing action as a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -52,7 +52,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 8c91dfb86c1b519b1240161626c9edf72541b58b, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 8e964f8f9f8b1cd15537d913911f030b646704fd, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -409,13 +409,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "8c91dfb86c1b519b1240161626c9edf72541b58b",
-      "codeCommit": "8c91dfb86c1b519b1240161626c9edf72541b58b",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/222",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/223",
-      "summary": "Main contains the native mTLS credential-file hardening from PR #222 plus the synchronized status and roadmap handoff from PR #223. The code-bearing handoff is 8c91dfb86c1b519b1240161626c9edf72541b58b; the tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, while GitHub release metadata reports immutable=false and unsigned assets.",
+      "commit": "8e964f8f9f8b1cd15537d913911f030b646704fd",
+      "codeCommit": "8e964f8f9f8b1cd15537d913911f030b646704fd",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/224",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/225",
+      "summary": "Main contains the native client and separate-file control-server mTLS credential hardening from PR #222 and PR #224 plus the synchronized status and roadmap handoff from PR #225. The code-bearing handoff is 8e964f8f9f8b1cd15537d913911f030b646704fd; the tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, while GitHub release metadata reports immutable=false and unsigned assets.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/223"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/225"
     }
   },
   "previousCandidates": [
