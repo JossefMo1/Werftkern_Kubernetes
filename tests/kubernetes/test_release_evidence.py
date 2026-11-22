@@ -184,6 +184,16 @@ class EvidenceTests(unittest.TestCase):
             self.check()
         self.assertEqual(str(error.exception),'VULNERABILITY_RESULT_INVALID')
 
+    def test_vulnerability_findings_require_ids(self):
+        self.gate('supply-chain')
+        self.statements['supply-chain']['documents']['vulnerabilities']=self.document(
+            'trivy-missing-vulnerability-id.json',
+            {'SchemaVersion':2,'Results':[{'Target':'synthetic-test','Vulnerabilities':[{'Severity':'LOW'}]}]})
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'VULNERABILITY_FINDING_INVALID')
+
     def test_provenance_wrong_builder(self):
         self.gate('supply-chain');self.save();self.c['builderId']='changed-builder';write_json(self.cp,self.c)
         with self.assertRaisesRegex(Blocked,'BUILDER'):self.check()
