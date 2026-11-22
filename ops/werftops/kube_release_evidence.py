@@ -147,7 +147,8 @@ def verify(candidate_path,trust_path,trust_sha256,now=None):
     if (not isinstance(c['sourceRepository'],str) or
         not re.fullmatch(r'https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:\.git)?',c['sourceRepository'])):
         raise Blocked('SOURCE_REPOSITORY_INVALID')
-    if (not isinstance(c['builderId'],str) or not c['builderId'].strip()):
+    if (not isinstance(c['builderId'],str) or
+        not c['builderId'].strip() or c['builderId'] != c['builderId'].strip()):
         raise Blocked('BUILD_IDENTITY_REQUIRED')
     fields(t,('format','keys','maxAgeDays'))
     if t['format']!='werftkern-evidence-trust/v1' or type(t['maxAgeDays']) is not int or not 1<=t['maxAgeDays']<=30:
