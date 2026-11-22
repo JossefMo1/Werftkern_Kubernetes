@@ -238,6 +238,9 @@ func (a *Agent) ReconcileOnce(ctx context.Context) error {
 		op, cancel := context.WithTimeout(ctx, 3*time.Minute)
 		r, e := a.Engine.Ensure(op, x, a.Config.Address, func() bool { return a.desired(x) })
 		cancel()
+		// Engines may return a zero report on failure; preserve the assignment identity
+		// so the next heartbeat remains valid and does not lose node liveness.
+		r.ID = x.ID
 		a.record(r, e)
 	}
 	return nil
