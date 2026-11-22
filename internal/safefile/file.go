@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"syscall"
 )
 
 func validateParentChain(path string) error {
@@ -34,6 +35,31 @@ func validateParentChain(path string) error {
 			return nil
 		}
 	}
+}
+
+func openTrusted(path string) (*os.File, error) {
+	if err := validateParentChain(filepath.Dir(path)); err != nil {
+		return nil, err
+	}
+	fd, err := syscall.Open(path, syscall.O_RDONLY|syscall.O_CLOEXEC|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
+	if err != nil {
+		return nil, err
+	}
+	f := os.NewFile(uintptr(fd), path)
+	if f == nil {
+		syscall.Close(fd)
+		return nil, errors.New("FILE_OPEN_FAILED")
+	}
+	st, err := f.Stat()
+	if err != nil {
+		f.Close()
+		return nil, err
+	}
+	if !st.Mode().IsRegular() {
+		f.Close()
+		return nil, errors.New("FILE_NOT_REGULAR")
+	}
+	return f, nil
 }
 
 func Write(path string, b []byte, mode os.FileMode) error {
@@ -92,7 +118,7 @@ func JSON(path string, v any, mode os.FileMode) error {
 	return Write(path, append(b, '\n'), mode)
 }
 func ReadJSON(path string, v any) error {
-	f, e := os.Open(path)
+	f, e := openTrusted(path)
 	if e != nil {
 		return e
 	}
