@@ -5,6 +5,7 @@ import (
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/apiclient"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/discovery"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"strings"
 	"testing"
 	"time"
 )
@@ -61,5 +62,8 @@ func TestGatewayCertificateOnlyReadsExplicitServicesAndRevocationBlocks(t *testi
 	}
 	if e := c.Call(ctx, "GET", "/v1/discovery", nil, &snap, ""); e == nil {
 		t.Fatal("revoked gateway still authorized")
+	}
+	if e := c.Call(ctx, "GET", "/v1/health", nil, nil, ""); e == nil || !strings.Contains(e.Error(), "GATEWAY_NOT_AUTHORIZED") {
+		t.Fatalf("revoked gateway still read health metadata: %v", e)
 	}
 }

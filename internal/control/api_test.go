@@ -122,10 +122,13 @@ func TestAPINodeCannotAcknowledgeForeignAllocation(t *testing.T) {
 		t.Fatal(e)
 	}
 }
-func TestAPIRevokedNodeCannotHeartbeat(t *testing.T) {
+func TestAPIRevokedNodeCannotReadHealthOrHeartbeat(t *testing.T) {
 	h := makeHarness(t)
 	if e := h.admin.Call(context.Background(), "POST", "/v1/nodes/"+h.nodeID, map[string]bool{"revoked": true}, nil, ""); e != nil {
 		t.Fatal(e)
+	}
+	if e := h.node.Call(context.Background(), "GET", "/v1/health", nil, nil, ""); e == nil || !strings.Contains(e.Error(), "NODE_NOT_AUTHORIZED") {
+		t.Fatalf("revoked node still read health metadata: %v", e)
 	}
 	if e := h.node.Call(context.Background(), "POST", "/v1/heartbeat", hb(h), nil, ""); e == nil {
 		t.Fatal("revoked node still admitted")
