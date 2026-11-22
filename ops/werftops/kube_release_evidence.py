@@ -121,7 +121,11 @@ def validate_supply_documents(root, documents, candidate):
     if not isinstance(build,dict):
         raise Blocked('PROVENANCE_BUILD_DEFINITION_INVALID')
     materials=build.get('resolvedDependencies')
-    if not isinstance(materials,list) or any(not isinstance(m,dict) or not isinstance(m.get('digest'),dict) for m in materials):
+    if (not isinstance(materials,list) or
+        any(not isinstance(m,dict) or not isinstance(m.get('uri'),str) or not m['uri'].strip() or
+            not isinstance(m.get('digest'),dict) or not m['digest'] or
+            any(not isinstance(value,str) or not value.strip() for value in m['digest'].values())
+            for m in materials)):
         raise Blocked('PROVENANCE_DEPENDENCIES_INVALID')
     if not any(m.get('uri')==candidate['sourceRepository'] and m['digest'].get('gitCommit')==candidate['sourceCommit'] for m in materials):
         raise Blocked('PROVENANCE_SOURCE_MISMATCH')
