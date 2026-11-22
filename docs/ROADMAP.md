@@ -12,7 +12,7 @@ The Native Single-Host scope is defined by [PR #203](https://github.com/JossefMo
 
 The release-tracker handoff contract is enforced by [PR #204](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/204), merged at `83c06425600749418994d34a1f197d4ad64f6d50`; PR #205 synchronizes this roadmap with that code-bearing handoff. No qualification gate is closed by these bookkeeping changes.
 
-The next exact-candidate build is pinned to package-bearing Main code handoff `48959dfb13a8219d29d9fd6885152dca36346a41`; documentation-only Main commits may have newer SHAs. No qualification gate is closed until the runner binds and verifies its own `GITHUB_SHA` and artifact digest. The current connector cannot dispatch `ci.yml`, so the live run remains blocked rather than implied.
+The next exact-candidate build is pinned to package-bearing Main code handoff `af04ffea42b8b0e38218f9c7ea4e641cb9f79485`; documentation-only Main commits may have newer SHAs. No qualification gate is closed until the runner binds and verifies its own `GITHUB_SHA` and artifact digest. The current connector cannot dispatch `ci.yml`, so the live run remains blocked rather than implied.
 
 The current tagged lab candidate is [`v0.2.0-dev.4-test.17`](https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.17), sourced from `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; GitHub release metadata reports `immutable=false` and its assets are unsigned. This candidate includes the auto-discovery known-hosts replay guard; it does not remove any K20 requirement or change the no-go production decision.
 
@@ -21,9 +21,10 @@ Main contains [PR #122](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/1
 
 ## Latest code handoff (2026-11-22)
 
-PR #226 (https://github.com/JossefMo1/Werftkern_Kubernetes/pull/226) merged as 48959df (https://github.com/JossefMo1/Werftkern_Kubernetes/commit/48959dfb13a8219d29d9fd6885152dca36346a41). safefile.Write now validates each existing parent component before and after MkdirAll, rejecting symlinked and non-directory parents before staging an atomic write. Regression coverage protects the parent-symlink boundary while retaining atomic-write, destination-symlink and strict-JSON tests.
+PR [#228](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/228) merged as [af04ffe](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/af04ffea42b8b0e38218f9c7ea4e641cb9f79485). Native `safefile.ReadJSON` now validates the trusted parent chain, opens the final path with `O_NOFOLLOW`, and rejects non-regular files before decoding JSON. Regression coverage verifies a regular file, a final symlink and a symlinked parent while retaining the existing atomic-write and strict-JSON coverage.
 
-Exact PR checks passed: Native runtime/package (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45075086638), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45075086644) and source/privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45075086649). The Native run's real-etcd job passed; real-VM and real-PITR were skipped. This is a safe-file boundary hardening only: the tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, productionReady=false, and no qualification gate was closed. The next candidate must be built from 48959dfb13a8219d29d9fd6885152dca36346a41 before live evidence can cover this fix.
+Exact PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45080546088), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45080546090) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45080546081). Real-etcd passed; real-VM and real-PITR were skipped. This is a trusted-read security hardening only: `v0.2.0-dev.4-test.17` remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, release metadata reports `immutable=false` and unsigned assets, and no qualification gate was closed. Build the next candidate from `af04ffea42b8b0e38218f9c7ea4e641cb9f79485` before live evidence can cover this fix.
+
 ## K20-001 — Review-Baseline und Ausführungspfade verifizieren
 
 **partial**. Separate Alpha neu gebaut/getestet; private C#-DI nicht erneut ausgeführt.

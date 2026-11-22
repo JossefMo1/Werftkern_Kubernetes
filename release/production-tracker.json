@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T22:02:03Z",
+  "updatedAt": "2026-11-22T23:02:17.316Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "48959dfb13a8219d29d9fd6885152dca36346a41",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/226",
-    "summary": "Native safefile.Write now rejects symlinked or non-directory parent components before and after MkdirAll, preventing a trusted-path assumption from redirecting atomic writes. Regression coverage adds a symlinked-parent case while retaining atomic-write, destination-symlink and strict-JSON tests. PR #226 passed Native, Kubernetes and source/privacy checks; real-etcd passed, real-vm and real-PITR were skipped. No qualification gate is claimed closed."
+    "commit": "af04ffea42b8b0e38218f9c7ea4e641cb9f79485",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/228",
+    "summary": "Native safefile.ReadJSON now validates the trusted parent chain, opens the final path with O_NOFOLLOW and rejects non-regular files before JSON decoding. Regression coverage verifies regular, final-symlink and symlinked-parent paths. PR #228 passed Native, Kubernetes and source/privacy checks; real-etcd passed, real-vm and real-PITR were skipped. No qualification gate is claimed closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate is bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged health-authorization, control-endpoint, client/server mTLS credential-file and safefile parent-traversal hardening changes.",
+      "The tagged v0.2.0-dev.4-test.17 candidate is bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged health-authorization, control-endpoint, client/server mTLS credential-file, safefile parent-traversal and safefile trusted-read hardening changes.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not yet complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; do not treat that missing action as a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -52,7 +52,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 48959dfb13a8219d29d9fd6885152dca36346a41, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff af04ffea42b8b0e38218f9c7ea4e641cb9f79485, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -409,13 +409,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "48959dfb13a8219d29d9fd6885152dca36346a41",
-      "codeCommit": "48959dfb13a8219d29d9fd6885152dca36346a41",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/226",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/227",
-      "summary": "Main contains the safefile parent-traversal hardening from PR #226; this tracker/status/roadmap synchronization is PR #227. The code-bearing handoff is 48959dfb13a8219d29d9fd6885152dca36346a41; the tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, while GitHub release metadata reports immutable=false and unsigned assets.",
+      "commit": "af04ffea42b8b0e38218f9c7ea4e641cb9f79485",
+      "codeCommit": "af04ffea42b8b0e38218f9c7ea4e641cb9f79485",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/228",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/229",
+      "summary": "Main contains the safefile trusted-read hardening from PR #228; tracker/status/roadmap synchronization is PR #229. The code-bearing handoff is af04ffea42b8b0e38218f9c7ea4e641cb9f79485; the tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, while GitHub release metadata reports immutable=false and unsigned assets.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/227"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/229"
     }
   },
   "previousCandidates": [
