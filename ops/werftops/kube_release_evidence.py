@@ -90,8 +90,11 @@ def validate_supply_documents(root, documents, candidate):
         if (not isinstance(result,dict) or not isinstance(result.get('Target'),str) or
             not result['Target'].strip()):
             raise Blocked('VULNERABILITY_RESULT_INVALID')
-        findings=result.get('Vulnerabilities',[]) or []
-        if not isinstance(findings,list):raise Blocked('VULNERABILITY_RESULT_INVALID')
+        findings=result.get('Vulnerabilities',[])
+        if findings is None:
+            findings=[]
+        if not isinstance(findings,list):
+            raise Blocked('VULNERABILITY_RESULT_INVALID')
         for finding in findings:
             if not isinstance(finding,dict) or finding.get('Severity') not in ('LOW','MEDIUM','HIGH','CRITICAL','UNKNOWN'):
                 raise Blocked('VULNERABILITY_SEVERITY_INVALID')
