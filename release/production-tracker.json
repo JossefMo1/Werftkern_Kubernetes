@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T13:03:42.219Z",
+  "updatedAt": "2026-11-22T13:56:04.872Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-20T10:11:54Z",
@@ -31,9 +31,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "f532b264a9f8bcc20ce26bfe2da6e4ab4debcc9d",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/199",
-    "summary": "Merged PR #199: production-tracker validation now rejects empty or whitespace-only decision evidence lists, rollback contracts, next-action evidence strings, gate-family strings and malformed blocked-workstream blockers; productionReady remains false and no live qualification gate is closed."
+    "commit": "a768d0e304bc7c28ca8f3da7732a179e504001e6",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/201",
+    "summary": "Merged PR #201: production-tracker validation now requires non-empty nextAction summary and nextStep strings; productionReady remains false and no live qualification gate is closed."
   },
   "nextAction": {
     "id": "E2E-K01-PREFLIGHT",
@@ -50,7 +50,7 @@
       "Evidence identifies one unchanged candidate and leaves unsupported gates open."
     ],
     "safeRollback": "Remove only labeled test objects after manual ownership verification; preserve evidence and do not delete uncertain volumes.",
-    "nextStep": "Publish a new immutable candidate from current package-bearing Main merge commit 71f1dfddc2be51ad6a1c54371cac4339c9910167; v0.2.0-dev.4-test.17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #197. Execute only on an expressly authorized disposable Ubuntu/k0s lab with --ssh-user root, explicit hosts file and approved assets; live VM/PITR and all other production gates remain required."
+    "nextStep": "Publish a new immutable candidate from current package-bearing Main merge commit a768d0e304bc7c28ca8f3da7732a179e504001e6; v0.2.0-dev.4-test.17 remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include PR #201. Execute only on an expressly authorized disposable Ubuntu/k0s lab with --ssh-user root, explicit hosts file and approved assets; live VM/PITR and all other production gates remain required."
   },
   "workstreams": [
     {
@@ -267,13 +267,18 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f532b264a9f8bcc20ce26bfe2da6e4ab4debcc9d",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45025092826",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45025092830",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45025092833"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45025092833",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/201",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/a768d0e304bc7c28ca8f3da7732a179e504001e6",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45029736383",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45029736359",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45029736350"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Publish a new immutable candidate from current package-bearing Main merge commit f532b264a9f8bcc20ce26bfe2da6e4ab4debcc9d, then run only on explicitly authorized disposable infrastructure."
+      "nextStep": "Publish a new immutable candidate from current package-bearing Main merge commit a768d0e304bc7c28ca8f3da7732a179e504001e6, then run only on explicitly authorized disposable infrastructure."
     },
     {
       "id": "E2E-K01",
@@ -321,7 +326,7 @@
       "blockers": [
         "No expressly authorized disposable Ubuntu VM and candidate package are configured."
       ],
-      "nextStep": "Publish a new immutable candidate from current Main merge commit f532b264a9f8bcc20ce26bfe2da6e4ab4debcc9d, then run the existing root-only script on a fresh disposable Ubuntu VM; CI checks do not replace live installation evidence."
+      "nextStep": "Publish a new immutable candidate from current Main merge commit a768d0e304bc7c28ca8f3da7732a179e504001e6, then run the existing root-only script on a fresh disposable Ubuntu VM; CI checks do not replace live installation evidence."
     },
     {
       "id": "E2E-H01",
@@ -401,13 +406,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "f532b264a9f8bcc20ce26bfe2da6e4ab4debcc9d",
-      "codeCommit": "f532b264a9f8bcc20ce26bfe2da6e4ab4debcc9d",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/199",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/200",
-      "summary": "Main contains the fail-closed production-tracker shape validation and regression tests from PR #199. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
+      "commit": "a768d0e304bc7c28ca8f3da7732a179e504001e6",
+      "codeCommit": "a768d0e304bc7c28ca8f3da7732a179e504001e6",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/201",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/202",
+      "summary": "Main contains the fail-closed production-tracker action-contract validation and regression tests from PR #201. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/199"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/201"
     }
   },
   "previousCandidates": [
