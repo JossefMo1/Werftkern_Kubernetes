@@ -698,3 +698,175 @@ func tunnelCommand(ctx context.Context, args []string) error {
 			http.Error(w, "NO_READY_ENDPOINT", 503)
 			return
 		}
+		target, _ := url.Parse(eps[int(next.Add(1)-1)%len(eps)])
+		proxy := httputil.NewSingleHostReverseProxy(target)
+		original := proxy.Director
+		proxy.Director = func(r *http.Request) {
+			original(r)
+			r.Host = target.Host
+			r.Header.Del("Cookie")
+			r.Header.Del("Authorization")
+			r.Header.Del("Forwarded")
+		}
+		proxy.ModifyResponse = func(r *http.Response) error { r.Header.Del("Set-Cookie"); return nil }
+		proxy.ServeHTTP(w, r)
+	})
+	srv := &http.Server{Addr: *listen, Handler: h, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 30 * time.Second, WriteTimeout: 30 * time.Second}
+	go func() {
+		<-ctx.Done()
+		stop, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		srv.Shutdown(stop)
+	}()
+	fmt.Printf("Anwendungs-Tunnel (getrennt vom Admin-Ursprung): http://%s\n", *listen)
+	e = srv.ListenAndServe()
+	if e == http.ErrServerClosed {
+		return nil
+	}
+	return e
+}
+func nodeCommand(ctx context.Context, args []string) error {
+	if len(args) == 0 {
+		return errors.New("node bundle|drain|uncordon|revoke")
+	}
+	if args[0] == "bundle" {
+		f := parser("node bundle")
+		name := f.String("name", "", "Node name")
+		address := f.String("address", "", "Private IP")
+		out := f.String("out", "", "Datei")
+		if e := f.Parse(args[1:]); e != nil {
+			return e
+		}
+		if *out == "" {
+			return errors.New("--out required")
+		}
+		return setup.CreateBundle(ctx, *name, *address, *out)
+	}
+	if len(args) != 2 {
+		return errors.New("node drain|uncordon|revoke NAME")
+	}
+	c, e := client()
+	if e != nil {
+		return e
+	}
+	s, e := c.State(ctx)
+	if e != nil {
+		return e
+	}
+	id := ""
+	for _, n := range s.Nodes {
+		if n.Name == args[1] || n.ID == args[1] {
+			id = n.ID
+			break
+		}
+	}
+	if id == "" {
+		return model.ErrNotFound
+	}
+	body := map[string]bool{}
+	switch args[0] {
+	case "drain":
+		body["drain"] = true
+	case "uncordon":
+		body["drain"] = false
+	case "revoke":
+		body["revoked"] = true
+	default:
+		return errors.New("NODE_ACTION_UNKNOWN")
+	}
+	if e = c.Call(ctx, "POST", "/v1/nodes/"+id, body, nil, ""); e != nil {
+		return e
+	}
+	fmt.Println("Node-Policy aktualisiert. Drain kann auf Reservekapazität warten. Revocation stoppt KEINE bereits laufenden Container.")
+	return nil
+}
+func demoCommand(ctx context.Context, args []string) error {
+	f := parser("demo")
+	replicas := f.Int("replicas", 2, "Replicas")
+	wait := f.Bool("wait", false, "Warten")
+	if e := f.Parse(args); e != nil {
+		return e
+	}
+	m, e := config.Load[DemoMetadata]("/usr/share/werftkern/demo.json")
+	if e != nil {
+		return e
+	}
+	c, e := client()
+	if e != nil {
+		return e
+	}
+	req := model.ApplyRequest{APIVersion: model.APIVersion, Name: "demo", Spec: model.Spec{Image: m.Image, Replicas: *replicas, CPUMilli: 100, MemoryMiB: 32, Port: 8080, ReadinessPath: "/healthz"}}
+	if e = apply(ctx, c, req); e != nil {
+		return e
+	}
+	if *wait {
+		return Wait(ctx, c, "demo", 120*time.Second)
+	}
+	return nil
+}
+func doctor(ctx context.Context) error {
+	fmt.Printf("Plattform: %s/%s; Compiler: %s\n", runtime.GOOS, runtime.GOARCH, runtime.Version())
+	if e := setup.Preflight(); e != nil {
+		fmt.Printf("Host-Preflight: %s\n", e)
+	} else {
+		fmt.Println("Host-Preflight: erfüllt (kein Ersatz für einen VM-E2E-Test)")
+	}
+	c, e := config.Load[config.Client](config.AdminPath())
+	if e != nil {
+		return e
+	}
+	b, e := os.ReadFile(c.Cert)
+	if e != nil {
+		return e
+	}
+	block, _ := pem.Decode(b)
+	if block == nil {
+		return errors.New("CERTIFICATE_INVALID")
+	}
+	cert, e := x509.ParseCertificate(block.Bytes)
+	if e != nil {
+		return e
+	}
+	fmt.Printf("Admin-Zertifikat gültig bis: %s\n", cert.NotAfter.Format(time.RFC3339))
+	if time.Until(cert.NotAfter) < 30*24*time.Hour {
+		fmt.Println("WARNUNG: Zertifikatserneuerung planen; automatische Rotation ist noch nicht implementiert.")
+	}
+	api, e := apiclient.New(c)
+	if e != nil {
+		return e
+	}
+	s, e := api.State(ctx)
+	if e != nil {
+		return e
+	}
+	fmt.Printf("mTLS und persistenter Cluster-State erreichbar: %s\n", s.Name)
+	return nil
+}
+func logsCommand(ctx context.Context, args []string) error {
+	if len(args) != 1 || !model.ValidID(args[0]) {
+		return errors.New("logs ALLOCATION_ID — auf dem zugewiesenen Worker ausführen")
+	}
+	c, e := config.Load[config.Agent](config.Directory + "/agent.json")
+	if e != nil {
+		return e
+	}
+	d := engine.NewDocker(c.Socket, c.Client.ClusterID)
+	b, e := d.Logs(ctx, args[0])
+	if e != nil {
+		return e
+	}
+	for len(b) >= 8 {
+		n := int(binary.BigEndian.Uint32(b[4:8]))
+		b = b[8:]
+		if n < 0 || n > len(b) {
+			break
+		}
+		for _, c := range string(b[:n]) {
+			if c == '\n' || c == '\t' || c >= 32 && c != 127 {
+				fmt.Printf("%c", c)
+			}
+		}
+		b = b[n:]
+	}
+	return nil
+}
