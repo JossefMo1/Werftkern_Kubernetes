@@ -13,7 +13,7 @@ The tracker contract is hardened by [PR #204](https://github.com/JossefMo1/Werft
 tracked in PR #205. The candidate remains an older, unsigned lab artifact and does not
 qualify any Native Single-Host gate.
 
-The next live candidate must be built from package-bearing Main code handoff `0a785a85435c6796a34cadd24d66e7c1256f553c`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor.
+The next live candidate must be built from package-bearing Main code handoff `ea83bb618edd82586a269930f388a66e04ade566`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor.
 
 # Release status — 0.2.0-dev.4
 
@@ -304,3 +304,10 @@ Exact PR checks passed: [Native runtime/package including real-etcd](https://git
 PR [#211](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/211) merged as [0a785a8](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/0a785a85435c6796a34cadd24d66e7c1256f553c). The ingress Gateway now evaluates edge TLS leaf validity through its injected clock, matching the existing snapshot-freshness boundary; `TestServeUsesInjectedClockForCertificateValidity` covers an out-of-window certificate.
 
 Exact PR checks passed: [Native test and real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45046437255), [contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45046437247) and [publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45046437285). Real-VM and real-PITR were skipped; no live qualification gate was closed. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and the decision remains `no-go`. The next candidate must be package-built from `0a785a85435c6796a34cadd24d66e7c1256f553c`.
+
+
+## Latest code handoff — PR #213 (2026-11-22)
+
+PR [#213](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/213) merged as [ea83bb6](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/ea83bb618edd82586a269930f388a66e04ade566). The Native agent now restores the allocation ID when an engine returns a zero report on failure; this keeps failure reports valid for the heartbeat contract and preserves node liveness. Regression coverage verifies the failed report identity.
+
+Exact PR checks passed: [Native test and real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45051874344), [contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45051874104) and [publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45051874099). Real-VM and real-PITR were skipped; no live qualification gate was closed. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and the decision remains `no-go`. The next candidate must be package-built from `ea83bb618edd82586a269930f388a66e04ade566`.
