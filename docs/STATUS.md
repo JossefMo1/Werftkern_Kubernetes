@@ -13,7 +13,7 @@ The tracker contract is hardened by [PR #204](https://github.com/JossefMo1/Werft
 tracked in PR #205. The candidate remains an older, unsigned lab artifact and does not
 qualify any Native Single-Host gate.
 
-The next live candidate must be built from package-bearing Main code handoff `cc62b2b758062669d9dc3e445c7f06dd74bbac97`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor.
+The next live candidate must be built from package-bearing Main code handoff `fe052af52ab80509f325b9ebee8338649f49ecdd`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor.
 
 # Release status — 0.2.0-dev.4
 
@@ -291,3 +291,9 @@ PR [#201](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/201) merged at 
 Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45029736383), [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45029736359) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45029736350). Real-VM and real-PITR remain skipped because no authorized disposable lab is configured.
 
 This is release-tracker validation hardening only; no qualification gate was closed. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and the decision remains `no-go`. Live Ubuntu/k0s installation, upgrade/rollback, backup/restore, HA/partition, load/soak, signed provenance and independent review remain open.
+
+## Latest code handoff — PR #209 (2026-11-22)
+
+PR [#209](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/209) merged at [fe052af](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fe052af52ab80509f325b9ebee8338649f49ecdd). The Native API now evaluates mTLS certificate validity through its injected UTC clock, with a regression test for certificates outside that validity window. This is a code-quality/security-boundary handoff only; no qualification gate was closed.
+
+Exact PR checks passed: [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45042904516), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45042904485) and [Source/Privacy publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45042904486). Real-VM and real-PITR remain skipped because the authorized disposable runner dispatch is not available through the current connector. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains `no-go`.
