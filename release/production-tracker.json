@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T20:08:20.919Z",
+  "updatedAt": "2026-11-22T20:14:37.363Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -40,9 +40,10 @@
     "status": "prepared",
     "summary": "Run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The immutable v0.2.0-dev.4-test.17 candidate is bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged health-authorization and control-endpoint hardening changes.",
+      "The tagged v0.2.0-dev.4-test.17 candidate is bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged health-authorization and control-endpoint hardening changes.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not yet complete for one unchanged candidate.",
-      "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; do not treat that missing action as a passed gate."
+      "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; do not treat that missing action as a passed gate.",
+      "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
