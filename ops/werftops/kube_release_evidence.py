@@ -161,7 +161,8 @@ def verify(candidate_path,trust_path,trust_sha256,now=None):
         if (k['id'] in keys or
             not isinstance(k['roles'],list) or not k['roles'] or
             any(not isinstance(role,str) or not role.strip() for role in k['roles']) or
-            not isinstance(k['organization'],str) or not k['organization'].strip()):
+            not isinstance(k['organization'],str) or not k['organization'].strip() or
+            k['organization'] != k['organization'].strip()):
             raise Blocked('TRUST_KEY_INVALID')
         keys[k['id']]=k
     now=now or dt.datetime.now(dt.timezone.utc)

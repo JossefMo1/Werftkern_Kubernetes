@@ -152,6 +152,13 @@ class EvidenceTests(unittest.TestCase):
             self.check()
         self.assertEqual(str(error.exception),'TRUST_KEY_INVALID')
 
+    def test_trust_key_organization_rejects_surrounding_whitespace(self):
+        self.t['keys'][0]['organization']=' product-org '
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'TRUST_KEY_INVALID')
+
     def test_trust_key_organization_must_be_nonempty_string(self):
         self.t['keys'][0]['organization']={}
         self.save()
