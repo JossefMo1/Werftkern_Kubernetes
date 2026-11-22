@@ -56,6 +56,38 @@ func TestRefusesParentSymlink(t *testing.T) {
 		t.Fatal("real target changed")
 	}
 }
+func TestReadJSONRefusesSymlinkedPaths(t *testing.T) {
+	d := t.TempDir()
+	real := filepath.Join(d, "real")
+	if err := os.Mkdir(real, 0700); err != nil {
+		t.Fatal(err)
+	}
+	file := filepath.Join(real, "config.json")
+	if err := os.WriteFile(file, []byte(`{"value":1}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	type config struct {
+		Value int `json:"value"`
+	}
+	var got config
+	if err := ReadJSON(file, &got); err != nil || got.Value != 1 {
+		t.Fatalf("valid file rejected: %v", err)
+	}
+	link := filepath.Join(d, "config-link.json")
+	if err := os.Symlink(file, link); err != nil {
+		t.Fatal(err)
+	}
+	if err := ReadJSON(link, &got); err == nil {
+		t.Fatal("followed destination symlink")
+	}
+	parentLink := filepath.Join(d, "parent-link")
+	if err := os.Symlink(real, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := ReadJSON(filepath.Join(parentLink, "config.json"), &got); err == nil {
+		t.Fatal("followed parent symlink")
+	}
+}
 func TestStrictJSON(t *testing.T) {
 	for _, raw := range []string{`{"value":1,"unknown":1}`, `{"value":1} {}`, `{"value":`, strings.Repeat(" ", 4<<20) + `{}`} {
 		p := filepath.Join(t.TempDir(), "a")
