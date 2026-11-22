@@ -1,0 +1,106 @@
+{
+  "schema": "werftkern/native-production-scope/v1",
+  "status": "production-target-not-qualified",
+  "productionTarget": true,
+  "productionReady": false,
+  "exactCandidateRequired": true,
+  "releaseProfile": "native-single-host-production",
+  "primaryProductionSurface": "native-runtime",
+  "releaseUnit": "one immutable commit and one digest-bound native artifact set",
+  "supportStatement": "The first production release targets supported single-host Native deployments. It is intended for real production workloads within the documented limits, but it does not claim high availability, multi-host failure tolerance, Kubernetes production support or site disaster recovery.",
+  "paths": {
+    "native": {
+      "supportLevel": "production-with-explicit-boundaries",
+      "componentVersion": "0.2.0-dev.4",
+      "stateSchema": 2,
+      "engine": "docker-engine",
+      "operatingSystem": "ubuntu-24.04-lts-amd64",
+      "topology": "one-controller-and-one-worker-on-one-host",
+      "trustBoundary": "single-trusted-administrator-and-trusted-workloads",
+      "installation": "fresh-host-only",
+      "upgradePath": "candidate-specific-same-schema-package-upgrade-after-backup",
+      "rollback": "candidate-specific-single-host-package-rollback-must-pass-live-qualification",
+      "requiredDependencies": [
+        "systemd",
+        "cgroup-v2",
+        "docker-engine",
+        "etcd"
+      ],
+      "limits": {
+        "nodes": 1,
+        "workloads": 20,
+        "allocations": 50,
+        "stateBytes": 900000
+      },
+      "qualificationGates": [
+        "unit-race",
+        "static-analysis",
+        "source-audit",
+        "supported-toolchain-security",
+        "ubuntu-install-e2e",
+        "real-engine-etcd",
+        "single-host-restart-and-workload-recovery",
+        "single-host-backup-restore",
+        "single-host-upgrade-rollback",
+        "single-host-load-soak",
+        "negative-authorization-and-secure-defaults",
+        "signed-artifacts-and-provenance",
+        "maintainer-approval"
+      ],
+      "includedCapabilities": [
+        "single-host workload scheduling and lifecycle",
+        "local Docker execution",
+        "etcd-backed state",
+        "mTLS between local runtime components",
+        "local dashboard and CLI",
+        "scoped secrets and encrypted local configuration backup"
+      ]
+    },
+    "kubernetes": {
+      "productionIncluded": false,
+      "supportLevel": "experimental-not-production",
+      "componentVersion": "0.1.0-dev.3",
+      "reason": "The Kubernetes manager still requires a separately qualified real k0s lifecycle, storage, recovery, security and upgrade environment."
+    }
+  },
+  "deferredProductionScopes": [
+    "multi-host-native-ha",
+    "controller-quorum-and-network-partition-tolerance",
+    "cross-host-restore-and-site-disaster-recovery",
+    "kubernetes-managed-production",
+    "cloud-provider-lifecycle",
+    "database-ha-and-pitr",
+    "air-gapped-installation",
+    "hostile-multi-tenancy",
+    "gpu-workloads",
+    "native-autoscaling"
+  ],
+  "crossPathReleaseGates": [
+    "reproducible-clean-build",
+    "artifact-commit-digest-identity",
+    "unit-race-contract-integration-package-source-vulnerability",
+    "sbom-dependency-supply-chain",
+    "signed-artifacts-and-provenance",
+    "install-uninstall-reinstall",
+    "operator-runbooks",
+    "published-rc-and-user-feedback",
+    "final-go-no-go"
+  ],
+  "promotion": {
+    "productionReadyMayBecomeTrueOnlyWhen": "Every applicable Native single-host gate passes for the same immutable candidate and the release artifacts are signed, digest-bound and independently reproducible.",
+    "deferredGatesMustRemainExplicit": true,
+    "neverClaim": [
+      "HA",
+      "multi-host failure tolerance",
+      "automatic quorum-loss recovery",
+      "Kubernetes production support",
+      "cross-host restore",
+      "CNCF certification",
+      "independent security audit"
+    ]
+  },
+  "fullScopeReference": {
+    "path": "release/production-scope.json",
+    "meaning": "The former full-masterplan proposal is retained as the future HA/Kubernetes qualification contract and is not a blocker for this first Native single-host production target."
+  }
+}

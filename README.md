@@ -6,14 +6,15 @@
 [![Kubernetes checks](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/workflows/kubernetes-backend.yml/badge.svg?branch=main)](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/workflows/kubernetes-backend.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-[Deutsch: hier beginnen](START-HERE-DE.md) · [Candidate production scope](docs/PRODUCTION-SCOPE.md) ·
+[Deutsch: hier beginnen](START-HERE-DE.md) · [Native production scope](release/native-production-scope.json) ·
 [Documentation](#documentation) ·
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) ·
 [Source releases](https://github.com/JossefMo1/Werftkern_Kubernetes/releases)
 
-> **Experimental alpha — not production-ready.** Use disposable test infrastructure.
-> No production support, SLA or CNCF certification is claimed. Passing CI checks
-> do not establish live cloud, multi-host recovery or production upgrade safety.
+> **Production target: Native Single-Host.** The first supported release targets
+> real production workloads on one Ubuntu host within the documented limits. The
+> current candidate is not yet qualified. HA, multi-host and Kubernetes production
+> support remain outside this first scope.
 
 ## What is Werftkern?
 
@@ -59,7 +60,7 @@ git clone https://github.com/JossefMo1/Werftkern_Kubernetes.git
 cd Werftkern_Kubernetes
 ```
 
-The repository currently provides experimental source prereleases. Source tags
+The repository currently contains experimental prereleases; the first production target is the Native Single-Host profile. Source tags
 such as `v0.1.0-alpha.3` identify the repository release, not the native or
 Kubernetes component versions. Read the [release notes](releases/v0.1.0-alpha.3.md)
 for their exact scope. Source archives are not verified binary distributions.
@@ -152,8 +153,8 @@ node --check internal/dashboard/assets/app.js
 
 [Testing](docs/TESTING.md) explains additional browser, real-etcd, compatibility,
 VM and database tests. Synthetic browser data and test adapters must remain
-distinct from real runtime evidence. The [production qualification gate](release/qualification.json)
-remains blocked.
+distinct from real runtime evidence. The [Native Single-Host production target](release/native-production-scope.json)
+remains blocked until its scoped gates pass.
 
 ## Contributing and security
 

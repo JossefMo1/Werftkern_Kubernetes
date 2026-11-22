@@ -1,96 +1,49 @@
 # Produktions-E2E-Plan und Arbeitsrhythmus
 
-**Status: aktiv, nicht qualifiziert.** Dieser Plan ist eine Ausführungs- und
-Nachweisreihenfolge. Er ersetzt weder die Gate-Verträge in
-`release/qualification.json` und `release/kubernetes-readiness.json` noch macht
-eine vorbereitete Prüfung zu einem bestandenen Live-Gate.
+**Aktueller Zielumfang: Native Single-Host Production. Status: noch nicht qualifiziert.**
 
-Der aktuelle, maschinenlesbare Handoff steht in
-[`release/production-tracker.json`](../release/production-tracker.json). Jeder
-Arbeitslauf beginnt mit diesem Tracker, den Release- und Kubernetes-Gates, offenen
-Issues/PRs und fehlgeschlagenen CI-Läufen. Nach einem Lauf wird der Tracker nur
-bei einem echten, belegten Zustandswechsel aktualisiert.
+Der erste Production-Release benötigt keine sieben VMs. Er wird auf einem frischen, entbehrlichen Ubuntu-24.04-amd64-Runner als Single-Host-Produkt qualifiziert. HA, Multi-Host und Kubernetes werden separat weitergeführt und blockieren diesen ersten Scope nicht.
 
-## Sicherheits- und Nachweisregeln
+Der maschinenlesbare Handoff steht in release/production-tracker.json. Jeder Lauf beginnt mit dem Tracker, dem Native-Scope, offenen Issues/PRs und den exakten CI-Ergebnissen.
 
-- Nur frische, ausdrücklich entbehrliche Ubuntu-24.04-amd64-VMs oder Cluster;
-  niemals Kunden-, bestehende Entwicklungs- oder Produktivsysteme.
-- Keine Cloud-Erstellung, Kosten, öffentlichen Dienste oder Secrets ohne konkrete
-  Konfiguration und ausdrückliche Autorisierung.
-- Jeder Live-Nachweis bindet Kandidat-Commit, Paket-/Chart-/Image-Digests,
-  Topologie, Start/Ende, Befehle, anonymisierte Logs, Exit-Status und Aufräumergebnis.
-- Ein fehlender Zugang, abgebrochener Lauf, rotes Ergebnis oder nicht reproduzierter
-  Kandidat bleibt `blocked` bzw. `failed`; keine Ersatznachweise aus Fixtures.
-- Vor einem zerstörerischen Schritt: eindeutige Besitzmarkierung, Wiederanlauf- und
-  sichere Aufräumprozedur. Nach einem Fehler bleiben Beweise und Sperren erhalten.
+## Regeln
 
-## Expliziter No-Go ohne reale Linux-Prüfung
+- Nur frische, ausdrücklich entbehrliche Linux-Runner oder Testhosts verwenden.
+- Keine Kunden-, Entwicklungs- oder Produktivsysteme für destruktive Tests verwenden.
+- Jeder Live-Nachweis bindet Kandidaten-Commit, Paket-Digest, Start/Ende, Exit-Status und bereinigtes Evidence.
+- Ein fehlender oder abweichender Kandidat bleibt blockiert; Fixtures ersetzen keinen Live-Nachweis.
+- productionReady=true ist nur für den unveränderten Kandidaten zulässig, nachdem alle anwendbaren Single-Host-Gates bestanden sind.
 
-Wenn keine ausdrücklich autorisierte, entbehrliche Linux-VM für Installation,
-Neustart, Deinstallation/Wiederinstallation und Upgrade/Rollback ausgeführt wird,
-bleibt die Production-Entscheidung **No-Go**. Lokale Unit-, Fixture-, statische
-und CI-Ergebnisse dürfen diese Nachweise nicht ersetzen. In diesem Fall werden die
-fehlenden Gate-IDs, die Einschränkung und der nächste sichere Schritt im
-`release/production-tracker.json` festgehalten; ein stabiler Tag oder
-`productionReady=true` ist nicht zulässig.
+## Reihenfolge
 
-## Reihenfolge der End-to-End-Qualifikation
+| Priorität | E2E-ID | Nachweis | Status |
+| --- | --- | --- | --- |
+| P0 | E2E-00 | sauberer Build, SBOM, Digest-Identität und signierbares Release-Artefakt | vorbereitet |
+| P0 | E2E-N01 | frische Ubuntu-Installation, Setup, echte Docker-/etcd-Workloads, Dienst-/etcd-Neustart, Cleanup | bereit zur Ausführung |
+| P1 | E2E-N02 | lokales Backup/Restore und Datenintegrität | offen |
+| P1 | E2E-N03 | unterstütztes Paket-Upgrade und Rollback auf demselben Host | offen |
+| P1 | E2E-P01 | begrenzter Single-Host-Load-/Soak-Test | offen |
+| P1 | E2E-R01 | Release Candidate, Nutzerfeedback, Runbooks und Go/No-Go | offen |
+| — | E2E-H01 | Multi-Host-HA, Quorum und Netzwerkpartition | zurückgestellt, nicht Bestandteil des ersten Scopes |
+| — | E2E-K01 | produktiver k0s/Kubernetes-Lifecycle | zurückgestellt, nicht Bestandteil des ersten Scopes |
 
-| Priorität | E2E-ID | Pfad | Mindestnachweis vor „passed“ | Aktueller Zustand |
-| --- | --- | --- | --- | --- |
-| P0 | E2E-00 | Gemeinsamer Release Candidate | sauberer Build, eindeutiger Commit und Artefakt-Digests, SBOM/Scanner-/Provenienzstatus für denselben Kandidaten | vorbereitet, noch kein RC |
-| P0 | E2E-K01 | Kubernetes CSI Lab | frischer k0s-Cluster; admission, Pod-Start, Token-Abwesenheit am Node, Provision/Attach/Mount/Write/Read, Expansion und Aufräumen; unveränderte SecurityContexts belegen | externe Lab-Infrastruktur fehlt |
-| P0 | E2E-N01 | Native Ubuntu | frische VM, echte Paketinstallation, Neustart, Deinstallation/Wiederinstallation und der bestehende Ubuntu-E2E-Skript-Nachweis | externe VM und Kandidat-Paket fehlen |
-| P1 | E2E-K02 | Kubernetes Lifecycle | Controller/Worker-Lifecycle, Scale, Add-ons, Storage, Backup/Restore und negative Zugriffsprüfung im dokumentierten Scope | abhängig von E2E-K01 |
-| P1 | E2E-N02 | Native Upgrade/Recovery | unterstützter dev.3→dev.4-Upgradepfad, Rollback, Backup/Restore auf neuem Host und Datenintegrität | abhängig von E2E-N01 und einem fixierten Kandidaten |
-| P1 | E2E-H01 | Mehrhost/Fehlerfälle | Controller-Ausfall, Quorum, Netzpartition, Wiederanlauf und dokumentierte Grenzen | entbehrliche Mehrhost-Topologie fehlt |
-| P2 | E2E-P01 | Last/Soak | gemessene Last-, Soak- und Fehlergrenzen für denselben Kandidaten | abhängig von stabilen Live-Pfaden |
-| P2 | E2E-R01 | RC/Review | veröffentlichter RC, nachvollziehbares Nutzerfeedback, erforderliche unabhängige Prüfung und Go/No-Go | abhängig von allen technischen Gates |
+## Native-Single-Host-Lauf
 
-## E2E-K01: vorbereiteter CSI-Lab-Lauf
+Die bestehende ci.yml besitzt den manuellen Parameter run_real_vm_e2e. Der Lauf muss für den exakten Kandidaten mit run_real_vm_e2e=true gestartet werden. Zusätzlich läuft der reale etcd-Test auf einem ephemeren Ubuntu-Runner.
 
-**Vorbedingungen:** Ein ausdrücklich freigegebener entbehrlicher k0s-Cluster mit
-einem Management-Host, drei Controllern, mindestens einem Worker, privaten
-Zugängen, passenden Hetzner-Cloud-Volumes und einem bereits vorhandenen
-`kube-system/hcloud`-Secret. Der Tokenwert wird niemals ausgegeben oder committed.
+Der E2E-N01-Nachweis muss mindestens enthalten:
 
-1. Den fail-closed Preflight `scripts/check-e2e-k01-preflight.py` mit der exakten
-   Wegwerf-Lab-Bestätigung `WERFTKERN-DISPOSABLE-K0S-ONLY` ausführen. Relative,
-   symbolische oder breit angelegte Management-Pfade blockieren den Lauf, bevor
-   `werft-kube apply` oder irgendeine Cloud-/Cluster-Mutation startet.
-2. Kandidat und Assets hashen; der hcloud-CSI-Render muss exakt
-   `1a439e5735f2635904acc8379a55185e010abfe8e3466b1ff8ae75433da6e438`
-   entsprechen oder der Lauf wird abgebrochen.
-3. Den Render anwenden und alle CSI-Pods direkt beobachten. Dokumentieren: Images,
-   Workload-UIDs, gestartete Container, SecurityContexts und dass der Node-Pod keinen
-   Service-Account-Token erhält. Keine Secrets auslesen.
-4. Eine isolierte Test-Namespace/PVC/Pod-Kette mit `werftkern-hcloud-retain` erstellen;
-   Daten schreiben, Hash erfassen und denselben Inhalt nach Attach/Mount lesen.
-5. Eine erlaubte Expansion durchführen und den erweiterten Zustand direkt prüfen.
-6. Testobjekte in umgekehrter Reihenfolge entfernen; `Retain`-Verhalten getrennt
-   dokumentieren. Nie ein fremdes Volume löschen.
-7. Logs und Checks an den exakten Kandidaten binden. Ein erfolgreicher E2E-K01 schließt
-   nur die dokumentierten Storage-Teilaspekte, nicht HA, Backup/Restore oder Production.
+- Paket- und BUILD-INFO-Commit stimmen mit dem Kandidaten überein;
+- Ubuntu 24.04, amd64, systemd und cgroup v2;
+- frische Paketinstallation und werft setup;
+- reale Demo-Workloads in Docker;
+- Workload-Neustart nach Controller-/Agent-Neustart;
+- etcd-Neustart und erneute Status-/Health-Prüfung;
+- Skalierung, Rollback, Secret-Mount- und Cleanup-Prüfung;
+- nicht-sensitive, kandidatengebundene Evidence.
 
-**Sichere Rückabwicklung:** Test-Workloads und Namespace entfernen; nur eindeutig
-Werftkern-eigene Testvolumes nach manueller Prüfung löschen. Bei Unsicherheit nicht
-löschen, Kennung dokumentieren und den Lauf blockiert lassen.
+Danach werden Backup/Restore, Upgrade/Rollback und der begrenzte Soak-Lauf als eigene Nachweise gegen denselben Kandidaten ergänzt. Keine HA- oder Kubernetes-Evidence wird als Ersatz dafür akzeptiert.
 
-## Kontinuierliches Tracking
+## Abschluss
 
-Der Tracker darf nur diese Zustände verwenden: `not-started`, `prepared`,
-`in-progress`, `blocked-external`, `failed` und `passed`. `passed` ist nur mit
-unveränderlichem Kandidaten, überprüfbaren Evidence-Referenzen und passendem
-Release-Gate zulässig. `productionReady` bleibt bis zum finalen Go/No-Go immer
-`false`.
-
-Bei jedem Lauf:
-
-1. offene Issues, PRs, Checks, Feedback und Tracker lesen;
-2. die höchste nicht blockierte Priorität bearbeiten;
-3. Testergebnis, Commit/PR und Blocker knapp im Tracker sowie im Issue-Handoff
-   festhalten;
-4. den nächsten konkreten Schritt nennen, ohne fehlende Infrastruktur zu simulieren.
-
-Damit bleibt die Arbeit auf dem Pfad zu einer Production-Version sichtbar, ohne
-einen Release vorzeitig zu behaupten.
+Erst wenn der Native-Single-Host-Vertrag, die Artefaktsignierung, die Runbooks und die Go/No-Go-Prüfung erfolgreich sind, darf die Version als Production Release veröffentlicht werden. Die Release Notes müssen die zurückgestellten HA-, Kubernetes- und Site-Recovery-Funktionen sichtbar nennen.
