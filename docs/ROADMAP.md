@@ -306,3 +306,11 @@ Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werf
 Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44982393959), [Native runtime/package, including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44982393878) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44982393890). Real-VM and real-PITR jobs were skipped because no authorized disposable lab is configured.
 
 This is a code-quality/security-boundary handoff only. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false`, the decision remains `no-go`, and no live qualification gate was closed. A new immutable candidate is required before any live evidence can cover this merge.
+
+## Code handoff — PR #183 (2026-11-22)
+
+[PR #183](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/183) merged as [8c0bc4a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8c0bc4aa21575891eb782ad6943bfe42c24cb4d6). The Kubernetes Trivy-v2 evidence verifier now requires each LOW/MEDIUM finding to carry a non-empty string `VulnerabilityID`; malformed findings fail closed with stable `VULNERABILITY_FINDING_INVALID` handling. A regression test protects a nameless LOW finding.
+
+Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44986729213), [Native runtime/package, including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44986729235) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44986729267). Real-VM and real-PITR jobs were skipped because no authorized disposable lab is configured.
+
+This is a code-quality/security-boundary handoff only. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false`, the decision remains `no-go`, and no live qualification gate was closed. A new immutable candidate is required before live evidence can cover this merge.
