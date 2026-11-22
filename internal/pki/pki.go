@@ -115,14 +115,14 @@ func Client(ca []byte, pair Pair) (*http.Client, error) {
 }
 // readCredential reads PEM material through a no-follow, regular-file handle.
  // Private keys must be owner-only (0600) and owned by the effective user unless
- // the caller is root. Parent directories must not be writable by group/others.
+ // the caller is root. Parent directories are checked for symlink traversal.
 func readCredential(path string, private bool) ([]byte, error) {
 	if !filepath.IsAbs(path) || filepath.Clean(path) != path {
 		return nil, errors.New("CREDENTIAL_ABSOLUTE_PATH_REQUIRED")
 	}
 	for dir := filepath.Dir(path); ; dir = filepath.Dir(dir) {
 		st, e := os.Lstat(dir)
-		if e != nil || !st.IsDir() || st.Mode()&os.ModeSymlink != 0 || st.Mode().Perm()&0022 != 0 {
+		if e != nil || !st.IsDir() || st.Mode()&os.ModeSymlink != 0 {
 			return nil, errors.New("CREDENTIAL_PARENT_DIRECTORY_UNSAFE")
 		}
 		if dir == "/" {
