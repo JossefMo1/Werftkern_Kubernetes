@@ -81,7 +81,6 @@ func TestInvalidPEMRejected(t *testing.T) {
 	}
 }
 
-
 func TestClientFilesRejectsUnsafePrivateKeyFiles(t *testing.T) {
 	ca, err := CA("test", time.Now())
 	if err != nil {
