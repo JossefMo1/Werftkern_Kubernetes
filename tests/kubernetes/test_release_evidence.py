@@ -201,6 +201,19 @@ class EvidenceTests(unittest.TestCase):
             self.check()
         self.assertEqual(str(error.exception),'SOURCE_REPOSITORY_INVALID')
 
+    def test_provenance_dependencies_require_nonempty_uri_and_digest_values(self):
+        self.gate('supply-chain')
+        self.statements['supply-chain']['documents']['provenance']=self.document(
+            'provenance-invalid-material.json',
+            {'_type':'https://in-toto.io/Statement/v1','predicateType':'https://slsa.dev/provenance/v1',
+             'subject':[{'name':self.artifact.name,'digest':{'sha256':self.c['artifact']['sha256']}}],
+             'predicate':{'runDetails':{'builder':{'id':self.c['builderId']}},
+                          'buildDefinition':{'resolvedDependencies':[{'uri':'','digest':{}}]}}})
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'PROVENANCE_DEPENDENCIES_INVALID')
+
     def test_provenance_wrong_builder(self):
         self.gate('supply-chain');self.save();self.c['builderId']='changed-builder';write_json(self.cp,self.c)
         with self.assertRaisesRegex(Blocked,'BUILDER'):self.check()
