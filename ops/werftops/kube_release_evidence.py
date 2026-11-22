@@ -140,7 +140,7 @@ def verify(candidate_path,trust_path,trust_sha256,now=None):
     if c['format']!='werftkern-release-candidate/v1' or not re.fullmatch(r'[a-f0-9]{40}',c['sourceCommit']):raise Blocked('CANDIDATE_INVALID')
     sha(c['assetsSHA256']);bounded_file(root,c['artifact'],2*1024**3)
     if (not isinstance(c['sourceRepository'],str) or
-        not re.fullmatch(r'https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:\\.git)?',c['sourceRepository'])):
+        not re.fullmatch(r'https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:\.git)?',c['sourceRepository'])):
         raise Blocked('SOURCE_REPOSITORY_INVALID')
     if not isinstance(c['builderId'],str) or not c['builderId']:
         raise Blocked('BUILD_IDENTITY_REQUIRED')
