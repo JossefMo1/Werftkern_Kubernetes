@@ -81,7 +81,7 @@ func (a *API) identity(r *http.Request) string {
 		return ""
 	}
 	c := r.TLS.PeerCertificates[0]
-	if now := time.Now(); now.Before(c.NotBefore) || !now.Before(c.NotAfter) {
+	if now := a.now(); now.Before(c.NotBefore) || !now.Before(c.NotAfter) {
 		return ""
 	}
 	if len(c.Subject.Organization) != 1 || c.Subject.Organization[0] != a.ClusterID {
