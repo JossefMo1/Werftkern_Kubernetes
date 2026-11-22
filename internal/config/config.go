@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
+	"net"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -70,6 +71,31 @@ func ValidateClient(c Client) error {
 		if e != nil || n < 1 || n > 65535 {
 			return errors.New("CLIENT_CONFIGURATION_INVALID")
 		}
+	}
+	return nil
+}
+
+// ValidateControl enforces the trust boundary for the native control process.
+// The control endpoint and the separate etcd endpoint must both use HTTPS and
+// the same cluster identity; the listener is restricted to a private IPv4/loopback
+// address for the bounded single-host deployment.
+func ValidateControl(c Control) error {
+	if e := ValidateClient(c.Client); e != nil {
+		return errors.New("CONTROL_CLIENT_CONFIGURATION_INVALID")
+	}
+	if e := ValidateClient(c.Etcd); e != nil {
+		return errors.New("ETCD_CLIENT_CONFIGURATION_INVALID")
+	}
+	if c.Etcd.ClusterID != c.Client.ClusterID {
+		return errors.New("ETCD_CLUSTER_ID_MISMATCH")
+	}
+	host, port, e := net.SplitHostPort(c.Listen)
+	if e != nil || !model.PrivateAddress(host) {
+		return errors.New("CONTROL_LISTEN_INVALID")
+	}
+	n, e := strconv.Atoi(port)
+	if e != nil || n < 1 || n > 65535 {
+		return errors.New("CONTROL_LISTEN_INVALID")
 	}
 	return nil
 }
