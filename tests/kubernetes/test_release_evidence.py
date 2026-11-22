@@ -221,6 +221,22 @@ class EvidenceTests(unittest.TestCase):
             self.check()
         self.assertEqual(str(error.exception),'PROVENANCE_DEPENDENCIES_INVALID')
 
+    def test_provenance_dependencies_require_nonempty_digest_keys(self):
+        self.gate('supply-chain')
+        self.statements['supply-chain']['documents']['provenance']=self.document(
+            'provenance-invalid-digest-key.json',
+            {'_type':'https://in-toto.io/Statement/v1','predicateType':'https://slsa.dev/provenance/v1',
+             'subject':[{'name':self.artifact.name,'digest':{'sha256':self.c['artifact']['sha256']}}],
+             'predicate':{'runDetails':{'builder':{'id':self.c['builderId']}},
+                          'buildDefinition':{'resolvedDependencies':[
+                              {'uri':self.c['sourceRepository'],
+                               'digest':{'':'invalid','gitCommit':self.c['sourceCommit']}},
+                              {'uri':'assets.json','digest':{'sha256':self.c['assetsSHA256']}}]}}})
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'PROVENANCE_DEPENDENCIES_INVALID')
+
     def test_provenance_wrong_builder(self):
         self.gate('supply-chain');self.save();self.c['builderId']='changed-builder';write_json(self.cp,self.c)
         with self.assertRaisesRegex(Blocked,'BUILDER'):self.check()
