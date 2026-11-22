@@ -78,7 +78,8 @@ def validate_supply_documents(root, documents, candidate):
     components=sbom.get('components')
     if sbom.get('bomFormat')!='CycloneDX' or not isinstance(components,list) or not components:
         raise Blocked('NONEMPTY_CYCLONEDX_SBOM_REQUIRED')
-    if any(not isinstance(component,dict) for component in components):
+    if any(not isinstance(component,dict) or not isinstance(component.get('name'),str) or
+           not component['name'].strip() for component in components):
         raise Blocked('SBOM_COMPONENT_INVALID')
     # Do not invent zero findings for a missing scan or silently ignore malformed records.
     scan=read_json(bounded_file(root,documents['vulnerabilities']))
