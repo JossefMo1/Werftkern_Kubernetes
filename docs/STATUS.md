@@ -173,3 +173,10 @@ This does not qualify production. The immutable `v0.2.0-dev.4-test.17` candidate
 [Private Alpha](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44969356902).
 
 This does not qualify production. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains no-go. Authorized disposable Ubuntu/k0s installation, upgrade/rollback, backup/restore, HA/partition, load/soak, signed provenance and independent review remain open.
+
+## Latest code handoff — PR #179 (2026-11-22)
+
+[PR #179](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/179) merged at [6b44496](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6b44496ed69a0feb25e11e2ba0ea358802dc8945). The Kubernetes Trivy-v2 evidence verifier now rejects boolean, numeric and other scalar `Vulnerabilities` inventories while preserving missing/`null` inventories as empty, with stable `VULNERABILITY_RESULT_INVALID` handling and a regression test. Exact PR checks passed: [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44973221312), [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44973221342), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44973221313); real-VM and real-PITR remained skipped.
+
+This does not qualify production. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains no-go. Authorized disposable Ubuntu/k0s installation, upgrade/rollback, backup/restore, HA/partition, load/soak, signed provenance and independent review remain open.
+
