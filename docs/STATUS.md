@@ -13,14 +13,14 @@ The tracker contract is hardened by [PR #204](https://github.com/JossefMo1/Werft
 tracked in PR #205. The candidate remains an older, unsigned lab artifact and does not
 qualify any Native Single-Host gate.
 
-The next live candidate must be built from package-bearing Main code handoff `a0712700dab3cccce2eca8c43788b4cfd4452953`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor.
+The next live candidate must be built from package-bearing Main code handoff `ec868d03299307b178e68fbbffabd8c211bda814`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor. The current connector cannot dispatch `ci.yml`, so this remains a documented blocker rather than a passed gate.
 
 
 ## Latest code handoff (2026-11-22)
 
-[PR #215](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/215) merged as [a071270](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/a0712700dab3cccce2eca8c43788b4cfd4452953). The Native API now checks the persisted node/gateway inventory before returning `GET /v1/health` metadata, so revoked or unenrolled identities receive `NODE_NOT_AUTHORIZED` or `GATEWAY_NOT_AUTHORIZED`; administrator access remains unchanged. Regression tests cover revoked node and gateway certificates against the etcd-backed API harness.
+[PR #217](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/217) merged as [ec868d0](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/ec868d03299307b178e68fbbffabd8c211bda814). Native control startup, resume and local backup now validate both the control and etcd HTTPS endpoints, require matching cluster identities, and reject non-private or malformed listener addresses. Regression tests cover HTTP etcd, cluster-ID mismatch, public listeners and missing listener ports.
 
-Exact PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45057875882), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45057875904) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45057875923). Real-VM and real-PITR jobs remained skipped. This is a security-boundary handoff only: the immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and the release decision remains no-go. Build a new candidate from `a0712700dab3cccce2eca8c43788b4cfd4452953` before any live evidence can cover this fix.
+Exact PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829562), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829580) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45063829544). Real-VM and real-PITR jobs remained skipped. This is a native security-boundary handoff only: the immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and the release decision remains no-go. Build a new candidate from `ec868d03299307b178e68fbbffabd8c211bda814` before any live evidence can cover this fix.
 
 # Release status — 0.2.0-dev.4
 
