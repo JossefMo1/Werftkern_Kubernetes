@@ -13,7 +13,14 @@ The tracker contract is hardened by [PR #204](https://github.com/JossefMo1/Werft
 tracked in PR #205. The candidate remains an older, unsigned lab artifact and does not
 qualify any Native Single-Host gate.
 
-The next live candidate must be built from package-bearing Main code handoff `ea83bb618edd82586a269930f388a66e04ade566`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor.
+The next live candidate must be built from package-bearing Main code handoff `a0712700dab3cccce2eca8c43788b4cfd4452953`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor.
+
+
+## Latest code handoff (2026-11-22)
+
+[PR #215](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/215) merged as [a071270](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/a0712700dab3cccce2eca8c43788b4cfd4452953). The Native API now checks the persisted node/gateway inventory before returning `GET /v1/health` metadata, so revoked or unenrolled identities receive `NODE_NOT_AUTHORIZED` or `GATEWAY_NOT_AUTHORIZED`; administrator access remains unchanged. Regression tests cover revoked node and gateway certificates against the etcd-backed API harness.
+
+Exact PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45057875882), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45057875904) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45057875923). Real-VM and real-PITR jobs remained skipped. This is a security-boundary handoff only: the immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and the release decision remains no-go. Build a new candidate from `a0712700dab3cccce2eca8c43788b4cfd4452953` before any live evidence can cover this fix.
 
 # Release status — 0.2.0-dev.4
 
