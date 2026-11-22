@@ -8,6 +8,11 @@ The scope decision is recorded in [PR #203](https://github.com/JossefMo1/Werftke
 `f75845424286c1c8bed6c9ef17d2b172066e6309`. The current immutable candidate remains
 older and must not be treated as evidence for this changed scope.
 
+The tracker contract is hardened by [PR #204](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/204), merged at
+`83c06425600749418994d34a1f197d4ad64f6d50`; the follow-up documentation synchronization is
+tracked in PR #205. The candidate remains an older, unsigned lab artifact and does not
+qualify any Native Single-Host gate.
+
 # Release status — 0.2.0-dev.4
 
 **NOT_PRODUCTION_READY. Full masterplan incomplete. State schema 2.**
