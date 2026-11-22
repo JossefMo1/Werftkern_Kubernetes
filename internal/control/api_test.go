@@ -23,6 +23,7 @@ type harness struct {
 	sequence                  atomic.Uint64
 	s                         *store.Etcd
 	tls                       *testutil.TLSFixture
+	api                       *control.API
 	admin                     *apiclient.Client
 	node                      *apiclient.Client
 	nodeID, otherID, instance string
@@ -48,7 +49,7 @@ func makeHarness(t *testing.T) *harness {
 			t.Fatal(e)
 		}
 	}
-	return &harness{s: s, tls: tls, admin: admin, node: &apiclient.Client{HTTP: tls.Client(t, "node:"+nodeID), Base: tls.Server.URL, ClusterID: id}, nodeID: nodeID, otherID: otherID, instance: model.ID()}
+	return &harness{s: s, tls: tls, api: api, admin: admin, node: &apiclient.Client{HTTP: tls.Client(t, "node:"+nodeID), Base: tls.Server.URL, ClusterID: id}, nodeID: nodeID, otherID: otherID, instance: model.ID()}
 }
 func rawRequest(t *testing.T, c *apiclient.Client, method, path, body, origin string) (int, string) {
 	t.Helper()
@@ -69,6 +70,14 @@ func rawRequest(t *testing.T, c *apiclient.Client, method, path, body, origin st
 func hb(h *harness) model.Heartbeat {
 	return model.Heartbeat{Sequence: h.sequence.Add(1), InstanceID: h.instance, CPUMilli: 2000, MemoryMiB: 2048, Healthy: true, Version: model.Version}
 }
+func TestAPIRejectsCertificateOutsideInjectedClock(t *testing.T) {
+	h := makeHarness(t)
+	h.api.Now = func() time.Time { return time.Time{} }
+	if _, e := h.admin.State(context.Background()); e == nil || !strings.Contains(e.Error(), "ADMIN_IDENTITY_REQUIRED") {
+		t.Fatalf("expected certificate validity rejection, got %v", e)
+	}
+}
+
 func TestAPIAdminVersusNodeAuthorization(t *testing.T) {
 	h := makeHarness(t)
 	if _, e := h.admin.State(context.Background()); e != nil {
