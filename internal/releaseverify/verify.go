@@ -10,9 +10,9 @@ import (
 	"encoding/pem"
 	"errors"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 	"io"
-	"os"
 	"regexp"
 )
 
@@ -55,7 +55,7 @@ func Verify(raw, sig, key []byte, packagePath string) (Manifest, error) {
 			return m, errors.New("SOURCE_VERSION_INVALID")
 		}
 	}
-	f, e := os.Open(packagePath)
+	f, e := safefile.OpenRead(packagePath)
 	if e != nil {
 		return m, e
 	}
