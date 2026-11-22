@@ -4,6 +4,10 @@ Der offizielle erste Production-Scope ist jetzt **Native Single-Host Production*
 
 Der aktuelle Status bleibt **No-Go**, bis der exakte Native-Kandidat die Single-Host-Gates, Signierung, Runbooks und Go/No-Go-Prüfung bestanden hat. Die alten Full-Masterplan-Einträge darunter sind historische Nachweise; sie gelten nicht mehr als Pflichtumfang für den ersten Release.
 
+The scope decision is recorded in [PR #203](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203), merged at
+`f75845424286c1c8bed6c9ef17d2b172066e6309`. The current immutable candidate remains
+older and must not be treated as evidence for this changed scope.
+
 # Release status — 0.2.0-dev.4
 
 **NOT_PRODUCTION_READY. Full masterplan incomplete. State schema 2.**

@@ -88,6 +88,16 @@ def validate(tracker: dict) -> list[str]:
     ):
         problems.append("TRACKER_NEXT_ACTION_EVIDENCE_INVALID")
 
+    last_completed = tracker.get("lastCompleted")
+    candidate = tracker.get("candidate")
+    main_after_candidate = candidate.get("mainAfterCandidate") if isinstance(candidate, dict) else None
+    completed_commit = last_completed.get("commit") if isinstance(last_completed, dict) else None
+    candidate_commit = main_after_candidate.get("commit") if isinstance(main_after_candidate, dict) else None
+    if not isinstance(completed_commit, str) or not completed_commit.strip() or not isinstance(candidate_commit, str) or not candidate_commit.strip():
+        problems.append("TRACKER_MAIN_HANDOFF_INVALID")
+    elif completed_commit != candidate_commit:
+        problems.append("TRACKER_MAIN_HANDOFF_MISMATCH")
+
     streams = tracker.get("workstreams")
     if not isinstance(streams, list):
         return problems + ["TRACKER_WORKSTREAMS_INVALID"]

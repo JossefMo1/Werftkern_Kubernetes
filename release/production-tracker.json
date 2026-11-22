@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T14:27:57.878Z",
+  "updatedAt": "2026-11-22T15:00:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "cd3e4f16ce09383839dc82d5b0f9701b505bb505",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/202",
-    "summary": "The official first production target was changed to Native Single-Host. No qualification gate is claimed closed; the exact candidate still needs scoped live evidence."
+    "commit": "f75845424286c1c8bed6c9ef17d2b172066e6309",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203",
+    "summary": "The official first production target is Native Single-Host. HA, Kubernetes production and site recovery remain deferred; no qualification gate is claimed closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -407,13 +407,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "a768d0e304bc7c28ca8f3da7732a179e504001e6",
-      "codeCommit": "a768d0e304bc7c28ca8f3da7732a179e504001e6",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/201",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/202",
-      "summary": "Main contains the fail-closed production-tracker action-contract validation and regression tests from PR #201. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
+      "commit": "f75845424286c1c8bed6c9ef17d2b172066e6309",
+      "codeCommit": "f75845424286c1c8bed6c9ef17d2b172066e6309",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203",
+      "summary": "Main contains the Native Single-Host scope contract from PR #203. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include the current scope change.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/201"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203"
     }
   },
   "previousCandidates": [

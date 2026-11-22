@@ -32,6 +32,17 @@ class ProductionTrackerTests(unittest.TestCase):
         self.assertIn(self.tracker["candidate"]["sourceCommit"], status)
         self.assertIn("production decision remains no-go", status)
 
+    def test_main_handoff_commit_is_consistent(self):
+        self.assertEqual(
+            self.tracker["lastCompleted"]["commit"],
+            self.tracker["candidate"]["mainAfterCandidate"]["commit"],
+        )
+
+    def test_main_handoff_commit_mismatch_is_rejected(self):
+        changed = copy.deepcopy(self.tracker)
+        changed["candidate"]["mainAfterCandidate"]["commit"] = "0" * 40
+        self.assertIn("TRACKER_MAIN_HANDOFF_MISMATCH", TRACKER.validate(changed))
+
     def test_missing_no_go_decision_is_rejected(self):
         changed = copy.deepcopy(self.tracker)
         del changed["decision"]
