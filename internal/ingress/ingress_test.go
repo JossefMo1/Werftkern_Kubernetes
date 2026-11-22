@@ -8,6 +8,8 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -169,6 +171,35 @@ func TestSnapshotFreshnessReplayScopeAndCIDRValidation(t *testing.T) {
 		t.Fatal("stale endpoint still selected")
 	}
 }
+func TestServeUsesInjectedClockForCertificateValidity(t *testing.T) {
+	c := cfg()
+	g, e := New(c)
+	if e != nil {
+		t.Fatal(e)
+	}
+	ca, e := pki.CA("serve-clock-test", time.Now())
+	if e != nil {
+		t.Fatal(e)
+	}
+	pair, e := pki.Issue(ca, "edge", c.Client.ClusterID, []string{"web.example.test"}, true, time.Now())
+	if e != nil {
+		t.Fatal(e)
+	}
+	dir := t.TempDir()
+	g.config.Certificate = filepath.Join(dir, "edge.crt")
+	g.config.PrivateKey = filepath.Join(dir, "edge.key")
+	if e = os.WriteFile(g.config.Certificate, pair.Cert, 0o600); e != nil {
+		t.Fatal(e)
+	}
+	if e = os.WriteFile(g.config.PrivateKey, pair.Key, 0o600); e != nil {
+		t.Fatal(e)
+	}
+	g.now = func() time.Time { return time.Time{} }
+	if e = g.Serve(context.Background()); e == nil || e.Error() != "INGRESS_TLS_CERTIFICATE_EXPIRED_OR_NOT_YET_VALID" {
+		t.Fatalf("expected injected-clock certificate rejection, got %v", e)
+	}
+}
+
 func TestSameRevisionMayExpireButNotIntroduceEndpoints(t *testing.T) {
 	c := cfg()
 	g, _ := New(c)
