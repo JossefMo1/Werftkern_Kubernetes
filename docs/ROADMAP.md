@@ -297,3 +297,12 @@ Exact post-merge checks passed: [Kubernetes contracts](https://github.com/Jossef
 
 Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44973221312), [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44973221342) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44973221313); real-VM and real-PITR remained skipped. This is a code-quality/security-boundary handoff only: the immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, `productionReady=false`, and no live qualification gate was closed.
 
+
+
+## Code handoff — PR #181 (2026-11-22)
+
+[PR #181](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/181) merged at [f38d33c](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f38d33c77394d321ec8229033dda5e48299d16cf). The Kubernetes CycloneDX evidence verifier now requires every component entry to contain a non-empty string `name`; empty or malformed entries fail closed with stable `SBOM_COMPONENT_INVALID` handling. A regression test protects the empty-object path.
+
+Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44982393959), [Native runtime/package, including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44982393878) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44982393890). Real-VM and real-PITR jobs were skipped because no authorized disposable lab is configured.
+
+This is a code-quality/security-boundary handoff only. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false`, the decision remains `no-go`, and no live qualification gate was closed. A new immutable candidate is required before any live evidence can cover this merge.
