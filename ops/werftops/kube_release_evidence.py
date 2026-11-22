@@ -100,6 +100,8 @@ def validate_supply_documents(root, documents, candidate):
             if not isinstance(finding,dict) or finding.get('Severity') not in ('LOW','MEDIUM','HIGH','CRITICAL','UNKNOWN'):
                 raise Blocked('VULNERABILITY_SEVERITY_INVALID')
             if finding['Severity'] in ('HIGH','CRITICAL','UNKNOWN'):raise Blocked('UNRESOLVED_VULNERABILITY_BLOCKS_RELEASE')
+            if not isinstance(finding.get('VulnerabilityID'),str) or not finding['VulnerabilityID'].strip():
+                raise Blocked('VULNERABILITY_FINDING_INVALID')
     provenance=read_json(bounded_file(root,documents['provenance']))
     if not isinstance(provenance,dict):
         raise Blocked('PROVENANCE_DOCUMENT_INVALID')
