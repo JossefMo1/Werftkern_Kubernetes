@@ -180,16 +180,16 @@ func ClientBundle(ca []byte, path string) (*http.Client, error) {
 	return &http.Client{Transport: &checkedTransport{tr, loader}, Timeout: 20 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}, nil
 }
 func ServerFiles(caFile, certFile, keyFile string) (*tls.Config, error) {
-	ca, e := os.ReadFile(caFile)
+	ca, e := readCredential(caFile, false)
 	if e != nil {
 		return nil, e
 	}
 	if certFile != keyFile {
-		cert, e := os.ReadFile(certFile)
+		cert, e := readCredential(certFile, false)
 		if e != nil {
 			return nil, e
 		}
-		key, e := os.ReadFile(keyFile)
+		key, e := readCredential(keyFile, true)
 		if e != nil {
 			return nil, e
 		}
