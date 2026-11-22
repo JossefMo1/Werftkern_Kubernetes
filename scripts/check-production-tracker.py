@@ -51,12 +51,16 @@ def validate(tracker: dict) -> list[str]:
             datetime.datetime.fromisoformat(decision["decidedAt"].replace("Z", "+00:00"))
         except (KeyError, TypeError, ValueError):
             problems.append("TRACKER_DECISION_TIME_INVALID")
-        if not isinstance(decision.get("basis"), list) or not all(
-            isinstance(value, str) and value for value in decision.get("basis", [])
+        if (
+            not isinstance(decision.get("basis"), list)
+            or not decision["basis"]
+            or not all(isinstance(value, str) and value.strip() for value in decision["basis"])
         ):
             problems.append("TRACKER_DECISION_BASIS_INVALID")
-        if not isinstance(decision.get("blockingGates"), list) or not all(
-            isinstance(value, str) and value for value in decision.get("blockingGates", [])
+        if (
+            not isinstance(decision.get("blockingGates"), list)
+            or not decision["blockingGates"]
+            or not all(isinstance(value, str) and value.strip() for value in decision["blockingGates"])
         ):
             problems.append("TRACKER_DECISION_GATES_INVALID")
     sources = tracker.get("sources")
@@ -75,11 +79,12 @@ def validate(tracker: dict) -> list[str]:
         or next_action.get("status") != "blocked-external"
         or not isinstance(next_action.get("blockers"), list)
         or not next_action["blockers"]
-        or not all(isinstance(value, str) and value for value in next_action["blockers"])
+        or not all(isinstance(value, str) and value.strip() for value in next_action["blockers"])
         or not isinstance(next_action.get("successCriteria"), list)
         or not next_action["successCriteria"]
-        or not all(isinstance(value, str) and value for value in next_action["successCriteria"])
+        or not all(isinstance(value, str) and value.strip() for value in next_action["successCriteria"])
         or not isinstance(next_action.get("safeRollback"), str)
+        or not next_action["safeRollback"].strip()
     ):
         problems.append("TRACKER_NEXT_ACTION_EVIDENCE_INVALID")
     streams = tracker.get("workstreams")
@@ -97,13 +102,19 @@ def validate(tracker: dict) -> list[str]:
         if (
             not isinstance(item.get("requiredGateFamilies"), list)
             or not item["requiredGateFamilies"]
-            or not all(isinstance(value, str) and value for value in item["requiredGateFamilies"])
+            or not all(isinstance(value, str) and value.strip() for value in item["requiredGateFamilies"])
         ):
             problems.append("TRACKER_GATE_FAMILIES_INVALID:" + str(item.get("id")))
         if item.get("status") == "passed":
             problems.append("TRACKER_CANNOT_CLOSE_E2E_WITHOUT_RELEASE_EVIDENCE:" + str(item.get("id")))
-        if item.get("status") == "blocked-external" and not item.get("blockers"):
-            problems.append("TRACKER_BLOCKER_MISSING:" + str(item.get("id")))
+        if item.get("status") == "blocked-external":
+            blockers = item.get("blockers")
+            if not blockers:
+                problems.append("TRACKER_BLOCKER_MISSING:" + str(item.get("id")))
+            elif not isinstance(blockers, list) or not all(
+                isinstance(value, str) and value.strip() for value in blockers
+            ):
+                problems.append("TRACKER_BLOCKERS_INVALID:" + str(item.get("id")))
     return problems
 
 
