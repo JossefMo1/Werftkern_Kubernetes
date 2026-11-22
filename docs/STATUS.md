@@ -1,3 +1,9 @@
+# Aktuelle Production-Entscheidung — 22.11.2026
+
+Der offizielle erste Production-Scope ist jetzt **Native Single-Host Production**. Die Hauptversion soll produktiv nutzbar sein, aber nur innerhalb dieses ausdrücklich dokumentierten Umfangs. HA/Multi-Host, Kubernetes-Production und Site-Recovery sind zurückgestellt und keine Blocker für den ersten Native-Release.
+
+Der aktuelle Status bleibt **No-Go**, bis der exakte Native-Kandidat die Single-Host-Gates, Signierung, Runbooks und Go/No-Go-Prüfung bestanden hat. Die alten Full-Masterplan-Einträge darunter sind historische Nachweise; sie gelten nicht mehr als Pflichtumfang für den ersten Release.
+
 # Release status — 0.2.0-dev.4
 
 **NOT_PRODUCTION_READY. Full masterplan incomplete. State schema 2.**
