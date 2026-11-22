@@ -241,3 +241,39 @@ func TestInstallRefusesIdentityChange(t *testing.T) {
 		t.Fatal("role change", e)
 	}
 }
+
+
+func TestServerFilesRejectsUnsafeSeparatePrivateKey(t *testing.T) {
+	ca, server := issueForRotation(t, "control", true)
+	dir := t.TempDir()
+	caPath := filepath.Join(dir, "ca.crt")
+	certPath := filepath.Join(dir, "server.crt")
+	keyPath := filepath.Join(dir, "server.key")
+	for path, raw := range map[string][]byte{caPath: ca.Cert, certPath: server.Cert, keyPath: server.Key} {
+		if err := os.WriteFile(path, raw, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := ServerFiles(caPath, certPath, keyPath); err != nil {
+		t.Fatalf("valid separate server credentials rejected: %v", err)
+	}
+	if err := os.Chmod(keyPath, 0640); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := ServerFiles(caPath, certPath, keyPath); err == nil {
+		t.Fatal("group-readable server private key accepted")
+	}
+	if err := os.Chmod(keyPath, 0600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(dir, "actual.key")
+	if err := os.Rename(keyPath, link); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(link, keyPath); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := ServerFiles(caPath, certPath, keyPath); err == nil {
+		t.Fatal("symlinked server private key accepted")
+	}
+}
