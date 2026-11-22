@@ -314,3 +314,11 @@ This is a code-quality/security-boundary handoff only. The immutable `v0.2.0-dev
 Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44986729213), [Native runtime/package, including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44986729235) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44986729267). Real-VM and real-PITR jobs were skipped because no authorized disposable lab is configured.
 
 This is a code-quality/security-boundary handoff only. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false`, the decision remains `no-go`, and no live qualification gate was closed. A new immutable candidate is required before live evidence can cover this merge.
+
+## Code handoff — PR #185 (2026-11-22)
+
+[PR #185](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/185) merged as [3cfe2e9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/3cfe2e9f25b68cce70a8e9684d8dd4dd957c8fa8). The Kubernetes release-candidate verifier now requires `sourceRepository` to be a canonical public GitHub repository URL, with an optional `.git` suffix; truncated identities fail closed with stable `SOURCE_REPOSITORY_INVALID` handling. A regression test protects the malformed URL path.
+
+Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44991036663), [Native runtime/package, including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44991036674) and [source/privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44991036662). Real-VM and real-PITR jobs were skipped because no authorized disposable lab is configured.
+
+This is a code-quality/security-boundary handoff only. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false`, the decision remains `no-go`, and no live qualification gate was closed. A new immutable candidate is required before live evidence can cover this merge.
