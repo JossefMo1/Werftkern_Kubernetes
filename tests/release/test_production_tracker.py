@@ -87,6 +87,12 @@ class ProductionTrackerTests(unittest.TestCase):
         changed["nextAction"]["safeRollback"] = "  "
         self.assertIn("TRACKER_NEXT_ACTION_EVIDENCE_INVALID", TRACKER.validate(changed))
 
+    def test_next_action_requires_summary_and_next_step(self):
+        changed = copy.deepcopy(self.tracker)
+        changed["nextAction"]["summary"] = ""
+        changed["nextAction"]["nextStep"] = "  "
+        self.assertIn("TRACKER_NEXT_ACTION_EVIDENCE_INVALID", TRACKER.validate(changed))
+
     def test_workstream_requires_nonempty_gate_families(self):
         changed = copy.deepcopy(self.tracker)
         stream = next(item for item in changed["workstreams"] if item["id"] == "E2E-K01")
