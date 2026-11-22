@@ -85,6 +85,10 @@ def validate(tracker: dict) -> list[str]:
         or not all(isinstance(value, str) and value.strip() for value in next_action["successCriteria"])
         or not isinstance(next_action.get("safeRollback"), str)
         or not next_action["safeRollback"].strip()
+        or not isinstance(next_action.get("summary"), str)
+        or not next_action["summary"].strip()
+        or not isinstance(next_action.get("nextStep"), str)
+        or not next_action["nextStep"].strip()
     ):
         problems.append("TRACKER_NEXT_ACTION_EVIDENCE_INVALID")
     streams = tracker.get("workstreams")
