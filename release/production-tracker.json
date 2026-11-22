@@ -412,10 +412,10 @@
       "commit": "48959dfb13a8219d29d9fd6885152dca36346a41",
       "codeCommit": "48959dfb13a8219d29d9fd6885152dca36346a41",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/226",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/225",
-      "summary": "Main contains the safefile parent-traversal hardening from PR #226 plus earlier native mTLS credential hardening. The code-bearing handoff is 48959dfb13a8219d29d9fd6885152dca36346a41; the tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, while GitHub release metadata reports immutable=false and unsigned assets.",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/227",
+      "summary": "Main contains the safefile parent-traversal hardening from PR #226; this tracker/status/roadmap synchronization is PR #227. The code-bearing handoff is 48959dfb13a8219d29d9fd6885152dca36346a41; the tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, while GitHub release metadata reports immutable=false and unsigned assets.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/226"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/227"
     }
   },
   "previousCandidates": [
