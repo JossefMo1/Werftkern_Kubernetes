@@ -320,6 +320,9 @@ func Resume(ctx context.Context) error {
 	if e != nil {
 		return e
 	}
+	if e = config.ValidateControl(cc); e != nil {
+		return e
+	}
 	if e = command(ctx, "systemctl", "daemon-reload"); e != nil {
 		return e
 	}
