@@ -62,10 +62,29 @@ class ProductionTrackerTests(unittest.TestCase):
         stream["blockers"] = []
         self.assertIn("TRACKER_BLOCKER_MISSING:E2E-K01", TRACKER.validate(changed))
 
+    def test_blocked_workstream_rejects_non_string_blockers(self):
+        changed = copy.deepcopy(self.tracker)
+        stream = next(item for item in changed["workstreams"] if item["id"] == "E2E-K01")
+        stream["blockers"] = "missing lab"
+        self.assertIn("TRACKER_BLOCKERS_INVALID:E2E-K01", TRACKER.validate(changed))
+
+    def test_decision_requires_nonempty_evidence_lists(self):
+        changed = copy.deepcopy(self.tracker)
+        changed["decision"]["basis"] = []
+        changed["decision"]["blockingGates"] = ["  "]
+        problems = TRACKER.validate(changed)
+        self.assertIn("TRACKER_DECISION_BASIS_INVALID", problems)
+        self.assertIn("TRACKER_DECISION_GATES_INVALID", problems)
+
     def test_next_action_requires_nonempty_evidence_contract(self):
         changed = copy.deepcopy(self.tracker)
         changed["nextAction"]["blockers"] = []
         changed["nextAction"]["successCriteria"] = []
+        self.assertIn("TRACKER_NEXT_ACTION_EVIDENCE_INVALID", TRACKER.validate(changed))
+
+    def test_next_action_requires_nonempty_safe_rollback(self):
+        changed = copy.deepcopy(self.tracker)
+        changed["nextAction"]["safeRollback"] = "  "
         self.assertIn("TRACKER_NEXT_ACTION_EVIDENCE_INVALID", TRACKER.validate(changed))
 
     def test_workstream_requires_nonempty_gate_families(self):
