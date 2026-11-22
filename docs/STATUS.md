@@ -189,3 +189,11 @@ PR [#181](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/181) merged at 
 Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44982393959), [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44982393878) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44982393890). Real-VM and real-PITR remain skipped. This is not SBOM validity, vulnerability clearance or production qualification.
 
 The immutable `v0.2.0-dev.4-test.17` candidate is unchanged at `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains `no-go`. Authorized disposable Ubuntu/k0s installation, upgrade/rollback, backup/restore, HA/partition, load/soak, signed provenance and independent review remain open.
+
+## Latest code handoff — PR #183 (2026-11-22)
+
+PR [#183](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/183) merged at [8c0bc4a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8c0bc4aa21575891eb782ad6943bfe42c24cb4d6). The Kubernetes Trivy-v2 evidence parser now requires each LOW/MEDIUM finding to carry a non-empty string `VulnerabilityID`; malformed findings are rejected fail-closed with `VULNERABILITY_FINDING_INVALID`, and a regression test covers a nameless LOW finding.
+
+Exact PR checks passed: [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44986729213), [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44986729235) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44986729267). Real-VM and real-PITR remain skipped. This is not vulnerability clearance or production qualification.
+
+The immutable `v0.2.0-dev.4-test.17` candidate is unchanged at `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains `no-go`. Authorized disposable Ubuntu/k0s installation, upgrade/rollback, backup/restore, HA/partition, load/soak, signed provenance and independent review remain open.
