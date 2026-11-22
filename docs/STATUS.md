@@ -13,7 +13,7 @@ The tracker contract is hardened by [PR #204](https://github.com/JossefMo1/Werft
 tracked in PR #205. The candidate remains an older, unsigned lab artifact and does not
 qualify any Native Single-Host gate.
 
-The next live candidate must be built from current Main `cc62b2b758062669d9dc3e445c7f06dd74bbac97`; the package-bearing code handoff remains `83c06425600749418994d34a1f197d4ad64f6d50`. Evidence must bind the runner-reported `GITHUB_SHA` and package digest, not a guessed predecessor.
+The next live candidate must be built from package-bearing Main code handoff `cc62b2b758062669d9dc3e445c7f06dd74bbac97`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor.
 
 # Release status — 0.2.0-dev.4
 
