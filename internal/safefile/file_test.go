@@ -39,6 +39,23 @@ func TestRefusesDestinationSymlink(t *testing.T) {
 		t.Fatal("target changed")
 	}
 }
+func TestRefusesParentSymlink(t *testing.T) {
+	d := t.TempDir()
+	real := filepath.Join(d, "real")
+	if err := os.Mkdir(real, 0700); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(d, "link")
+	if err := os.Symlink(real, link); err != nil {
+		t.Fatal(err)
+	}
+	if err := Write(filepath.Join(link, "file"), []byte("bad"), 0600); err == nil {
+		t.Fatal("followed parent symlink")
+	}
+	if _, err := os.Stat(filepath.Join(real, "file")); !os.IsNotExist(err) {
+		t.Fatal("real target changed")
+	}
+}
 func TestStrictJSON(t *testing.T) {
 	for _, raw := range []string{`{"value":1,"unknown":1}`, `{"value":1} {}`, `{"value":`, strings.Repeat(" ", 4<<20) + `{}`} {
 		p := filepath.Join(t.TempDir(), "a")

@@ -10,9 +10,44 @@ import (
 	"path/filepath"
 )
 
+func validateParentChain(path string) error {
+	for current := filepath.Clean(path); ; current = filepath.Dir(current) {
+		info, err := os.Lstat(current)
+		if err != nil {
+			if !errors.Is(err, os.ErrNotExist) {
+				return err
+			}
+			parent := filepath.Dir(current)
+			if parent == current {
+				return err
+			}
+			continue
+		}
+		if info.Mode()&os.ModeSymlink != 0 {
+			return errors.New("REFUSING_SYMLINK_PARENT")
+		}
+		if !info.IsDir() {
+			return errors.New("PARENT_NOT_DIRECTORY")
+		}
+		parent := filepath.Dir(current)
+		if parent == current {
+			return nil
+		}
+	}
+}
+
 func Write(path string, b []byte, mode os.FileMode) error {
 	d := filepath.Dir(path)
+	// Check existing components before creating directories so a symlinked
+	// parent cannot redirect the write into another tree.
+	if err := validateParentChain(d); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
 	if err := os.MkdirAll(d, 0700); err != nil {
+		return err
+	}
+	// Re-check after MkdirAll so newly-created components are covered too.
+	if err := validateParentChain(d); err != nil {
 		return err
 	}
 	if i, e := os.Lstat(path); e == nil && i.Mode()&os.ModeSymlink != 0 {
