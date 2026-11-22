@@ -194,6 +194,13 @@ class EvidenceTests(unittest.TestCase):
             self.check()
         self.assertEqual(str(error.exception),'VULNERABILITY_FINDING_INVALID')
 
+    def test_source_repository_must_be_canonical_github_url(self):
+        self.c['sourceRepository']='https://github.com/'
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'SOURCE_REPOSITORY_INVALID')
+
     def test_provenance_wrong_builder(self):
         self.gate('supply-chain');self.save();self.c['builderId']='changed-builder';write_json(self.cp,self.c)
         with self.assertRaisesRegex(Blocked,'BUILDER'):self.check()
