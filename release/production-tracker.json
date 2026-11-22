@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T16:20:30Z",
+  "updatedAt": "2026-11-22T16:59:17.517Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "fe052af52ab80509f325b9ebee8338649f49ecdd",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/209",
-    "summary": "The Native API now evaluates mTLS certificate validity through the injected UTC clock, with regression coverage; no qualification gate is claimed closed."
+    "commit": "0a785a85435c6796a34cadd24d66e7c1256f553c",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/211",
+    "summary": "Ingress edge TLS certificate validity now uses the injected Gateway clock, with regression coverage; no qualification gate is claimed closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The immutable test.17 candidate is bound to an older commit and does not include the package-bearing Native API clock handoff fe052af52ab80509f325b9ebee8338649f49ecdd.",
+      "The immutable test.17 candidate is bound to an older commit and does not include the package-bearing ingress TLS clock handoff 0a785a85435c6796a34cadd24d66e7c1256f553c.",
       "Single-host backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not yet complete for one unchanged candidate."
     ],
     "successCriteria": [
@@ -50,7 +50,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff fe052af52ab80509f325b9ebee8338649f49ecdd (documentation-only Main commits may have newer SHAs; when dispatching from Main, record the runner-reported GITHUB_SHA), run ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 0a785a85435c6796a34cadd24d66e7c1256f553c (documentation-only Main commits may have newer SHAs; when dispatching from Main, record the runner-reported GITHUB_SHA), run ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -407,13 +407,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "fe052af52ab80509f325b9ebee8338649f49ecdd",
-      "codeCommit": "fe052af52ab80509f325b9ebee8338649f49ecdd",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/209",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/210",
-      "summary": "Main contains the mTLS certificate-validity clock fix and regression test from PR #209. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
+      "commit": "0a785a85435c6796a34cadd24d66e7c1256f553c",
+      "codeCommit": "0a785a85435c6796a34cadd24d66e7c1256f553c",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/211",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/212",
+      "summary": "Main contains the ingress TLS validity clock fix and regression test from PR #211. The immutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and does not include this main change.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/209"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/211"
     }
   },
   "previousCandidates": [
