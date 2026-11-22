@@ -108,6 +108,29 @@ func (a *API) admin(fn http.HandlerFunc) http.HandlerFunc {
 		fn(w, r)
 	}
 }
+func authorizeHealthIdentity(identity string, s *model.State) error {
+	if identity == "admin" {
+		return nil
+	}
+	if strings.HasPrefix(identity, "node:") {
+		id := strings.TrimPrefix(identity, "node:")
+		n := s.Nodes[id]
+		if n == nil || n.Revoked {
+			return errors.New("NODE_NOT_AUTHORIZED")
+		}
+		return nil
+	}
+	if strings.HasPrefix(identity, "gateway:") {
+		id := strings.TrimPrefix(identity, "gateway:")
+		g := s.Gateways[id]
+		if g == nil || g.Revoked {
+			return errors.New("GATEWAY_NOT_AUTHORIZED")
+		}
+		return nil
+	}
+	return errors.New("IDENTITY_REQUIRED")
+}
+
 func (a *API) Handler() http.Handler {
 	m := http.NewServeMux()
 	m.HandleFunc("GET /v1/health", func(w http.ResponseWriter, r *http.Request) {
@@ -115,9 +138,18 @@ func (a *API) Handler() http.Handler {
 			failure(w, 403, "IDENTITY_REQUIRED")
 			return
 		}
-		_, _, e := a.Store.Read(r.Context())
+		identity := a.identity(r)
+		if identity == "" {
+			failure(w, 403, "IDENTITY_REQUIRED")
+			return
+		}
+		s, _, e := a.Store.Read(r.Context())
 		if e != nil {
 			failError(w, e)
+			return
+		}
+		if e := authorizeHealthIdentity(identity, s); e != nil {
+			failure(w, 403, e.Error())
 			return
 		}
 		write(w, 200, map[string]any{"status": "ready", "clusterId": a.ClusterID, "version": model.Version, "stateSchema": model.StateSchema, "maturity": "experimental", "supportedAgentVersions": model.SupportedAgentVersions()})
