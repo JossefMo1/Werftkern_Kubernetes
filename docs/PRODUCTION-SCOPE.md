@@ -1,78 +1,60 @@
-# Candidate production scope
+# Offizieller Production-Scope
 
-This document defines the **proposed first support boundary**, not a production
-release. Werftkern remains an experimental alpha. The boundary becomes supported
-only after one unchanged release candidate and its digest-bound artifacts pass
-every applicable live, security, supply-chain and operational gate.
+Der erste Production-Release von Werftkern wird offiziell auf den **Native-Single-Host-Betrieb** konzentriert. Damit wird die Version hauptsächlich produktiv nutzbar, ohne nicht belegte HA-, Multi-Host- oder Kubernetes-Versprechen abzugeben.
 
-The machine-readable contract is `release/production-scope.json`; CI validates
-that it classifies every item in the 52-item masterplan and keeps the Native and
-Kubernetes paths separate. Scope validation cannot set `productionReady`.
+Der maschinenlesbare Vertrag ist release/native-production-scope.json. Er beschreibt den Production-Zielumfang; er setzt productionReady nicht automatisch auf true. Das geschieht erst nach der Qualifikation eines unveränderten Kandidaten.
 
-## Native runtime candidate
+## Production im ersten Release
 
-| Area | Proposed supported boundary |
+| Bereich | Unterstützter Umfang |
 | --- | --- |
-| Host | Fresh Ubuntu 24.04 LTS amd64, systemd and cgroup v2 |
-| Runtime | Werftkern Native 0.2.0-dev.4, state schema 2, Docker Engine and etcd |
-| Topology | Exactly three controllers and at least three workers; one site |
-| Trust | One trusted administrator and trusted workloads; no hostile multi-tenancy |
-| Capacity ceiling | 20 nodes, 50 workloads, 200 allocations and 900,000 state bytes; these are hard model bounds, not performance claims |
-| Dependencies | systemd, cgroup v2, Docker Engine and etcd, using the exact versions selected for the candidate |
-| Operations | Fresh-host installation; uninstall/reinstall; dev.3 workers to dev.4 only after every controller is on dev.4; backup/restore on a new host; candidate-specific rollback and recovery, all only after live qualification |
+| Produktpfad | Native Werftkern-Runtime |
+| Host | Frisches Ubuntu 24.04 LTS amd64 mit systemd und cgroup v2 |
+| Topologie | Ein Controller und ein lokaler Worker auf einem Host |
+| Runtime | Docker Engine, etcd, mTLS, CLI und lokales Dashboard |
+| Vertrauen | Ein vertrauenswürdiger Administrator und vertrauenswürdige Workloads |
+| Limits | 1 Node, 20 Workloads, 50 Allocations, 900.000 State-Bytes |
+| Betrieb | Installation, lokaler Workload-Lifecycle, Neustart/Wiederanlauf, lokales Backup/Restore, unterstütztes Paket-Upgrade und Rollback nach bestandener Qualifikation |
 
-Direct containerd, CNI compatibility, per-workload network policy, air-gap,
-native Jobs/CronJobs, autoscaling and GPU workloads are explicitly outside the
-first boundary. Docker-socket access remains privileged host authority. Loss of
-contact is not storage fencing and no automatic quorum-loss recovery is promised.
+Das ist ein echter Production-Zielumfang für geeignete Single-Host-Workloads. Die Release Notes müssen die Grenzen ausdrücklich nennen; es gibt keine allgemeine HA- oder SLA-Zusage.
 
-## Kubernetes manager candidate
+## Nicht Bestandteil dieses Production-Releases
 
-| Area | Proposed supported boundary |
-| --- | --- |
-| Management host | Ubuntu 24.04 LTS amd64 with Python 3.10 or newer |
-| Target hosts | Fresh dedicated Ubuntu 24.04 LTS amd64 hosts |
-| Engine | Separately supplied and digest-pinned k0s/Kubernetes; not the Native scheduler |
-| Topology | Exactly three controllers and at least three workers with an external highly available API endpoint |
-| Trust | One trusted administrator and one cluster; no multi-writer manager HA |
-| Storage and add-ons | Candidate storage profile: Hetzner Cloud Volumes through hcloud-csi 2.24.2, ReadWriteOnce, non-default `werftkern-hcloud-retain` StorageClass, `Retain`, `WaitForFirstConsumer`; exact RBAC/privilege/host-path boundary statically audited, node token automount disabled and `RuntimeDefault` pod seccomp bound; an exact-input post-render contract makes all root identities explicit and makes seven non-privileged container instances disable privilege escalation, drop all capabilities and bind container-level `RuntimeDefault`; all six locked linux/amd64 configs default to root, so pod-level `runAsNonRoot` is explicitly blocked; exact per-container CPU/memory budgets are statically bound but not live load/soak validated; the privileged node driver and qualified non-root identities remain unresolved; no add-on set is selected yet |
-| Upgrade | One adjacent Kubernetes minor-version edge selected before RC; no skipped-minor, downgrade or simultaneous topology/authentication change |
+- Multi-Host-HA, drei Controller, Quorum- und Netzwerkpartitionstoleranz
+- automatischer Quorum-Verlustausgleich
+- Restore auf einen anderen Host und vollständige Site-Disaster-Recovery
+- produktiver Kubernetes-Manager/k0s-Lifecycle
+- Cloud-Provisioning und Provider-Recovery
+- PostgreSQL-/Patroni-HA und qualifiziertes PITR
+- Air-Gap-Betrieb, GPU-Workloads, Native-Autoscaling und hostile Multi-Tenancy
+- CNCF-Zertifizierung oder unabhängiges Security-Audit
 
-The [candidate target matrix](../release/kubernetes-target-matrix.json) pins
-k0s, k0sctl, Kubernetes/kubectl and their inspected upstream digests. Those
-binaries have not been executed or signature-verified, so the pins are not
-compatibility or support evidence. The matrix also records a candidate Hetzner
-CSI chart and conservative StorageClass contract. The exact six-image inventory is
-bound to the upstream values Git blob and every OCI index digest is pinned after
-registry header/body hash agreement. The checker can re-resolve those tags and
-rejects drift, tag-only renders or unlisted images. The hash-checked chart has been
-rendered with pinned images and conservative values; the exact generated manifest
-is committed and hash-bound. The locked linux/amd64 manifest/config chain is also
-recorded: all six configs select root explicitly or implicitly, and the upstream chart
-does not expose per-container security-context values. The exact-input post-render path
-now binds explicit root identities and narrow non-privileged contexts, but this does not
-prove non-root execution or live compatibility. A pod-level non-root claim is therefore
-rejected until qualified identities and real runtime proof exist.
-Helm/chart/image signatures and vulnerabilities remain
-unverified, the manifest was not applied, and no Volume lifecycle test ran.
-Hetzner Cloud Volumes attach to one server at a time and the provider does not
-offer Volume backups or snapshots. Application-consistent backup and restore
-therefore remain separate mandatory gates. Until the complete matrix is reviewed
-and tested, there is no supported Kubernetes combination.
+Diese Bereiche bleiben geplante beziehungsweise experimentelle Erweiterungen. Sie blockieren den ersten Native-Single-Host-Release nicht, dürfen aber auch nicht als bestanden dargestellt werden.
 
-## Release evidence for the exact candidate
+## Verbindliche Production-Gates
 
-Both paths require a reproducible clean build, commit/artifact identity, all
-relevant unit/race/contract/integration/package/source/vulnerability checks,
-SBOM and dependency evidence, signed artifacts and provenance, fresh install,
-uninstall/reinstall, supported upgrade and rollback, backup/restore on a new
-host, multi-host failure and partition tests, negative authorization, load/soak
-limits, complete operator runbooks, an RC with real feedback, required independent
-review and a final Go/No-Go decision.
+Für denselben unveränderten Commit und dieselben Artefakte müssen mindestens folgende Nachweise vorliegen:
 
-The Native gate inventory remains in `release/qualification.json`; the Kubernetes
-inventory remains in `release/kubernetes-readiness.json`. Neither a green fixture
-nor this narrower scope removes the still-open full-masterplan work. The JSON
-contract records every deferred K20 item and its reason so scope cannot shrink
-silently. The current Native qualification contract still requires the full
-52-item masterplan; this proposal does not weaken or replace that gate.
+- reproduzierbarer Build, Commit-/Artefakt-Digest und SBOM;
+- grüne Unit-, Race-, Static-, Source- und Vulnerability-Prüfungen;
+- reale Installation auf einem frischen, entbehrlichen Ubuntu-24.04-Host;
+- realer Docker-/etcd-Betrieb mit Workload-Lifecycle und Neustart;
+- lokales Backup/Restore mit Integritätsprüfung;
+- unterstütztes Single-Host-Upgrade und Rollback;
+- begrenzter Single-Host-Load-/Soak-Test;
+- sichere Defaults und negative Autorisierungstests;
+- signierte oder anderweitig verifizierbare Release-Artefakte und Provenienz;
+- vollständige Single-Host-Runbooks, Release-Notes und abschließende Go/No-Go-Prüfung.
+
+Die vorhandene CI kann den Single-Host-E2E-Lauf auf einem ephemeren ubuntu-24.04-Runner ausführen. Dafür sind keine sieben VMs erforderlich. Der Lauf muss ausdrücklich gestartet und an den exakten Release-Kandidaten gebunden werden.
+
+## Weiterer Weg
+
+Nach diesem Release kann der Supportumfang schrittweise erweitert werden:
+
+1. Native Single-Host Production
+2. Native Multi-Host/HA
+3. Kubernetes-Production
+4. Cloud-, Recovery- und erweiterte Datenbankprofile
+
+Der bisherige vollständige Masterplan in release/production-scope.json bleibt als späterer HA-/Kubernetes-Qualifikationsvertrag erhalten.
