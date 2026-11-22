@@ -201,6 +201,13 @@ class EvidenceTests(unittest.TestCase):
             self.check()
         self.assertEqual(str(error.exception),'SOURCE_REPOSITORY_INVALID')
 
+    def test_builder_identity_must_be_nonempty_string(self):
+        self.c['builderId']='   '
+        self.save()
+        with self.assertRaises(Blocked) as error:
+            self.check()
+        self.assertEqual(str(error.exception),'BUILD_IDENTITY_REQUIRED')
+
     def test_provenance_dependencies_require_nonempty_uri_and_digest_values(self):
         self.gate('supply-chain')
         self.statements['supply-chain']['documents']['provenance']=self.document(
