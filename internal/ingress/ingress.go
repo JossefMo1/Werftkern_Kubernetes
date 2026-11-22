@@ -272,7 +272,7 @@ func (g *Gateway) Serve(ctx context.Context) error {
 	if e != nil {
 		return errors.New("INGRESS_TLS_CERTIFICATE_INVALID")
 	}
-	if time.Now().Before(leaf.NotBefore) || !time.Now().Before(leaf.NotAfter) {
+	if now := g.now(); now.Before(leaf.NotBefore) || !now.Before(leaf.NotAfter) {
 		return errors.New("INGRESS_TLS_CERTIFICATE_EXPIRED_OR_NOT_YET_VALID")
 	}
 	for _, route := range g.config.Routes {
