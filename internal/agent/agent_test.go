@@ -13,6 +13,7 @@ import (
 type fakeEngine struct {
 	items         map[string]bool
 	starts, stops int
+	ensureErr     error
 }
 
 func (f *fakeEngine) Health(context.Context) error { return nil }
@@ -31,6 +32,9 @@ func (f *fakeEngine) Stop(_ context.Context, id string) error {
 	return nil
 }
 func (f *fakeEngine) Ensure(_ context.Context, a model.Allocation, _ string, allowed func() bool) (model.Report, error) {
+	if f.ensureErr != nil {
+		return model.Report{}, f.ensureErr
+	}
 	if !allowed() {
 		return model.Report{}, errors.New("stale")
 	}
@@ -83,6 +87,28 @@ func TestJournalFailurePreventsNewExecution(t *testing.T) {
 		t.Fatal("ran unjournaled work")
 	}
 }
+func TestAgentFailureReportRetainsAllocationIdentity(t *testing.T) {
+	a, f, s := makeAgent(t)
+	if e := a.Accept(s); e != nil {
+		t.Fatal(e)
+	}
+	f.ensureErr = errors.New("engine unavailable")
+	if e := a.ReconcileOnce(context.Background()); e != nil {
+		t.Fatal(e)
+	}
+	id := s.Allocations[0].ID
+	r, ok := a.reports[id]
+	if !ok || r.ID != id || r.Phase != "failed" || r.Reason != "ENGINE_OPERATION_FAILED" {
+		t.Fatalf("failure report lost allocation identity: %#v", a.reports)
+	}
+	if _, ok := a.reports[""]; ok {
+		t.Fatal("empty allocation report identity recorded")
+	}
+	if f.starts != 0 {
+		t.Fatal("failed ensure started a workload")
+	}
+}
+
 func TestAgentRefusesScopeRollbackDuplicatesAndPorts(t *testing.T) {
 	for _, kind := range []string{"cluster", "node", "revision", "duplicate", "port", "image"} {
 		t.Run(kind, func(t *testing.T) {
