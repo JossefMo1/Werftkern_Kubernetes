@@ -12,7 +12,7 @@ The Native Single-Host scope is defined by [PR #203](https://github.com/JossefMo
 
 The release-tracker handoff contract is enforced by [PR #204](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/204), merged at `83c06425600749418994d34a1f197d4ad64f6d50`; PR #205 synchronizes this roadmap with that code-bearing handoff. No qualification gate is closed by these bookkeeping changes.
 
-The next exact-candidate build is pinned to current Main `cc62b2b758062669d9dc3e445c7f06dd74bbac97`; the package-bearing code handoff is `83c06425600749418994d34a1f197d4ad64f6d50`. No qualification gate is closed until the runner binds and verifies its own `GITHUB_SHA` and artifact digest.
+The next exact-candidate build is pinned to package-bearing Main code handoff `cc62b2b758062669d9dc3e445c7f06dd74bbac97`; documentation-only Main commits may have newer SHAs. No qualification gate is closed until the runner binds and verifies its own `GITHUB_SHA` and artifact digest.
 
 The current immutable lab candidate is [`v0.2.0-dev.4-test.17`](https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.17), sourced from `28efa7518e171a618d4dcf9ff3aba58cddaf3296`. This candidate includes the auto-discovery known-hosts replay guard; it does not remove any K20 requirement or change the no-go production decision.
 

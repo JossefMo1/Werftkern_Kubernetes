@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-22T16:56:00Z",
+  "updatedAt": "2026-11-22T16:01:10Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -50,7 +50,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main commit cc62b2b758062669d9dc3e445c7f06dd74bbac97 (the package-bearing code handoff is 83c06425600749418994d34a1f197d4ad64f6d50), run ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. The runner-reported GITHUB_SHA must be recorded in every evidence file. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff cc62b2b758062669d9dc3e445c7f06dd74bbac97 (documentation-only Main commits may have newer SHAs; when dispatching from Main, record the runner-reported GITHUB_SHA), run ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner, then complete the remaining same-candidate backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -278,7 +278,7 @@
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Publish the next immutable candidate from current Main commit cc62b2b758062669d9dc3e445c7f06dd74bbac97 (package-bearing code handoff 83c06425600749418994d34a1f197d4ad64f6d50), then run only on explicitly authorized disposable infrastructure."
+      "nextStep": "Publish the next immutable candidate from package-bearing Main code handoff cc62b2b758062669d9dc3e445c7f06dd74bbac97 (documentation-only Main commits may have newer SHAs; bind evidence to the runner-reported GITHUB_SHA), then run only on explicitly authorized disposable infrastructure."
     },
     {
       "id": "E2E-K01",
@@ -327,7 +327,7 @@
         "The exact candidate must be rebuilt from the current scoped main line.",
         "The ephemeral Ubuntu real-vm job has not yet been run for that candidate."
       ],
-      "nextStep": "Publish the next immutable candidate from current Main commit cc62b2b758062669d9dc3e445c7f06dd74bbac97, then run the existing root-only script on the ephemeral Ubuntu 24.04 runner; bind evidence to the runner GITHUB_SHA and package digest. CI checks do not replace live installation evidence."
+      "nextStep": "Publish the next immutable candidate from package-bearing Main code handoff cc62b2b758062669d9dc3e445c7f06dd74bbac97, then run the existing root-only script on the ephemeral Ubuntu 24.04 runner; bind evidence to the runner GITHUB_SHA and package digest. Documentation-only Main commits do not replace live installation evidence, and CI checks do not replace live installation evidence."
     },
     {
       "id": "E2E-H01",
