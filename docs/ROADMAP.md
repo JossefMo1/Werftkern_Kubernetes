@@ -1,3 +1,19 @@
+## Latest code handoff (2026-11-23, PR #244)
+
+PR [#244](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244) merged as [6faf2fbe](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6faf2fbe819ae7a0775d27727986bc02be07228e). Native ingress gateway credentials now use no-follow certificate/private-key reads, while edge TLS PEM loading is bounded and refuses final and parent symlinks. Regression tests cover valid pairs and symlinked certificate/key paths. This is defensive PKI hardening; no production gate is closed.
+
+Exact PR checks:
+- [Native PR 45120310439](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120310439) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes PR 45120310428](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120310428) — **success**.
+- [Source/Privacy PR 45120310459](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120310459) — **success**.
+
+Exact post-merge Main checks:
+- [Native Main 45120597182](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597182) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes Main 45120597181](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597181) — **success**.
+- [Source/Privacy Main 45120597194](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597194) — **success**.
+
+The roadmap remains **No-Go** until a new immutable candidate is built from [6faf2fbe](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6faf2fbe819ae7a0775d27727986bc02be07228e) and the scoped live gates (fresh Ubuntu install, Docker/etcd workload lifecycle, restart, local backup/restore, single-host upgrade/rollback, bounded load/soak, signed artifacts/provenance and final Go/No-Go) are evidenced for that unchanged candidate. HA, multi-host and Kubernetes Production remain deferred outside the first Native scope.
+
 ## Latest code handoff (2026-11-23, PR #242)
 
 PR [#242](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242) merged as [485fcfd2](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/485fcfd2b9f53abc857dfe19d66e8741981aa864). Native certificate bundle/renew/install now opens CA and leaf certificate inputs through `safefile.OpenRead`, refusing final and parent symlinks and enforcing a bounded 1 MiB read. Regression tests cover both symlink forms. This is a defensive input-hardening change; no production qualification gate is closed.
