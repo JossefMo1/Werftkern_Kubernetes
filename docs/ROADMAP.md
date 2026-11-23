@@ -1,5 +1,16 @@
 # Masterplan traceability
 
+## Latest code handoff (2026-11-23, PR #235)
+
+PR [#235](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/235) merged as [6e524547](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6e524547645c0555097a0042bd9d5692babc58b4). Native `werft secret put --file` now opens private secret inputs through `safefile.OpenRead`, rejecting final and parent symlinks before the existing private-mode and size checks. Regression coverage protects both symlink shapes.
+
+Exact Main checks:
+- [Native runtime/package 45097932838](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932838) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts/package 45097932830](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932830) — **success**.
+- [Source/Privacy audit 45097932869](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932869) — **success**.
+
+No qualification gate was closed. The current `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and remains `productionReady=false`/No-Go. The next candidate must be built from `6e524547645c0555097a0042bd9d5692babc58b4`; live installation, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability and final Go/No-Go remain open. The connector cannot dispatch `ci.yml`, so no live gate is implied.
+
 ## Latest code handoff (2026-11-23, PR #232)
 
 PR [#232](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/232) merged as [29418520](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/29418520bc4198a2e8102fe7518ef8e1e23893fe). Native `Docker.Load` now opens local image archives through `safefile.OpenRead`, refusing final symlinks and symlinked parent paths before Docker ingestion; regression tests cover both paths.
