@@ -804,6 +804,22 @@ func demoCommand(ctx context.Context, args []string) error {
 	}
 	return nil
 }
+func readCertificateInput(path string) ([]byte, error) {
+	f, e := safefile.OpenRead(path)
+	if e != nil {
+		return nil, e
+	}
+	defer f.Close()
+	st, e := f.Stat()
+	if e != nil || !st.Mode().IsRegular() || st.Size() < 1 || st.Size() > 64<<10 {
+		return nil, errors.New("CERTIFICATE_INPUT_INVALID")
+	}
+	b, e := io.ReadAll(io.LimitReader(f, (64<<10)+1))
+	if e != nil || len(b) > 64<<10 {
+		return nil, errors.New("CERTIFICATE_INPUT_INVALID")
+	}
+	return b, nil
+}
 func doctor(ctx context.Context) error {
 	fmt.Printf("Plattform: %s/%s; Compiler: %s\n", runtime.GOOS, runtime.GOARCH, runtime.Version())
 	if e := setup.Preflight(); e != nil {
@@ -815,7 +831,7 @@ func doctor(ctx context.Context) error {
 	if e != nil {
 		return e
 	}
-	b, e := os.ReadFile(c.Cert)
+	b, e := readCertificateInput(c.Cert)
 	if e != nil {
 		return e
 	}
