@@ -1,18 +1,19 @@
 # Aktuelle Production-Entscheidung — 23.11.2026
 
-## Latest code handoff (2026-11-23, PR #235)
+## Latest code handoff (2026-11-23, PR #237)
 
-PR [#235](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/235) merged as [6e524547](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6e524547645c0555097a0042bd9d5692babc58b4). Native `werft secret put --file` now opens private secret inputs through `safefile.OpenRead`, rejecting final and parent symlinks before the existing private-mode and size checks. Regression coverage protects both symlink shapes.
+PR [#237](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/237) merged as [6463c29d](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6463c29de2a1bfcb6c9e7dbcfbfeae26585d427d). Native `werft release verify` liest Manifest-, Signatur- und Public-Key-Eingaben jetzt über `safefile.OpenRead`, weist finale und übergeordnete Symlinks ab und erzwingt das Größenlimit auch nach dem Öffnen. Regressionstests decken beide Symlinkformen und das Limit ab.
 
 Exact Main checks for the merge commit:
-- [Native runtime/package 45097932838](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932838) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
-- [Kubernetes contracts/package 45097932830](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932830) — **success**.
-- [Source/Privacy audit 45097932869](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932869) — **success**.
+- [Native runtime/package 45103114622](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45103114622) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts/package 45103114692](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45103114692) — **success**.
+- [Source/Privacy audit 45103114649](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45103114649) — **success**.
 
-Private alpha publication jobs [45097966319](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097966319), [45097970734](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097970734) and [45098147453](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45098147453) completed successfully but are not stable release or production evidence. No qualification gate was closed. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains **no-go**.
+Private alpha publication jobs [45103144455](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45103144455), [45103152906](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45103152906) and [45103316680](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45103316680) completed successfully but are not stable release or production evidence. No qualification gate was closed. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains **no-go**.
 
-The next candidate must be package-built from `6e524547645c0555097a0042bd9d5692babc58b4`. Live Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle and restart, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability, user feedback and final Go/No-Go remain open. The current GitHub connector still cannot dispatch `ci.yml`; this is a blocker, not a passed gate.
+The next candidate must be package-built from `6463c29de2a1bfcb6c9e7dbcfbfeae26585d427d`. Live Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle and restart, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability, user feedback and final Go/No-Go remain open. The current GitHub connector still cannot dispatch `ci.yml`; this is a blocker, not a passed gate.
 
+## Previous handoff history
 ## Previous handoff history
 
 ## Latest code handoff (2026-11-23, PR #232)
