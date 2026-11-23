@@ -1,3 +1,19 @@
+# Latest code handoff (2026-11-23, PR #270)
+
+PR [#270](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/270) merged as [f7ab7e5a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f7ab7e5a0d3f10a6fa182222fb24c61c5dbb6b85). Native worker join-bundle input now uses no-follow safefile.OpenRead and bounded strict-JSON parsing from the opened descriptor. Final and parent symlink redirection, group-readable inputs and oversize bundles are rejected; regression coverage pins those cases and the exact 32 KiB boundary.
+
+PR checks:
+- Native runtime/package [45233988541](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45233988541) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45233988578](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45233988578) — **success**.
+- Source/Privacy audit [45233988580](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45233988580) — **success**.
+
+Post-merge Main checks:
+- Native runtime/package [45234652978](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45234652978) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45234652991](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45234652991) — **success**.
+- Source/Privacy audit [45234653067](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45234653067) — **success**.
+
+This defensive change closes no Single-Host qualification gate. The unchanged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, reports immutable=false and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope.
+
 # Latest code handoff (2026-11-23, PR #268)
 
 PR [#268](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268) merged as [f73662f4](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f73662f4e957cf0489319d34445715d17c626cd4) with no-follow safefile directory locking, parent-chain validation, regular-file/0600/owner checks and a parent-symlink regression test. PR Native, Kubernetes and Source/Privacy checks passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888940), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888882), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220889258)). Post-merge Main checks also passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221411990), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412038), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412406)); Native real-etcd passed while real-vm/PITR remain skipped.
