@@ -207,6 +207,35 @@ func TestEngineRejectsInvalidAllocationPortAndPublicIP(t *testing.T) {
 		t.Fatal("public node accepted")
 	}
 }
+func TestEngineLoadRejectsSymlinkedArchives(t *testing.T) {
+	f := dockerTest(t)
+	root := t.TempDir()
+	payload := filepath.Join(root, "image.tar")
+	if err := os.WriteFile(payload, []byte("image"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	finalLink := filepath.Join(root, "image-link.tar")
+	if err := os.Symlink(payload, finalLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.d.Load(context.Background(), finalLink); err == nil {
+		t.Fatal("accepted final symlink image archive")
+	}
+
+	targetDir := t.TempDir()
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(targetDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	parentPath := filepath.Join(parentLink, "image.tar")
+	if err := os.WriteFile(filepath.Join(targetDir, "image.tar"), []byte("image"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.d.Load(context.Background(), parentPath); err == nil {
+		t.Fatal("accepted symlinked parent for image archive")
+	}
+}
+
 func TestEngineNegotiationRejectsIncompatibleAPI(t *testing.T) {
 	f := dockerTest(t)
 	f.api = "1.60"
