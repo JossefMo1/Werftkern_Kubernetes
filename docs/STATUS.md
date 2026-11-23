@@ -1,3 +1,18 @@
+# Latest code handoff (2026-11-23, PR #268)
+
+PR [#268](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268) merged as [f73662f4](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f73662f4e957cf0489319d34445715d17c626cd4). Native `safefile.DirectoryLock` now validates absolute, clean and non-symlink parent directories before and after creation, opens lock files with no-follow/close-on-exec flags, and rejects non-regular files, non-0600 modes or unexpected owners. Regression coverage verifies a parent-symlink lock directory is rejected.
+
+PR checks:
+- Native runtime/package [45220888940](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888940) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45220888882](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888882) — **success**.
+- Source/Privacy audit [45220889258](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220889258) — **success**.
+
+Post-merge Main checks:
+- Native runtime/package [45221411990](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221411990) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45221412038](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412038) — **success**.
+- Source/Privacy audit [45221412406](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412406) — **success**.
+
+No Single-Host qualification gate closed. The unchanged v0.2.0-dev.4-test.17 candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; immutable=false and unsigned assets mean it cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed artifacts/provenance and Go/No-Go remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native Single-Host scope.
 # Latest code handoff (2026-11-23, PR #266)
 
 PR [#266](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/266) merged as [cdc929e8](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cdc929e8651bef08ee4744edc234fa4c52f9ff35). Native `werft control` and agent local-lock paths now validate absolute, clean and non-symlink parent directories before and after creation, open lock files with no-follow/close-on-exec flags, and reject non-regular files, non-0600 modes or unexpected owners. Regression coverage verifies final and parent symlink rejection.
