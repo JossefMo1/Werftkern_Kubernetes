@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-23T14:05:04.497Z",
+  "updatedAt": "2026-11-23T14:57:54.491Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262",
-    "summary": "Native packaged demo-archive verification now uses safefile.OpenRead before hashing, rejecting final and parent symlink redirection and non-regular files consistently with Docker image loading. Regression coverage verifies valid, final-symlink and parent-symlink paths. PR and post-merge required checks pass; real-vm/PITR remain skipped. No qualification gate closed."
+    "commit": "1b24e6cd7b0f38c13797f2ab161a609e2641ca48",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264",
+    "summary": "Native werft doctor now reads the configured admin certificate through safefile.OpenRead with a regular-file and size bound, rejecting final and parent symlink redirection before parsing. Regression coverage verifies valid, final-symlink and parent-symlink paths. PR and post-merge required checks pass; real-vm/PITR remain skipped. No qualification gate closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the Native demo-archive verification hardening from PR #262.",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the Native doctor certificate input hardening from PR #264.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; this is a blocker, not a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -52,7 +52,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 1b24e6cd7b0f38c13797f2ab161a609e2641ca48, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -358,13 +358,21 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189154242",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685437",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685472",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685479"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685479",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1b24e6cd7b0f38c13797f2ab161a609e2641ca48",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198552808",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198553068",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198552768",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052283",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052324",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052375"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Build the next immutable candidate from package-bearing Main code handoff b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+      "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 1b24e6cd7b0f38c13797f2ab161a609e2641ca48, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
     },
     {
       "id": "E2E-K01",
@@ -430,13 +438,21 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189154392",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685437"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685437",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1b24e6cd7b0f38c13797f2ab161a609e2641ca48",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198552808",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198553068",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198552768",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052283",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052324",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052375"
       ],
       "blockers": [
         "The exact candidate must be rebuilt from the current scoped main line.",
         "The ephemeral Ubuntu real-vm job has not yet been run for that candidate."
       ],
-      "nextStep": "Build the next immutable candidate from package-bearing Main code handoff b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+      "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 1b24e6cd7b0f38c13797f2ab161a609e2641ca48, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
     },
     {
       "id": "E2E-H01",
@@ -516,19 +532,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe",
-      "codeCommit": "b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262",
-      "summary": "Main contains PR #262 Native demo-archive verification hardening using no-follow regular-file access before hashing, with final/parent symlink regression coverage. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
+      "commit": "1b24e6cd7b0f38c13797f2ab161a609e2641ca48",
+      "codeCommit": "1b24e6cd7b0f38c13797f2ab161a609e2641ca48",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264",
+      "summary": "Main contains PR #264 Native doctor certificate input hardening using no-follow regular-file access and a size bound, with final/parent symlink regression coverage. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264"
     },
-    "commit": "b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe",
-    "codeCommit": "b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262",
+    "commit": "1b24e6cd7b0f38c13797f2ab161a609e2641ca48",
+    "codeCommit": "1b24e6cd7b0f38c13797f2ab161a609e2641ca48",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/263",
-    "summary": "Main contains PR #262 Native demo-archive verification hardening using no-follow regular-file access before hashing, with final/parent symlink regression coverage. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262",
+    "summary": "Main contains PR #264 Native doctor certificate input hardening using no-follow regular-file access and a size bound, with final/parent symlink regression coverage. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
