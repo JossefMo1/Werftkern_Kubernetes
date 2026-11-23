@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"errors"
+	"io"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"os"
@@ -46,8 +47,19 @@ func (d *Docker) secretDirectory(ctx context.Context, a model.Allocation) (strin
 		if !st.IsDir() || st.Mode()&os.ModeSymlink != 0 {
 			return "", errors.New("SECRET_DIRECTORY_UNSAFE")
 		}
-		b, e := os.ReadFile(filepath.Join(dir, ".manifest"))
-		if e != nil || string(b) != model.Hash(a.Spec) {
+		expectedManifest := model.Hash(a.Spec)
+		manifest, e := safefile.OpenRead(filepath.Join(dir, ".manifest"))
+		if e != nil {
+			return "", errors.New("SECRET_MATERIAL_IDENTITY_MISMATCH")
+		}
+		manifestInfo, statErr := manifest.Stat()
+		if statErr != nil || manifestInfo.Mode().Perm() != 0400 || manifestInfo.Size() != int64(len(expectedManifest)) {
+			manifest.Close()
+			return "", errors.New("SECRET_MATERIAL_IDENTITY_MISMATCH")
+		}
+		b, readErr := io.ReadAll(io.LimitReader(manifest, int64(len(expectedManifest)+1)))
+		manifest.Close()
+		if readErr != nil || len(b) != len(expectedManifest) || string(b) != expectedManifest {
 			return "", errors.New("SECRET_MATERIAL_IDENTITY_MISMATCH")
 		}
 		names, e := os.ReadDir(dir)
