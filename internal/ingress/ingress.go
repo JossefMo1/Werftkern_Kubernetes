@@ -9,6 +9,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -24,6 +25,7 @@ import (
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/discovery"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 )
 
 type Route struct {
@@ -261,10 +263,39 @@ type discardLog struct{}
 
 func (*discardLog) Write(p []byte) (int, error) { return len(p), nil }
 
+func loadTLSInput(path string, maxSize int64) ([]byte, error) {
+	f, e := safefile.OpenRead(path)
+	if e != nil {
+		return nil, e
+	}
+	defer f.Close()
+	st, e := f.Stat()
+	if e != nil || st.Size() < 0 || st.Size() > maxSize {
+		return nil, errors.New("TLS_INPUT_INVALID")
+	}
+	b, e := io.ReadAll(io.LimitReader(f, maxSize+1))
+	if e != nil || int64(len(b)) > maxSize {
+		return nil, errors.New("TLS_INPUT_INVALID")
+	}
+	return b, nil
+}
+
+func loadCertificatePair(certPath, keyPath string) (tls.Certificate, error) {
+	certPEM, e := loadTLSInput(certPath, 1<<20)
+	if e != nil {
+		return tls.Certificate{}, e
+	}
+	keyPEM, e := loadTLSInput(keyPath, 64<<10)
+	if e != nil {
+		return tls.Certificate{}, e
+	}
+	return tls.X509KeyPair(certPEM, keyPEM)
+}
+
 // Serve does not terminate TLS verification for the control-plane client. Edge
 // certificates must come from an operator-managed issuer; there is no ACME hack.
 func (g *Gateway) Serve(ctx context.Context) error {
-	cert, e := tls.LoadX509KeyPair(g.config.Certificate, g.config.PrivateKey)
+	cert, e := loadCertificatePair(g.config.Certificate, g.config.PrivateKey)
 	if e != nil {
 		return errors.New("INGRESS_TLS_CERTIFICATE_UNAVAILABLE")
 	}
