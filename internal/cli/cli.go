@@ -433,7 +433,7 @@ func verifyDemoArchive(path string) error {
 	if e != nil {
 		return e
 	}
-	f, e := os.Open(path)
+	f, e := safefile.OpenRead(path)
 	if e != nil {
 		return e
 	}
