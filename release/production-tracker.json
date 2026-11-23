@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-23T05:07:24.544Z",
+  "updatedAt": "2026-11-23T05:56:33.312Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "485fcfd2b9f53abc857dfe19d66e8741981aa864",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242",
-    "summary": "Native certificate bundle/renew/install now reads CA and leaf certificate inputs through safefile.OpenRead, rejecting final and parent symlinks and enforcing a 1 MiB bound. Regression tests cover both symlink forms. PR #242 and post-merge Native, Kubernetes and Source/Privacy checks passed; Native real-etcd passed while real-vm and real-PITR were skipped. No qualification gate was closed."
+    "commit": "6faf2fbe819ae7a0775d27727986bc02be07228e",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244",
+    "summary": "Native ingress CLI gateway credentials and edge TLS certificate/key loading now use bounded no-follow reads. Regression coverage rejects final and parent symlinks for edge certificates and private keys. PR #244 and post-merge Native, Kubernetes and Source/Privacy checks passed; Native real-etcd passed while real-vm and real-PITR were skipped. No qualification gate was closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged certificate-input hardening from PR #242.",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged ingress PKI hardening from PR #244.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; this is a blocker, not a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -52,7 +52,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 485fcfd2b9f53abc857dfe19d66e8741981aa864, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 6faf2fbe819ae7a0775d27727986bc02be07228e, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -292,13 +292,21 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115165443",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468629",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468670",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468624"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468624",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6faf2fbe819ae7a0775d27727986bc02be07228e",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120310439",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120310428",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120310459",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597182",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597181",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597194"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Publish the next immutable candidate from package-bearing Main code handoff 485fcfd2b9f53abc857dfe19d66e8741981aa864 (PR #242); then run only on explicitly authorized disposable infrastructure."
+      "nextStep": "Publish the next immutable candidate from package-bearing Main code handoff 6faf2fbe819ae7a0775d27727986bc02be07228e (PR #244); then run only on explicitly authorized disposable infrastructure."
     },
     {
       "id": "E2E-K01",
@@ -344,13 +352,16 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/44873105339",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/485fcfd2b9f53abc857dfe19d66e8741981aa864",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468629"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468629",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6faf2fbe819ae7a0775d27727986bc02be07228e",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597182"
       ],
       "blockers": [
         "The exact candidate must be rebuilt from the current scoped main line.",
         "The ephemeral Ubuntu real-vm job has not yet been run for that candidate."
       ],
-      "nextStep": "Publish the next immutable candidate from package-bearing Main code handoff 485fcfd2b9f53abc857dfe19d66e8741981aa864, then run the existing root-only script on the ephemeral Ubuntu 24.04 runner; bind evidence to the runner GITHUB_SHA and package digest."
+      "nextStep": "Publish the next immutable candidate from package-bearing Main code handoff 6faf2fbe819ae7a0775d27727986bc02be07228e, then run the existing root-only script on the ephemeral Ubuntu 24.04 runner; bind evidence to the runner GITHUB_SHA and package digest."
     },
     {
       "id": "E2E-H01",
@@ -430,20 +441,20 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "485fcfd2b9f53abc857dfe19d66e8741981aa864",
-      "codeCommit": "485fcfd2b9f53abc857dfe19d66e8741981aa864",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/243",
-      "summary": "Main contains PR #242 Native certificate-input no-follow hardening and symlink regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
+      "commit": "6faf2fbe819ae7a0775d27727986bc02be07228e",
+      "codeCommit": "6faf2fbe819ae7a0775d27727986bc02be07228e",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/245",
+      "summary": "Main contains PR #244 Native ingress PKI input hardening and symlink regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244"
     },
-    "commit": "485fcfd2b9f53abc857dfe19d66e8741981aa864",
-    "codeCommit": "485fcfd2b9f53abc857dfe19d66e8741981aa864",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/243",
-    "summary": "Main contains PR #242 Native certificate-input no-follow hardening and symlink regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242",
+    "commit": "6faf2fbe819ae7a0775d27727986bc02be07228e",
+    "codeCommit": "6faf2fbe819ae7a0775d27727986bc02be07228e",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/245",
+    "summary": "Main contains PR #244 Native ingress PKI input hardening and symlink regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244",
     "nextCandidateRequired": true
   },
   "previousCandidates": [

@@ -1,3 +1,19 @@
+## Latest code handoff (2026-11-23, PR #244)
+
+PR [#244](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244) merged as [6faf2fbe](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6faf2fbe819ae7a0775d27727986bc02be07228e). Native ingress gateway credentials now use the existing no-follow certificate/private-key readers, and edge TLS PEM loading uses bounded no-follow reads instead of path-based `tls.LoadX509KeyPair`. Regression coverage rejects final and parent symlinks for edge certificates and private keys. No certificate format, routing policy or qualification claim changed.
+
+PR checks:
+- [Native PR run 45120310439](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120310439) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes PR run 45120310428](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120310428) — **success**.
+- [Source/Privacy PR run 45120310459](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120310459) — **success**.
+
+Post-merge Main checks:
+- [Native Main run 45120597182](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597182) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes Main run 45120597181](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597181) — **success**.
+- [Source/Privacy Main run 45120597194](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45120597194) — **success**.
+
+Production remains **not ready**: the immutable/signed release candidate, fresh Ubuntu installation, backup/restore, upgrade/rollback, bounded load/soak and final Go/No-Go evidence are still open. The tagged dev.4-test.17 candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296` and cannot evidence this newer Main commit. Next handoff: build a new candidate from [6faf2fbe](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6faf2fbe819ae7a0775d27727986bc02be07228e), then run the existing ephemeral Ubuntu path when dispatch access is available.
+
 ## Latest code handoff (2026-11-23, PR #242)
 
 PR [#242](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242) merged as [485fcfd2](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/485fcfd2b9f53abc857dfe19d66e8741981aa864). Native `certificate bundle/renew/install` now reads CA and leaf certificate inputs through `safefile.OpenRead`, rejecting final and parent symlinks and enforcing a 1 MiB input bound. Regression coverage rejects both symlink forms. The change does not alter certificate formats or qualification claims.
