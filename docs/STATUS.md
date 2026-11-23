@@ -1,3 +1,19 @@
+# Latest code handoff (2026-11-23, PR #262)
+
+PR [#262](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262) merged as [b99d5b8d](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe). The packaged demo archive verification path now opens the archive through `safefile.OpenRead` before hashing, rejecting final and parent symlink redirection and non-regular inputs consistently with Docker image loading. Regression coverage verifies a valid archive and both symlink forms.
+
+PR checks:
+- Native runtime/package [45189154392](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189154392) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45189154412](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189154412) — **success**.
+- Source/Privacy audit [45189154242](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189154242) — **success**.
+
+Post-merge Main checks:
+- Native runtime/package [45189685437](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685437) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45189685472](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685472) — **success**.
+- Source/Privacy audit [45189685479](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685479) — **success**.
+
+No Single-Host qualification gate closed. The unchanged v0.2.0-dev.4-test.17 candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; immutable=false and unsigned assets mean it cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. Next handoff: build a new candidate from [b99d5b8d](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe) and use the existing ephemeral Ubuntu path when dispatch access is available.
+
 # Latest code handoff (2026-11-23, PR #260)
 
 PR [#260](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/260) merged as [5cfd4726](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5cfd47267648840f57d947e2bc9f14443e2bf2b2). The read-only `werft assess DATEI.json` path now opens Kubernetes inventory files through `safefile.OpenRead`, rejecting final and parent symlink redirection before bounded assessment. Regression coverage verifies a valid inventory and both symlink forms. Input size limits, strict JSON, read-only behavior and the migration assessment contract are unchanged.
