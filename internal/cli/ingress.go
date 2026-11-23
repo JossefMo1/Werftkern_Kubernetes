@@ -106,6 +106,9 @@ func gatewayCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return errors.New("gateway list | enroll --name NAME --services web,api --out NEW_DIR | revoke ID")
 	}
+	if args[0] != "list" && args[0] != "enroll" && args[0] != "revoke" {
+		return errors.New("GATEWAY_ACTION_UNSUPPORTED")
+	}
 	c, e := client()
 	if e != nil {
 		return e

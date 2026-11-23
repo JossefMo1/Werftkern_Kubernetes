@@ -91,6 +91,27 @@ func TestNodePolicyBody(t *testing.T) {
 	}
 }
 
+func TestStatefulCLIRejectsUnknownActionsBeforeConfigAccess(t *testing.T) {
+	missing := filepath.Join(t.TempDir(), "missing-admin.json")
+	t.Setenv("WERFT_CONFIG", missing)
+	checks := []struct {
+		name string
+		call func() error
+		want string
+	}{
+		{name: "volume", call: func() error { return volumeCommand(context.Background(), []string{"inspect"}) }, want: "VOLUME_ACTION_UNSUPPORTED"},
+		{name: "secret", call: func() error { return secretCommand(context.Background(), []string{"inspect"}) }, want: "SECRET_ACTION_UNKNOWN"},
+		{name: "gateway", call: func() error { return gatewayCommand(context.Background(), []string{"inspect"}) }, want: "GATEWAY_ACTION_UNSUPPORTED"},
+	}
+	for _, tc := range checks {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := tc.call(); err == nil || err.Error() != tc.want {
+				t.Fatalf("unexpected result: %v", err)
+			}
+		})
+	}
+}
+
 func TestEndpointsHideOfflineDrainingAndForeign(t *testing.T) {
 	now := time.Now()
 	s := model.NewState(model.ID(), "test", now)
