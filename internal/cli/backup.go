@@ -4,18 +4,45 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/failover"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/recovery"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/setup"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/store"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/vault"
-	"os"
-	"path/filepath"
-	"time"
 )
+
+func readBackupInput(path string) ([]byte, error) {
+	f, e := safefile.OpenRead(path)
+	if e != nil {
+		return nil, e
+	}
+	defer f.Close()
+	st, e := f.Stat()
+	if e != nil {
+		return nil, e
+	}
+	max := int64(3 * vault.MaxPlaintext)
+	if st.Size() < 0 || st.Size() > max {
+		return nil, errors.New("BACKUP_TOO_LARGE")
+	}
+	b, e := io.ReadAll(io.LimitReader(f, max+1))
+	if e != nil {
+		return nil, e
+	}
+	if int64(len(b)) > max {
+		return nil, errors.New("BACKUP_TOO_LARGE")
+	}
+	return b, nil
+}
 
 func backupCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
@@ -47,14 +74,7 @@ func backupCommand(ctx context.Context, args []string) error {
 		return e
 	}
 	if args[0] == "inspect" || args[0] == "restore" {
-		st, e := os.Stat(*in)
-		if e != nil {
-			return e
-		}
-		if !st.Mode().IsRegular() || st.Size() > 3*vault.MaxPlaintext {
-			return errors.New("BACKUP_TOO_LARGE")
-		}
-		b, e := os.ReadFile(*in)
+		b, e := readBackupInput(*in)
 		if e != nil {
 			return e
 		}
@@ -134,6 +154,7 @@ func backupCommand(ctx context.Context, args []string) error {
 	fmt.Println("Encrypted logical configuration backup created. Keep its key separately. Does NOT include host PKI, images or application data.")
 	return nil
 }
+
 func localStore() (config.Control, *store.Etcd, []byte, error) {
 	cc, e := config.Load[config.Control](config.Directory + "/control.json")
 	if e != nil {
