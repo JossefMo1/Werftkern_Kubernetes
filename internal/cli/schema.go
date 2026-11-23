@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/setup"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/vault"
 	"os"
@@ -63,7 +64,7 @@ func schemaCommand(ctx context.Context, args []string) error {
 		if e != nil {
 			return e
 		}
-		f, e := os.OpenFile(*backup, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+		f, e := safefile.CreateExclusive(*backup, 0600)
 		if e != nil {
 			return e
 		}
