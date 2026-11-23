@@ -153,3 +153,31 @@ func TestVolumeArchiveCLIPhysicalRestoreAfterLostAcknowledgment(t *testing.T) {
 	}
 	t.Log("Executed real CLI, files, encryption, mTLS and UNIX HTTP with injected ACK failure; etcd/Docker remained explicit adapters, not live services.")
 }
+
+
+func TestOpenVolumeArchiveRejectsParentSymlink(t *testing.T) {
+	root := t.TempDir()
+	realDir := filepath.Join(root, "real")
+	if err := os.Mkdir(realDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	archive := filepath.Join(realDir, "backup.wva")
+	if err := os.WriteFile(archive, []byte("archive"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	f, err := openVolumeArchive(archive)
+	if err != nil {
+		t.Fatalf("valid archive rejected: %v", err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(realDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if f, err := openVolumeArchive(filepath.Join(parentLink, "backup.wva")); err == nil {
+		f.Close()
+		t.Fatal("followed archive parent symlink")
+	}
+}
