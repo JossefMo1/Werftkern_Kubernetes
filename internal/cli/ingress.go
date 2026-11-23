@@ -49,15 +49,15 @@ func ingressCommand(ctx context.Context, args []string) error {
 	cfg.Client.Key = resolve(cfg.Client.Key)
 	cfg.Certificate = resolve(cfg.Certificate)
 	cfg.PrivateKey = resolve(cfg.PrivateKey)
-	ca, e := os.ReadFile(cfg.Client.CA)
+	ca, e := certificateInput(cfg.Client.CA)
 	if e != nil {
 		return e
 	}
-	cert, e := os.ReadFile(cfg.Client.Cert)
+	cert, e := certificateInput(cfg.Client.Cert)
 	if e != nil {
 		return e
 	}
-	key, e := os.ReadFile(cfg.Client.Key)
+	key, e := privateCertificateInput(cfg.Client.Key)
 	if e != nil {
 		return e
 	}
@@ -154,15 +154,15 @@ func gatewayCommand(ctx context.Context, args []string) error {
 			if model.Hash(q) != model.Hash(previous) {
 				return errors.New("EXISTING_GATEWAY_BUNDLE_CONFLICT")
 			}
-			ca, e := os.ReadFile(filepath.Join(dir, "ca.crt"))
+			ca, e := certificateInput(filepath.Join(dir, "ca.crt"))
 			if e != nil {
 				return e
 			}
-			cert, e := os.ReadFile(filepath.Join(dir, "gateway.crt"))
+			cert, e := certificateInput(filepath.Join(dir, "gateway.crt"))
 			if e != nil {
 				return e
 			}
-			key, e := os.ReadFile(filepath.Join(dir, "gateway.key"))
+			key, e := privateCertificateInput(filepath.Join(dir, "gateway.key"))
 			if e != nil {
 				return e
 			}
@@ -176,11 +176,11 @@ func gatewayCommand(ctx context.Context, args []string) error {
 			if e != nil {
 				return e
 			}
-			ca, e := os.ReadFile(config.Directory + "/authority/client.crt")
+			ca, e := certificateInput(config.Directory + "/authority/client.crt")
 			if e != nil {
 				return e
 			}
-			key, e := os.ReadFile(config.Directory + "/authority/client.key")
+			key, e := privateCertificateInput(config.Directory + "/authority/client.key")
 			if e != nil {
 				return e
 			}
