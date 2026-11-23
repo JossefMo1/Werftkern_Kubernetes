@@ -452,7 +452,6 @@
       "commit": "7154c11c58ec2b77c839b0ec1dd8745c630756e2",
       "codeCommit": "7154c11c58ec2b77c839b0ec1dd8745c630756e2",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/246",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/245",
       "summary": "Main contains PR #246 Native setup node-bundle credential hardening with bounded no-follow reads and regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
       "nextCandidateRequired": true,
       "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/246"
@@ -460,7 +459,7 @@
     "commit": "7154c11c58ec2b77c839b0ec1dd8745c630756e2",
     "codeCommit": "7154c11c58ec2b77c839b0ec1dd8745c630756e2",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/246",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/245",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/247",
     "summary": "Main contains PR #246 Native setup node-bundle credential hardening with bounded no-follow reads and regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/246",
     "nextCandidateRequired": true
