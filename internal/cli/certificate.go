@@ -12,7 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"\n\t"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 )
 
 // These are offline administrative operations, not an online signing service.
