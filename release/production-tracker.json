@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-23T20:08:00Z",
+  "updatedAt": "2026-11-23T21:03:30Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
-    "summary": "Native volume archive CLI dispatch now rejects unknown actions before root, state, Docker or filesystem access; a regression test covers the fail-closed boundary. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The initial blob transfer was truncated and caught by CI, then the complete file was republished before merge. No qualification gate closed."
+    "commit": "2c4cbd4ec54e63b52e45dde557809dfa13d2b88e",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277",
+    "summary": "Native gateway enrollment now preflights controller state before creating the credential directory or writing mTLS files, preventing incomplete retry-blocking directories. The ingress example helper has deterministic regression coverage. PR #277 checks are green (Native, Kubernetes and source/privacy; real-etcd succeeds; real-vm/PITR are skipped). An initial remote source-transfer error was caught by the Native compile check and corrected before merge. No qualification gate closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the Native volume-archive action validation from PR #274.",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the gateway enrollment preflight and deterministic ingress coverage from PR #277.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; this is a blocker, not a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -52,7 +52,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 960ddafc6ab99b883ebdb2c180be41e71d3a071f, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow-dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 2c4cbd4ec54e63b52e45dde557809dfa13d2b88e, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow-dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -398,13 +398,18 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244001445",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598160",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598234",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598089"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598089",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2c4cbd4ec54e63b52e45dde557809dfa13d2b88e",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45264880235",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45264880291",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45264880241"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Use Main merge d92c922fa8f1d46fc98e9dd5580124dacfdba001 as the package-bearing source for the next immutable candidate; dispatch the scoped Ubuntu 24.04 real-vm run when authorized, then collect same-candidate installation, backup/restore, upgrade/rollback and bounded-soak evidence."
+      "nextStep": "Use Main merge 2c4cbd4ec54e63b52e45dde557809dfa13d2b88e as the package-bearing source for the next immutable candidate; dispatch the scoped Ubuntu 24.04 real-vm run when authorized, then collect same-candidate installation, backup/restore, upgrade/rollback and bounded-soak evidence."
     },
     {
       "id": "E2E-K01",
@@ -510,13 +515,16 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244001445",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598160",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598234",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598089"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598089",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2c4cbd4ec54e63b52e45dde557809dfa13d2b88e",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45264880235"
       ],
       "blockers": [
         "The exact candidate must be rebuilt from the current scoped main line.",
         "The ephemeral Ubuntu real-vm job has not yet been run for that candidate."
       ],
-      "nextStep": "Use Main merge d92c922fa8f1d46fc98e9dd5580124dacfdba001 as the package-bearing source for the next immutable candidate; dispatch the scoped Ubuntu 24.04 real-vm run when authorized, then collect same-candidate installation, backup/restore, upgrade/rollback and bounded-soak evidence."
+      "nextStep": "Use Main merge 2c4cbd4ec54e63b52e45dde557809dfa13d2b88e as the package-bearing source for the next immutable candidate; dispatch the scoped Ubuntu 24.04 real-vm run when authorized, then collect same-candidate installation, backup/restore, upgrade/rollback and bounded-soak evidence."
     },
     {
       "id": "E2E-H01",
@@ -567,7 +575,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/275",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/278",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -596,19 +604,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
-      "codeCommit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
-      "summary": "Main contains PR #274 Native volume archive CLI action validation: unknown actions are rejected before root, state, Docker or filesystem access, with focused regression coverage. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
+      "commit": "2c4cbd4ec54e63b52e45dde557809dfa13d2b88e",
+      "codeCommit": "2c4cbd4ec54e63b52e45dde557809dfa13d2b88e",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277",
+      "summary": "Main contains PR #277 Native gateway enrollment preflight: controller state is read before credential-directory creation or mTLS writes, so transient state/API failures do not strand an incomplete retry-blocking directory. Deterministic ingress helper coverage verifies stable CIDR de-duplication, scoped routes and gateway/client identity. PR #277 Native, Kubernetes and source/privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. The initial remote source-transfer error was caught and corrected before merge. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277"
     },
-    "commit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
-    "codeCommit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/275",
-    "summary": "Main contains PR #274 Native volume archive CLI action validation: unknown actions are rejected before root, state, Docker or filesystem access, with focused regression coverage. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
+    "commit": "2c4cbd4ec54e63b52e45dde557809dfa13d2b88e",
+    "codeCommit": "2c4cbd4ec54e63b52e45dde557809dfa13d2b88e",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/278",
+    "summary": "Main contains PR #277 Native gateway enrollment preflight: controller state is read before credential-directory creation or mTLS writes, so transient state/API failures do not strand an incomplete retry-blocking directory. Deterministic ingress helper coverage verifies stable CIDR de-duplication, scoped routes and gateway/client identity. PR #277 Native, Kubernetes and source/privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. The initial remote source-transfer error was caught and corrected before merge. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
@@ -674,4 +682,3 @@
     }
   ]
 }
-
