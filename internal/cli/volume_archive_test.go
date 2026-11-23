@@ -181,3 +181,9 @@ func TestOpenVolumeArchiveRejectsParentSymlink(t *testing.T) {
 		t.Fatal("followed archive parent symlink")
 	}
 }
+
+func TestVolumeArchiveRejectsUnknownActionBeforePrivilegeOrStateAccess(t *testing.T) {
+	if err := volumeArchiveCommand(context.Background(), []string{"inspect", "data"}); err == nil || err.Error() != "VOLUME_ARCHIVE_ACTION_INVALID" {
+		t.Fatalf("unexpected unknown-action result: %v", err)
+	}
+}
