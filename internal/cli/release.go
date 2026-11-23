@@ -4,9 +4,35 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/JossefMo1/Werftkern_Kubernetes/internal/releaseverify"
+	"io"
 	"os"
+
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/releaseverify"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 )
+
+func readReleaseInput(path string, max int64) ([]byte, error) {
+	f, e := safefile.OpenRead(path)
+	if e != nil {
+		return nil, e
+	}
+	defer f.Close()
+	st, e := f.Stat()
+	if e != nil {
+		return nil, e
+	}
+	if st.Size() < 0 || st.Size() > max {
+		return nil, errors.New("RELEASE_INPUT_INVALID")
+	}
+	raw, e := io.ReadAll(io.LimitReader(f, max+1))
+	if e != nil {
+		return nil, e
+	}
+	if int64(len(raw)) > max {
+		return nil, errors.New("RELEASE_INPUT_INVALID")
+	}
+	return raw, nil
+}
 
 func releaseCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 || args[0] != "verify" {
@@ -20,25 +46,15 @@ func releaseCommand(ctx context.Context, args []string) error {
 	if e := f.Parse(args[1:]); e != nil {
 		return e
 	}
-	read := func(path string, max int64) ([]byte, error) {
-		st, e := os.Lstat(path)
-		if e != nil {
-			return nil, e
-		}
-		if !st.Mode().IsRegular() || st.Size() > max {
-			return nil, errors.New("RELEASE_INPUT_INVALID")
-		}
-		return os.ReadFile(path)
-	}
-	raw, e := read(*manifest, 65536)
+	raw, e := readReleaseInput(*manifest, 65536)
 	if e != nil {
 		return e
 	}
-	signature, e := read(*sig, 128)
+	signature, e := readReleaseInput(*sig, 128)
 	if e != nil {
 		return e
 	}
-	pub, e := read(*key, 16384)
+	pub, e := readReleaseInput(*key, 16384)
 	if e != nil {
 		return e
 	}
