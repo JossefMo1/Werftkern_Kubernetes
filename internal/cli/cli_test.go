@@ -21,6 +21,30 @@ func TestManifestIsStrict(t *testing.T) {
 		}
 	}
 }
+func TestAgentProcessLockRejectsSymlinkedPaths(t *testing.T) {
+	dir := t.TempDir()
+	target := filepath.Join(dir, "target")
+	if err := os.WriteFile(target, []byte("target"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	finalLink := filepath.Join(dir, "final.lock")
+	if err := os.Symlink(target, finalLink); err != nil {
+		t.Fatal(err)
+	}
+	if unlock, err := lock(finalLink); err == nil {
+		unlock()
+		t.Fatal("accepted final lock symlink")
+	}
+	parentLink := filepath.Join(dir, "linked")
+	if err := os.Symlink(dir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if unlock, err := lock(filepath.Join(parentLink, "nested.lock")); err == nil {
+		unlock()
+		t.Fatal("accepted parent lock symlink")
+	}
+}
+
 func TestAgentProcessLock(t *testing.T) {
 	p := filepath.Join(t.TempDir(), "lock")
 	unlock, e := lock(p)
