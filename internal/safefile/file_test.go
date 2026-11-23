@@ -100,3 +100,47 @@ func TestStrictJSON(t *testing.T) {
 		}
 	}
 }
+
+func TestExclusiveCreateRefusesSymlinks(t *testing.T) {
+	d := t.TempDir()
+	path := filepath.Join(d, "key")
+	f, err := CreateExclusive(path, 0600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = f.Write([]byte("key")); err != nil {
+		t.Fatal(err)
+	}
+	if err = f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	st, err := os.Stat(path)
+	if err != nil || st.Mode().Perm() != 0600 {
+		t.Fatalf("created file invalid: %v %v", err, st)
+	}
+	if _, err = CreateExclusive(path, 0600); err == nil {
+		t.Fatal("overwrote existing file")
+	}
+	target := filepath.Join(d, "target")
+	if err = os.WriteFile(target, []byte("untouched"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(d, "link")
+	if err = os.Symlink(target, link); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = CreateExclusive(link, 0600); err == nil {
+		t.Fatal("followed destination symlink")
+	}
+	real := filepath.Join(d, "real")
+	if err = os.Mkdir(real, 0700); err != nil {
+		t.Fatal(err)
+	}
+	parentLink := filepath.Join(d, "parent-link")
+	if err = os.Symlink(real, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = CreateExclusive(filepath.Join(parentLink, "nested"), 0600); err == nil {
+		t.Fatal("followed parent symlink")
+	}
+}
