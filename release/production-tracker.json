@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-23T14:04:27.032Z",
+  "updatedAt": "2026-11-23T14:05:04.497Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -526,7 +526,7 @@
     "commit": "b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe",
     "codeCommit": "b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/261",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/263",
     "summary": "Main contains PR #262 Native demo-archive verification hardening using no-follow regular-file access before hashing, with final/parent symlink regression coverage. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262",
     "nextCandidateRequired": true
