@@ -46,4 +46,16 @@ func TestVolumeIOLockRejectsSymlinkAndPublicRoot(t *testing.T) {
 		f.Close()
 		t.Fatal("lock symlink")
 	}
+	real := filepath.Join(t.TempDir(), "real")
+	if e := os.Mkdir(real, 0700); e != nil {
+		t.Fatal(e)
+	}
+	parentLink := filepath.Join(p, "parent-link")
+	if e := os.Symlink(real, parentLink); e != nil {
+		t.Fatal(e)
+	}
+	if f, e := DirectoryLock(filepath.Join(parentLink, "nested"), true); e == nil {
+		f.Close()
+		t.Fatal("parent symlink")
+	}
 }
