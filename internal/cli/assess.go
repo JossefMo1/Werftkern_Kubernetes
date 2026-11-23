@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/migrate"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"io"
 	"os"
 )
@@ -12,7 +13,7 @@ func assessCommand(args []string) error {
 	if len(args) != 1 {
 		return errors.New("assess KUBERNETES-INVENTORY.json")
 	}
-	f, e := os.Open(args[0])
+	f, e := safefile.OpenRead(args[0])
 	if e != nil {
 		return e
 	}
