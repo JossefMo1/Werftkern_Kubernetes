@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 )
 
 // These are offline administrative operations, not an online signing service.
@@ -45,13 +46,13 @@ func certificateCommand(args []string) error {
 		}
 		return certificateSummary(p)
 	}
-	ca, e := os.ReadFile(*caPath)
+	ca, e := certificateInput(*caPath)
 	if e != nil {
 		return errors.New("CA_CERTIFICATE_UNAVAILABLE")
 	}
 	switch args[0] {
 	case "bundle":
-		cb, e := os.ReadFile(*cert)
+		cb, e := certificateInput(*cert)
 		if e != nil {
 			return e
 		}
@@ -123,6 +124,24 @@ func certificateCommand(args []string) error {
 		return errors.New("UNKNOWN_CERTIFICATE_OPERATION")
 	}
 }
+func certificateInput(path string) ([]byte, error) {
+	f, e := safefile.OpenRead(path)
+	if e != nil {
+		return nil, e
+	}
+	defer f.Close()
+	const maxSize = int64(1 << 20)
+	st, e := f.Stat()
+	if e != nil || st.Size() < 0 || st.Size() > maxSize {
+		return nil, errors.New("CERTIFICATE_INPUT_INVALID")
+	}
+	b, e := io.ReadAll(io.LimitReader(f, maxSize+1))
+	if e != nil || int64(len(b)) > maxSize {
+		return nil, errors.New("CERTIFICATE_INPUT_INVALID")
+	}
+	return b, nil
+}
+
 func privateCertificateInput(path string) ([]byte, error) {
 	if e := certificateParents(path); e != nil {
 		return nil, e
