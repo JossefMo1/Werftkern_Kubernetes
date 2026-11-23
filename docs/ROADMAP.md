@@ -1,3 +1,19 @@
+## Latest code handoff (2026-11-23, PR #242)
+
+PR [#242](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242) merged as [485fcfd2](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/485fcfd2b9f53abc857dfe19d66e8741981aa864). Native certificate bundle/renew/install now opens CA and leaf certificate inputs through `safefile.OpenRead`, refusing final and parent symlinks and enforcing a bounded 1 MiB read. Regression tests cover both symlink forms. This is a defensive input-hardening change; no production qualification gate is closed.
+
+Exact PR checks:
+- [Native PR 45115171200](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115171200) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes PR 45115171140](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115171140) — **success**.
+- [Source/Privacy PR 45115171174](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115171174) — **success**.
+
+Exact post-merge Main checks:
+- [Native Main 45115468629](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468629) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes Main 45115468670](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468670) — **success**.
+- [Source/Privacy Main 45115468624](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468624) — **success**.
+
+The roadmap remains **No-Go** until a new immutable candidate is built from [485fcfd2](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/485fcfd2b9f53abc857dfe19d66e8741981aa864) and the scoped live gates (fresh Ubuntu install, Docker/etcd workload lifecycle, restart, local backup/restore, single-host upgrade/rollback, bounded load/soak, signed artifacts/provenance and final Go/No-Go) are evidenced for that unchanged candidate. HA, multi-host and Kubernetes Production remain deferred outside the first Native scope.
+
 ## Latest code handoff (2026-11-23, PR #239)
 
 PR [#239](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/239) merged as [43bcfb46](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/43bcfb468680d976b181a5ca8a745d55bd1d63ff). Native backup inspect/restore inputs now use `safefile.OpenRead`, refusing final and parent symlinks and enforcing the bounded read after opening; regression tests cover the boundary. The corrected head passed the Native, Kubernetes and Source/Privacy checks.

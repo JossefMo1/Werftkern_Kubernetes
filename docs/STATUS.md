@@ -1,3 +1,19 @@
+## Latest code handoff (2026-11-23, PR #242)
+
+PR [#242](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/242) merged as [485fcfd2](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/485fcfd2b9f53abc857dfe19d66e8741981aa864). Native `certificate bundle/renew/install` now reads CA and leaf certificate inputs through `safefile.OpenRead`, rejecting final and parent symlinks and enforcing a 1 MiB input bound. Regression coverage rejects both symlink forms. The change does not alter certificate formats or qualification claims.
+
+PR checks:
+- [Native PR run 45115171200](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115171200) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes PR run 45115171140](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115171140) — **success**.
+- [Source/Privacy PR run 45115171174](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115171174) — **success**.
+
+Post-merge Main checks:
+- [Native Main run 45115468629](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468629) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes Main run 45115468670](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468670) — **success**.
+- [Source/Privacy Main run 45115468624](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45115468624) — **success**.
+
+Production remains **not ready**: the immutable/signed release candidate, fresh Ubuntu installation, backup/restore, upgrade/rollback, bounded load/soak and final Go/No-Go evidence are still open. The tagged dev.4-test.17 candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296` and must not be treated as evidence for this newer Main commit. Next handoff: build a new candidate from [485fcfd2](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/485fcfd2b9f53abc857dfe19d66e8741981aa864), then run the existing ephemeral Ubuntu path when dispatch access is available.
+
 ## Latest code handoff (2026-11-23, PR #239)
 
 PR [#239](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/239) merged as [43bcfb46](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/43bcfb468680d976b181a5ca8a745d55bd1d63ff). Native `backup inspect/restore --file` now opens privileged backup inputs through `safefile.OpenRead`, rejecting final and parent symlinks and enforcing the existing 3x `MaxPlaintext` limit after opening. Regression tests cover both symlink forms and regular-file reads. The first CI attempt exposed a self-introduced truncated-file error; it was corrected before the merged head.
