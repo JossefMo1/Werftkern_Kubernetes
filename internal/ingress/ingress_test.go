@@ -283,3 +283,57 @@ func TestTransientDiscoveryFailureCanRecoverAtSameStateRevision(t *testing.T) {
 		t.Fatal("recovery still blocked")
 	}
 }
+func TestLoadCertificatePairRejectsSymlinkedPaths(t *testing.T) {
+	ca, e := pki.CA("ingress-input-test", time.Now())
+	if e != nil {
+		t.Fatal(e)
+	}
+	pair, e := pki.Issue(ca, "edge", model.ID(), []string{"web.example.test"}, true, time.Now())
+	if e != nil {
+		t.Fatal(e)
+	}
+	dir := t.TempDir()
+	certPath := filepath.Join(dir, "edge.crt")
+	keyPath := filepath.Join(dir, "edge.key")
+	if e = os.WriteFile(certPath, pair.Cert, 0600); e != nil {
+		t.Fatal(e)
+	}
+	if e = os.WriteFile(keyPath, pair.Key, 0600); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = loadCertificatePair(certPath, keyPath); e != nil {
+		t.Fatal("valid certificate pair rejected:", e)
+	}
+
+	certLink := filepath.Join(dir, "edge-link.crt")
+	if e = os.Symlink(certPath, certLink); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = loadCertificatePair(certLink, keyPath); e == nil {
+		t.Fatal("followed symlinked certificate")
+	}
+
+	targetDir := filepath.Join(dir, "target")
+	if e = os.Mkdir(targetDir, 0700); e != nil {
+		t.Fatal(e)
+	}
+	targetCert := filepath.Join(targetDir, "edge.crt")
+	if e = os.WriteFile(targetCert, pair.Cert, 0600); e != nil {
+		t.Fatal(e)
+	}
+	parentLink := filepath.Join(dir, "parent-link")
+	if e = os.Symlink(targetDir, parentLink); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = loadCertificatePair(filepath.Join(parentLink, "edge.crt"), keyPath); e == nil {
+		t.Fatal("followed symlinked certificate parent")
+	}
+
+	keyLink := filepath.Join(dir, "edge-link.key")
+	if e = os.Symlink(keyPath, keyLink); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = loadCertificatePair(certPath, keyLink); e == nil {
+		t.Fatal("followed symlinked private key")
+	}
+}
