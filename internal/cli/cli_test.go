@@ -55,3 +55,31 @@ func TestEndpointsHideOfflineDrainingAndForeign(t *testing.T) {
 		t.Fatal("offline endpoint exposed")
 	}
 }
+
+func TestReadPrivateSecretRejectsSymlinkedInputs(t *testing.T) {
+	root := t.TempDir()
+	target := filepath.Join(root, "secret")
+	if err := os.WriteFile(target, []byte("top-secret"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(root, "secret-link")
+	if err := os.Symlink(target, link); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readPrivateSecret(link); err == nil {
+		t.Fatal("accepted final symlink for secret input")
+	}
+
+	targetDir := t.TempDir()
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(targetDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	parentPath := filepath.Join(parentLink, "secret")
+	if err := os.WriteFile(filepath.Join(targetDir, "secret"), []byte("top-secret"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readPrivateSecret(parentPath); err == nil {
+		t.Fatal("accepted symlinked parent for secret input")
+	}
+}

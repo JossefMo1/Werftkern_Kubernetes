@@ -4,11 +4,32 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
-	"os"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"strconv"
 )
+
+func readPrivateSecret(path string) ([]byte, error) {
+	f, e := safefile.OpenRead(path)
+	if e != nil {
+		return nil, e
+	}
+	defer f.Close()
+	st, e := f.Stat()
+	if e != nil || !st.Mode().IsRegular() || st.Mode().Perm()&0077 != 0 || st.Size() < 1 || st.Size() > 4096 {
+		return nil, errors.New("SECRET_INPUT_FILE_MUST_BE_PRIVATE_AND_AT_MOST_4096_BYTES")
+	}
+	b, e := io.ReadAll(io.LimitReader(f, 4097))
+	if e != nil {
+		return nil, e
+	}
+	if len(b) > 4096 {
+		return nil, errors.New("SECRET_INPUT_FILE_MUST_BE_PRIVATE_AND_AT_MOST_4096_BYTES")
+	}
+	return b, nil
+}
 
 func secretCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
@@ -39,14 +60,7 @@ func secretCommand(ctx context.Context, args []string) error {
 		if e = f.Parse(args[2:]); e != nil {
 			return e
 		}
-		st, e := os.Stat(*path)
-		if e != nil {
-			return e
-		}
-		if !st.Mode().IsRegular() || st.Mode().Perm()&0077 != 0 || st.Size() < 1 || st.Size() > 4096 {
-			return errors.New("SECRET_INPUT_FILE_MUST_BE_PRIVATE_AND_AT_MOST_4096_BYTES")
-		}
-		b, e := os.ReadFile(*path)
+		b, e := readPrivateSecret(*path)
 		if e != nil {
 			return e
 		}
