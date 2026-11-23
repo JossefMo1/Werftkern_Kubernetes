@@ -1,3 +1,18 @@
+# Latest code handoff (2026-11-23, PR #266)
+
+PR [#266](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/266) merged as [cdc929e8](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cdc929e8651bef08ee4744edc234fa4c52f9ff35). Native `werft control` and agent local-lock paths now validate absolute, clean and non-symlink parent directories before and after creation, open lock files with no-follow/close-on-exec flags, and reject non-regular files, non-0600 modes or unexpected owners. Regression coverage verifies final and parent symlink rejection.
+
+PR checks:
+- Native runtime/package [45211017062](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45211017062) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45211016964](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45211016964) — **success**.
+- Source/Privacy audit [45211016962](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45211016962) — **success**.
+
+Post-merge Main checks:
+- Native runtime/package [45212279490](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279490) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45212279129](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279129) — **success**.
+- Source/Privacy audit [45212279244](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279244) — **success**.
+
+No Single-Host qualification gate closed. The unchanged v0.2.0-dev.4-test.17 candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; immutable=false and unsigned assets mean it cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed artifacts/provenance and Go/No-Go remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native Single-Host scope.
 # Latest code handoff (2026-11-23, PR #264)
 
 PR [#264](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264) merged as [1b24e6cd](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1b24e6cd7b0f38c13797f2ab161a609e2641ca48). The `werft doctor` path now reads the configured admin certificate through `safefile.OpenRead` with a regular-file and 64 KiB size bound before parsing. Final and parent symlink redirection is rejected consistently with other credential paths. Regression coverage verifies a valid certificate and both symlink forms.
