@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
 
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
@@ -30,7 +29,7 @@ type diskVolumeIdentity struct {
 	UID       int    `json:"uid"`
 	GID       int    `json:"gid"`
 }
-type restoreDiskReceipt struct {
+// openVolumeArchive applies the trusted-input boundary to restore archives.\n// Parent and final symlinks are rejected before any archive bytes are consumed.\nfunc openVolumeArchive(path string) (*os.File, error) {\n\treturn safefile.OpenRead(path)\n}\n\ntype restoreDiskReceipt struct {
 	OperationID string               `json:"operationId"`
 	SHA256      string               `json:"sha256"`
 	Identity    diskVolumeIdentity   `json:"identity"`
@@ -166,7 +165,7 @@ func volumeArchiveCommand(ctx context.Context, args []string) error {
 	// Reserve the target before copying bytes. A crash now cannot cause the
 	// runtime to initialize an empty replacement: Initialized is already true,
 	// and RestoreComplete remains false until a durable receipt is acknowledged.
-	in, e := os.OpenFile(*archive, os.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
+	in, e := openVolumeArchive(*archive)
 	if e != nil {
 		return e
 	}
