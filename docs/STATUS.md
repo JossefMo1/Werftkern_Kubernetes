@@ -1,3 +1,18 @@
+# Latest code handoff (2026-11-23, PR #277)
+
+PR [#277](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277) merged as [2c4cbd4e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2c4cbd4ec54e63b52e45dde557809dfa13d2b88e). Native gateway enrollment now reads controller state before creating the credential directory or writing mTLS files. A transient controller/API failure therefore leaves no incomplete directory that blocks a safe retry with the same gateway identity. The generated ingress example was extracted into a deterministic helper and regression-tested for stable CIDR de-duplication, scoped routes and gateway/client identity.
+
+PR checks:
+- Native runtime/package [45264880235](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45264880235) — **success**; compile, race/static checks, package smoke checks and reachable Go vulnerability check passed; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45264880291](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45264880291) — **success**.
+- Source/Privacy audit [45264880241](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45264880241) — **success**.
+
+The first PR attempt exposed a source-transfer error in the remote Go blob; the Native compile check failed, the exact blob was republished, and the corrected head passed all available PR workflows before merge. This is recorded as a corrected publication defect, not as a production qualification result. The connector exposed no post-merge Main workflow runs for [2c4cbd4e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2c4cbd4ec54e63b52e45dde557809dfa13d2b88e) at handoff time.
+
+No Single-Host qualification gate closed. The unchanged [v0.2.0-dev.4-test.17 candidate](https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.17) remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle, service/etcd restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope.
+
+Next handoff: build a new immutable candidate from [2c4cbd4e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2c4cbd4ec54e63b52e45dde557809dfa13d2b88e) and use the existing ephemeral Ubuntu path with `run_real_vm_e2e=true` when workflow-dispatch access is available; do not start a seven-VM lab for this first release.
+
 # Latest code handoff (2026-11-23, PR #274)
 
 PR [#274](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274) merged as [960ddafc](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/960ddafc6ab99b883ebdb2c180be41e71d3a071f). Native volume archive CLI dispatch now rejects unknown actions before root, state, Docker or filesystem access; a regression test covers the fail-closed boundary. The initial blob transfer was truncated and caught by CI; the complete file was republished before merge.
