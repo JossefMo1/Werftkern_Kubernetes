@@ -83,3 +83,33 @@ func TestReadPrivateSecretRejectsSymlinkedInputs(t *testing.T) {
 		t.Fatal("accepted symlinked parent for secret input")
 	}
 }
+
+
+func TestManifestInputRejectsSymlinkedPaths(t *testing.T) {
+	root := t.TempDir()
+	realDir := filepath.Join(root, "real")
+	if err := os.Mkdir(realDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	manifest := filepath.Join(realDir, "manifest.json")
+	if err := os.WriteFile(manifest, []byte("{}"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readManifest(manifest); err != nil {
+		t.Fatalf("valid manifest rejected: %v", err)
+	}
+	finalLink := filepath.Join(root, "manifest-link.json")
+	if err := os.Symlink(manifest, finalLink); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readManifest(finalLink); err == nil {
+		t.Fatal("accepted final manifest symlink")
+	}
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(realDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readManifest(filepath.Join(parentLink, "manifest.json")); err == nil {
+		t.Fatal("accepted parent manifest symlink")
+	}
+}
