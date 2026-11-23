@@ -14,6 +14,7 @@ import (
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/store"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/vault"
+	"io"
 	"net"
 	"os"
 	"os/exec"
@@ -22,6 +23,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -474,6 +476,31 @@ type Bundle struct {
 	ExpiresAt  time.Time `json:"expiresAt"`
 }
 
+func readSetupCredential(path string, maxSize int64, private bool) ([]byte, error) {
+	f, e := safefile.OpenRead(path)
+	if e != nil {
+		return nil, e
+	}
+	defer f.Close()
+	st, e := f.Stat()
+	if e != nil || st.Size() < 0 || st.Size() > maxSize {
+		return nil, errors.New("SETUP_CREDENTIAL_INVALID")
+	}
+	if private {
+		if st.Mode().Perm() != 0600 {
+			return nil, errors.New("SETUP_PRIVATE_KEY_MODE_INVALID")
+		}
+		if owner, ok := st.Sys().(*syscall.Stat_t); ok && os.Geteuid() != 0 && owner.Uid != uint32(os.Geteuid()) {
+			return nil, errors.New("SETUP_PRIVATE_KEY_OWNER_MISMATCH")
+		}
+	}
+	b, e := io.ReadAll(io.LimitReader(f, maxSize+1))
+	if e != nil || int64(len(b)) > maxSize {
+		return nil, errors.New("SETUP_CREDENTIAL_READ_FAILED")
+	}
+	return b, nil
+}
+
 func CreateBundle(ctx context.Context, name, address, out string) error {
 	if e := RequireRoot(); e != nil {
 		return e
@@ -492,11 +519,11 @@ func CreateBundle(ctx context.Context, name, address, out string) error {
 	if e != nil {
 		return e
 	}
-	caCert, e := os.ReadFile(config.Directory + "/authority/client.crt")
+	caCert, e := readSetupCredential(config.Directory+"/authority/client.crt", 1<<20, false)
 	if e != nil {
 		return e
 	}
-	caKey, e := os.ReadFile(config.Directory + "/authority/client.key")
+	caKey, e := readSetupCredential(config.Directory+"/authority/client.key", 64<<10, true)
 	if e != nil {
 		return e
 	}
