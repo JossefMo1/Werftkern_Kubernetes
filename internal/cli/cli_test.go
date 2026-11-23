@@ -2,6 +2,8 @@ package cli
 
 import (
 	"context"
+	"crypto/sha256"
+	"fmt"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"os"
 	"path/filepath"
