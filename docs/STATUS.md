@@ -1,3 +1,14 @@
+# Latest code handoff (2026-11-23, PR #255)
+
+PR [#255](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/255) merged as [e1586312](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e15863120152e08e280c65e8d00b00d27c06ea61). The Native `apply DATEI.json` path now opens manifest inputs through `safefile.OpenRead`, rejecting final and parent symlink traversal before a mutating manifest is parsed. Regression coverage verifies a valid file and both symlink forms. Stdin input (`-`), strict JSON, size limits, API contracts and state schema are unchanged.
+
+Post-merge Main checks:
+- [Native runtime/package 45160914694](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45160914694) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts 45160914910](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45160914910) — **success**.
+- [Source/Privacy audit 45160914778](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45160914778) — **success**.
+
+No Single-Host qualification gate closed. The existing `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. Next handoff: build a new candidate from [e1586312](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e15863120152e08e280c65e8d00b00d27c06ea61) and use the existing ephemeral Ubuntu path when dispatch access is available.
+
 # Latest code handoff (2026-11-23, PR #253)
 
 PR [#253](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/253) merged as [39965f40](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/39965f40c5103e64cfe563da4d4631df9032fb6a). Native volume restore archive inputs now use `safefile.OpenRead`, rejecting final and parent symlink traversal before archive bytes are consumed. A focused regression covers a valid archive and a parent-symlink path. Archive format, restore state and authorization policy are unchanged.
