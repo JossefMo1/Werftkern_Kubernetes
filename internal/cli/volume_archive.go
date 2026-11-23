@@ -29,7 +29,13 @@ type diskVolumeIdentity struct {
 	UID       int    `json:"uid"`
 	GID       int    `json:"gid"`
 }
-// openVolumeArchive applies the trusted-input boundary to restore archives.\n// Parent and final symlinks are rejected before any archive bytes are consumed.\nfunc openVolumeArchive(path string) (*os.File, error) {\n\treturn safefile.OpenRead(path)\n}\n\ntype restoreDiskReceipt struct {
+// openVolumeArchive applies the trusted-input boundary to restore archives.
+// Parent and final symlinks are rejected before any archive bytes are consumed.
+func openVolumeArchive(path string) (*os.File, error) {
+	return safefile.OpenRead(path)
+}
+
+type restoreDiskReceipt struct {
 	OperationID string               `json:"operationId"`
 	SHA256      string               `json:"sha256"`
 	Identity    diskVolumeIdentity   `json:"identity"`
