@@ -1,3 +1,19 @@
+# Latest code handoff (2026-11-23, PR #260)
+
+PR [#260](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/260) merged as [5cfd4726](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5cfd47267648840f57d947e2bc9f14443e2bf2b2). The read-only `werft assess DATEI.json` path now opens Kubernetes inventory files through `safefile.OpenRead`, rejecting final and parent symlink redirection before bounded assessment. Regression coverage verifies a valid inventory and both symlink forms. Input size limits, strict JSON, read-only behavior and the migration assessment contract are unchanged.
+
+PR checks:
+- [Native runtime/package 45179199727](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45179199727) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts 45179199695](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45179199695) — **success**.
+- [Source/Privacy audit 45179199809](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45179199809) — **success**.
+
+Post-merge Main checks:
+- [Native runtime/package 45180128482](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45180128482) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts 45180128580](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45180128580) — **success**.
+- [Source/Privacy audit 45180128505](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45180128505) — **success**.
+
+No Single-Host qualification gate closed. The unchanged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. Next handoff: build a new candidate from [5cfd4726](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5cfd47267648840f57d947e2bc9f14443e2bf2b2) and use the existing ephemeral Ubuntu path when dispatch access is available.
+
 # Latest code handoff (2026-11-23, PR #257)
 
 PR [#257](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/257) merged as [bafbf1e9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bafbf1e98d93490282117b36a26a89eb3f51581b). Native secret-directory reuse now opens `.manifest` through `safefile.OpenRead`, rejecting final and parent symlink redirection. Reuse additionally requires a regular 0400 manifest with the exact expected hash length and a bounded read. Regression coverage rejects a symlinked manifest. Allocation APIs, state schema, stdin input, Kubernetes manager behavior and production flags are unchanged.
