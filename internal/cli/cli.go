@@ -288,13 +288,53 @@ func setupCommand(ctx context.Context, args []string) error {
 	fmt.Printf("Ziel: %s · %s · lokaler Worker: %t\n", *name, *address, !*only)
 	return setup.Init(ctx, *name, *address, !*only)
 }
+func validateLockParents(path string) error {
+	if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+		return errors.New("LOCK_PATH_MUST_BE_ABSOLUTE_AND_CLEAN")
+	}
+	for dir := filepath.Dir(path); ; dir = filepath.Dir(dir) {
+		st, e := os.Lstat(dir)
+		if e != nil {
+			if !os.IsNotExist(e) {
+				return e
+			}
+			parent := filepath.Dir(dir)
+			if parent == dir {
+				return e
+			}
+			continue
+		}
+		if !st.IsDir() || st.Mode()&os.ModeSymlink != 0 {
+			return errors.New("LOCK_DIRECTORY_UNSAFE")
+		}
+		if dir == "/" {
+			return nil
+		}
+	}
+}
 func lock(path string) (func(), error) {
+	if e := validateLockParents(path); e != nil {
+		return nil, e
+	}
 	if e := os.MkdirAll(filepath.Dir(path), 0700); e != nil {
 		return nil, e
 	}
-	f, e := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0600)
+	if e := validateLockParents(path); e != nil {
+		return nil, e
+	}
+	f, e := os.OpenFile(path, os.O_CREATE|os.O_RDWR|syscall.O_NOFOLLOW|syscall.O_CLOEXEC, 0600)
 	if e != nil {
 		return nil, e
+	}
+	st, e := f.Stat()
+	if e != nil {
+		f.Close()
+		return nil, e
+	}
+	owner, ok := st.Sys().(*syscall.Stat_t)
+	if !st.Mode().IsRegular() || st.Mode().Perm() != 0600 || !ok || owner.Uid != uint32(os.Geteuid()) {
+		f.Close()
+		return nil, errors.New("LOCK_FILE_UNSAFE")
 	}
 	if e = syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB); e != nil {
 		f.Close()
