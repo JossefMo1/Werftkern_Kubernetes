@@ -12,7 +12,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"syscall"
 )
 
 const MaxPlaintext = 2 << 20
@@ -41,17 +40,16 @@ func GenerateKey() ([]byte, error) {
 	return b, e
 }
 func LoadKey(path string) ([]byte, error) {
-	fd, e := syscall.Open(path, syscall.O_RDONLY|syscall.O_CLOEXEC|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
+	f, e := safefile.OpenRead(path)
 	if e != nil {
 		return nil, e
 	}
-	f := os.NewFile(uintptr(fd), path)
 	defer f.Close()
 	st, e := f.Stat()
 	if e != nil {
 		return nil, e
 	}
-	if !st.Mode().IsRegular() || st.Mode().Perm()&0077 != 0 || st.Size() != 32 {
+	if st.Mode().Perm()&0077 != 0 || st.Size() != 32 {
 		return nil, errors.New("KEY_FILE_MUST_BE_32_BYTES_AND_PRIVATE")
 	}
 	return io.ReadAll(io.LimitReader(f, 33))

@@ -61,6 +61,13 @@ func TestKeys(t *testing.T) {
 	if _, e = CreateKey(filepath.Join(parentLink, "nested.key")); e == nil {
 		t.Fatal("created key through parent symlink")
 	}
+	linkedKey := filepath.Join(realParent, "existing.key")
+	if err := os.WriteFile(linkedKey, k, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, e = LoadKey(filepath.Join(parentLink, "existing.key")); e == nil {
+		t.Fatal("loaded key through parent symlink")
+	}
 	link := filepath.Join(filepath.Dir(p), "link")
 	if e = os.Symlink(p, link); e != nil {
 		t.Fatal(e)
