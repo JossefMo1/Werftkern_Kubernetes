@@ -1,4 +1,19 @@
-# Aktuelle Production-Entscheidung — 22.11.2026
+# Aktuelle Production-Entscheidung — 23.11.2026
+
+## Latest code handoff (2026-11-23, PR #235)
+
+PR [#235](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/235) merged as [6e524547](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6e524547645c0555097a0042bd9d5692babc58b4). Native `werft secret put --file` now opens private secret inputs through `safefile.OpenRead`, rejecting final and parent symlinks before the existing private-mode and size checks. Regression coverage protects both symlink shapes.
+
+Exact Main checks for the merge commit:
+- [Native runtime/package 45097932838](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932838) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts/package 45097932830](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932830) — **success**.
+- [Source/Privacy audit 45097932869](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932869) — **success**.
+
+Private alpha publication jobs [45097966319](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097966319), [45097970734](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097970734) and [45098147453](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45098147453) completed successfully but are not stable release or production evidence. No qualification gate was closed. The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains **no-go**.
+
+The next candidate must be package-built from `6e524547645c0555097a0042bd9d5692babc58b4`. Live Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle and restart, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability, user feedback and final Go/No-Go remain open. The current GitHub connector still cannot dispatch `ci.yml`; this is a blocker, not a passed gate.
+
+## Previous handoff history
 
 ## Latest code handoff (2026-11-23, PR #232)
 
