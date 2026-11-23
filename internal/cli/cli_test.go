@@ -113,3 +113,32 @@ func TestManifestInputRejectsSymlinkedPaths(t *testing.T) {
 		t.Fatal("accepted parent manifest symlink")
 	}
 }
+
+func TestAssessInputRejectsSymlinkedPaths(t *testing.T) {
+	root := t.TempDir()
+	realDir := filepath.Join(root, "real")
+	if err := os.Mkdir(realDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	inventory := filepath.Join(realDir, "inventory.json")
+	if err := os.WriteFile(inventory, []byte(`{"kind":"List","items":[]}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := assessCommand([]string{inventory}); err != nil {
+		t.Fatalf("valid inventory rejected: %v", err)
+	}
+	finalLink := filepath.Join(root, "inventory-link.json")
+	if err := os.Symlink(inventory, finalLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := assessCommand([]string{finalLink}); err == nil {
+		t.Fatal("accepted final inventory symlink")
+	}
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(realDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := assessCommand([]string{filepath.Join(parentLink, "inventory.json")}); err == nil {
+		t.Fatal("accepted parent inventory symlink")
+	}
+}
