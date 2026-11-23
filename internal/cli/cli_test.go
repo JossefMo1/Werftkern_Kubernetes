@@ -142,3 +142,39 @@ func TestAssessInputRejectsSymlinkedPaths(t *testing.T) {
 		t.Fatal("accepted parent inventory symlink")
 	}
 }
+
+
+func TestVerifyDemoArchiveRejectsSymlinkedPaths(t *testing.T) {
+	root := t.TempDir()
+	realDir := filepath.Join(root, "real")
+	if err := os.Mkdir(realDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	archive := filepath.Join(realDir, "demo.tar")
+	data := []byte("demo-archive")
+	if err := os.WriteFile(archive, data, 0600); err != nil {
+		t.Fatal(err)
+	}
+	digest := sha256.Sum256(data)
+	metadata := fmt.Sprintf(`{"image":"example","archiveSha256":"%x","compiler":"test"}`, digest)
+	if err := os.WriteFile(filepath.Join(realDir, "demo.json"), []byte(metadata), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifyDemoArchive(archive); err != nil {
+		t.Fatalf("valid demo archive rejected: %v", err)
+	}
+	finalLink := filepath.Join(root, "demo-link.tar")
+	if err := os.Symlink(archive, finalLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifyDemoArchive(finalLink); err == nil {
+		t.Fatal("accepted final demo archive symlink")
+	}
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(realDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifyDemoArchive(filepath.Join(parentLink, "demo.tar")); err == nil {
+		t.Fatal("accepted parent demo archive symlink")
+	}
+}
