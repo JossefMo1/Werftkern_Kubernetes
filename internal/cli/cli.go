@@ -500,7 +500,7 @@ func readManifest(path string) (model.ApplyRequest, error) {
 	var req model.ApplyRequest
 	var r io.Reader = os.Stdin
 	if path != "-" {
-		f, e := os.Open(path)
+		f, e := safefile.OpenRead(path)
 		if e != nil {
 			return req, e
 		}
