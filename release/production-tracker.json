@@ -595,7 +595,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/280",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/283",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -634,7 +634,7 @@
     "commit": "8800325ab64dd701a69d65a39f332e6153c9da0d",
     "codeCommit": "8800325ab64dd701a69d65a39f332e6153c9da0d",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/282",
-    "documentationPullRequest": null,
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/283",
     "summary": "Main contains PR #282 Native stateful CLI action preflight: volume, secret and gateway reject unknown actions before admin configuration or controller-state access, so malformed input fails closed without a control-plane request. TestStatefulCLIRejectsUnknownActionsBeforeConfigAccess covers all three command families. PR #282 Native, Kubernetes and source/privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/282",
     "nextCandidateRequired": true
