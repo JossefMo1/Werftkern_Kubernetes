@@ -412,7 +412,7 @@
       "commit": "29418520bc4198a2e8102fe7518ef8e1e23893fe",
       "codeCommit": "29418520bc4198a2e8102fe7518ef8e1e23893fe",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/232",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/231",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/233",
       "summary": "Main contains PR #232 Docker.Load no-follow hardening and its final/parent symlink regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
       "nextCandidateRequired": true,
       "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/232"
