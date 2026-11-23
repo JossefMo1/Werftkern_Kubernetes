@@ -13,6 +13,7 @@ import (
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/pki"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/store"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/vault"
 	"io"
 	"net"
@@ -542,6 +543,36 @@ func CreateBundle(ctx context.Context, name, address, out string) error {
 	fmt.Printf("Beitrittsdatei geschrieben: %s\nEnthält einen privaten Node-Schlüssel. Über einen sicheren Kanal übertragen.\nAuf Worker: sudo werft setup --join /pfad/zur/datei\n", out)
 	return nil
 }
+func readJoinBundle(path string) (Bundle, error) {
+	var b Bundle
+	f, e := safefile.OpenRead(path)
+	if e != nil {
+		return b, e
+	}
+	defer f.Close()
+	stat, e := f.Stat()
+	if e != nil {
+		return b, e
+	}
+	if stat.Mode().Perm()&0077 != 0 {
+		return b, errors.New("JOIN_FILE_MUST_HAVE_MODE_0600")
+	}
+	if stat.Size() > 32768 {
+		return b, errors.New("JOIN_FILE_TOO_LARGE")
+	}
+	raw, e := io.ReadAll(io.LimitReader(f, 32768+1))
+	if e != nil {
+		return b, e
+	}
+	if len(raw) > 32768 {
+		return b, errors.New("JOIN_FILE_TOO_LARGE")
+	}
+	if e = strictjson.Unmarshal(raw, &b); e != nil {
+		return b, e
+	}
+	return b, nil
+}
+
 func Join(ctx context.Context, path string) error {
 	if e := Preflight(); e != nil {
 		return e
@@ -549,17 +580,7 @@ func Join(ctx context.Context, path string) error {
 	if _, e := os.Stat(progressPath); e == nil {
 		return errors.New("HOST_ALREADY_CONFIGURED; use werft setup to resume, never overwrite identity")
 	}
-	stat, e := os.Stat(path)
-	if e != nil {
-		return e
-	}
-	if stat.Mode().Perm()&0077 != 0 {
-		return errors.New("JOIN_FILE_MUST_HAVE_MODE_0600")
-	}
-	if stat.Size() > 32768 {
-		return errors.New("JOIN_FILE_TOO_LARGE")
-	}
-	b, e := config.Load[Bundle](path)
+	b, e := readJoinBundle(path)
 	if e != nil {
 		return e
 	}
