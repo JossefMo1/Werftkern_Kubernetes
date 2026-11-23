@@ -55,6 +55,14 @@ func TestCertificateCommandsRoundTripAndNoOverwrite(t *testing.T) {
 		t.Fatal(e)
 	}
 }
+func TestCertificateUnknownOperationFailsBeforeCARead(t *testing.T) {
+	dir := t.TempDir()
+	missingCA := filepath.Join(dir, "missing-ca.crt")
+	if err := certificateCommand([]string{"rotate", "--ca", missingCA}); err == nil || err.Error() != "UNKNOWN_CERTIFICATE_OPERATION" {
+		t.Fatalf("unexpected result: %v", err)
+	}
+}
+
 func TestCertificatePrivateParentsAndConfirmation(t *testing.T) {
 	dir := t.TempDir()
 	real := filepath.Join(dir, "real")

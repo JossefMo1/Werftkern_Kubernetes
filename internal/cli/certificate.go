@@ -39,6 +39,11 @@ func certificateCommand(args []string) error {
 	if f.NArg() != 0 {
 		return errors.New("UNEXPECTED_CERTIFICATE_ARGUMENT")
 	}
+	switch args[0] {
+	case "inspect", "bundle", "renew", "install":
+	default:
+		return errors.New("UNKNOWN_CERTIFICATE_OPERATION")
+	}
 	if args[0] == "inspect" {
 		p, e := pki.ReadBundle(*bundle)
 		if e != nil {
