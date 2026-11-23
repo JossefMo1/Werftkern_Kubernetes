@@ -74,7 +74,7 @@ func CreateExclusive(path string, mode os.FileMode) (*os.File, error) {
 	if err := validateParentChain(filepath.Dir(path)); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
 	}
-	fd, err := syscall.Open(path, syscall.O_WRONLY|syscall.O_CREATE|syscall.O_EXCL|syscall.O_CLOEXEC|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, uint32(mode.Perm()))
+	fd, err := syscall.Open(path, syscall.O_WRONLY|syscall.O_CREAT|syscall.O_EXCL|syscall.O_CLOEXEC|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, uint32(mode.Perm()))
 	if err != nil {
 		return nil, err
 	}
