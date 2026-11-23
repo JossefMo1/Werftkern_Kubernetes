@@ -1,3 +1,14 @@
+## Latest code handoff (2026-11-23, PR #239)
+
+PR [#239](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/239) merged as [43bcfb46](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/43bcfb468680d976b181a5ca8a745d55bd1d63ff). Native backup inspect/restore inputs now use `safefile.OpenRead`, refusing final and parent symlinks and enforcing the bounded read after opening; regression tests cover the boundary. The corrected head passed the Native, Kubernetes and Source/Privacy checks.
+
+Exact Main checks:
+- [Native runtime/package 45108824975](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45108824975) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts/package 45108825010](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45108825010) — **success**.
+- [Source/Privacy audit 45108824979](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45108824979) — **success**.
+
+No qualification gate was closed. The current `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and remains `productionReady=false)/No-Go. The next candidate must be built from `43bcfb468680d976b181a5ca8a745d55bd1d63ff`; live installation, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability and final Go/No-Go remain open. The connector cannot dispatch `ci.yml`, so no live gate is implied.
+
 # Masterplan traceability
 
 ## Latest code handoff (2026-11-23, PR #237)
