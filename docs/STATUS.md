@@ -1,3 +1,14 @@
+# Latest code handoff (2026-11-23, PR #253)
+
+PR [#253](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/253) merged as [39965f40](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/39965f40c5103e64cfe563da4d4631df9032fb6a). Native volume restore archive inputs now use `safefile.OpenRead`, rejecting final and parent symlink traversal before archive bytes are consumed. A focused regression covers a valid archive and a parent-symlink path. Archive format, restore state and authorization policy are unchanged.
+
+Post-merge Main checks:
+- [Native runtime/package 45151283506](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45151283506) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts 45151283604](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45151283604) — **success**.
+- [Source/Privacy audit 45151283665](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45151283665) — **success**.
+
+No Single-Host qualification gate closed. The existing `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. Next handoff: build a new candidate from [39965f40](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/39965f40c5103e64cfe563da4d4631df9032fb6a) and use the existing ephemeral Ubuntu path when dispatch access is available.
+
 ## Latest code handoff (2026-11-23, PR #244)
 
 PR [#244](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/244) merged as [6faf2fbe](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6faf2fbe819ae7a0775d27727986bc02be07228e). Native ingress gateway credentials now use the existing no-follow certificate/private-key readers, and edge TLS PEM loading uses bounded no-follow reads instead of path-based `tls.LoadX509KeyPair`. Regression coverage rejects final and parent symlinks for edge certificates and private keys. No certificate format, routing policy or qualification claim changed.
