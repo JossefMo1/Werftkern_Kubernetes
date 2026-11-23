@@ -68,8 +68,8 @@ func OpenRead(path string) (*os.File, error) {
 }
 
 // CreateExclusive creates a new regular file without following a final symlink.
- // Existing parent components are checked for symlinks before the exclusive open.
- // The caller owns the returned file and must close it.
+// Existing parent components are checked for symlinks before the exclusive open.
+// The caller owns the returned file and must close it.
 func CreateExclusive(path string, mode os.FileMode) (*os.File, error) {
 	if err := validateParentChain(filepath.Dir(path)); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
