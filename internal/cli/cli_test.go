@@ -146,6 +146,31 @@ func TestAssessInputRejectsSymlinkedPaths(t *testing.T) {
 }
 
 
+func TestReadCertificateInputRejectsSymlinkedPaths(t *testing.T) {
+	dir := t.TempDir()
+	cert := filepath.Join(dir, "admin.crt")
+	if err := os.WriteFile(cert, []byte("certificate"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if got, err := readCertificateInput(cert); err != nil || string(got) != "certificate" {
+		t.Fatalf("valid certificate rejected: %v", err)
+	}
+	finalLink := filepath.Join(dir, "final.crt")
+	if err := os.Symlink(cert, finalLink); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readCertificateInput(finalLink); err == nil {
+		t.Fatal("accepted final certificate symlink")
+	}
+	parentLink := filepath.Join(dir, "linked")
+	if err := os.Symlink(dir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readCertificateInput(filepath.Join(parentLink, "admin.crt")); err == nil {
+		t.Fatal("accepted parent certificate symlink")
+	}
+}
+
 func TestVerifyDemoArchiveRejectsSymlinkedPaths(t *testing.T) {
 	root := t.TempDir()
 	realDir := filepath.Join(root, "real")
