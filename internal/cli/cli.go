@@ -765,6 +765,19 @@ func tunnelCommand(ctx context.Context, args []string) error {
 	}
 	return e
 }
+func nodePolicyBody(action string) (map[string]bool, error) {
+	switch action {
+	case "drain":
+		return map[string]bool{"drain": true}, nil
+	case "uncordon":
+		return map[string]bool{"drain": false}, nil
+	case "revoke":
+		return map[string]bool{"revoked": true}, nil
+	default:
+		return nil, errors.New("NODE_ACTION_UNKNOWN")
+	}
+}
+
 func nodeCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return errors.New("node bundle|drain|uncordon|revoke")
@@ -785,6 +798,10 @@ func nodeCommand(ctx context.Context, args []string) error {
 	if len(args) != 2 {
 		return errors.New("node drain|uncordon|revoke NAME")
 	}
+	body, e := nodePolicyBody(args[0])
+	if e != nil {
+		return e
+	}
 	c, e := client()
 	if e != nil {
 		return e
@@ -802,17 +819,6 @@ func nodeCommand(ctx context.Context, args []string) error {
 	}
 	if id == "" {
 		return model.ErrNotFound
-	}
-	body := map[string]bool{}
-	switch args[0] {
-	case "drain":
-		body["drain"] = true
-	case "uncordon":
-		body["drain"] = false
-	case "revoke":
-		body["revoked"] = true
-	default:
-		return errors.New("NODE_ACTION_UNKNOWN")
 	}
 	if e = c.Call(ctx, "POST", "/v1/nodes/"+id, body, nil, ""); e != nil {
 		return e
