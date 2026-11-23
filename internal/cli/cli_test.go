@@ -65,6 +65,32 @@ func TestInvalidWaitDoesNotConnect(t *testing.T) {
 		t.Fatal("invalid timeout")
 	}
 }
+
+func TestNodePolicyBody(t *testing.T) {
+	tests := map[string]map[string]bool{
+		"drain":    map[string]bool{"drain": true},
+		"uncordon": map[string]bool{"drain": false},
+		"revoke":   map[string]bool{"revoked": true},
+	}
+	for action, want := range tests {
+		got, err := nodePolicyBody(action)
+		if err != nil {
+			t.Fatalf("%s: unexpected error: %v", action, err)
+		}
+		if len(got) != len(want) {
+			t.Fatalf("%s: got body %#v, want %#v", action, got, want)
+		}
+		for key, value := range want {
+			if got[key] != value {
+				t.Fatalf("%s: got body %#v, want %#v", action, got, want)
+			}
+		}
+	}
+	if got, err := nodePolicyBody("unknown"); err == nil || err.Error() != "NODE_ACTION_UNKNOWN" || got != nil {
+		t.Fatalf("unknown action returned body=%#v, err=%v", got, err)
+	}
+}
+
 func TestEndpointsHideOfflineDrainingAndForeign(t *testing.T) {
 	now := time.Now()
 	s := model.NewState(model.ID(), "test", now)
