@@ -1,3 +1,19 @@
+# Latest code handoff (2026-11-23, PR #257)
+
+PR [#257](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/257) merged as [bafbf1e9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bafbf1e98d93490282117b36a26a89eb3f51581b). Native secret-directory reuse now opens `.manifest` through `safefile.OpenRead`, rejecting final and parent symlink redirection. Reuse additionally requires a regular 0400 manifest with the exact expected hash length and a bounded read. Regression coverage rejects a symlinked manifest. Allocation APIs, state schema, stdin input, Kubernetes manager behavior and production flags are unchanged.
+
+PR checks:
+- [Native runtime/package 45169953738](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45169953738) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts 45169953783](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45169953783) — **success**.
+- [Source/Privacy audit 45169953690](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45169953690) — **success**.
+
+Post-merge Main checks:
+- [Native runtime/package 45170406716](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45170406716) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts 45170406949](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45170406949) — **success**.
+- [Source/Privacy audit 45170407002](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45170407002) — **success**.
+
+No Single-Host qualification gate closed. The unchanged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false) and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. Next handoff: build a new candidate from [bafbf1e9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bafbf1e98d93490282117b36a26a89eb3f51581b) and use the existing ephemeral Ubuntu path when dispatch access is available.
+
 # Latest code handoff (2026-11-23, PR #255)
 
 PR [#255](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/255) merged as [e1586312](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e15863120152e08e280c65e8d00b00d27c06ea61). The Native `apply DATEI.json` path now opens manifest inputs through `safefile.OpenRead`, rejecting final and parent symlink traversal before a mutating manifest is parsed. Regression coverage verifies a valid file and both symlink forms. Stdin input (`-`), strict JSON, size limits, API contracts and state schema are unchanged.
