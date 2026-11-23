@@ -123,3 +123,18 @@ func TestReadJoinBundleRejectsOversizedInput(t *testing.T) {
 		t.Fatal("accepted oversized join bundle")
 	}
 }
+
+func TestReadJoinBundleAcceptsExactSizeLimit(t *testing.T) {
+	d := t.TempDir()
+	path := filepath.Join(d, "join.json")
+	raw := append([]byte("{}"), bytes.Repeat([]byte(" "), 32766)...)
+	if len(raw) != 32768 {
+		t.Fatalf("test fixture has unexpected size: %d", len(raw))
+	}
+	if err := os.WriteFile(path, raw, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readJoinBundle(path); err != nil {
+		t.Fatalf("rejected exact-size join bundle: %v", err)
+	}
+}
