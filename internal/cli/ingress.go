@@ -188,6 +188,13 @@ func gatewayCommand(ctx context.Context, args []string) error {
 			if e != nil {
 				return e
 			}
+			// Read controller state before creating the credential directory. A
+			// transient state/API failure must not leave an incomplete directory
+			// that blocks a safe retry with the same gateway identity.
+			state, e := c.State(ctx)
+			if e != nil {
+				return e
+			}
 			if e = os.Mkdir(dir, 0700); e != nil {
 				return e
 			}
@@ -199,24 +206,7 @@ func gatewayCommand(ctx context.Context, args []string) error {
 			admin.CA = "ca.crt"
 			admin.Cert = "gateway.crt"
 			admin.Key = "gateway.key"
-			example := ingress.Config{Client: admin, GatewayID: q.ID, Listen: "127.0.0.1:8443", Certificate: "edge.crt", PrivateKey: "edge.key", AllowedCIDRs: []string{}, UpstreamMode: "private-http", Routes: []ingress.Route{}}
-			state, e := c.State(ctx)
-			if e != nil {
-				return e
-			}
-			seen := map[string]bool{}
-			for _, id := range model.SortedKeys(state.Nodes) {
-				n := state.Nodes[id]
-				for _, cidr := range []string{n.Address + "/32", n.PodCIDR} {
-					if cidr != "" && !seen[cidr] {
-						example.AllowedCIDRs = append(example.AllowedCIDRs, cidr)
-						seen[cidr] = true
-					}
-				}
-			}
-			for _, service := range q.Services {
-				example.Routes = append(example.Routes, ingress.Route{Host: service + ".example.invalid", Service: service})
-			}
+			example := gatewayIngressExample(q, admin, state)
 			if e = safefile.JSON(filepath.Join(dir, "ingress.example.json"), example, 0600); e != nil {
 				return e
 			}
@@ -232,4 +222,22 @@ func gatewayCommand(ctx context.Context, args []string) error {
 	default:
 		return errors.New("GATEWAY_ACTION_UNSUPPORTED")
 	}
+}
+
+func gatewayIngressExample(q model.Gateway, admin config.Client, state *model.State) ingress.Config {
+	example := ingress.Config{Client: admin, GatewayID: q.ID, Listen: "127.0.0.1:8443", Certificate: "edge.crt", PrivateKey: "edge.key", AllowedCIDRs: []string{}, UpstreamMode: "private-http", Routes: []ingress.Route{}}
+	seen := map[string]bool{}
+	for _, id := range model.SortedKeys(state.Nodes) {
+		n := state.Nodes[id]
+		for _, cidr := range []string{n.Address + "/32", n.PodCIDR} {
+			if cidr != "" && !seen[cidr] {
+				example.AllowedCIDRs = append(example.AllowedCIDRs, cidr)
+				seen[cidr] = true
+			}
+		}
+	}
+	for _, service := range q.Services {
+		example.Routes = append(example.Routes, ingress.Route{Host: service + ".example.invalid", Service: service})
+	}
+	return example
 }
