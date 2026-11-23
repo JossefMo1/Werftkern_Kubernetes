@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-23T08:03:43.573Z",
+  "updatedAt": "2026-11-23T08:09:46.452Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -467,7 +467,7 @@
     "commit": "5c564acb4972041bc3a9e3733404cc356594b4e7",
     "codeCommit": "5c564acb4972041bc3a9e3733404cc356594b4e7",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/248",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/247",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/249",
     "summary": "Main contains PR #248 Native trusted exclusive output creation and symlink regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/248",
     "nextCandidateRequired": true
