@@ -5,6 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/failover"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
@@ -14,7 +18,6 @@ import (
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/setup"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/store"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/vault"
-	"os"
 	"path/filepath"
 	"time"
 )
