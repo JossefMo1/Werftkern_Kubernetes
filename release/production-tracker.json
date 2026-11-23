@@ -409,13 +409,13 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "6e524547645c0555097a0042bd9d5692babc58b4",
-      "codeCommit": "6e524547645c0555097a0042bd9d5692babc58b4",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/235",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/236",
-      "summary": "Main contains PR #235 private-secret no-follow hardening and final/parent symlink regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
+      "commit": "6463c29de2a1bfcb6c9e7dbcfbfeae26585d427d",
+      "codeCommit": "6463c29de2a1bfcb6c9e7dbcfbfeae26585d427d",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/237",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/238",
+      "summary": "Main contains PR #237 release-verification no-follow hardening and symlink/size regression tests. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296; release metadata reports immutable=false and unsigned assets. A new candidate is required before live testing this change.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/235"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/237"
     },
     "commit": "6463c29de2a1bfcb6c9e7dbcfbfeae26585d427d",
     "codeCommit": "6463c29de2a1bfcb6c9e7dbcfbfeae26585d427d",
