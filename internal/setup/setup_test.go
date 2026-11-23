@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"bytes"
 	"net"
 	"os"
 	"path/filepath"
@@ -109,5 +110,16 @@ func TestReadJoinBundleRejectsSymlinkedInput(t *testing.T) {
 	}
 	if _, err := readJoinBundle(input); err == nil {
 		t.Fatal("accepted join bundle with group permissions")
+	}
+}
+
+func TestReadJoinBundleRejectsOversizedInput(t *testing.T) {
+	d := t.TempDir()
+	path := filepath.Join(d, "join.json")
+	if err := os.WriteFile(path, bytes.Repeat([]byte("x"), 32769), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readJoinBundle(path); err == nil {
+		t.Fatal("accepted oversized join bundle")
 	}
 }
