@@ -138,3 +138,39 @@ func TestReadJoinBundleAcceptsExactSizeLimit(t *testing.T) {
 		t.Fatalf("rejected exact-size join bundle: %v", err)
 	}
 }
+
+func TestValidateNewBundleOutput(t *testing.T) {
+	d := t.TempDir()
+	missing := filepath.Join(d, "new", "join.json")
+	if err := validateNewBundleOutput(missing); err != nil {
+		t.Fatalf("rejected missing output path: %v", err)
+	}
+
+	existing := filepath.Join(d, "existing.json")
+	if err := os.WriteFile(existing, []byte("old"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateNewBundleOutput(existing); err == nil || err.Error() != "OUTPUT_FILE_ALREADY_EXISTS" {
+		t.Fatalf("unexpected existing-file result: %v", err)
+	}
+
+	link := filepath.Join(d, "dangling.json")
+	if err := os.Symlink(filepath.Join(d, "does-not-exist.json"), link); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateNewBundleOutput(link); err == nil || err.Error() != "OUTPUT_FILE_PATH_UNSAFE" {
+		t.Fatalf("did not reject final symlink: %v", err)
+	}
+
+	parent := filepath.Join(d, "parent-link")
+	if err := os.Symlink(filepath.Join(d, "missing-parent"), parent); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateNewBundleOutput(filepath.Join(parent, "join.json")); err == nil || !strings.HasPrefix(err.Error(), "OUTPUT_FILE_PATH_UNSAFE:") {
+		t.Fatalf("did not reject parent symlink: %v", err)
+	}
+
+	if err := validateNewBundleOutput("   "); err == nil || err.Error() != "OUTPUT_FILE_PATH_INVALID" {
+		t.Fatalf("did not reject empty output path: %v", err)
+	}
+}
