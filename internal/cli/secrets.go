@@ -8,7 +8,6 @@ import (
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/control"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
-	"os"
 	"strconv"
 )
 
