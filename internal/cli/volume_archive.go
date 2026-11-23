@@ -43,13 +43,16 @@ type restoreDiskReceipt struct {
 }
 
 func volumeArchiveCommand(ctx context.Context, args []string) error {
-	if e := setup.RequireRoot(); e != nil {
-		return e
-	}
 	if len(args) < 2 {
 		return errors.New("volume backup|restore NAME --key-file FILE --file ARCHIVE --maintenance-id ID [--operation-id ID]")
 	}
 	action, name := args[0], args[1]
+	if action != "backup" && action != "restore" {
+		return errors.New("VOLUME_ARCHIVE_ACTION_INVALID")
+	}
+	if e := setup.RequireRoot(); e != nil {
+		return e
+	}
 	if !model.ValidName(name) {
 		return errors.New("VOLUME_NAME_INVALID")
 	}
