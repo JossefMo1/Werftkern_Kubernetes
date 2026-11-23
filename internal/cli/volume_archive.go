@@ -238,3 +238,27 @@ func volumeArchiveCommand(ctx context.Context, args []string) error {
 		}
 		// All cooperative engine/restore writers hold .io.lock; the parent is root
 		// owned 0700. Never merge data into an existing destination.
+		if _, e = os.Lstat(target); !os.IsNotExist(e) {
+			return errors.New("RESTORE_TARGET_ALREADY_EXISTS")
+		}
+		if e = os.Rename(stage, target); e != nil {
+			return e
+		}
+		if e = syncDir(root); e != nil {
+			return e
+		}
+	}
+	q.Complete = true
+	if e = c.Call(ctx, "POST", "/v1/volumes/"+name+"/restore", q, nil, *operation); e != nil {
+		return fmt.Errorf("DISK_RESTORED_API_ACK_PENDING_RETRY_SAME_OPERATION: %w", e)
+	}
+	return json.NewEncoder(os.Stdout).Encode(map[string]any{"operationId": *operation, "targetVolume": v.ID, "source": receipt.Result.Header, "sha256": digest, "applicationsRemainPaused": true})
+}
+func syncDir(p string) error {
+	f, e := os.Open(p)
+	if e != nil {
+		return e
+	}
+	defer f.Close()
+	return f.Sync()
+}
