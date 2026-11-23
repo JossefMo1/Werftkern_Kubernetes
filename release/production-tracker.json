@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-23T22:02:36Z",
+  "updatedAt": "2026-11-23T22:08:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -585,7 +585,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/278",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/280",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -624,7 +624,7 @@
     "commit": "bfc74495a3248d98df9cfc770eac3a519811e2d0",
     "codeCommit": "bfc74495a3248d98df9cfc770eac3a519811e2d0",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/279",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/278",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/280",
     "summary": "Main contains PR #279 Native node policy preflight: drain, uncordon and revoke are validated before admin configuration or controller-state access, so malformed two-argument actions fail closed without a control-plane request. TestNodePolicyBody covers supported bodies and NODE_ACTION_UNKNOWN. PR #279 Native, Kubernetes and source/privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/279",
     "nextCandidateRequired": true
