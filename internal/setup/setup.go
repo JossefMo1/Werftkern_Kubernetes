@@ -502,6 +502,35 @@ func readSetupCredential(path string, maxSize int64, private bool) ([]byte, erro
 	return b, nil
 }
 
+// validateNewBundleOutput checks the destination before CreateBundle performs
+// any remote node registration. The final path and every existing parent
+// must be trusted; otherwise a local write failure could leave a registered
+// worker without a usable join bundle.
+func validateNewBundleOutput(path string) error {
+	if strings.TrimSpace(path) == "" {
+		return errors.New("OUTPUT_FILE_PATH_INVALID")
+	}
+	if info, e := os.Lstat(path); e == nil {
+		if info.Mode()&os.ModeSymlink != 0 {
+			return errors.New("OUTPUT_FILE_PATH_UNSAFE")
+		}
+		return errors.New("OUTPUT_FILE_ALREADY_EXISTS")
+	} else if !errors.Is(e, os.ErrNotExist) {
+		return fmt.Errorf("OUTPUT_FILE_PATH_UNSAFE: %w", e)
+	}
+	// A missing final path can still traverse a symlinked parent. OpenRead
+	// validates the parent chain without following the final component.
+	f, e := safefile.OpenRead(path)
+	if e == nil {
+		_ = f.Close()
+		return errors.New("OUTPUT_FILE_ALREADY_EXISTS")
+	}
+	if errors.Is(e, os.ErrNotExist) {
+		return nil
+	}
+	return fmt.Errorf("OUTPUT_FILE_PATH_UNSAFE: %w", e)
+}
+
 func CreateBundle(ctx context.Context, name, address, out string) error {
 	if e := RequireRoot(); e != nil {
 		return e
@@ -509,8 +538,8 @@ func CreateBundle(ctx context.Context, name, address, out string) error {
 	if !model.ValidName(name) || !model.PrivateAddress(address) || net.ParseIP(address).IsLoopback() {
 		return errors.New("WORKER_NAME_AND_PRIVATE_IPV4_REQUIRED")
 	}
-	if _, e := os.Stat(out); !os.IsNotExist(e) {
-		return errors.New("OUTPUT_FILE_ALREADY_EXISTS")
+	if e := validateNewBundleOutput(out); e != nil {
+		return e
 	}
 	c, e := config.Load[config.Client](config.AdminPath())
 	if e != nil {
