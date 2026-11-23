@@ -76,6 +76,29 @@ func TestSecretScopeMismatchAndSymlinkRejected(t *testing.T) {
 		t.Fatal("symlink")
 	}
 }
+func TestSecretManifestReuseRejectsSymlink(t *testing.T) {
+	f := dockerTest(t)
+	a := allocation()
+	a.Spec.Secrets = []model.SecretRef{{Name: "db", Version: 1}}
+	dir := filepath.Join(f.d.SecretRoot, a.ID)
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "db"), []byte("secret-value"), 0444); err != nil {
+		t.Fatal(err)
+	}
+	target := filepath.Join(t.TempDir(), "manifest")
+	if err := os.WriteFile(target, []byte(model.Hash(a.Spec)), 0400); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(target, filepath.Join(dir, ".manifest")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.d.secretDirectory(context.Background(), a); err == nil {
+		t.Fatal("symlinked manifest accepted")
+	}
+}
+
 func TestSecretProductionModeRejectsDiskFilesystem(t *testing.T) {
 	f := dockerTest(t)
 	f.d.RequireSecretTmpfs = true
