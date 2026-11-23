@@ -1,3 +1,4 @@
+
 package cli
 
 import (
@@ -188,6 +189,13 @@ func gatewayCommand(ctx context.Context, args []string) error {
 			if e != nil {
 				return e
 			}
+			// Read controller state before creating the credential directory. A
+			// transient state/API failure must not leave an incomplete directory
+			// that blocks a safe retry with the same gateway identity.
+			state, e := c.State(ctx)
+			if e != nil {
+				return e
+			}
 			if e = os.Mkdir(dir, 0700); e != nil {
 				return e
 			}
@@ -199,24 +207,7 @@ func gatewayCommand(ctx context.Context, args []string) error {
 			admin.CA = "ca.crt"
 			admin.Cert = "gateway.crt"
 			admin.Key = "gateway.key"
-			example := ingress.Config{Client: admin, GatewayID: q.ID, Listen: "127.0.0.1:8443", Certificate: "edge.crt", PrivateKey: "edge.key", AllowedCIDRs: []string{}, UpstreamMode: "private-http", Routes: []ingress.Route{}}
-			state, e := c.State(ctx)
-			if e != nil {
-				return e
-			}
-			seen := map[string]bool{}
-			for _, id := range model.SortedKeys(state.Nodes) {
-				n := state.Nodes[id]
-				for _, cidr := range []string{n.Address + "/32", n.PodCIDR} {
-					if cidr != "" && !seen[cidr] {
-						example.AllowedCIDRs = append(example.AllowedCIDRs, cidr)
-						seen[cidr] = true
-					}
-				}
-			}
-			for _, service := range q.Services {
-				example.Routes = append(example.Routes, ingress.Route{Host: service + ".example.invalid", Service: service})
-			}
+			example := gatewayIngressExample(q, admin, state)
 			if e = safefile.JSON(filepath.Join(dir, "ingress.example.json"), example, 0600); e != nil {
 				return e
 			}
@@ -231,5 +222,60 @@ func gatewayCommand(ctx context.Context, args []string) error {
 		return nil
 	default:
 		return errors.New("GATEWAY_ACTION_UNSUPPORTED")
+	}
+}
+
+func gatewayIngressExample(q model.Gateway, admin config.Client, state *model.State) ingress.Config {
+	example := ingress.Config{Client: admin, GatewayID: q.ID, Listen: "127.0.0.1:8443", Certificate: "edge.crt", PrivateKey: "edge.key", AllowedCIDRs: []string{}, UpstreamMode: "private-http", Routes: []ingress.Route{}}
+	seen := map[string]bool{}
+	for _, id := range model.SortedKeys(state.Nodes) {
+		n := state.Nodes[id]
+		for _, cidr := range []string{n.Address + "/32", n.PodCIDR} {
+			if cidr != "" && !seen[cidr] {
+				example.AllowedCIDRs = append(example.AllowedCIDRs, cidr)
+				seen[cidr] = true
+			}
+		}
+	}
+	for _, service := range q.Services {
+		example.Routes = append(example.Routes, ingress.Route{Host: service + ".example.invalid", Service: service})
+	}
+	return example
+}
+
+---FILE:internal/cli/ingress_test.go---
+package cli
+
+import (
+	"reflect"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/config"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/ingress"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+)
+
+func TestGatewayIngressExampleIsDeterministicAndScoped(t *testing.T) {
+	cluster := model.ID()
+	state := model.NewState(cluster, "gateway-test", time.Unix(0, 0))
+	first, second := strings.Repeat("1", 32), strings.Repeat("2", 32)
+	state.Nodes[first] = &model.Node{ID: first, Address: "127.0.0.1", PodCIDR: "10.0.0.0/24"}
+	state.Nodes[second] = &model.Node{ID: second, Address: "127.0.0.1", PodCIDR: "10.0.1.0/24"}
+	q := model.Gateway{ID: model.ID(), Services: []string{"api", "web"}}
+	admin := config.Client{ClusterID: cluster, CA: "ca.crt", Cert: "gateway.crt", Key: "gateway.key"}
+
+	got := gatewayIngressExample(q, admin, state)
+	wantCIDRs := []string{"127.0.0.1/32", "10.0.0.0/24", "10.0.1.0/24"}
+	if !reflect.DeepEqual(got.AllowedCIDRs, wantCIDRs) {
+		t.Fatalf("allowed CIDRs = %#v, want %#v", got.AllowedCIDRs, wantCIDRs)
+	}
+	wantRoutes := []ingress.Route{{Host: "api.example.invalid", Service: "api"}, {Host: "web.example.invalid", Service: "web"}}
+	if !reflect.DeepEqual(got.Routes, wantRoutes) {
+		t.Fatalf("routes = %#v, want %#v", got.Routes, wantRoutes)
+	}
+	if got.GatewayID != q.ID || !reflect.DeepEqual(got.Client, admin) {
+		t.Fatalf("gateway identity/client changed: %#v", got)
 	}
 }
