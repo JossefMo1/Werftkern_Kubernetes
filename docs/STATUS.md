@@ -1,3 +1,19 @@
+# Latest code handoff (2026-11-23, PR #264)
+
+PR [#264](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264) merged as [1b24e6cd](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1b24e6cd7b0f38c13797f2ab161a609e2641ca48). The `werft doctor` path now reads the configured admin certificate through `safefile.OpenRead` with a regular-file and 64 KiB size bound before parsing. Final and parent symlink redirection is rejected consistently with other credential paths. Regression coverage verifies a valid certificate and both symlink forms.
+
+PR checks:
+- Native runtime/package [45198552808](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198552808) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45198553068](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198553068) — **success**.
+- Source/Privacy audit [45198552768](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198552768) — **success**.
+
+Post-merge Main checks:
+- Native runtime/package [45199052283](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052283) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45199052324](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052324) — **success**.
+- Source/Privacy audit [45199052375](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052375) — **success**.
+
+No Single-Host qualification gate closed. The unchanged v0.2.0-dev.4-test.17 candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; immutable=false and unsigned assets mean it cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. Next handoff: build a new candidate from [1b24e6cd](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1b24e6cd7b0f38c13797f2ab161a609e2641ca48) and use the existing ephemeral Ubuntu path when dispatch access is available.
+
 # Latest code handoff (2026-11-23, PR #262)
 
 PR [#262](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262) merged as [b99d5b8d](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe). The packaged demo archive verification path now opens the archive through `safefile.OpenRead` before hashing, rejecting final and parent symlink redirection and non-regular inputs consistently with Docker image loading. Regression coverage verifies a valid archive and both symlink forms.
