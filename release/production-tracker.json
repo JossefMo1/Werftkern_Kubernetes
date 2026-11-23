@@ -575,7 +575,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/278",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -614,7 +614,7 @@
     "commit": "2c4cbd4ec54e63b52e45dde557809dfa13d2b88e",
     "codeCommit": "2c4cbd4ec54e63b52e45dde557809dfa13d2b88e",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/275",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/278",
     "summary": "Main contains PR #277 Native gateway enrollment preflight: controller state is read before credential-directory creation or mTLS writes, so transient state/API failures do not strand an incomplete retry-blocking directory. Deterministic ingress helper coverage verifies stable CIDR de-duplication, scoped routes and gateway/client identity. PR #277 Native, Kubernetes and source/privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. The initial remote source-transfer error was caught and corrected before merge. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/277",
     "nextCandidateRequired": true
