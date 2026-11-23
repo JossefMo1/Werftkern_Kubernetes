@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-23T16:09:14.538Z",
+  "updatedAt": "2026-11-23T16:56:02.474Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "cdc929e8651bef08ee4744edc234fa4c52f9ff35",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/266",
-    "summary": "Native CLI controller/agent lock paths now validate absolute clean non-symlink parents before and after creation, use no-follow/close-on-exec access, and reject non-regular, wrong-mode or wrong-owner lock files. Regression coverage verifies final and parent symlinks. PR and post-merge required checks pass; real-vm/PITR remain skipped. No qualification gate closed."
+    "commit": "f73662f4e957cf0489319d34445715d17c626cd4",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268",
+    "summary": "Native safefile.DirectoryLock now validates absolute clean non-symlink parents before and after creation, uses no-follow/close-on-exec access, and rejects non-regular, wrong-mode or wrong-owner lock files. Regression coverage verifies a symlinked parent lock directory. PR and post-merge required checks pass; real-vm/PITR remain skipped. No qualification gate closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the Native CLI lock-path hardening from PR #266.",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the Native safefile DirectoryLock hardening from PR #268.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; this is a blocker, not a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -52,7 +52,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff cdc929e8651bef08ee4744edc234fa4c52f9ff35, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff f73662f4e957cf0489319d34445715d17c626cd4, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -374,13 +374,21 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45211016962",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279490",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279129",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279244"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279244",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f73662f4e957cf0489319d34445715d17c626cd4",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888940",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888882",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220889258",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221411990",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412038",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412406"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Use Main merge cdc929e8651bef08ee4744edc234fa4c52f9ff35 as the package-bearing source for the next immutable candidate; dispatch the scoped Ubuntu 24.04 real-vm run when authorized, then collect same-candidate installation, backup/restore, upgrade/rollback and bounded-soak evidence."
+      "nextStep": "Use Main merge f73662f4e957cf0489319d34445715d17c626cd4 as the package-bearing source for the next immutable candidate; dispatch the scoped Ubuntu 24.04 real-vm run when authorized, then collect same-candidate installation, backup/restore, upgrade/rollback and bounded-soak evidence."
     },
     {
       "id": "E2E-K01",
@@ -462,13 +470,21 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45211016962",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279490",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279129",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279244"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279244",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f73662f4e957cf0489319d34445715d17c626cd4",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888940",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888882",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220889258",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221411990",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412038",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412406"
       ],
       "blockers": [
         "The exact candidate must be rebuilt from the current scoped main line.",
         "The ephemeral Ubuntu real-vm job has not yet been run for that candidate."
       ],
-      "nextStep": "Use Main merge cdc929e8651bef08ee4744edc234fa4c52f9ff35 as the package-bearing source for the next immutable candidate; dispatch the scoped Ubuntu 24.04 real-vm run when authorized, then collect same-candidate installation, backup/restore, upgrade/rollback and bounded-soak evidence."
+      "nextStep": "Use Main merge f73662f4e957cf0489319d34445715d17c626cd4 as the package-bearing source for the next immutable candidate; dispatch the scoped Ubuntu 24.04 real-vm run when authorized, then collect same-candidate installation, backup/restore, upgrade/rollback and bounded-soak evidence."
     },
     {
       "id": "E2E-H01",
@@ -548,19 +564,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "cdc929e8651bef08ee4744edc234fa4c52f9ff35",
-      "codeCommit": "cdc929e8651bef08ee4744edc234fa4c52f9ff35",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/266",
-      "summary": "Main contains PR #266 Native CLI controller/agent local-lock hardening using validated absolute non-symlink parents, no-follow/close-on-exec access and regular-file/0600/owner checks, with final/parent symlink regression coverage. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
+      "commit": "f73662f4e957cf0489319d34445715d17c626cd4",
+      "codeCommit": "f73662f4e957cf0489319d34445715d17c626cd4",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268",
+      "summary": "Main contains PR #268 Native safefile.DirectoryLock hardening using validated absolute non-symlink parents, no-follow/close-on-exec access and regular-file/0700/0600/owner checks, with a parent-symlink regression test. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/266"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268"
     },
-    "commit": "cdc929e8651bef08ee4744edc234fa4c52f9ff35",
-    "codeCommit": "cdc929e8651bef08ee4744edc234fa4c52f9ff35",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/266",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/267",
-    "summary": "Main contains PR #266 Native CLI controller/agent local-lock hardening using validated absolute non-symlink parents, no-follow/close-on-exec access and regular-file/0600/owner checks, with final/parent symlink regression coverage. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/266",
+    "commit": "f73662f4e957cf0489319d34445715d17c626cd4",
+    "codeCommit": "f73662f4e957cf0489319d34445715d17c626cd4",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/269",
+    "summary": "Main contains PR #268 Native safefile.DirectoryLock hardening using validated absolute non-symlink parents, no-follow/close-on-exec access and regular-file/0700/0600/owner checks, with a parent-symlink regression test. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
