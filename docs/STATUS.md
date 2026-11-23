@@ -7,7 +7,7 @@ PR and post-merge required checks:
 - [Kubernetes Main](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45108825010) — **success**.
 - [Source/Privacy Main](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45108824979) — **success**.
 
-No qualification gate was closed. The tagged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and remains `productionReady=false)/No-Go. The next candidate must be built from `43bcfb468680d976b181a5ca8a745d55bd1d63ff`. Live Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle and restart, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability, user feedback and final Go/No-Go remain open. The connector still cannot dispatch `ci.yml`; this is a blocker, not a passed gate.
+No qualification gate was closed. The tagged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and remains `productionReady=false`/No-Go. The next candidate must be built from `43bcfb468680d976b181a5ca8a745d55bd1d63ff`. Live Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle and restart, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability, user feedback and final Go/No-Go remain open. The connector still cannot dispatch `ci.yml`; this is a blocker, not a passed gate.
 
 # Aktuelle Production-Entscheidung — 23.11.2026
 
