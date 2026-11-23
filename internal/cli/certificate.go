@@ -45,13 +45,13 @@ func certificateCommand(args []string) error {
 		}
 		return certificateSummary(p)
 	}
-	ca, e := os.ReadFile(*caPath)
+	ca, e := certificateInput(*caPath)
 	if e != nil {
 		return errors.New("CA_CERTIFICATE_UNAVAILABLE")
 	}
 	switch args[0] {
 	case "bundle":
-		cb, e := os.ReadFile(*cert)
+		cb, e := certificateInput(*cert)
 		if e != nil {
 			return e
 		}
