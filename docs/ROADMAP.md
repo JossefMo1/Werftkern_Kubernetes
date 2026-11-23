@@ -1,43 +1,15 @@
 # Masterplan traceability
 
-## Latest code handoff (2026-11-23, PR #235)
+## Latest code handoff (2026-11-23, PR #237)
 
-PR [#235](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/235) merged as [6e524547](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6e524547645c0555097a0042bd9d5692babc58b4). Native `werft secret put --file` now opens private secret inputs through `safefile.OpenRead`, rejecting final and parent symlinks before the existing private-mode and size checks. Regression coverage protects both symlink shapes.
+PR [#237](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/237) merged as [6463c29d](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6463c29de2a1bfcb6c9e7dbcfbfeae26585d427d). Native `werft release verify` now uses `safefile.OpenRead` for manifest, signature and public-key inputs, rejecting final/parent symlinks and enforcing the size limit after opening. Regression coverage protects both symlink forms and the limit.
 
 Exact Main checks:
-- [Native runtime/package 45097932838](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932838) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
-- [Kubernetes contracts/package 45097932830](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932830) — **success**.
-- [Source/Privacy audit 45097932869](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45097932869) — **success**.
+- [Native runtime/package 45103114622](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45103114622) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- [Kubernetes contracts/package 45103114692](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45103114692) — **success**.
+- [Source/Privacy audit 45103114649](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45103114649) — **success**.
 
-No qualification gate was closed. The current `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and remains `productionReady=false`/No-Go. The next candidate must be built from `6e524547645c0555097a0042bd9d5692babc58b4`; live installation, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability and final Go/No-Go remain open. The connector cannot dispatch `ci.yml`, so no live gate is implied.
-
-## Latest code handoff (2026-11-23, PR #232)
-
-PR [#232](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/232) merged as [29418520](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/29418520bc4198a2e8102fe7518ef8e1e23893fe). Native `Docker.Load` now opens local image archives through `safefile.OpenRead`, refusing final symlinks and symlinked parent paths before Docker ingestion; regression tests cover both paths.
-
-Exact PR checks passed: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091069067), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091068980) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091069003). Post-merge Main checks passed: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091414068), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091414150) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091414089). Real-etcd passed; real-vm and real-PITR were skipped.
-
-This is security-boundary hardening only. The tagged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, its release metadata reports `immutable=false` and unsigned assets, `productionReady=false`, and no qualification gate was closed. The next candidate must be built from `29418520bc4198a2e8102fe7518ef8e1e23893fe`; live installation, backup/restore, upgrade/rollback, bounded load/soak, signing/provenance and final Go/No-Go remain open.
-
-
-**Dev.4: full scope remains incomplete.** Partial means code exists, not production qualification.
-
-The [candidate production scope](PRODUCTION-SCOPE.md) classifies every K20 item
-as in the proposed first support boundary or explicitly deferred. A deferral is
-not completion and does not remove the item from this masterplan; the current
-Native qualification contract still treats all 52 entries as blocking.
-`release/production-scope.json` is checked against the complete inventory.
-
-The Native Single-Host scope is defined by [PR #203](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/203), merged at `f75845424286c1c8bed6c9ef17d2b172066e6309`. The tagged lab candidate below predates that scope decision and remains non-qualifying; GitHub release metadata reports immutable=false and its assets are unsigned.
-
-The release-tracker handoff contract is enforced by [PR #204](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/204), merged at `83c06425600749418994d34a1f197d4ad64f6d50`; PR #205 synchronizes this roadmap with that code-bearing handoff. No qualification gate is closed by these bookkeeping changes.
-
-The next exact-candidate build is pinned to package-bearing Main code handoff `29418520bc4198a2e8102fe7518ef8e1e23893fe`; documentation-only Main commits may have newer SHAs. No qualification gate is closed until the runner binds and verifies its own `GITHUB_SHA` and artifact digest. The current connector cannot dispatch `ci.yml`, so the live run remains blocked rather than implied.
-
-The current tagged lab candidate is [`v0.2.0-dev.4-test.17`](https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.17), sourced from `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; GitHub release metadata reports `immutable=false` and its assets are unsigned. This candidate includes the auto-discovery known-hosts replay guard; it does not remove any K20 requirement or change the no-go production decision.
-
-Main contains [PR #122](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/122), merged at `c95511a5f1e1c8ca6aa909b3e69bb21558b00634`, [PR #140](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/140), [PR #143](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/143), [PR #148](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/148), [PR #152](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/152), [PR #154](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/154), [PR #156](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/156) and [PR #158](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/158). The code-bearing handoff commit remains `2ab2ebe5433b938925b4aebd57c84a7939d92a43`; the latest tracker-synchronized Main handoff is `9403d55e2deae30f4c99e889a56cfffbafb0390b`, with this status/roadmap/tracker synchronization following PR #158. PR #148 adds a Native release-contract regression test covering every service stop/disable action and preventing uninstall scripts from deleting persisted state, identities or workloads. PR #152 adds a Kubernetes release-contract regression test covering both recovery/repair systemd templates and preserving their explicit root, token/assets and sandbox boundaries. PR #154 adds hermetic Kubernetes-manager wrapper tests for staged package-root execution and exit-78 fail-closed behavior when Python modules are missing. PR #156 requires the Kubernetes wrapper entrypoint to exist before selecting an installed, staged or source-tree module path and regression-tests incomplete package trees. PR #158 requires the Native `werft-ops` wrapper to find both `werftops/__init__.py` and `werftops/__main__.py` before selecting a module path and regression-tests incomplete package trees. Test17 remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; GitHub release metadata reports immutable=false and its assets are unsigned. It does not contain PR #140, PR #143, PR #148, PR #152, PR #154, PR #156 or PR #158; publish a new candidate before live testing the updated package. No K20 requirement is removed and the production decision remains no-go.
-
+No qualification gate was closed. The current `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and remains `productionReady=false`/No-Go. The next candidate must be built from `6463c29de2a1bfcb6c9e7dbcfbfeae26585d427d`; live installation, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability and final Go/No-Go remain open. The connector cannot dispatch `ci.yml`, so no live gate is implied.
 
 ## Previous code handoff (2026-11-23, PR #230)
 
