@@ -78,3 +78,33 @@ func TestCertificatePrivateParentsAndConfirmation(t *testing.T) {
 		t.Fatal("relative path")
 	}
 }
+func TestCertificateInputRejectsSymlinkedPaths(t *testing.T) {
+	dir := t.TempDir()
+	target := filepath.Join(dir, "ca.crt")
+	if e := os.WriteFile(target, []byte("certificate"), 0600); e != nil {
+		t.Fatal(e)
+	}
+	finalLink := filepath.Join(dir, "ca-link")
+	if e := os.Symlink(target, finalLink); e != nil {
+		t.Fatal(e)
+	}
+	if _, e := certificateInput(finalLink); e == nil {
+		t.Fatal("followed symlinked certificate file")
+	}
+
+	targetDir := filepath.Join(dir, "target-dir")
+	if e := os.Mkdir(targetDir, 0700); e != nil {
+		t.Fatal(e)
+	}
+	parentTarget := filepath.Join(targetDir, "ca.crt")
+	if e := os.WriteFile(parentTarget, []byte("certificate"), 0600); e != nil {
+		t.Fatal(e)
+	}
+	parentLink := filepath.Join(dir, "parent-link")
+	if e := os.Symlink(targetDir, parentLink); e != nil {
+		t.Fatal(e)
+	}
+	if _, e := certificateInput(filepath.Join(parentLink, "ca.crt")); e == nil {
+		t.Fatal("followed symlinked certificate parent")
+	}
+}
