@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-23T19:05:34Z",
+  "updatedAt": "2026-11-23T20:02:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "d92c922fa8f1d46fc98e9dd5580124dacfdba001",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/272",
-    "summary": "Native CreateBundle now validates the output path before any remote node registration. Empty destinations, existing paths, final symlinks and symlinked parents are rejected; regression coverage verifies safe missing paths and those rejection cases. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. No qualification gate closed."
+    "commit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
+    "summary": "Native volume archive CLI dispatch now rejects unknown actions before root, state, Docker or filesystem access; a regression test covers the fail-closed boundary. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The initial blob transfer was truncated and caught by CI, then the complete file was republished before merge. No qualification gate closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the Native bundle-output preflight from PR #272.",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the Native volume-archive action validation from PR #274.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; this is a blocker, not a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -52,7 +52,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff d92c922fa8f1d46fc98e9dd5580124dacfdba001, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow-dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 960ddafc6ab99b883ebdb2c180be41e71d3a071f, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow-dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -596,19 +596,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "d92c922fa8f1d46fc98e9dd5580124dacfdba001",
-      "codeCommit": "d92c922fa8f1d46fc98e9dd5580124dacfdba001",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/272",
-      "summary": "Main contains PR #272 Native bundle-output preflight: CreateBundle rejects empty, existing, final-symlink and symlinked-parent destinations before POST /v1/nodes, with focused regression coverage. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
+      "commit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
+      "codeCommit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
+      "summary": "Main contains PR #274 Native volume archive CLI action validation: unknown actions are rejected before root, state, Docker or filesystem access, with focused regression coverage. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/272"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274"
     },
-    "commit": "d92c922fa8f1d46fc98e9dd5580124dacfdba001",
-    "codeCommit": "d92c922fa8f1d46fc98e9dd5580124dacfdba001",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/272",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/273",
-    "summary": "Main contains PR #272 Native bundle-output preflight: CreateBundle rejects empty, existing, final-symlink and symlinked-parent destinations before POST /v1/nodes, with focused regression coverage. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/272",
+    "commit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
+    "codeCommit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
+    "documentationPullRequest": "",
+    "summary": "Main contains PR #274 Native volume archive CLI action validation: unknown actions are rejected before root, state, Docker or filesystem access, with focused regression coverage. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
     "nextCandidateRequired": true
   },
   "previousCandidates": [

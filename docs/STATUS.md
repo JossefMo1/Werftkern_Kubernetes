@@ -1,3 +1,20 @@
+# Latest code handoff (2026-11-23, PR #274)
+
+PR [#274](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274) merged as [960ddafc](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/960ddafc6ab99b883ebdb2c180be41e71d3a071f). Native volume archive CLI dispatch now rejects unknown actions before root, state, Docker or filesystem access; a regression test covers the fail-closed boundary. The initial blob transfer was truncated and caught by CI; the complete file was republished before merge.
+
+PR checks:
+- Native runtime/package [45253629415](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45253629415) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45253629612](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45253629612) — **success**.
+- Source/Privacy audit [45253629987](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45253629987) — **success**.
+
+Post-merge Main checks:
+- Native runtime/package [45254149973](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45254149973) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45254150050](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45254150050) — **success**.
+- Source/Privacy audit [45254149998](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45254149998) — **success**.
+- Alpha publication guard [45254244539](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45254244539) — **success**; source-only publication was **skipped** because no new release was created.
+
+No Single-Host qualification gate closed. The unchanged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope.
+
 # Latest code handoff (2026-11-23, PR #272)
 
 PR [#272](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/272) merged as [d92c922f](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d92c922fa8f1d46fc98e9dd5580124dacfdba001). Native `CreateBundle` now validates the join-bundle output destination before loading PKI material or registering the worker through `POST /v1/nodes`. Empty paths, existing destinations, final symlinks and symlinked parents are rejected; regression coverage verifies safe missing paths and each rejection case. This prevents a deterministic remote registration without a materialized local bundle.
