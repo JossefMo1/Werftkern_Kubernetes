@@ -80,3 +80,34 @@ func TestReadSetupCredentialRefusesSymlinkAndInvalidPrivateKey(t *testing.T) {
 		t.Fatal("accepted oversized credential")
 	}
 }
+
+func TestReadJoinBundleRejectsSymlinkedInput(t *testing.T) {
+	d := t.TempDir()
+	input := filepath.Join(d, "join.json")
+	if err := os.WriteFile(input, []byte("{}\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readJoinBundle(input); err != nil {
+		t.Fatalf("valid join bundle rejected: %v", err)
+	}
+	link := filepath.Join(d, "join-link.json")
+	if err := os.Symlink(input, link); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readJoinBundle(link); err == nil {
+		t.Fatal("followed join bundle symlink")
+	}
+	parentLink := filepath.Join(d, "parent-link")
+	if err := os.Symlink(d, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readJoinBundle(filepath.Join(parentLink, "join.json")); err == nil {
+		t.Fatal("followed join bundle parent symlink")
+	}
+	if err := os.Chmod(input, 0640); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readJoinBundle(input); err == nil {
+		t.Fatal("accepted join bundle with group permissions")
+	}
+}
