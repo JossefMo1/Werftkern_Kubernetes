@@ -35,6 +35,9 @@ func secretCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return errors.New("secret put NAME --file FILE [--expected-version N] | list | delete NAME VERSION")
 	}
+	if args[0] != "list" && args[0] != "put" && args[0] != "delete" {
+		return errors.New("SECRET_ACTION_UNKNOWN")
+	}
 	c, e := client()
 	if e != nil {
 		return e

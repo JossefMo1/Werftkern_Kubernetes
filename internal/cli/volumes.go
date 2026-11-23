@@ -17,6 +17,9 @@ func volumeCommand(ctx context.Context, args []string) error {
 	if args[0] == "backup" || args[0] == "restore" {
 		return volumeArchiveCommand(ctx, args)
 	}
+	if args[0] != "list" && args[0] != "create" && args[0] != "release" {
+		return errors.New("VOLUME_ACTION_UNSUPPORTED")
+	}
 	c, e := client()
 	if e != nil {
 		return e
