@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-23T20:02:00Z",
+  "updatedAt": "2026-11-23T20:08:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -567,7 +567,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/273",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/275",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -606,7 +606,7 @@
     "commit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
     "codeCommit": "960ddafc6ab99b883ebdb2c180be41e71d3a071f",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
-    "documentationPullRequest": "",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/275",
     "summary": "Main contains PR #274 Native volume archive CLI action validation: unknown actions are rejected before root, state, Docker or filesystem access, with focused regression coverage. PR and post-merge required checks pass; real-etcd succeeds while real-vm/PITR remain skipped. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets. A new candidate is required before live qualification; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/274",
     "nextCandidateRequired": true
@@ -674,3 +674,4 @@
     }
   ]
 }
+
