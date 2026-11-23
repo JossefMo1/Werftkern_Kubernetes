@@ -12,7 +12,7 @@ Post-merge Main checks:
 - [Kubernetes contracts 45170406949](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45170406949) — **success**.
 - [Source/Privacy audit 45170407002](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45170407002) — **success**.
 
-No Single-Host qualification gate closed. The unchanged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false) and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. Next handoff: build a new candidate from [bafbf1e9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bafbf1e98d93490282117b36a26a89eb3f51581b) and use the existing ephemeral Ubuntu path when dispatch access is available.
+No Single-Host qualification gate closed. The unchanged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. Next handoff: build a new candidate from [bafbf1e9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bafbf1e98d93490282117b36a26a89eb3f51581b) and use the existing ephemeral Ubuntu path when dispatch access is available.
 
 # Latest code handoff (2026-11-23, PR #255)
 
