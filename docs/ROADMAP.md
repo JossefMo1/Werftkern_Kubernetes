@@ -1,3 +1,19 @@
+# Latest code handoff (2026-11-23, PR #272)
+
+PR [#272](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/272) merged as [d92c922f](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d92c922fa8f1d46fc98e9dd5580124dacfdba001). Native `CreateBundle` now validates the join-bundle output destination before loading PKI material or registering the worker through `POST /v1/nodes`. Empty paths, existing destinations, final symlinks and symlinked parents are rejected; regression coverage verifies safe missing paths and each rejection case. This prevents a deterministic remote registration without a materialized local bundle.
+
+PR checks:
+- Native runtime/package [45244001391](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244001391) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45244001496](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244001496) — **success**.
+- Source/Privacy audit [45244001445](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244001445) — **success**.
+
+Post-merge Main checks:
+- Native runtime/package [45244598160](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598160) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+- Kubernetes contracts [45244598234](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598234) — **success**.
+- Source/Privacy audit [45244598089](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598089) — **success**.
+
+The roadmap remains **No-Go**: no Single-Host qualification gate closed. The unchanged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope. Next handoff: build a new immutable candidate from [d92c922f](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d92c922fa8f1d46fc98e9dd5580124dacfdba001) and use the existing ephemeral Ubuntu path when dispatch access is available.
+
 # Latest code handoff (2026-11-23, PR #270)
 
 PR [#270](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/270) merged as [f7ab7e5a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f7ab7e5a0d3f10a6fa182222fb24c61c5dbb6b85). Native worker join-bundle input now uses no-follow safefile.OpenRead and bounded strict-JSON parsing from the opened descriptor. Final and parent symlink redirection, group-readable inputs and oversize bundles are rejected; regression coverage pins those cases and the exact 32 KiB boundary.
