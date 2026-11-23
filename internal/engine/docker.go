@@ -12,7 +12,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -471,7 +470,7 @@ func (d *Docker) Load(ctx context.Context, path string) error {
 	if e != nil {
 		return e
 	}
-	f, e := os.Open(path)
+	f, e := safefile.OpenRead(path)
 	if e != nil {
 		return e
 	}
