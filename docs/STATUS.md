@@ -1,5 +1,14 @@
 # Aktuelle Production-Entscheidung — 22.11.2026
 
+## Latest code handoff (2026-11-23, PR #232)
+
+PR [#232](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/232) merged as [29418520](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/29418520bc4198a2e8102fe7518ef8e1e23893fe). Native `Docker.Load` now opens local image archives through `safefile.OpenRead`, refusing final symlinks and symlinked parent paths before Docker ingestion; regression tests cover both paths.
+
+Exact PR checks passed: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091069067), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091068980) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091069003). Post-merge Main checks passed: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091414068), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091414150) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45091414089). Real-etcd passed; real-vm and real-PITR were skipped.
+
+This is security-boundary hardening only. The tagged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, its release metadata reports `immutable=false` and unsigned assets, `productionReady=false`, and no qualification gate was closed. The next candidate must be built from `29418520bc4198a2e8102fe7518ef8e1e23893fe`; live installation, backup/restore, upgrade/rollback, bounded load/soak, signing/provenance and final Go/No-Go remain open.
+
+
 Der offizielle erste Production-Scope ist jetzt **Native Single-Host Production**. Die Hauptversion soll produktiv nutzbar sein, aber nur innerhalb dieses ausdrücklich dokumentierten Umfangs. HA/Multi-Host, Kubernetes-Production und Site-Recovery sind zurückgestellt und keine Blocker für den ersten Native-Release.
 
 Der aktuelle Status bleibt **No-Go**, bis der exakte Native-Kandidat die Single-Host-Gates, Signierung, Runbooks und Go/No-Go-Prüfung bestanden hat. Die alten Full-Masterplan-Einträge darunter sind historische Nachweise; sie gelten nicht mehr als Pflichtumfang für den ersten Release.
@@ -13,10 +22,10 @@ The tracker contract is hardened by [PR #204](https://github.com/JossefMo1/Werft
 tracked in PR #205. The candidate remains an older, unsigned lab artifact and does not
 qualify any Native Single-Host gate.
 
-The next live candidate must be built from package-bearing Main code handoff `397e0ff6de39404f631aab92c12ed9719108c617`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor. The current connector cannot dispatch `ci.yml`, so this remains a documented blocker rather than a passed gate.
+The next live candidate must be built from package-bearing Main code handoff `29418520bc4198a2e8102fe7518ef8e1e23893fe`; documentation-only Main commits may have newer SHAs, so evidence must bind the runner-reported `GITHUB_SHA` and package digest rather than a guessed predecessor. The current connector cannot dispatch `ci.yml`, so this remains a documented blocker rather than a passed gate.
 
 
-## Latest code handoff (2026-11-23)
+## Previous code handoff (2026-11-23, PR #230)
 
 PR [#230](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/230) merged as [397e0ff](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/397e0ff6de39404f631aab92c12ed9719108c617). Native release verification now opens the candidate package through `safefile.OpenRead`, which validates non-symlink parent components, refuses final symlinks and rejects non-regular files before hashing. Regression coverage protects both final-package and parent-symlink paths.
 
