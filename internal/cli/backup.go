@@ -133,7 +133,7 @@ func backupCommand(ctx context.Context, args []string) error {
 		return e
 	}
 	// Exclusive output creation; never overwrite a prior backup.
-	h, e := os.OpenFile(*out, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	h, e := safefile.CreateExclusive(*out, 0600)
 	if e != nil {
 		return e
 	}

@@ -67,6 +67,38 @@ func OpenRead(path string) (*os.File, error) {
 	return openTrusted(path)
 }
 
+// CreateExclusive creates a new regular file without following a final symlink.
+// Existing parent components are checked for symlinks before the exclusive open.
+// The caller owns the returned file and must close it.
+func CreateExclusive(path string, mode os.FileMode) (*os.File, error) {
+	if err := validateParentChain(filepath.Dir(path)); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return nil, err
+	}
+	fd, err := syscall.Open(path, syscall.O_WRONLY|syscall.O_CREAT|syscall.O_EXCL|syscall.O_CLOEXEC|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, uint32(mode.Perm()))
+	if err != nil {
+		return nil, err
+	}
+	f := os.NewFile(uintptr(fd), path)
+	if f == nil {
+		syscall.Close(fd)
+		return nil, errors.New("FILE_OPEN_FAILED")
+	}
+	st, err := f.Stat()
+	if err != nil {
+		f.Close()
+		return nil, err
+	}
+	if !st.Mode().IsRegular() {
+		f.Close()
+		return nil, errors.New("FILE_NOT_REGULAR")
+	}
+	if err := f.Chmod(mode); err != nil {
+		f.Close()
+		return nil, err
+	}
+	return f, nil
+}
+
 func Write(path string, b []byte, mode os.FileMode) error {
 	d := filepath.Dir(path)
 	// Check existing components before creating directories so a symlinked

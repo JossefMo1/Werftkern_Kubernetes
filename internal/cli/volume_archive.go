@@ -135,7 +135,7 @@ func volumeArchiveCommand(ctx context.Context, args []string) error {
 		if e = safefile.ReadJSON(filepath.Join(target, "identity.json"), &got); e != nil || got != expected {
 			return errors.New("VOLUME_DISK_IDENTITY_MISMATCH")
 		}
-		out, e := os.OpenFile(*archive, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+		out, e := safefile.CreateExclusive(*archive, 0600)
 		if e != nil {
 			return e
 		}

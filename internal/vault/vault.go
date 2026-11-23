@@ -65,7 +65,7 @@ func CreateKey(path string) ([]byte, error) {
 		return nil, e
 	}
 	// Exclusive creation prevents concurrent setup from replacing a trust root.
-	f, e := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	f, e := safefile.CreateExclusive(path, 0600)
 	if e != nil {
 		return nil, e
 	}
