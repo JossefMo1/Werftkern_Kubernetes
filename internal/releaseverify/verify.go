@@ -16,6 +16,8 @@ import (
 	"regexp"
 )
 
+const maxPackageBytes int64 = 256 << 20
+
 type Manifest struct {
 	Format         string   `json:"format"`
 	Version        string   `json:"version"`
@@ -64,9 +66,18 @@ func Verify(raw, sig, key []byte, packagePath string) (Manifest, error) {
 	if e != nil || !st.Mode().IsRegular() {
 		return m, errors.New("PACKAGE_NOT_REGULAR")
 	}
+	if st.Size() < 0 || st.Size() > maxPackageBytes {
+		return m, errors.New("PACKAGE_TOO_LARGE")
+	}
 	h := sha256.New()
-	if _, e = io.Copy(h, f); e != nil {
+	if _, e = io.Copy(h, io.LimitReader(f, maxPackageBytes+1)); e != nil {
 		return m, e
+	}
+	if st, e = f.Stat(); e != nil {
+		return m, e
+	}
+	if st.Size() > maxPackageBytes {
+		return m, errors.New("PACKAGE_TOO_LARGE")
 	}
 	if hex.EncodeToString(h.Sum(nil)) != m.PackageSHA256 {
 		return m, errors.New("PACKAGE_DIGEST_MISMATCH")
