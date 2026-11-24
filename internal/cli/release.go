@@ -46,6 +46,9 @@ func releaseCommand(ctx context.Context, args []string) error {
 	if e := f.Parse(args[1:]); e != nil {
 		return e
 	}
+	if f.NArg() != 0 || *manifest == "" || *sig == "" || *key == "" || *pkg == "" {
+		return errors.New("RELEASE_ARGUMENTS_INVALID")
+	}
 	raw, e := readReleaseInput(*manifest, 65536)
 	if e != nil {
 		return e

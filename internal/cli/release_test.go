@@ -1,10 +1,19 @@
 package cli
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
 )
+
+func TestReleaseCommandRejectsIncompleteInputBeforeReadingFiles(t *testing.T) {
+	missing := filepath.Join(t.TempDir(), "missing")
+	err := releaseCommand(context.Background(), []string{"verify", "--manifest", missing})
+	if err == nil || err.Error() != "RELEASE_ARGUMENTS_INVALID" {
+		t.Fatalf("expected stable argument error before file access, got %v", err)
+	}
+}
 
 func TestReadReleaseInputRejectsSymlinkedInputs(t *testing.T) {
 	root := t.TempDir()
