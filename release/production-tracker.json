@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T11:07:17Z",
+  "updatedAt": "2026-11-24T11:54:30Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -43,7 +43,7 @@
       "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #292 (as well as later Main hardening).",
       "Workflow #1662 passed real-vm for prior Main 7f1a81a, but cannot close the current exact-candidate gate at 479f4be.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
-      "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; this is a blocker, not a passed gate.",
+      "The connector exposes no workflow-dispatch action; PR #296 adds an automatic real-vm trigger for an authorized exact `v0.2.0-rc.*` candidate tag, but no candidate tag was created in this run.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
     ],
     "successCriteria": [
@@ -53,7 +53,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 479f4beaecb919b7b376300927282262a7213530, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow-dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 479f4beaecb919b7b376300927282262a7213530, create an authorized exact `v0.2.0-rc.*` candidate tag (or use workflow_dispatch when available) so ci.yml runs `real-vm` with the existing ephemeral Ubuntu 24.04 runner, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -666,7 +666,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/294",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/296",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
