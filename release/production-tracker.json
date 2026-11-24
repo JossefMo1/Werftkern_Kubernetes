@@ -730,7 +730,7 @@
     "commit": "02307049c72fc07b0d96926a81a7ce54a6963559",
     "codeCommit": "02307049c72fc07b0d96926a81a7ce54a6963559",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/313",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/311",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/314",
     "summary": "PR #313 hardens the privileged Native backup CLI: positional leftovers are rejected immediately after flag parsing, before loading encryption keys, reading cluster state or mutating output. Regression coverage is in internal/cli/backup_test.go. The first PR run exposed a missing context import in that new test; corrected commit f581975edebb233db418cea7be183b149ccf7c99 passed the complete PR checks. The merge commit 02307049c72fc07b0d96926a81a7ce54a6963559 passed post-merge Native, real-etcd, Kubernetes contract, publication and private-alpha checks; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/313",
     "nextCandidateRequired": true
