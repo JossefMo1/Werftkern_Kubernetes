@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T18:58:03Z",
+  "updatedAt": "2026-11-24T19:04:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -719,7 +719,7 @@
     "commit": "689257882c58acb511d9e4be106e20ea88f18fe8",
     "codeCommit": "689257882c58acb511d9e4be106e20ea88f18fe8",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/310",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/309",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/311",
     "summary": "PR #310 hardens the privileged secret CLI: `secret list` now rejects unexpected arguments, and `secret put` rejects positional leftovers before reading the input file or loading cluster configuration. Regression coverage is in internal/cli/cli_test.go. Exact PR checks passed: Native test/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/310",
     "nextCandidateRequired": true
