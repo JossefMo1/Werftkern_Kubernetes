@@ -1,3 +1,9 @@
+# Native single-host release handoff — PR #322 (2026-11-24)
+
+[PR #322](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322) merged as [80c091e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/80c091e03d1c7687c46a7ca4543f55b34d281bfe). Secret staging and cleanup now fail closed when the configured SecretRoot or any parent is a symlink; the default root is applied consistently and a regression test covers operator-provided redirection.
+
+PR and post-merge Main checks passed for Native, real-etcd, Kubernetes contracts and Source/Privacy. Real-vm and real-PITR remain skipped, so no Single-Host production gate closed. Rebuild an immutable candidate from [80c091e03d1c7687c46a7ca4543f55b34d281bfe](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/80c091e03d1c7687c46a7ca4543f55b34d281bfe) before installation, backup/restore, upgrade/rollback, bounded load/soak and signing evidence. HA, multi-host and Kubernetes-production remain deferred.
+
 # Native single-host release handoff — PR #308 (2026-11-24)
 
 PR [#308](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/308) merged as [c0e7b30](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/c0e7b30320f46562177b837f1a0afaf01bf7de17). Volume archive backup now fails closed before key creation when the archive parent is missing, non-directory or symlinked. Regression tests cover missing and symlinked parents.
