@@ -667,3 +667,10 @@ The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a6
 Exact PR checks passed: [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45408696336), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45408696528) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45408696330). Real-VM and real-PITR were skipped; no live single-host production gate closed.
 
 The mutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, with `productionReady=false`; its release metadata is not immutable and its assets are unsigned. A new immutable candidate must be built from [b6ad0aa](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b6ad0aa1baf034407b15be7b194eed476b5a2195) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. The decision remains `no-go`.
+
+
+## Native single-host release handoff — PR #301 (2026-11-24)
+
+[PR #301](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/301) merged as [88daa16](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/88daa16106e73724a6c7b5ad51436aa123b932c). The Native `volume backup` command now performs a fail-closed output preflight before key creation, preventing orphan encryption keys when an operator reuses an existing or symlinked archive path. Regression coverage is in `internal/cli/volume_archive_test.go`.
+
+The PR's Native/real-etcd, Kubernetes contract and Source/Privacy/publication checks passed; real-VM and real-PITR remained skipped. This is a reliability/security hardening handoff, not a production-gate closure. The next release step is to rebuild one immutable candidate from commit `88daa16106e73724a6c7b5ad51436aa123b932c6`, run the existing Ubuntu 24.04 real-vm job and collect same-candidate installation, backup/restore, upgrade/rollback, bounded load/soak and signed-provenance evidence. HA, multi-host and Kubernetes-production remain deferred.
