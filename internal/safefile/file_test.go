@@ -144,3 +144,24 @@ func TestExclusiveCreateRefusesSymlinks(t *testing.T) {
 		t.Fatal("followed parent symlink")
 	}
 }
+
+func TestValidateCreateParent(t *testing.T) {
+	root := t.TempDir()
+	realDir := filepath.Join(root, "real")
+	if err := os.Mkdir(realDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateCreateParent(filepath.Join(realDir, "new")); err != nil {
+		t.Fatalf("trusted parent rejected: %v", err)
+	}
+	if err := ValidateCreateParent(filepath.Join(root, "missing", "new")); !os.IsNotExist(err) {
+		t.Fatalf("missing parent error = %v, want os.ErrNotExist", err)
+	}
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(realDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateCreateParent(filepath.Join(parentLink, "new")); err == nil {
+		t.Fatal("accepted symlinked parent")
+	}
+}
