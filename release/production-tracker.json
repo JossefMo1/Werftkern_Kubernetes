@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T21:56:49Z",
+  "updatedAt": "2026-11-24T22:02:44Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -489,8 +489,8 @@
         "PR #318 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45495534555/job/138804889721",
         "Post-merge Main Native test: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45495995923/job/138806524918",
         "Post-merge Main real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45495995923/job/138806525269",
-        "Post-merge Main Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45495995874/job/138806525982",
-        "Post-merge Main Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45495995860/job/138806525851",
+        "Post-merge Main Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45495995874/job/138806524314",
+        "Post-merge Main Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45495995860/job/138806524987",
         "Post-merge Main real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45495995923/job/138807483610",
         "Post-merge Main real-PITR skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45495995923/job/138807484104"
       ],
