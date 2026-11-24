@@ -697,17 +697,17 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "70c97f3d48bf785a697f01fdf35e0896b3ae68bf",
-      "codeCommit": "70c97f3d48bf785a697f01fdf35e0896b3ae68bf",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/297",
-      "summary": "PR #297 hardens Native failover retries: unkeyed etcd POST /v3/kv/txn requests are no longer replayed after a lost acknowledgement; only an explicit Idempotency-Key permits replay. PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. A new immutable candidate is required.",
+      "commit": "b6ad0aa1baf034407b15be7b194eed476b5a2195",
+      "codeCommit": "b6ad0aa1baf034407b15be7b194eed476b5a2195",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/299",
+      "summary": "PR #299 hardens the Native backup CLI fail-closed: `backup create` validates the output path before loading or creating the separate key, so an invalid or already-existing destination cannot leave orphaned key material. Regression coverage is in internal/cli/backup_test.go. PR checks passed: Native compile/race/static/package checks and real-etcd succeeded; Kubernetes contracts and Source/Privacy audit succeeded; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/297"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/299"
     },
     "commit": "70c97f3d48bf785a697f01fdf35e0896b3ae68bf",
     "codeCommit": "70c97f3d48bf785a697f01fdf35e0896b3ae68bf",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/297",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/298",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/300",
     "summary": "PR #297 hardens Native failover retries: unkeyed etcd POST /v3/kv/txn requests are no longer replayed after a lost acknowledgement; only an explicit Idempotency-Key permits replay. PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/297",
     "nextCandidateRequired": true
