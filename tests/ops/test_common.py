@@ -1,7 +1,7 @@
 import os,pathlib,sys,tempfile,time,unittest
 from unittest import mock
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[2]/'ops'))
-from werftops.common import Blocked,run,read_json,canonical
+from werftops.common import Blocked,run,read_json,canonical,atomic,lock
 class CommonTests(unittest.TestCase):
  def test_timeout_kills_owned_children_and_redacts_arguments(self):
   with tempfile.TemporaryDirectory() as d:
@@ -29,3 +29,11 @@ class CommonTests(unittest.TestCase):
    p=pathlib.Path(d)/'oversized.json'
    with p.open('wb') as payload: payload.truncate(4*1024*1024+1)
    with self.assertRaisesRegex(Blocked,'^FILE_TOO_LARGE$'):read_json(p)
+ def test_state_writes_and_locks_reject_symlinked_parent(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);target=root/'target';target.mkdir();link=root/'redirect';link.symlink_to(target,target_is_directory=True)
+   path=link/'state'/'journal.json'
+   with self.assertRaisesRegex(Blocked,'^UNSAFE_PARENT_DIRECTORY$'):atomic(path,b'{}')
+   with self.assertRaisesRegex(Blocked,'^UNSAFE_PARENT_DIRECTORY$'):
+    with lock(path):pass
+   self.assertFalse((target/'state').exists())
