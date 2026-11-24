@@ -1,3 +1,11 @@
+# Production qualification evidence review (2026-11-24, Run #1662)
+
+GitHub Actions [Run #1662](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45372806861) was manually dispatched with `run_real_vm_e2e=true` from Main commit `7f1a81ae8eba7042c3c1440ba4151a5a84acd903`. The `actual-ubuntu-vm-evidence` artifact (workflow artifact `14909024562`) contains `ubuntu-vm-result.json` with `status=passed`, exit code 0, Ubuntu 24.04 amd64, Docker Engine 28.0.4, etcd 3.4.30 and package SHA-256 `05042f7c02465c012a34a230a00185b77f014f778de874ed10937e457deb3623`.
+
+This is genuine single-host installation/runtime evidence for that unchanged commit; it does not certify HA or multi-node networking. Main now contains PR #292 recovery hardening and is at [18c0c3d](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/18c0c3dd74d263ab155f8988d3a432a44887fdc6), so the run cannot close the current exact-candidate gate. The stale evidence is recorded for traceability only; `productionReady=false` and the decision remains `no-go`.
+
+Next handoff: build an immutable candidate from [479f4be](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/479f4beaecb919b7b376300927282262a7213530), rerun the same Ubuntu path against that exact candidate, then complete backup/restore, upgrade/rollback, bounded load/soak, signing/provenance and Go/No-Go.
+
 # Latest code handoff (2026-11-24, PR #292)
 
 PR [#292](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292) merged as [479f4be](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/479f4beaecb919b7b376300927282262a7213530). Native restore mapping now fails closed for every workload with an explicit source node selector unless a target-node mapping is provided, including workloads without volumes. This prevents a paused restore from retaining a stale source-node reference. Regression coverage is in `internal/recovery/mapping_test.go`.
