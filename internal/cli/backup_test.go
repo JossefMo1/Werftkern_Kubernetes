@@ -81,3 +81,30 @@ func TestValidateBackupCreateOutput(t *testing.T) {
 	}
 }
 
+
+func TestValidateBackupCreateOutputRejectsUnsafeParentsAndAbsoluteCollisions(t *testing.T) {
+	root := t.TempDir()
+	keyPath := filepath.Join(root, "backup.key")
+	absoluteKey, err := filepath.Abs(keyPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := validateBackupCreateOutput(keyPath, absoluteKey); err == nil || err.Error() != "DISTINCT_OUTPUT_AND_KEY_PATH_REQUIRED" {
+		t.Fatalf("absolute key/output collision was accepted: %v", err)
+	}
+
+	realDir := filepath.Join(root, "real")
+	if err := os.Mkdir(realDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(realDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateBackupCreateOutput(keyPath, filepath.Join(parentLink, "new.backup")); err == nil || err.Error() != "BACKUP_OUTPUT_PARENT_UNSAFE_OR_MISSING" {
+		t.Fatalf("symlinked backup parent was accepted: %v", err)
+	}
+	if err := validateBackupCreateOutput(keyPath, filepath.Join(root, "missing", "new.backup")); err == nil || err.Error() != "BACKUP_OUTPUT_PARENT_UNSAFE_OR_MISSING" {
+		t.Fatalf("missing backup parent was accepted: %v", err)
+	}
+}

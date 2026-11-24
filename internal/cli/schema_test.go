@@ -36,3 +36,22 @@ func TestValidateSchemaBackupOutput(t *testing.T) {
 		t.Fatalf("new backup path was rejected: %v", err)
 	}
 }
+
+func TestValidateSchemaBackupOutputRejectsUnsafeParents(t *testing.T) {
+	root := t.TempDir()
+	keyPath := filepath.Join(root, "backup.key")
+	realDir := filepath.Join(root, "real")
+	if err := os.Mkdir(realDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(realDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateSchemaBackupOutput(keyPath, filepath.Join(parentLink, "new.backup")); err == nil || err.Error() != "SCHEMA_BACKUP_PARENT_UNSAFE_OR_MISSING" {
+		t.Fatalf("symlinked schema backup parent was accepted: %v", err)
+	}
+	if err := validateSchemaBackupOutput(keyPath, filepath.Join(root, "missing", "new.backup")); err == nil || err.Error() != "SCHEMA_BACKUP_PARENT_UNSAFE_OR_MISSING" {
+		t.Fatalf("missing schema backup parent was accepted: %v", err)
+	}
+}
