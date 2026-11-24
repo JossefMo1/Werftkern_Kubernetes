@@ -711,7 +711,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/323",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -751,7 +751,7 @@
     "commit": "80c091e03d1c7687c46a7ca4543f55b34d281bfe",
     "codeCommit": "80c091e03d1c7687c46a7ca4543f55b34d281bfe",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322",
-    "documentationPullRequest": null,
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/323",
     "summary": "PR #322 hardens the Native secret/mTLS boundary: the complete SecretRoot parent chain is checked after MkdirAll, operator-provided symlinked parents fail closed, cleanup uses the same validated/default root, and internal/engine/secrets_test.go covers parent redirection. PR and post-merge Native/real-etcd, Kubernetes contract and Source/Privacy checks passed; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322",
     "nextCandidateRequired": true
