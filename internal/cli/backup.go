@@ -44,6 +44,16 @@ func readBackupInput(path string) ([]byte, error) {
 	return b, nil
 }
 
+func validateBackupCreateOutput(keyPath, out string) error {
+	if out == "" || filepath.Clean(out) == filepath.Clean(keyPath) {
+		return errors.New("DISTINCT_OUTPUT_AND_KEY_PATH_REQUIRED")
+	}
+	if _, e := os.Lstat(out); !os.IsNotExist(e) {
+		return errors.New("BACKUP_OUTPUT_ALREADY_EXISTS")
+	}
+	return nil
+}
+
 func backupCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return errors.New("backup create|inspect|restore --key-file KEY --out FILE / --file FILE")
@@ -65,6 +75,11 @@ func backupCommand(ctx context.Context, args []string) error {
 	}
 	if args[0] != "create" && args[0] != "inspect" && args[0] != "restore" {
 		return errors.New("BACKUP_ACTION_INVALID")
+	}
+	if args[0] == "create" {
+		if e := validateBackupCreateOutput(*keyPath, *out); e != nil {
+			return e
+		}
 	}
 	key, e := vault.LoadKey(*keyPath)
 	if os.IsNotExist(e) && args[0] == "create" {
@@ -113,12 +128,6 @@ func backupCommand(ctx context.Context, args []string) error {
 			fmt.Println("Configuration restored PAUSED. Old nodes, allocations and certificates were not restored. Review source fencing and node selectors before werft resume NAME.")
 		}
 		return e
-	}
-	if *out == "" || filepath.Clean(*out) == filepath.Clean(*keyPath) {
-		return errors.New("DISTINCT_OUTPUT_AND_KEY_PATH_REQUIRED")
-	}
-	if _, e = os.Lstat(*out); !os.IsNotExist(e) {
-		return errors.New("BACKUP_OUTPUT_ALREADY_EXISTS")
 	}
 	_, db, master, e := localStore()
 	if e != nil {
