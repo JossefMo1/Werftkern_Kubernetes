@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T22:02:44Z",
+  "updatedAt": "2026-11-24T22:04:30Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -711,7 +711,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/319",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/320",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -751,7 +751,7 @@
     "commit": "02307049c72fc07b0d96926a81a7ce54a6963559",
     "codeCommit": "dd94bb41f4264b0b463d522d282050c646b52e5c",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/318",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/319",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/320",
     "summary": "PR #318 hardens Native CLI argument handling: wait, dashboard, status, tunnel, demo and node bundle now reject unexpected positional arguments immediately after flag parsing, before configuration, metadata, network or workload access. Negative regression coverage in internal/cli/cli_test.go covers all six paths. PR and post-merge Native/real-etcd, Kubernetes contract and Source/Privacy checks passed; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/318",
     "nextCandidateRequired": true
