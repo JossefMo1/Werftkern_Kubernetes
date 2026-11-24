@@ -38,12 +38,15 @@ func secretCommand(ctx context.Context, args []string) error {
 	if args[0] != "list" && args[0] != "put" && args[0] != "delete" {
 		return errors.New("SECRET_ACTION_UNKNOWN")
 	}
-	c, e := client()
-	if e != nil {
-		return e
-	}
 	switch args[0] {
 	case "list":
+		if len(args) != 1 {
+			return errors.New("SECRET_LIST_TAKES_NO_ARGUMENTS")
+		}
+		c, e := client()
+		if e != nil {
+			return e
+		}
 		s, e := c.State(ctx)
 		if e != nil {
 			return e
@@ -60,10 +63,17 @@ func secretCommand(ctx context.Context, args []string) error {
 		f := parser("secret put")
 		path := f.String("file", "", "Private input file")
 		expected := f.Int("expected-version", 0, "Previous version")
-		if e = f.Parse(args[2:]); e != nil {
+		if e := f.Parse(args[2:]); e != nil {
 			return e
 		}
+		if f.NArg() != 0 {
+			return errors.New("UNEXPECTED_ARGUMENT")
+		}
 		b, e := readPrivateSecret(*path)
+		if e != nil {
+			return e
+		}
+		c, e := client()
 		if e != nil {
 			return e
 		}
@@ -80,6 +90,10 @@ func secretCommand(ctx context.Context, args []string) error {
 		v, e := strconv.Atoi(args[2])
 		if e != nil || model.ValidateSecretRefs([]model.SecretRef{{Name: args[1], Version: v}}) != nil {
 			return errors.New("SECRET_REFERENCE_INVALID")
+		}
+		c, e := client()
+		if e != nil {
+			return e
 		}
 		return c.Call(ctx, "DELETE", "/v1/secrets/"+args[1]+"/"+args[2], nil, nil, "")
 	}

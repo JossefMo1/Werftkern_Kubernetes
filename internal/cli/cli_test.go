@@ -112,6 +112,17 @@ func TestStatefulCLIRejectsUnknownActionsBeforeConfigAccess(t *testing.T) {
 	}
 }
 
+func TestSecretCLIRejectsUnexpectedArgumentsBeforeConfigAccess(t *testing.T) {
+	missing := filepath.Join(t.TempDir(), "missing-admin.json")
+	t.Setenv("WERFT_CONFIG", missing)
+	if err := secretCommand(context.Background(), []string{"list", "unexpected"}); err == nil || err.Error() != "SECRET_LIST_TAKES_NO_ARGUMENTS" {
+		t.Fatalf("list accepted unexpected arguments: %v", err)
+	}
+	if err := secretCommand(context.Background(), []string{"put", "db", "unexpected"}); err == nil || err.Error() != "UNEXPECTED_ARGUMENT" {
+		t.Fatalf("put accepted unexpected arguments: %v", err)
+	}
+}
+
 func TestEndpointsHideOfflineDrainingAndForeign(t *testing.T) {
 	now := time.Now()
 	s := model.NewState(model.ID(), "test", now)
