@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T00:02:20Z",
+  "updatedAt": "2026-11-24T02:00:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "e564148b89a883190aa116ea5848540ebd48c922",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/285",
-    "summary": "Native certificate dispatch now rejects unknown operations before reading the configured CA certificate. TestCertificateUnknownOperationFailsBeforeCARead proves malformed input returns UNKNOWN_CERTIFICATE_OPERATION with an unavailable CA path. PR #285 and post-merge Main Native, Kubernetes and source/privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. No qualification gate closed."
+    "commit": "d286279a8e9a1728910204293380c6dcf3953f10",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/287",
+    "summary": "Native release verification now rejects incomplete required paths and positional arguments before reading manifest, signature, public-key or package input. Regression coverage proves the stable RELEASE_ARGUMENTS_INVALID error for missing inputs. PR #287 and its post-merge Main Native, Kubernetes and Source/Privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. No Single-Host qualification gate closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the certificate action preflight and regression coverage from PR #285 (as well as earlier CLI hardening PRs).",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #287 (as well as earlier CLI hardening PRs).",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; this is a blocker, not a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -52,7 +52,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff e564148b89a883190aa116ea5848540ebd48c922, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow-dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff d286279a8e9a1728910204293380c6dcf3953f10, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow-dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -422,13 +422,24 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45293062402",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45293062401",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45293062474",
-        "PR #285 Native/Kubernetes/Source checks success; real-etcd success; real-vm and real-PITR skipped."
+        "PR #285 Native/Kubernetes/Source checks success; real-etcd success; real-vm and real-PITR skipped.",
+        "PR #287: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/287",
+        "PR #287 head commit: b7d85552630fd834c3762f10d386aba7bd524a30",
+        "Post-merge Main commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d286279a8e9a1728910204293380c6dcf3953f10",
+        "PR #287 Native workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308382126",
+        "PR #287 Kubernetes workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308382080",
+        "PR #287 Source/Privacy workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308382109",
+        "PR #287 Native/Kubernetes/Source checks success; real-etcd success; real-vm and real-PITR skipped.",
+        "Post-merge Main Native workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308989520",
+        "Post-merge Main Kubernetes workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308989479",
+        "Post-merge Main Source/Privacy workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308989539",
+        "Post-merge Main checks success; no Single-Host qualification gate closed."
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs; the PR #282 real-vm job was skipped.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Build the next immutable candidate from e564148b89a883190aa116ea5848540ebd48c922; no Single-Host gate closed by PR #285."
+      "nextStep": "Build the next immutable candidate from d286279a8e9a1728910204293380c6dcf3953f10; no Single-Host gate closed by PR #287."
     },
     {
       "id": "E2E-K01",
@@ -556,13 +567,24 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45293062402",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45293062401",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45293062474",
-        "PR #285 Native/Kubernetes/Source checks success; real-etcd success; real-vm and real-PITR skipped."
+        "PR #285 Native/Kubernetes/Source checks success; real-etcd success; real-vm and real-PITR skipped.",
+        "PR #287: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/287",
+        "PR #287 head commit: b7d85552630fd834c3762f10d386aba7bd524a30",
+        "Post-merge Main commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d286279a8e9a1728910204293380c6dcf3953f10",
+        "PR #287 Native workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308382126",
+        "PR #287 Kubernetes workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308382080",
+        "PR #287 Source/Privacy workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308382109",
+        "PR #287 Native/Kubernetes/Source checks success; real-etcd success; real-vm and real-PITR skipped.",
+        "Post-merge Main Native workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308989520",
+        "Post-merge Main Kubernetes workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308989479",
+        "Post-merge Main Source/Privacy workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45308989539",
+        "Post-merge Main checks success; no Single-Host qualification gate closed."
       ],
       "blockers": [
         "The exact candidate must be rebuilt from the current scoped main line.",
         "The ephemeral Ubuntu real-vm job has not yet been run for that candidate."
       ],
-      "nextStep": "Build the next immutable candidate from e564148b89a883190aa116ea5848540ebd48c922; no Single-Host gate closed by PR #285."
+      "nextStep": "Build the next immutable candidate from d286279a8e9a1728910204293380c6dcf3953f10; dispatch the existing ephemeral Ubuntu real-vm path with run_real_vm_e2e=true when workflow access is available."
     },
     {
       "id": "E2E-H01",
@@ -613,7 +635,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/286",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/288",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -642,19 +664,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "e564148b89a883190aa116ea5848540ebd48c922",
-      "codeCommit": "e564148b89a883190aa116ea5848540ebd48c922",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/285",
-      "summary": "Native certificate dispatch now rejects unknown operations before reading the configured CA certificate. TestCertificateUnknownOperationFailsBeforeCARead proves malformed input returns UNKNOWN_CERTIFICATE_OPERATION with an unavailable CA path. PR #285 and post-merge Main Native, Kubernetes and source/privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. No qualification gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+      "commit": "d286279a8e9a1728910204293380c6dcf3953f10",
+      "codeCommit": "d286279a8e9a1728910204293380c6dcf3953f10",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/287",
+      "summary": "Native release verification now rejects incomplete required paths and positional arguments before reading manifest, signature, public-key or package input. Regression coverage proves the stable RELEASE_ARGUMENTS_INVALID error for missing inputs. PR #287 and its post-merge Main Native, Kubernetes and Source/Privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. No Single-Host qualification gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/285"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/287"
     },
-    "commit": "e564148b89a883190aa116ea5848540ebd48c922",
-    "codeCommit": "e564148b89a883190aa116ea5848540ebd48c922",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/285",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/286",
-    "summary": "Native certificate dispatch now rejects unknown operations before reading the configured CA certificate. TestCertificateUnknownOperationFailsBeforeCARead proves malformed input returns UNKNOWN_CERTIFICATE_OPERATION with an unavailable CA path. PR #285 and post-merge Main Native, Kubernetes and source/privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. No qualification gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/285",
+    "commit": "d286279a8e9a1728910204293380c6dcf3953f10",
+    "codeCommit": "d286279a8e9a1728910204293380c6dcf3953f10",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/287",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/288",
+    "summary": "Native release verification now rejects incomplete required paths and positional arguments before reading manifest, signature, public-key or package input. Regression coverage proves the stable RELEASE_ARGUMENTS_INVALID error for missing inputs. PR #287 and its post-merge Main Native, Kubernetes and Source/Privacy checks are green; real-etcd succeeds while real-vm/PITR remain skipped. No Single-Host qualification gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/287",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
