@@ -209,4 +209,20 @@ func TestValidateVolumeArchiveBackupOutput(t *testing.T) {
 	if err := validateVolumeArchiveBackupOutput(missing); err != nil {
 		t.Fatalf("new archive path rejected: %v", err)
 	}
+	missingParent := filepath.Join(root, "missing", "new.wva")
+	if err := validateVolumeArchiveBackupOutput(missingParent); err == nil || err.Error() != "VOLUME_ARCHIVE_OUTPUT_PARENT_UNSAFE_OR_MISSING" {
+		t.Fatalf("missing archive parent was not rejected before key creation: %v", err)
+	}
+	realDir := filepath.Join(root, "real")
+	if err := os.Mkdir(realDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	parentLink := filepath.Join(root, "parent-link")
+	if err := os.Symlink(realDir, parentLink); err != nil {
+		t.Fatal(err)
+	}
+	unsafeParent := filepath.Join(parentLink, "new.wva")
+	if err := validateVolumeArchiveBackupOutput(unsafeParent); err == nil || err.Error() != "VOLUME_ARCHIVE_OUTPUT_PARENT_UNSAFE_OR_MISSING" {
+		t.Fatalf("symlinked archive parent was not rejected before key creation: %v", err)
+	}
 }
