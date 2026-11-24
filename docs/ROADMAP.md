@@ -1,3 +1,18 @@
+# Production qualification handoff — Run #1662 (2026-11-24)
+
+The official first Production scope remains **Native Single-Host Production**; seven VMs and HA are not required for this release profile. GitHub Actions [Run #1662](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45372806861) completed successfully from [main commit 7f1a81a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/7f1a81ae8eba7042c3c1440ba4151a5a84acd903) with the manually requested `run_real_vm_e2e=true` and `run_real_pitr=false`.
+
+Evidence now available for this exact run/candidate:
+- `test`: compile, race/static checks, reachable Go vulnerability checks, package build and package installation smoke checks — **success**.
+- `real-etcd`: real process lifecycle, leader termination, quorum-loss and restart suite — **success**.
+- `real-vm`: disposable Ubuntu 24.04 single-host qualification — **success**.
+- Candidate binding: `werftkern_0.2.0~dev4_amd64.deb`, SHA-256 `05042f7c02465c012a34a230a00185b77f014f778de874ed10937e457deb3623`; checkout and source commit both equal `7f1a81ae8eba7042c3c1440ba4151a5a84acd903`.
+- VM result: `real-ubuntu-docker-etcd-single-node-e2e`, status `passed`, exit code 0. The evidence explicitly does not certify HA or multi-node networking.
+
+This closes the evidence gap for the exact candidate's Ubuntu install and real Docker/etcd single-host E2E path. It does **not** make `productionReady=true` and does not create a Production release. Local backup/restore, supported upgrade/rollback, bounded load/soak, signed SBOM/provenance, immutable RC/user feedback, maintainer approval and final Go/No-Go remain open. The current CI release checker therefore remains intentionally **BLOCKED** until those gates are completed.
+
+Next action: package this same commit as an immutable signed RC, then execute the remaining Single-Host gates in order and record their evidence against the same commit and artifact digest. `real-pitr` was intentionally skipped because it is outside the first Native scope.
+
 # Latest code handoff (2026-11-24, PR #289)
 
 PR [#289](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/289) merged as [2d5b982](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2d5b9828f0cd696380259b93ac586ad2d14b31cb). Native release verification now bounds package hashing to 256 MiB before digest verification and rejects oversized regular files with stable `PACKAGE_TOO_LARGE` handling. The sparse-file regression test `TestVerifyRejectsOversizedPackageBeforeHashing` protects this fail-closed resource boundary.
