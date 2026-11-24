@@ -42,6 +42,21 @@ type restoreDiskReceipt struct {
 	Result      volumearchive.Result `json:"result"`
 }
 
+// validateVolumeArchiveBackupOutput runs before key creation so an operator
+// error cannot leave an orphan encryption key. CreateExclusive remains the
+// race-safe final guard when the archive is actually written.
+func validateVolumeArchiveBackupOutput(path string) error {
+	_, e := os.Lstat(path)
+	switch {
+	case e == nil:
+		return errors.New("VOLUME_ARCHIVE_OUTPUT_ALREADY_EXISTS")
+	case errors.Is(e, os.ErrNotExist):
+		return nil
+	default:
+		return e
+	}
+}
+
 func volumeArchiveCommand(ctx context.Context, args []string) error {
 	if len(args) < 2 {
 		return errors.New("volume backup|restore NAME --key-file FILE --file ARCHIVE --maintenance-id ID [--operation-id ID]")
@@ -103,6 +118,11 @@ func volumeArchiveCommand(ctx context.Context, args []string) error {
 	archiveAbs, _ := filepath.Abs(*archive)
 	if keyAbs == archiveAbs {
 		return errors.New("SEPARATE_KEY_AND_ARCHIVE_REQUIRED")
+	}
+	if action == "backup" {
+		if e := validateVolumeArchiveBackupOutput(*archive); e != nil {
+			return e
+		}
 	}
 	ioLock, e := safefile.DirectoryLock(root, true)
 	if e != nil {
