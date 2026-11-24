@@ -1,3 +1,9 @@
+# Current main handoff — PR #297 (2026-11-24)
+
+The Native failover transport now fails closed for unkeyed etcd transaction retries after a lost acknowledgement; keyed requests remain replayable through the existing idempotency contract. The regression test is tracked in [PR #297](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/297), merged as [70c97f3](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/70c97f3d48bf785a697f01fdf35e0896b3ae68bf).
+
+This is runtime/reliability hardening only. Native/Kubernetes/source checks passed, but real-vm, backup/restore, upgrade/rollback, bounded load/soak, signed provenance and maintainer approval remain open. The next release step is an exact immutable candidate from `70c97f3d48bf785a697f01fdf35e0896b3ae68bf` and candidate-bound Ubuntu 24.04 qualification; HA/multi-host and Kubernetes Production remain deferred outside the first scope.
+
 # Production qualification evidence review (2026-11-24, Run #1662)
 
 GitHub Actions [Run #1662](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45372806861) was manually dispatched with `run_real_vm_e2e=true` from Main commit `7f1a81ae8eba7042c3c1440ba4151a5a84acd903`. The `actual-ubuntu-vm-evidence` artifact (workflow artifact `14909024562`) contains `ubuntu-vm-result.json` with `status=passed`, exit code 0, Ubuntu 24.04 amd64, Docker Engine 28.0.4, etcd 3.4.30 and package SHA-256 `05042f7c02465c012a34a230a00185b77f014f778de874ed10937e457deb3623`.
