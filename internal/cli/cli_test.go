@@ -123,6 +123,24 @@ func TestSecretCLIRejectsUnexpectedArgumentsBeforeConfigAccess(t *testing.T) {
 	}
 }
 
+func TestDaemonCommandsRejectUnexpectedArgumentsBeforeConfigAccess(t *testing.T) {
+	missing := filepath.Join(t.TempDir(), "missing-daemon.json")
+	t.Setenv("WERFT_CONFIG", missing)
+	for _, tc := range []struct {
+		name string
+		call func() error
+	}{
+		{name: "control", call: func() error { return controlCommand(context.Background(), []string{"unexpected"}) }},
+		{name: "agent", call: func() error { return agentCommand(context.Background(), []string{"unexpected"}) }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := tc.call(); err == nil || err.Error() != "UNEXPECTED_ARGUMENT" {
+				t.Fatalf("unexpected positional argument was accepted: %v", err)
+			}
+		})
+	}
+}
+
 func TestEndpointsHideOfflineDrainingAndForeign(t *testing.T) {
 	now := time.Now()
 	s := model.NewState(model.ID(), "test", now)

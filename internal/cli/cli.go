@@ -348,6 +348,9 @@ func controlCommand(ctx context.Context, args []string) error {
 	if e := f.Parse(args); e != nil {
 		return e
 	}
+	if f.NArg() != 0 {
+		return errors.New("UNEXPECTED_ARGUMENT")
+	}
 	c, e := config.Load[config.Control](*path)
 	if e != nil {
 		return e
@@ -413,6 +416,9 @@ func agentCommand(ctx context.Context, args []string) error {
 	path := f.String("config", config.Directory+"/agent.json", "Config")
 	if e := f.Parse(args); e != nil {
 		return e
+	}
+	if f.NArg() != 0 {
+		return errors.New("UNEXPECTED_ARGUMENT")
 	}
 	c, e := config.Load[config.Agent](*path)
 	if e != nil {
