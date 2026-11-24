@@ -76,6 +76,25 @@ func TestSecretScopeMismatchAndSymlinkRejected(t *testing.T) {
 		t.Fatal("symlink")
 	}
 }
+
+func TestSecretRootRejectsSymlinkedParent(t *testing.T) {
+	f := dockerTest(t)
+	a := allocation()
+	a.Spec.Secrets = []model.SecretRef{{Name: "db", Version: 1}}
+	f.d.Secrets = func(context.Context, model.Allocation) (map[string][]byte, error) {
+		return map[string][]byte{"db": []byte("secret-value")}, nil
+	}
+	parent := t.TempDir()
+	target := t.TempDir()
+	link := filepath.Join(parent, "redirect")
+	if err := os.Symlink(target, link); err != nil {
+		t.Fatal(err)
+	}
+	f.d.SecretRoot = filepath.Join(link, "secrets")
+	if _, err := f.d.secretDirectory(context.Background(), a); err == nil {
+		t.Fatal("symlinked secret root parent accepted")
+	}
+}
 func TestSecretManifestReuseRejectsSymlink(t *testing.T) {
 	f := dockerTest(t)
 	a := allocation()
