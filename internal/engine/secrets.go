@@ -16,6 +16,33 @@ const DefaultSecretRoot = "/run/werftkern/secrets"
 
 type SecretSource func(context.Context, model.Allocation) (map[string][]byte, error)
 
+func (d *Docker) secretRoot() string {
+	if d.SecretRoot == "" {
+		return DefaultSecretRoot
+	}
+	return d.SecretRoot
+}
+
+func ensureSecretRoot(root string) error {
+	if !filepath.IsAbs(root) || filepath.Clean(root) != root || strings.ContainsAny(root, ":\n\r") {
+		return errors.New("SECRET_ROOT_INVALID")
+	}
+	if e := os.MkdirAll(root, 0700); e != nil {
+		return e
+	}
+	// A private leaf is not sufficient: an operator-provided parent such as
+	// /run/werftkern-link/secrets could otherwise redirect secret staging to an
+	// unrelated tree. Re-check the complete chain after MkdirAll.
+	if e := noSymlinkPath(root); e != nil {
+		return errors.New("SECRET_ROOT_NOT_PRIVATE")
+	}
+	st, e := os.Lstat(root)
+	if e != nil || !st.IsDir() || st.Mode()&os.ModeSymlink != 0 || st.Mode().Perm() != 0700 {
+		return errors.New("SECRET_ROOT_NOT_PRIVATE")
+	}
+	return nil
+}
+
 // secretDirectory materializes ONLY explicitly referenced immutable versions in
 // a host tmpfs, before container creation/start. No plaintext enters its journal,
 // container environment or labels. Parent 0700 prevents host-user traversal.
@@ -23,16 +50,12 @@ func (d *Docker) secretDirectory(ctx context.Context, a model.Allocation) (strin
 	if len(a.Spec.Secrets) == 0 {
 		return "", nil
 	}
-	root := d.SecretRoot
-	if root == "" || !filepath.IsAbs(root) || strings.ContainsAny(root, ":\n\r") || !model.ValidID(a.ID) {
+	root := d.secretRoot()
+	if !model.ValidID(a.ID) {
 		return "", errors.New("SECRET_ROOT_INVALID")
 	}
-	if e := os.MkdirAll(root, 0700); e != nil {
+	if e := ensureSecretRoot(root); e != nil {
 		return "", e
-	}
-	st, e := os.Lstat(root)
-	if e != nil || !st.IsDir() || st.Mode()&os.ModeSymlink != 0 || st.Mode().Perm() != 0700 {
-		return "", errors.New("SECRET_ROOT_NOT_PRIVATE")
 	}
 	if d.RequireSecretTmpfs {
 		var fs syscall.Statfs_t
@@ -112,11 +135,17 @@ func (d *Docker) secretDirectory(ctx context.Context, a model.Allocation) (strin
 	return dir, nil
 }
 func (d *Docker) removeSecrets(id string) error {
-	if d.SecretRoot == "" {
-		return nil
-	}
 	if !model.ValidID(id) {
 		return errors.New("SECRET_ALLOCATION_ID_INVALID")
 	}
-	return os.RemoveAll(filepath.Join(d.SecretRoot, id))
+	root := d.secretRoot()
+	if _, e := os.Lstat(root); os.IsNotExist(e) {
+		return nil
+	} else if e != nil {
+		return e
+	}
+	if e := ensureSecretRoot(root); e != nil {
+		return e
+	}
+	return os.RemoveAll(filepath.Join(root, id))
 }
