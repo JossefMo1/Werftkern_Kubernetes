@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T10:56:00Z",
+  "updatedAt": "2026-11-24T11:06:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -40,7 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #292 (as well as earlier Main hardening).",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #292 (as well as later Main hardening).",
+      "Workflow #1662 passed real-vm for prior Main 7f1a81a, but cannot close the current exact-candidate gate at 479f4be.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; this is a blocker, not a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -604,11 +605,15 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013283",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013752",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013761",
-        "Main merge commit verified as 479f4beaecb919b7b376300927282262a7213530"
+        "Main merge commit verified as 479f4beaecb919b7b376300927282262a7213530",
+        "Historical live evidence (not current candidate): workflow #1662 https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45372806861 was manually dispatched with run_real_vm_e2e=true from Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903.",
+        "Artifact actual-ubuntu-vm-evidence (workflow artifact 14909024562) contains ubuntu-vm-result.json status=passed, exitCode=0, Ubuntu 24.04 amd64, Docker 28.0.4, etcd 3.4.30 and package SHA-256 05042f7c02465c012a34a230a00185b77f014f778de874ed10937e457deb3623.",
+        "The run record explicitly excludes HA/multi-node certification; this evidence is valid only for 7f1a81ae8eba7042c3c1440ba4151a5a84acd903 and is not evidence for current candidate 479f4beaecb919b7b376300927282262a7213530."
       ],
       "blockers": [
+        "Workflow #1662 real-vm evidence is bound to prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903; current candidate 479f4beaecb919b7b376300927282262a7213530 requires a fresh exact-candidate run.",
         "The exact candidate must be rebuilt from the current scoped main line.",
-        "The ephemeral Ubuntu real-vm job has not yet been run for that candidate."
+        "The ephemeral Ubuntu real-vm job has not yet been run for current candidate 479f4beaecb919b7b376300927282262a7213530."
       ],
       "nextStep": "Build the next immutable candidate from 479f4beaecb919b7b376300927282262a7213530; dispatch the existing ephemeral Ubuntu real-vm path with run_real_vm_e2e=true when workflow access is available."
     },
@@ -661,7 +666,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/293",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/294",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
