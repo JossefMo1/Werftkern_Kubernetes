@@ -1,3 +1,13 @@
+# Latest code handoff (2026-11-24, PR #289)
+
+PR [#289](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/289) merged as [2d5b982](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2d5b9828f0cd696380259b93ac586ad2d14b31cb). Native release verification now bounds package hashing to 256 MiB before digest verification and rejects oversized regular files with stable `PACKAGE_TOO_LARGE` handling. The sparse-file regression test `TestVerifyRejectsOversizedPackageBeforeHashing` protects this fail-closed resource boundary.
+
+Exact PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45315680883) with [real-etcd success](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45315680883), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45315680853) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45315680843). Native real-vm and real-PITR were explicitly skipped.
+
+No Single-Host qualification gate closed. The mutable, unsigned `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; `productionReady=false` and the decision remains `no-go`. Fresh Ubuntu installation/reinstallation, Docker/etcd lifecycle and restart, backup/restore, upgrade/rollback, bounded load/soak, signed SBOM/provenance, release-candidate feedback and maintainer approval remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope.
+
+Next handoff: build a new immutable candidate from [2d5b9828f0cd696380259b93ac586ad2d14b31cb](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2d5b9828f0cd696380259b93ac586ad2d14b31cb) and dispatch `ci.yml` with `run_real_vm_e2e=true` when workflow-dispatch access is available. Do not claim skipped jobs or the private alpha workflow as live qualification evidence.
+
 # Latest code handoff (2026-11-24, PR #287)
 
 PR [#287](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/287) merged as [d286279a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d286279a8e9a1728910204293380c6dcf3953f10). Native `werft release verify` now validates all required manifest, signature, public-key and package paths plus positional arguments before reading any file, returning stable `RELEASE_ARGUMENTS_INVALID` for incomplete input. The regression test `TestReleaseCommandRejectsIncompleteInputBeforeReadingFiles` covers the fail-closed path.
