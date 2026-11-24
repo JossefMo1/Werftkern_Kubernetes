@@ -72,7 +72,8 @@ func TestRestoreRejectsUnmappedExplicitNodeWithoutVolumes(t *testing.T) {
 		t.Fatal(e)
 	}
 	target := model.NewState(model.ID(), "new", now)
-	target.Nodes[model.ID()] = &model.Node{Name: "new-node", Address: "10.2.0.1"}
+	newNode := model.ID()
+	target.Nodes[newNode] = &model.Node{ID: newNode, Name: "new-node", Address: "10.2.0.1"}
 	if _, e = PrepareRestore(b, target, make([]byte, 32), now); e == nil || e.Error() != "RESTORE_STATEFUL_REQUIRES_NODE_MAPPING" {
 		t.Fatalf("expected explicit node mapping error, got %v", e)
 	}
