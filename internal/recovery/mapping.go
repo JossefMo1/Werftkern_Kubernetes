@@ -14,14 +14,17 @@ type RestoreMapping struct {
 
 func mapSpec(spec model.Spec, target *model.State, m RestoreMapping) (model.Spec, error) {
 	if spec.Node != "" {
-		if n, ok := m.Nodes[spec.Node]; ok {
-			if target.Nodes[n] == nil {
-				return spec, errors.New("RESTORE_TARGET_NODE_NOT_FOUND")
-			}
-			spec.Node = n
-		} else if len(spec.Volumes) > 0 {
-			return spec, errors.New("STATEFUL_RESTORE_REQUIRES_NODE_MAPPING")
+		n, ok := m.Nodes[spec.Node]
+		if !ok {
+			// Any explicit node selector is a host-specific restore contract,
+			// even when the workload has no volumes. Keeping the source node ID
+			// would allow a paused workload to bypass target-node review.
+			return spec, errors.New("RESTORE_STATEFUL_REQUIRES_NODE_MAPPING")
 		}
+		if target.Nodes[n] == nil {
+			return spec, errors.New("RESTORE_TARGET_NODE_NOT_FOUND")
+		}
+		spec.Node = n
 	}
 	spec.Volumes = append([]model.VolumeRef{}, spec.Volumes...)
 	for i, ref := range spec.Volumes {
