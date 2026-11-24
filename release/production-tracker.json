@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T11:06:00Z",
+  "updatedAt": "2026-11-24T11:07:17Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -705,7 +705,7 @@
     "commit": "479f4beaecb919b7b376300927282262a7213530",
     "codeCommit": "479f4beaecb919b7b376300927282262a7213530",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/293",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/294",
     "summary": "PR #292 hardens Native restore mapping: workloads with any explicit source node selector now require an explicit target-node mapping, including workloads without volumes. A regression test covers the stale-node fail-closed boundary. PR checks passed: Native compile/race/static/package checks and real-etcd succeeded; Kubernetes contracts and Source/Privacy audit succeeded; real-vm and real-PITR were skipped. No Single-Host production gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292",
     "nextCandidateRequired": true
