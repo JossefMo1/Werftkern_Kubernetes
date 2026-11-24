@@ -1,3 +1,13 @@
+# Latest code handoff (2026-11-24, PR #285)
+
+PR [#285](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/285) merged as [e564148b](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e564148b89a883190aa116ea5848540ebd48c922). Native certificate dispatch now rejects unknown operations before reading the configured CA certificate. The regression test `TestCertificateUnknownOperationFailsBeforeCARead` proves malformed input returns `UNKNOWN_CERTIFICATE_OPERATION` even when the CA path is unavailable.
+
+PR checks: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45292645090) **success** with real-etcd **success** and real-vm/PITR **skipped**; [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45292645074) **success**; [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45292645094) **success**. Post-merge Main checks also passed: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45293062402), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45293062401) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45293062474).
+
+No Single-Host qualification gate closed. The unchanged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle, service/etcd restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope.
+
+Next handoff: build a new immutable candidate from [e564148b](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e564148b89a883190aa116ea5848540ebd48c922) and use the existing ephemeral Ubuntu path with `run_real_vm_e2e=true` when workflow-dispatch access is available; do not start a seven-VM HA or Kubernetes lab for this first release.
+
 # Latest code handoff (2026-11-23, PR #282)
 
 PR [#282](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/282) merged as [8800325a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8800325ab64dd701a69d65a39f332e6153c9da0d). Native `volume`, `secret` and `gateway` dispatch now rejects unknown actions before loading admin configuration or attempting controller access. A regression table uses an unavailable configuration path and verifies stable fail-closed errors for all three command families. This removes an unnecessary configuration/control-plane side effect from malformed CLI input.
