@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T12:58:00Z",
+  "updatedAt": "2026-11-24T13:59:48Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "70c97f3d48bf785a697f01fdf35e0896b3ae68bf",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/297",
-    "summary": "PR #297 hardens Native failover retries: unkeyed etcd POST /v3/kv/txn requests are no longer replayed after a lost acknowledgement; only an explicit Idempotency-Key permits replay. Regression coverage is in internal/failover/transport_test.go. PR checks passed: Native compile/race/static/package checks and real-etcd succeeded; Kubernetes contracts and Source/Privacy audit succeeded; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
+    "commit": "b6ad0aa1baf034407b15be7b194eed476b5a2195",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/299",
+    "summary": "PR #299 hardens the Native backup CLI fail-closed: `backup create` validates the output path before loading or creating the separate key, so an invalid or already-existing destination cannot leave orphaned key material. Regression coverage is in internal/cli/backup_test.go. PR checks passed: Native compile/race/static/package checks and real-etcd succeeded; Kubernetes contracts and Source/Privacy audit succeeded; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #297 (and the automatic RC-tag trigger change).",
-      "The exact candidate must now be rebuilt from Main commit 70c97f3d48bf785a697f01fdf35e0896b3ae68bf.",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #297, PR #296 and PR #299.",
+      "The exact candidate must now be rebuilt from Main commit b6ad0aa1baf034407b15be7b194eed476b5a2195.",
       "Workflow #1662 passed real-vm for prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903, but cannot close the current exact-candidate gate.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The connector exposes no workflow-dispatch action; merged PR #296 adds an automatic real-vm trigger for an authorized exact v0.2.0-rc.* candidate tag, but no candidate tag was created.",
@@ -54,7 +54,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from Main commit 70c97f3d48bf785a697f01fdf35e0896b3ae68bf, create an authorized exact v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml runs the existing Ubuntu 24.04 real-vm job, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from Main commit b6ad0aa1baf034407b15be7b194eed476b5a2195, create an authorized exact v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml runs the existing Ubuntu 24.04 real-vm job, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
