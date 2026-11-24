@@ -47,6 +47,19 @@ func TestReadBackupInputReadsRegularFile(t *testing.T) {
 		t.Fatalf("read %q, want %q", got, want)
 	}
 }
+func TestBackupCLIRejectsUnexpectedArgumentsBeforeStateAccess(t *testing.T) {
+	if os.Geteuid() != 0 {
+		t.Skip("CLI root boundary requires explicit privileged test host")
+	}
+	missing := filepath.Join(t.TempDir(), "missing-admin.json")
+	t.Setenv("WERFT_CONFIG", missing)
+	key := filepath.Join(t.TempDir(), "backup.key")
+	out := filepath.Join(t.TempDir(), "backup.json")
+	if err := backupCommand(context.Background(), []string{"create", "--key-file", key, "--out", out, "unexpected"}); err == nil || err.Error() != "BACKUP_ARGUMENTS_INVALID" {
+		t.Fatalf("unexpected positional argument was accepted: %v", err)
+	}
+}
+
 func TestValidateBackupCreateOutput(t *testing.T) {
 	root := t.TempDir()
 	keyPath := filepath.Join(root, "backup.key")
