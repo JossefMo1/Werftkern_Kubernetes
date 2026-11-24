@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T02:58:46Z",
+  "updatedAt": "2026-11-24T10:56:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "2d5b9828f0cd696380259b93ac586ad2d14b31cb",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/289",
-    "summary": "Native release verification now bounds package hashing to 256 MiB before digest verification and rejects oversized regular files with PACKAGE_TOO_LARGE. A sparse-file regression test covers the fail-closed boundary. PR #289 Native/Kubernetes/Source checks passed; real-etcd succeeded while real-vm/PITR remained skipped. No Single-Host qualification gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
+    "commit": "479f4beaecb919b7b376300927282262a7213530",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292",
+    "summary": "PR #292 hardens Native restore mapping: workloads with any explicit source node selector now require an explicit target-node mapping, including workloads without volumes. A regression test covers the stale-node fail-closed boundary. PR checks passed: Native compile/race/static/package checks and real-etcd succeeded; Kubernetes contracts and Source/Privacy audit succeeded; real-vm and real-PITR were skipped. No Single-Host production gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,7 +40,7 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #289 (as well as earlier CLI hardening PRs).",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #292 (as well as earlier Main hardening).",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The available GitHub connector exposes no workflow-dispatch action and no authenticated browser session, so ci.yml cannot be dispatched from this run; this is a blocker, not a passed gate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -52,7 +52,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 2d5b9828f0cd696380259b93ac586ad2d14b31cb, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow-dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from package-bearing Main code handoff 479f4beaecb919b7b376300927282262a7213530, dispatch ci.yml with run_real_vm_e2e=true on the ephemeral Ubuntu 24.04 runner when workflow-dispatch access is available, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -441,13 +441,18 @@
         "PR #289 Source/Privacy workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45315680843",
         "PR #289 Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
         "Release verification package limit: 256 MiB; oversized paths fail with PACKAGE_TOO_LARGE before hashing.",
-        "No Single-Host qualification gate closed by PR #289."
+        "No Single-Host qualification gate closed by PR #289.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013283",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013752",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013761",
+        "Main merge commit verified as 479f4beaecb919b7b376300927282262a7213530"
       ],
       "blockers": [
         "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs; the PR #282 real-vm job was skipped.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Build the next immutable candidate from 2d5b9828f0cd696380259b93ac586ad2d14b31cb; no Single-Host gate closed by PR #289."
+      "nextStep": "Build the next immutable candidate from 479f4beaecb919b7b376300927282262a7213530; no Single-Host gate closed by PR #292."
     },
     {
       "id": "E2E-K01",
@@ -594,13 +599,18 @@
         "PR #289 Source/Privacy workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45315680843",
         "PR #289 Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
         "Release verification package limit: 256 MiB; oversized paths fail with PACKAGE_TOO_LARGE before hashing.",
-        "No Single-Host qualification gate closed by PR #289."
+        "No Single-Host qualification gate closed by PR #289.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013283",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013752",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013761",
+        "Main merge commit verified as 479f4beaecb919b7b376300927282262a7213530"
       ],
       "blockers": [
         "The exact candidate must be rebuilt from the current scoped main line.",
         "The ephemeral Ubuntu real-vm job has not yet been run for that candidate."
       ],
-      "nextStep": "Build the next immutable candidate from 2d5b9828f0cd696380259b93ac586ad2d14b31cb; dispatch the existing ephemeral Ubuntu real-vm path with run_real_vm_e2e=true when workflow access is available."
+      "nextStep": "Build the next immutable candidate from 479f4beaecb919b7b376300927282262a7213530; dispatch the existing ephemeral Ubuntu real-vm path with run_real_vm_e2e=true when workflow access is available."
     },
     {
       "id": "E2E-H01",
@@ -651,7 +661,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/290",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/293",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -680,19 +690,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "2d5b9828f0cd696380259b93ac586ad2d14b31cb",
-      "codeCommit": "2d5b9828f0cd696380259b93ac586ad2d14b31cb",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/289",
-      "summary": "Native release verification now bounds package hashing to 256 MiB before digest verification and rejects oversized regular files with PACKAGE_TOO_LARGE. A sparse-file regression test covers the fail-closed boundary. PR #289 Native/Kubernetes/Source checks passed; real-etcd succeeded while real-vm/PITR remained skipped. No Single-Host qualification gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+      "commit": "479f4beaecb919b7b376300927282262a7213530",
+      "codeCommit": "479f4beaecb919b7b376300927282262a7213530",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292",
+      "summary": "PR #292 hardens Native restore mapping: workloads with any explicit source node selector now require an explicit target-node mapping, including workloads without volumes. A regression test covers the stale-node fail-closed boundary. PR checks passed: Native compile/race/static/package checks and real-etcd succeeded; Kubernetes contracts and Source/Privacy audit succeeded; real-vm and real-PITR were skipped. No Single-Host production gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/289"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292"
     },
-    "commit": "2d5b9828f0cd696380259b93ac586ad2d14b31cb",
-    "codeCommit": "2d5b9828f0cd696380259b93ac586ad2d14b31cb",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/289",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/290",
-    "summary": "Native release verification now bounds package hashing to 256 MiB before digest verification and rejects oversized regular files with PACKAGE_TOO_LARGE. A sparse-file regression test covers the fail-closed boundary. PR #289 Native/Kubernetes/Source checks passed; real-etcd succeeded while real-vm/PITR remained skipped. No Single-Host qualification gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/289",
+    "commit": "479f4beaecb919b7b376300927282262a7213530",
+    "codeCommit": "479f4beaecb919b7b376300927282262a7213530",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/293",
+    "summary": "PR #292 hardens Native restore mapping: workloads with any explicit source node selector now require an explicit target-node mapping, including workloads without volumes. A regression test covers the stale-node fail-closed boundary. PR checks passed: Native compile/race/static/package checks and real-etcd succeeded; Kubernetes contracts and Source/Privacy audit succeeded; real-vm and real-PITR were skipped. No Single-Host production gate closed. The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
