@@ -29,7 +29,7 @@ Der maschinenlesbare Handoff steht in release/production-tracker.json. Jeder Lau
 
 ## Native-Single-Host-Lauf
 
-Die bestehende ci.yml besitzt den manuellen Parameter run_real_vm_e2e. Der Lauf muss für den exakten Kandidaten mit run_real_vm_e2e=true gestartet werden. Zusätzlich läuft der reale etcd-Test auf einem ephemeren Ubuntu-Runner.
+Die bestehende ci.yml besitzt den manuellen Parameter run_real_vm_e2e. Für den exakten Kandidaten kann der Lauf weiterhin mit run_real_vm_e2e=true gestartet werden. Zusätzlich startet ein autorisierter Push eines unveränderten Release-Candidate-Tags im Format `v0.2.0-rc.*` automatisch denselben privilegierten `real-vm`-Job; damit bleibt die Qualifikation ausführbar, wenn der GitHub-Connector keinen Workflow-Dispatch anbietet. Der Tag ist nur ein Trigger und schließt kein Gate: Commit-, Paket-Digest-, Evidence-, Backup/Restore-, Upgrade/Rollback-, Load/Soak- und Signaturprüfung bleiben verpflichtend. Zusätzlich läuft der reale etcd-Test auf einem ephemeren Ubuntu-Runner.
 
 Der E2E-N01-Nachweis muss mindestens enthalten:
 

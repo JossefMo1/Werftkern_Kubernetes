@@ -162,7 +162,10 @@ jobs:
           path: real-etcd-evidence/
           if-no-files-found: warn
   real-vm:
-    if: github.event_name == 'workflow_dispatch' && inputs.run_real_vm_e2e
+    if: >-
+      needs.test.result == 'success' &&
+      ((github.event_name == 'workflow_dispatch' && inputs.run_real_vm_e2e) ||
+       (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v0.2.0-rc.')))
     runs-on: ubuntu-24.04
     needs: test
     timeout-minutes: 30
