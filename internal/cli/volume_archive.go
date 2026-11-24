@@ -50,11 +50,15 @@ func validateVolumeArchiveBackupOutput(path string) error {
 	switch {
 	case e == nil:
 		return errors.New("VOLUME_ARCHIVE_OUTPUT_ALREADY_EXISTS")
-	case errors.Is(e, os.ErrNotExist):
-		return nil
-	default:
+	case !errors.Is(e, os.ErrNotExist):
 		return e
 	}
+	// The archive parent must be an existing, non-symlinked trusted directory
+	// before vault.CreateKey can mutate the separate key path.
+	if e := safefile.ValidateCreateParent(path); e != nil {
+		return errors.New("VOLUME_ARCHIVE_OUTPUT_PARENT_UNSAFE_OR_MISSING")
+	}
+	return nil
 }
 
 func volumeArchiveCommand(ctx context.Context, args []string) error {
