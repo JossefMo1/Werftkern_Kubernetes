@@ -187,3 +187,26 @@ func TestVolumeArchiveRejectsUnknownActionBeforePrivilegeOrStateAccess(t *testin
 		t.Fatalf("unexpected unknown-action result: %v", err)
 	}
 }
+
+
+func TestValidateVolumeArchiveBackupOutput(t *testing.T) {
+	root := t.TempDir()
+	existing := filepath.Join(root, "existing.wva")
+	if err := os.WriteFile(existing, []byte("existing"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateVolumeArchiveBackupOutput(existing); err == nil || err.Error() != "VOLUME_ARCHIVE_OUTPUT_ALREADY_EXISTS" {
+		t.Fatalf("existing archive was not rejected before key creation: %v", err)
+	}
+	link := filepath.Join(root, "archive-link.wva")
+	if err := os.Symlink(existing, link); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateVolumeArchiveBackupOutput(link); err == nil || err.Error() != "VOLUME_ARCHIVE_OUTPUT_ALREADY_EXISTS" {
+		t.Fatalf("archive symlink was not rejected before key creation: %v", err)
+	}
+	missing := filepath.Join(root, "new.wva")
+	if err := validateVolumeArchiveBackupOutput(missing); err != nil {
+		t.Fatalf("new archive path rejected: %v", err)
+	}
+}
