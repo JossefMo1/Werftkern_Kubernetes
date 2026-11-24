@@ -45,3 +45,36 @@ func TestStatefulRestoreNeedsExplicitNewNodeAndVolume(t *testing.T) {
 		t.Fatal("pretended data restore")
 	}
 }
+
+func TestRestoreRejectsUnmappedExplicitNodeWithoutVolumes(t *testing.T) {
+	now := time.Now()
+	s := model.NewState(model.ID(), "old", now)
+	oldNode := model.ID()
+	s.Nodes[oldNode] = &model.Node{ID: oldNode, Name: "old-node", Address: "10.1.0.1"}
+	s.Workloads["app"] = &model.Workload{
+		UID:        model.ID(),
+		Name:       "app",
+		Generation: 1,
+		Spec: model.Spec{
+			Image:    "sha256:" + strings.Repeat("b", 64),
+			Replicas: 1,
+			CPUMilli: 100,
+			MemoryMiB: 64,
+			Node:     oldNode,
+		},
+	}
+	sealed, e := Seal(s, 1, make([]byte, 32), make([]byte, 32), now)
+	if e != nil {
+		t.Fatal(e)
+	}
+	b, e := Open(sealed, make([]byte, 32))
+	if e != nil {
+		t.Fatal(e)
+	}
+	target := model.NewState(model.ID(), "new", now)
+	newNode := model.ID()
+	target.Nodes[newNode] = &model.Node{ID: newNode, Name: "new-node", Address: "10.2.0.1"}
+	if _, e = PrepareRestore(b, target, make([]byte, 32), now); e == nil || e.Error() != "RESTORE_STATEFUL_REQUIRES_NODE_MAPPING" {
+		t.Fatalf("expected explicit node mapping error, got %v", e)
+	}
+}
