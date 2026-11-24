@@ -38,7 +38,7 @@ func validateParentChain(path string) error {
 }
 
 // ValidateCreateParent checks that an existing destination parent is a trusted directory.
- // It performs no creation; CreateExclusive remains the race-safe final guard.
+// It performs no creation; CreateExclusive remains the race-safe final guard.
 func ValidateCreateParent(path string) error {
 	if path == "" {
 		return errors.New("PATH_REQUIRED")
