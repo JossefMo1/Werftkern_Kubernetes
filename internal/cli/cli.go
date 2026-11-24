@@ -185,6 +185,9 @@ func Run(ctx context.Context, args []string) error {
 		if e := f.Parse(args[2:]); e != nil {
 			return e
 		}
+		if f.NArg() != 0 {
+			return errors.New("UNEXPECTED_ARGUMENT")
+		}
 		c, e := client()
 		if e != nil {
 			return e
@@ -203,6 +206,9 @@ func Run(ctx context.Context, args []string) error {
 		listen := f.String("listen", "127.0.0.1:8787", "Loopback")
 		if e := f.Parse(args[1:]); e != nil {
 			return e
+		}
+		if f.NArg() != 0 {
+			return errors.New("UNEXPECTED_ARGUMENT")
 		}
 		c, e := client()
 		if e != nil {
@@ -499,6 +505,9 @@ func statusCommand(ctx context.Context, args []string) error {
 	if e := f.Parse(args); e != nil {
 		return e
 	}
+	if f.NArg() != 0 {
+		return errors.New("UNEXPECTED_ARGUMENT")
+	}
 	c, e := client()
 	if e != nil {
 		return e
@@ -720,6 +729,9 @@ func tunnelCommand(ctx context.Context, args []string) error {
 	if e := f.Parse(args[1:]); e != nil {
 		return e
 	}
+	if f.NArg() != 0 {
+		return errors.New("UNEXPECTED_ARGUMENT")
+	}
 	host, _, e := net.SplitHostPort(*listen)
 	if e != nil || host != "127.0.0.1" {
 		return errors.New("TUNNEL_LOOPBACK_REQUIRED")
@@ -796,6 +808,9 @@ func nodeCommand(ctx context.Context, args []string) error {
 		if e := f.Parse(args[1:]); e != nil {
 			return e
 		}
+		if f.NArg() != 0 {
+			return errors.New("UNEXPECTED_ARGUMENT")
+		}
 		if *out == "" {
 			return errors.New("--out required")
 		}
@@ -838,6 +853,9 @@ func demoCommand(ctx context.Context, args []string) error {
 	wait := f.Bool("wait", false, "Warten")
 	if e := f.Parse(args); e != nil {
 		return e
+	}
+	if f.NArg() != 0 {
+		return errors.New("UNEXPECTED_ARGUMENT")
 	}
 	m, e := config.Load[DemoMetadata]("/usr/share/werftkern/demo.json")
 	if e != nil {
