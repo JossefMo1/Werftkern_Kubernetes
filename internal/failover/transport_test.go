@@ -48,6 +48,19 @@ func TestNoAmbiguousMutationReplay(t *testing.T) {
 		t.Fatal(n)
 	}
 }
+func TestEtcdTxnWithoutIdempotencyKeyIsNotReplayed(t *testing.T) {
+	n := 0
+	tr, _ := New(rt(func(*http.Request) (*http.Response, error) {
+		n++
+		return nil, errors.New("lost ack")
+	}), []string{"https://a", "https://b"})
+	r, _ := http.NewRequest("POST", "https://a/v3/kv/txn", strings.NewReader(`{"success":[]}`))
+	_, _ = tr.RoundTrip(r)
+	if n != 1 {
+		t.Fatalf("unkeyed transaction replayed %d times", n)
+	}
+}
+
 func TestRejectUnsafeEndpoints(t *testing.T) {
 	for _, s := range []string{"http://a", "https://" + "u:p@a", "https://a/path", "https://a?secret=x"} {
 		if _, e := New(nil, []string{s}); e == nil {
