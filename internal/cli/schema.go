@@ -19,7 +19,7 @@ func validateSchemaBackupOutput(keyPath, backup string) error {
 	}
 	keyAbs, keyErr := filepath.Abs(keyPath)
 	backupAbs, backupErr := filepath.Abs(backup)
-	if keyErr == nil && backupErr == nil && keyAbs == backupAbs || filepath.Clean(keyPath) == filepath.Clean(backup) {
+	if (keyErr == nil && backupErr == nil && keyAbs == backupAbs) || filepath.Clean(keyPath) == filepath.Clean(backup) {
 		return errors.New("SCHEMA_BACKUP_AND_EXPECTED_HASH_REQUIRED")
 	}
 	if _, e := os.Lstat(backup); !os.IsNotExist(e) {
