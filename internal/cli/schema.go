@@ -25,6 +25,9 @@ func validateSchemaBackupOutput(keyPath, backup string) error {
 	if _, e := os.Lstat(backup); !os.IsNotExist(e) {
 		return errors.New("SCHEMA_BACKUP_OUTPUT_ALREADY_EXISTS")
 	}
+	if e := safefile.ValidateCreateParent(backup); e != nil {
+		return errors.New("SCHEMA_BACKUP_PARENT_UNSAFE_OR_MISSING")
+	}
 	return nil
 }
 
