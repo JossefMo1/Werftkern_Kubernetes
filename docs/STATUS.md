@@ -1,3 +1,13 @@
+# Latest code handoff — PR #308 (2026-11-24)
+
+PR [#308](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/308) merged as [c0e7b30](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/c0e7b30320f46562177b837f1a0afaf01bf7de17). Native volume backup now rejects missing, non-directory and symlinked archive parents before creating a separate backup key; the existing output-exists and race-safe safefile.CreateExclusive checks remain in place. Regression coverage is in internal/cli/volume_archive_test.go.
+
+PR checks passed: [Native runtime/package and real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45454133889) — compile/race/static/package checks and real-etcd **success**; [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45454133869) — **success**; [Source/Privacy/publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45454133920) — **success**. Real-vm and real-PITR were explicitly skipped. No Single-Host production gate closed.
+
+The mutable, unsigned v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and cannot evidence c0e7b30320f46562177b837f1a0afaf01bf7de17. productionReady=false and the decision remains no-go.
+
+Next handoff: build an immutable candidate from c0e7b30320f46562177b837f1a0afaf01bf7de17, run the existing Ubuntu 24.04 path against that exact candidate, then complete backup/restore, upgrade/rollback, bounded load/soak, signing/provenance and Go/No-Go. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope.
+
 # Latest code handoff — PR #305 (2026-11-24)
 
 PR [#305](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/305) merged as [ea980c4](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/ea980c46e04b7939251d9e787f8635b69d2d29d5). Native backup creation and schema migration now reject absolute key/output aliases, missing parents and symlinked parents before creating a new backup key or mutating source state. The final safefile.CreateExclusive call remains the race-safe write guard. Regression coverage is in internal/cli/backup_test.go, internal/cli/schema_test.go and internal/safefile/file_test.go.
