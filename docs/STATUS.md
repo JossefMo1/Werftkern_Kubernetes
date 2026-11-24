@@ -678,3 +678,12 @@ The immutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a6
 Exact PR checks passed: [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45408696336), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45408696528) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45408696330). Real-VM and real-PITR were skipped; no live single-host production gate closed.
 
 The mutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, with `productionReady=false`; its release metadata is not immutable and its assets are unsigned. A new immutable candidate must be built from [b6ad0aa](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b6ad0aa1baf034407b15be7b194eed476b5a2195) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. The decision remains `no-go`.
+
+
+## Latest code handoff — PR #301 (2026-11-24)
+
+[PR #301](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/301) merged as [88daa16](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/88daa16106e73724a6c7b5ad51436aa123b932c). The Native `volume backup` path now rejects an existing or symlinked archive destination before loading or creating the separate encryption key. The exclusive `safefile.CreateExclusive` call remains the race-safe final guard, and regression coverage is in `internal/cli/volume_archive_test.go`.
+
+Exact PR checks passed: [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45419523693), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45419490186) and [publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45419523403). Real-VM and real-PITR were skipped by the workflow; no Single-Host production gate closed.
+
+The mutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, with `productionReady=false`; its release metadata is not immutable and its assets are unsigned. A new immutable candidate must be built from [88daa16106e73724a6c7b5ad51436aa123b932c6](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/88daa16106e73724a6c7b5ad51436aa123b932c6) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. The decision remains `no-go`.
