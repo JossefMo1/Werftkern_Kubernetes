@@ -141,6 +141,40 @@ func TestDaemonCommandsRejectUnexpectedArgumentsBeforeConfigAccess(t *testing.T)
 	}
 }
 
+func TestCLIRejectsUnexpectedArgumentsBeforeConfigAccess(t *testing.T) {
+	missing := filepath.Join(t.TempDir(), "missing-admin.json")
+	t.Setenv("WERFT_CONFIG", missing)
+	for _, tc := range []struct {
+		name string
+		call func() error
+	}{
+		{name: "wait", call: func() error {
+			return Run(context.Background(), []string{"wait", "demo", "unexpected"})
+		}},
+		{name: "dashboard", call: func() error {
+			return Run(context.Background(), []string{"dashboard", "unexpected"})
+		}},
+		{name: "status", call: func() error {
+			return Run(context.Background(), []string{"status", "unexpected"})
+		}},
+		{name: "tunnel", call: func() error {
+			return tunnelCommand(context.Background(), []string{"demo", "unexpected"})
+		}},
+		{name: "demo", call: func() error {
+			return demoCommand(context.Background(), []string{"unexpected"})
+		}},
+		{name: "node-bundle", call: func() error {
+			return nodeCommand(context.Background(), []string{"bundle", "--name", "node", "--address", "127.0.0.1", "--out", filepath.Join(t.TempDir(), "join.json"), "unexpected"})
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := tc.call(); err == nil || err.Error() != "UNEXPECTED_ARGUMENT" {
+				t.Fatalf("unexpected positional argument was accepted: %v", err)
+			}
+		})
+	}
+}
+
 func TestEndpointsHideOfflineDrainingAndForeign(t *testing.T) {
 	now := time.Now()
 	s := model.NewState(model.ID(), "test", now)
