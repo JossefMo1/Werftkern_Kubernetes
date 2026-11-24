@@ -687,3 +687,12 @@ The mutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618
 Exact PR checks passed: [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45419523693), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45419490186) and [publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45419523403). Real-VM and real-PITR were skipped by the workflow; no Single-Host production gate closed.
 
 The mutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, with `productionReady=false`; its release metadata is not immutable and its assets are unsigned. A new immutable candidate must be built from [88daa16106e73724a6c7b5ad51436aa123b932c6](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/88daa16106e73724a6c7b5ad51436aa123b932c6) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. The decision remains `no-go`.
+
+
+## Latest code handoff — PR #303 (2026-11-24)
+
+[PR #303](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/303) merged as [76f6656](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/76f6656ce4c21c67f203f50ad467417fa65835a1). The Native `schema migrate` path now rejects an existing or symlinked backup destination and normalized key/output collisions before local state access, key creation or schema migration. The final `safefile.CreateExclusive` guard remains in place, with regression coverage in `internal/cli/schema_test.go`.
+
+Exact PR checks passed: [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45430965312), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45430965426) and [publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45430965344). Real-VM and real-PITR were skipped by the workflow; no Single-Host production gate closed.
+
+The mutable `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, with `productionReady=false`; its release metadata is not immutable and its assets are unsigned. A new immutable candidate must be built from [76f6656ce4c21c67f203f50ad467417fa65835a1](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/76f6656ce4c21c67f203f50ad467417fa65835a1) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. The decision remains `no-go`.

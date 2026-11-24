@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T14:59:29Z",
+  "updatedAt": "2026-11-24T15:58:11Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "88daa16106e73724a6c7b5ad51436aa123b932c6",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/301",
-    "summary": "PR #301 hardens Native volume backup preflight: existing or symlinked archive destinations are rejected before the separate encryption key is loaded or created, while safefile.CreateExclusive remains the race-safe final guard. Regression coverage is in internal/cli/volume_archive_test.go. Exact PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
+    "commit": "76f6656ce4c21c67f203f50ad467417fa65835a1",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/303",
+    "summary": "PR #303 hardens Native schema migration preflight: existing or symlinked schema-backup destinations and normalized key/output collisions are rejected before local state access, key creation or migration. The final safefile.CreateExclusive call remains the race-safe guard; regression coverage is in internal/cli/schema_test.go. Exact PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #297, PR #296, PR #299 and PR #301.",
-      "The exact candidate must now be rebuilt from Main commit 88daa16106e73724a6c7b5ad51436aa123b932c6.",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #297, PR #296, PR #299, PR #301 and PR #303.",
+      "The exact candidate must now be rebuilt from Main commit 76f6656ce4c21c67f203f50ad467417fa65835a1.",
       "Workflow #1662 passed real-vm for prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903, but cannot close the current exact-candidate gate.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The connector exposes no workflow-dispatch action; merged PR #296 adds an automatic real-vm trigger for an authorized exact v0.2.0-rc.* candidate tag, but no candidate tag was created.",
@@ -54,7 +54,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from Main commit 88daa16106e73724a6c7b5ad51436aa123b932c6, create an authorized exact v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml runs the existing Ubuntu 24.04 real-vm job, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from Main commit 76f6656ce4c21c67f203f50ad467417fa65835a1, create an authorized exact v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml runs the existing Ubuntu 24.04 real-vm job, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -697,19 +697,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "88daa16106e73724a6c7b5ad51436aa123b932c6",
-      "codeCommit": "88daa16106e73724a6c7b5ad51436aa123b932c6",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/301",
-      "summary": "PR #301 hardens Native volume backup preflight: existing or symlinked archive destinations are rejected before the separate encryption key is loaded or created, while safefile.CreateExclusive remains the race-safe final guard. Regression coverage is in internal/cli/volume_archive_test.go. Exact PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+      "commit": "76f6656ce4c21c67f203f50ad467417fa65835a1",
+      "codeCommit": "76f6656ce4c21c67f203f50ad467417fa65835a1",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/303",
+      "summary": "PR #303 hardens Native schema migration preflight: existing or symlinked schema-backup destinations and normalized key/output collisions are rejected before local state access, key creation or migration. The final safefile.CreateExclusive call remains the race-safe guard; regression coverage is in internal/cli/schema_test.go. Exact PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/301"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/303"
     },
-    "commit": "88daa16106e73724a6c7b5ad51436aa123b932c6",
-    "codeCommit": "88daa16106e73724a6c7b5ad51436aa123b932c6",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/301",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/302",
-    "summary": "PR #301 hardens Native volume backup preflight: existing or symlinked archive destinations are rejected before the separate encryption key is loaded or created, while safefile.CreateExclusive remains the race-safe final guard. Regression coverage is in internal/cli/volume_archive_test.go. Exact PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/301",
+    "commit": "76f6656ce4c21c67f203f50ad467417fa65835a1",
+    "codeCommit": "76f6656ce4c21c67f203f50ad467417fa65835a1",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/303",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/304",
+    "summary": "PR #303 hardens Native schema migration preflight: existing or symlinked schema-backup destinations and normalized key/output collisions are rejected before local state access, key creation or migration. The final safefile.CreateExclusive call remains the race-safe guard; regression coverage is in internal/cli/schema_test.go. Exact PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/303",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
