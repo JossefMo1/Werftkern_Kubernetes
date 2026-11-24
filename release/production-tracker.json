@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T18:01:56.209Z",
+  "updatedAt": "2026-11-24T18:58:03Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "c0e7b30320f46562177b837f1a0afaf01bf7de17",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/308",
-    "summary": "PR #308 hardens Native volume backup output preflight: missing, non-directory and symlinked archive parents are rejected before a separate backup key can be created. The existing output-exists and race-safe safefile.CreateExclusive checks remain in place; regression coverage is in internal/cli/volume_archive_test.go. Exact PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
+    "commit": "689257882c58acb511d9e4be106e20ea88f18fe8",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/310",
+    "summary": "PR #310 hardens the privileged secret CLI: `secret list` now rejects unexpected arguments, and `secret put` rejects positional leftovers before reading the input file or loading cluster configuration. Regression coverage is in internal/cli/cli_test.go. Exact PR checks passed: Native test/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes PR #297, PR #296, PR #299, PR #301, PR #303, PR #305 and PR #308.",
-      "The exact candidate must now be rebuilt from the merged Native code commit c0e7b30320f46562177b837f1a0afaf01bf7de17.",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged Native hardening through PR #310.",
+      "The exact candidate must now be rebuilt from the merged Main commit 689257882c58acb511d9e4be106e20ea88f18fe8.",
       "Workflow #1662 passed real-vm for prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903, but cannot close the current exact-candidate gate.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The connector exposes no workflow-dispatch action; merged PR #296 adds an automatic real-vm trigger for an authorized exact v0.2.0-rc.* candidate tag, but no candidate tag was created.",
@@ -54,7 +54,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from merged Native code commit c0e7b30320f46562177b837f1a0afaf01bf7de17, create an authorized exact v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml runs the existing Ubuntu 24.04 real-vm job, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from merged Main commit 689257882c58acb511d9e4be106e20ea88f18fe8, create an authorized exact v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml runs the existing Ubuntu 24.04 real-vm job, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -709,19 +709,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "c0e7b30320f46562177b837f1a0afaf01bf7de17",
-      "codeCommit": "c0e7b30320f46562177b837f1a0afaf01bf7de17",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/308",
-      "summary": "PR #308 hardens Native volume backup output preflight: missing, non-directory and symlinked archive parents are rejected before a separate backup key can be created. The existing output-exists and race-safe safefile.CreateExclusive checks remain in place; regression coverage is in internal/cli/volume_archive_test.go. Exact PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+      "commit": "689257882c58acb511d9e4be106e20ea88f18fe8",
+      "codeCommit": "689257882c58acb511d9e4be106e20ea88f18fe8",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/310",
+      "summary": "PR #310 hardens the privileged secret CLI: `secret list` now rejects unexpected arguments, and `secret put` rejects positional leftovers before reading the input file or loading cluster configuration. Regression coverage is in internal/cli/cli_test.go. Exact PR checks passed: Native test/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/308"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/310"
     },
-    "commit": "c0e7b30320f46562177b837f1a0afaf01bf7de17",
-    "codeCommit": "c0e7b30320f46562177b837f1a0afaf01bf7de17",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/308",
+    "commit": "689257882c58acb511d9e4be106e20ea88f18fe8",
+    "codeCommit": "689257882c58acb511d9e4be106e20ea88f18fe8",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/310",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/309",
-    "summary": "PR #308 hardens Native volume backup output preflight: missing, non-directory and symlinked archive parents are rejected before a separate backup key can be created. The existing output-exists and race-safe safefile.CreateExclusive checks remain in place; regression coverage is in internal/cli/volume_archive_test.go. Exact PR checks passed: Native compile/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/308",
+    "summary": "PR #310 hardens the privileged secret CLI: `secret list` now rejects unexpected arguments, and `secret put` rejects positional leftovers before reading the input file or loading cluster configuration. Regression coverage is in internal/cli/cli_test.go. Exact PR checks passed: Native test/race/static/package and real-etcd, Kubernetes contracts and Source/Privacy/publication audit; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/310",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
