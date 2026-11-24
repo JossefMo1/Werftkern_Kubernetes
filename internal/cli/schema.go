@@ -11,6 +11,23 @@ import (
 	"path/filepath"
 )
 
+// validateSchemaBackupOutput runs before loading the backup key or mutating
+// source state. An existing destination must fail closed before migration.
+func validateSchemaBackupOutput(keyPath, backup string) error {
+	if keyPath == "" || backup == "" {
+		return errors.New("SCHEMA_BACKUP_AND_EXPECTED_HASH_REQUIRED")
+	}
+	keyAbs, keyErr := filepath.Abs(keyPath)
+	backupAbs, backupErr := filepath.Abs(backup)
+	if keyErr == nil && backupErr == nil && keyAbs == backupAbs || filepath.Clean(keyPath) == filepath.Clean(backup) {
+		return errors.New("SCHEMA_BACKUP_AND_EXPECTED_HASH_REQUIRED")
+	}
+	if _, e := os.Lstat(backup); !os.IsNotExist(e) {
+		return errors.New("SCHEMA_BACKUP_OUTPUT_ALREADY_EXISTS")
+	}
+	return nil
+}
+
 func schemaCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 || args[0] != "inspect" && args[0] != "migrate" {
 		return errors.New("schema inspect|migrate --maintenance-id ID [--source-sha256 HASH --backup FILE --key-file KEY]")
@@ -29,6 +46,14 @@ func schemaCommand(ctx context.Context, args []string) error {
 	if f.NArg() != 0 {
 		return errors.New("SCHEMA_ARGUMENTS_INVALID")
 	}
+	if args[0] == "migrate" {
+		if *expected == "" {
+			return errors.New("SCHEMA_BACKUP_AND_EXPECTED_HASH_REQUIRED")
+		}
+		if e := validateSchemaBackupOutput(*keyPath, *backup); e != nil {
+			return e
+		}
+	}
 	_, db, _, e := localStore()
 	if e != nil {
 		return e
@@ -39,9 +64,6 @@ func schemaCommand(ctx context.Context, args []string) error {
 			return e
 		}
 		return json.NewEncoder(os.Stdout).Encode(out)
-	}
-	if *backup == "" || *keyPath == "" || *backup == *keyPath || *expected == "" {
-		return errors.New("SCHEMA_BACKUP_AND_EXPECTED_HASH_REQUIRED")
 	}
 	key, e := vault.LoadKey(*keyPath)
 	if os.IsNotExist(e) {
