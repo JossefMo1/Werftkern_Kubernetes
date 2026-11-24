@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-24T22:04:30Z",
+  "updatedAt": "2026-11-24T23:10:57.017Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "dd94bb41f4264b0b463d522d282050c646b52e5c",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/318",
-    "summary": "PR #318 hardens Native CLI argument handling: wait, dashboard, status, tunnel, demo and node bundle now reject unexpected positional arguments immediately after flag parsing, before configuration, metadata, network or workload access. Negative regression coverage in internal/cli/cli_test.go covers all six paths. PR and post-merge Native/real-etcd, Kubernetes contract and Source/Privacy checks passed; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
+    "commit": "80c091e03d1c7687c46a7ca4543f55b34d281bfe",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322",
+    "summary": "PR #322 hardens the Native secret/mTLS boundary: the complete SecretRoot parent chain is checked after MkdirAll, operator-provided symlinked parents fail closed, cleanup uses the same validated/default root, and internal/engine/secrets_test.go covers parent redirection. PR and post-merge Native/real-etcd, Kubernetes contract and Source/Privacy checks passed; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged Native hardening through PR #318.",
-      "The exact candidate must now be rebuilt from the merged Main commit dd94bb41f4264b0b463d522d282050c646b52e5c.",
+      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged Native hardening through PR #322.",
+      "The exact candidate must now be rebuilt from the merged Main commit 80c091e03d1c7687c46a7ca4543f55b34d281bfe.",
       "Workflow #1662 passed real-vm for prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903, but cannot close the current exact-candidate gate.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "The connector exposes no workflow-dispatch action; merged PR #296 adds an automatic real-vm trigger for an authorized exact v0.2.0-rc.* candidate tag, but no candidate tag was created.",
@@ -54,7 +54,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from merged Main commit dd94bb41f4264b0b463d522d282050c646b52e5c, create an authorized exact v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml runs the existing Ubuntu 24.04 real-vm job, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from merged Main commit 80c091e03d1c7687c46a7ca4543f55b34d281bfe, create an authorized exact v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml runs the existing Ubuntu 24.04 real-vm job, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -711,7 +711,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/320",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/323",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -741,19 +741,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "dd94bb41f4264b0b463d522d282050c646b52e5c",
-      "codeCommit": "dd94bb41f4264b0b463d522d282050c646b52e5c",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/318",
-      "summary": "PR #318 hardens Native CLI argument handling: wait, dashboard, status, tunnel, demo and node bundle now reject unexpected positional arguments immediately after flag parsing, before configuration, metadata, network or workload access. Negative regression coverage in internal/cli/cli_test.go covers all six paths. PR and post-merge Native/real-etcd, Kubernetes contract and Source/Privacy checks passed; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+      "commit": "80c091e03d1c7687c46a7ca4543f55b34d281bfe",
+      "codeCommit": "80c091e03d1c7687c46a7ca4543f55b34d281bfe",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322",
+      "summary": "PR #322 hardens the Native secret/mTLS boundary: the complete SecretRoot parent chain is checked after MkdirAll, operator-provided symlinked parents fail closed, cleanup uses the same validated/default root, and internal/engine/secrets_test.go covers parent redirection. PR and post-merge Native/real-etcd, Kubernetes contract and Source/Privacy checks passed; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/318"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322"
     },
-    "commit": "02307049c72fc07b0d96926a81a7ce54a6963559",
-    "codeCommit": "dd94bb41f4264b0b463d522d282050c646b52e5c",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/318",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/320",
-    "summary": "PR #318 hardens Native CLI argument handling: wait, dashboard, status, tunnel, demo and node bundle now reject unexpected positional arguments immediately after flag parsing, before configuration, metadata, network or workload access. Negative regression coverage in internal/cli/cli_test.go covers all six paths. PR and post-merge Native/real-etcd, Kubernetes contract and Source/Privacy checks passed; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/318",
+    "commit": "80c091e03d1c7687c46a7ca4543f55b34d281bfe",
+    "codeCommit": "80c091e03d1c7687c46a7ca4543f55b34d281bfe",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/323",
+    "summary": "PR #322 hardens the Native secret/mTLS boundary: the complete SecretRoot parent chain is checked after MkdirAll, operator-provided symlinked parents fail closed, cleanup uses the same validated/default root, and internal/engine/secrets_test.go covers parent redirection. PR and post-merge Native/real-etcd, Kubernetes contract and Source/Privacy checks passed; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
