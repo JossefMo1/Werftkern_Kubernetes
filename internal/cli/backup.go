@@ -45,11 +45,19 @@ func readBackupInput(path string) ([]byte, error) {
 }
 
 func validateBackupCreateOutput(keyPath, out string) error {
-	if out == "" || filepath.Clean(out) == filepath.Clean(keyPath) {
+	if keyPath == "" || out == "" {
+		return errors.New("DISTINCT_OUTPUT_AND_KEY_PATH_REQUIRED")
+	}
+	keyAbs, keyErr := filepath.Abs(keyPath)
+	outAbs, outErr := filepath.Abs(out)
+	if (keyErr == nil && outErr == nil && keyAbs == outAbs) || filepath.Clean(out) == filepath.Clean(keyPath) {
 		return errors.New("DISTINCT_OUTPUT_AND_KEY_PATH_REQUIRED")
 	}
 	if _, e := os.Lstat(out); !os.IsNotExist(e) {
 		return errors.New("BACKUP_OUTPUT_ALREADY_EXISTS")
+	}
+	if e := safefile.ValidateCreateParent(out); e != nil {
+		return errors.New("BACKUP_OUTPUT_PARENT_UNSAFE_OR_MISSING")
 	}
 	return nil
 }
