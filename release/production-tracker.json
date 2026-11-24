@@ -635,7 +635,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/287",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/288",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
