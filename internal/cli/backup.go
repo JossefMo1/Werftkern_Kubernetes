@@ -78,6 +78,9 @@ func backupCommand(ctx context.Context, args []string) error {
 	if e := f.Parse(args[1:]); e != nil {
 		return e
 	}
+	if f.NArg() != 0 {
+		return errors.New("BACKUP_ARGUMENTS_INVALID")
+	}
 	if *keyPath == "" {
 		return errors.New("SEPARATE_KEY_FILE_REQUIRED")
 	}
