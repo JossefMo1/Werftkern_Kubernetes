@@ -47,3 +47,37 @@ func TestReadBackupInputReadsRegularFile(t *testing.T) {
 		t.Fatalf("read %q, want %q", got, want)
 	}
 }
+func TestValidateBackupCreateOutput(t *testing.T) {
+	root := t.TempDir()
+	keyPath := filepath.Join(root, "backup.key")
+	existing := filepath.Join(root, "existing.backup")
+	if err := os.WriteFile(existing, []byte("existing"), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name string
+		out  string
+		want string
+	}{
+		{name: "missing output", out: "", want: "DISTINCT_OUTPUT_AND_KEY_PATH_REQUIRED"},
+		{name: "same as key", out: keyPath, want: "DISTINCT_OUTPUT_AND_KEY_PATH_REQUIRED"},
+		{name: "existing output", out: existing, want: "BACKUP_OUTPUT_ALREADY_EXISTS"},
+		{name: "new output", out: filepath.Join(root, "new.backup")},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateBackupCreateOutput(keyPath, tt.out)
+			if tt.want == "" {
+				if err != nil {
+					t.Fatalf("validateBackupCreateOutput() error = %v", err)
+				}
+				return
+			}
+			if err == nil || err.Error() != tt.want {
+				t.Fatalf("validateBackupCreateOutput() error = %v, want %s", err, tt.want)
+			}
+		})
+	}
+}
+
