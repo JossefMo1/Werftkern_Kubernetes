@@ -1,3 +1,13 @@
+# Latest code handoff (2026-11-24, PR #292)
+
+PR [#292](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/292) merged as [479f4be](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/479f4beaecb919b7b376300927282262a7213530). Native restore mapping now fails closed for every workload with an explicit source node selector unless a target-node mapping is provided, including workloads without volumes. This prevents a paused restore from retaining a stale source-node reference. Regression coverage is in `internal/recovery/mapping_test.go`.
+
+Exact PR checks passed: [Native runtime/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013283) — compile/race/static/package checks and real-etcd **success**; [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013752) — **success**; [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45379013761) — **success**. Native real-vm and real-PITR were explicitly skipped. No Single-Host production gate closed.
+
+The mutable, unsigned `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296` and cannot evidence this Main commit. `productionReady=false` and the decision remains `no-go`. Fresh Ubuntu installation/reinstallation, Docker/etcd lifecycle and restart, backup/restore, upgrade/rollback, bounded load/soak, signed SBOM/provenance, release-candidate feedback and maintainer approval remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope.
+
+Next handoff: build a new immutable candidate from [479f4be](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/479f4beaecb919b7b376300927282262a7213530) and dispatch `ci.yml` with `run_real_vm_e2e=true` when workflow-dispatch access is available; do not claim skipped jobs or the private alpha workflow as live qualification evidence.
+
 # Latest code handoff (2026-11-24, PR #289)
 
 PR [#289](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/289) merged as [2d5b982](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2d5b9828f0cd696380259b93ac586ad2d14b31cb). Native release verification now bounds package hashing to 256 MiB before digest verification and rejects oversized regular files with stable `PACKAGE_TOO_LARGE` handling. The sparse-file regression test `TestVerifyRejectsOversizedPackageBeforeHashing` protects this fail-closed resource boundary.
