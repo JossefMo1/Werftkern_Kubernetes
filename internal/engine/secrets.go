@@ -59,7 +59,7 @@ func (d *Docker) secretDirectory(ctx context.Context, a model.Allocation) (strin
 	}
 	if d.RequireSecretTmpfs {
 		var fs syscall.Statfs_t
-		if e = syscall.Statfs(root, &fs); e != nil || uint64(fs.Type) != 0x01021994 {
+		if e := syscall.Statfs(root, &fs); e != nil || uint64(fs.Type) != 0x01021994 {
 			return "", errors.New("SECRET_ROOT_MUST_BE_TMPFS")
 		}
 	}
