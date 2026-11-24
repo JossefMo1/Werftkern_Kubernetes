@@ -77,12 +77,40 @@ def parse_json(raw, limit=4*1024*1024):
 def write_json(path, value, exclusive=False):
     atomic(path, canonical(value)+b"\n", exclusive=exclusive)
 
+def _prepare_parent(path):
+    """Create and validate every parent component without following links."""
+    p = pathlib.Path(os.path.abspath(os.fspath(path)))
+    parent = p.parent
+    current = pathlib.Path(parent.anchor or os.getcwd())
+    try:
+        parts = parent.relative_to(current).parts
+        for component in parts:
+            current /= component
+            try:
+                st = current.lstat()
+            except FileNotFoundError:
+                try:
+                    os.mkdir(current, 0o700)
+                except FileExistsError:
+                    pass
+                st = current.lstat()
+            if stat.S_ISLNK(st.st_mode) or not stat.S_ISDIR(st.st_mode):
+                raise Blocked("UNSAFE_PARENT_DIRECTORY")
+    except (OSError, ValueError):
+        raise Blocked("UNSAFE_PARENT_DIRECTORY") from None
+    return p, parent
+
 def atomic(path, raw, mode=0o600, exclusive=False):
-    p = pathlib.Path(path)
-    p.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    if p.is_symlink():
+    p, parent = _prepare_parent(path)
+    try:
+        final = p.lstat()
+    except FileNotFoundError:
+        final = None
+    except OSError:
+        raise Blocked("REFUSING_SYMLINK") from None
+    if final is not None and stat.S_ISLNK(final.st_mode):
         raise Blocked("REFUSING_SYMLINK")
-    fd, name = tempfile.mkstemp(prefix=".stage-", dir=p.parent)
+    fd, name = tempfile.mkstemp(prefix=".stage-", dir=parent)
     try:
         with os.fdopen(fd, "wb") as f:
             os.fchmod(f.fileno(), mode)
@@ -92,7 +120,7 @@ def atomic(path, raw, mode=0o600, exclusive=False):
             os.unlink(name)
         else:
             os.replace(name, p)
-        d = os.open(p.parent, os.O_DIRECTORY)
+        d = os.open(parent, os.O_DIRECTORY)
         try: os.fsync(d)
         finally: os.close(d)
     finally:
@@ -100,7 +128,7 @@ def atomic(path, raw, mode=0o600, exclusive=False):
 
 @contextlib.contextmanager
 def lock(path):
-    p = pathlib.Path(path); p.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    p, _ = _prepare_parent(path)
     fd = os.open(p, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     try:
         st = os.fstat(fd)
