@@ -1,3 +1,11 @@
+# Current main handoff — PR #297 (2026-11-24)
+
+PR [#297](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/297) merged as [70c97f3](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/70c97f3d48bf785a697f01fdf35e0896b3ae68bf). Native failover now fails closed for unkeyed etcd `POST /v3/kv/txn` retries after a lost acknowledgement; only an explicit `Idempotency-Key` permits replay. Regression coverage is in `internal/failover/transport_test.go` (`TestEtcdTxnWithoutIdempotencyKeyIsNotReplayed`).
+
+PR checks passed: [Native runtime/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45397864977) — compile/race/static/package checks and real-etcd **success**; [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45397864834) — **success**; [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45397864852) — **success**. Real-vm and real-PITR were explicitly skipped. No Single-Host production gate closed.
+
+The mutable, unsigned `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`; it cannot evidence Main `70c97f3d48bf785a697f01fdf35e0896b3ae68bf`. `productionReady=false` and the decision remains `no-go`. Build the next immutable candidate from the current Main commit before any live qualification claim.
+
 # Production qualification evidence review (2026-11-24, Run #1662)
 
 GitHub Actions [Run #1662](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45372806861) was manually dispatched with `run_real_vm_e2e=true` from Main commit `7f1a81ae8eba7042c3c1440ba4151a5a84acd903`. The `actual-ubuntu-vm-evidence` artifact (workflow artifact `14909024562`) contains `ubuntu-vm-result.json` with `status=passed`, exit code 0, Ubuntu 24.04 amd64, Docker Engine 28.0.4, etcd 3.4.30 and package SHA-256 `05042f7c02465c012a34a230a00185b77f014f778de874ed10937e457deb3623`.
