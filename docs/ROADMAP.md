@@ -1,3 +1,11 @@
+# Native single-host release handoff — PR #305 (2026-11-24)
+
+PR [#305](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/305) merged as [ea980c4](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/ea980c46e04b7939251d9e787f8635b69d2d29d5). Backup creation and schema migration now fail closed before key creation when the output aliases the key by absolute path or when its parent is missing or symlinked. The regression tests cover backup, schema and trusted-file parent validation.
+
+The Native code checks and real-etcd passed in [run 45443014723](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45443014723), contracts passed in [run 45443013024](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45443013024), and source/publication audit passed in [run 45443013302](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45443013302). Real-vm and real-PITR were skipped; no Single-Host production gate closed.
+
+The next release step is an exact immutable candidate from ea980c46e04b7939251d9e787f8635b69d2d29d5 and candidate-bound Ubuntu 24.04 qualification. Backup/restore, upgrade/rollback, bounded load/soak, signed provenance and maintainer approval remain open. HA/multi-host and Kubernetes Production remain deferred outside the first scope.
+
 # Current main handoff — PR #297 (2026-11-24)
 
 The Native failover transport now fails closed for unkeyed etcd transaction retries after a lost acknowledgement; keyed requests remain replayable through the existing idempotency contract. The regression test is tracked in [PR #297](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/297), merged as [70c97f3](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/70c97f3d48bf785a697f01fdf35e0896b3ae68bf).
