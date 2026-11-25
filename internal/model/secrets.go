@@ -86,6 +86,23 @@ func (s *State) SecretReferenced(ref SecretRef) bool {
 	return false
 }
 
+func allocationSpecMatchesWorkload(spec Spec, generation int64, w *Workload) bool {
+	if w == nil {
+		return false
+	}
+	if generation == w.Generation {
+		return Hash(spec) == Hash(w.Spec)
+	}
+	if generation < w.Generation {
+		for _, historical := range w.History {
+			if Hash(spec) == Hash(historical) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // ValidateInventory checks persisted inventory before reads/commits and backup
 // import. Structural validity is not independent proof of an agent observation.
 func (s *State) ValidateInventory() error {
@@ -148,8 +165,13 @@ func (s *State) ValidateInventory() error {
 		addrs[n.Address] = true
 	}
 	for id, a := range s.Allocations {
-		w := workloadByUID[a.WorkloadUID]
-		if a == nil || id != a.ID || !ValidID(id) || s.Nodes[a.NodeID] == nil || w == nil || a.Name != w.Name || a.Generation < 1 || a.Generation > w.Generation || (a.Desired != "run" && a.Desired != "stop") {
+		w := workloadByUID[func() string {
+			if a == nil {
+				return ""
+			}
+			return a.WorkloadUID
+		}()]
+		if a == nil || id != a.ID || !ValidID(id) || s.Nodes[a.NodeID] == nil || w == nil || a.Name != w.Name || a.Generation < 1 || a.Generation > w.Generation || (a.Desired != "run" && a.Desired != "stop") || !allocationSpecMatchesWorkload(a.Spec, a.Generation, w) {
 			return errors.New("ALLOCATION_RECORD_INVALID")
 		}
 		if e := a.Spec.Validate(); e != nil {
