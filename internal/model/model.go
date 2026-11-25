@@ -237,7 +237,7 @@ type Receipt struct {
 // successful mutations. Receipts are persisted state, so each field must retain
 // the invariants established by Apply and MutateWorkload.
 func (r Receipt) Validate() error {
-	if !ValidRequestID(r.ID) || !ValidSHA256(r.Hash) || !ValidID(r.WorkloadUID) || r.Generation < 1 || r.At.IsZero() {
+	if !ValidRequestID(r.ID) || !ValidSHA256(r.Hash) || !validReceiptWorkloadUID(r.WorkloadUID) || r.Generation < 1 || r.At.IsZero() {
 		return errors.New("RECEIPT_INVALID")
 	}
 	return nil

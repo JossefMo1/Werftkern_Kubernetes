@@ -242,6 +242,18 @@ func TestStateRejectsMalformedReceipts(t *testing.T) {
 	}
 }
 
+func TestStateAcceptsSecretReceiptOwner(t *testing.T) {
+	now := time.Now()
+	s := NewState(ID(), "test", now)
+	key := ID()
+	s.Receipts[key] = Receipt{
+		ID: key, Hash: strings.Repeat("a", 64), WorkloadUID: "secret:api/3", Generation: 3, At: now,
+	}
+	if err := s.Validate(); err != nil {
+		t.Fatalf("secret receipt owner rejected: %v", err)
+	}
+}
+
 func TestHashMapOrder(t *testing.T) {
 	if Hash(map[string]int{"a": 1, "b": 2}) != Hash(map[string]int{"b": 2, "a": 1}) {
 		t.Fatal("unstable hash")
