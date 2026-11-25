@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T03:06:05Z",
+  "updatedAt": "2026-11-25T03:21:22Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -31,8 +31,8 @@
   },
   "lastCompleted": {
     "commit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
-    "summary": "PR #332 merged as 28d4b139514e46fbc787e64acf0552d17fc03b83. Native CI now emits bounded deterministic SPDX 2.3 evidence from the exact Debian package metadata, declared runtime dependencies and Go module graph, plus a SHA-256 sidecar. Main Native source/package checks, real-etcd, Kubernetes contracts and Source/Privacy audit passed; real-vm and real-PITR were skipped. The SBOM is evidence plumbing only: OS vulnerability completeness, signing, provenance, Ubuntu installation, backup/restore, upgrade/rollback, load/soak, user feedback and production qualification remain open. productionReady=false with decision no-go."
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/334",
+    "summary": "PR #334 merged as fd439384a19b8aa0a170864675bc6f9e9ddead30; it extends the experimental test-release workflow to ship a bounded Native SPDX 2.3 document and SHA-256 sidecar in the manifest/checksum set. The candidate-bearing Native runtime remains 28d4b139514e46fbc787e64acf0552d17fc03b83; Main CI source/package, real-etcd, Kubernetes contracts and Source/Privacy checks passed for the preceding code commit, while real-vm and real-PITR were skipped. The SBOM is evidence plumbing only: OS vulnerability completeness, signing, provenance, Ubuntu installation, backup/restore, upgrade/rollback, load/soak, user feedback and production qualification remain open. productionReady=false with decision no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes after PR #332.",
-      "The exact candidate must now be rebuilt from merged Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83; CI-only SBOM evidence is not a live Ubuntu qualification.",
+      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes after PR #334.",
+      "The exact candidate must be rebuilt from candidate-bearing Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83; the test-release workflow only prepares experimental assets and does not qualify production.",
       "PR and post-merge Main checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -53,7 +53,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from merged Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from candidate-bearing Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -509,11 +509,12 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412649",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412758",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412880"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412880",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/334"
       ],
       "blockers": [
-        "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs; the Main real-vm job was skipped.",
-        "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
+        "The experimental test-release workflow now packages bounded SBOM evidence, but no immutable production candidate has been rebuilt or qualified.",
+        "The released development artifacts remain unsigned; provenance/signature and production qualification remain open."
       ],
       "nextStep": "Build the next immutable candidate from merged Main commit 545cf797b30958d1d60e8cf5177ee13c37566e00; CI now proves two package builds have the same SHA-256 under SOURCE_DATE_EPOCH, but CI-only checks do not close the live Ubuntu installation gate."
     },
@@ -676,7 +677,7 @@
         "Current Main real-etcd passed (not installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45523787625/job/138901958457"
       ],
       "blockers": [
-        "Workflow #1662 real-vm evidence is bound to prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903; it is not evidence for current Main 28d4b139514e46fbc787e64acf0552d17fc03b83.",
+        "Workflow #1662 real-vm evidence is bound to prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903; it is not evidence for current candidate-bearing commit 28d4b139514e46fbc787e64acf0552d17fc03b83.",
         "The exact immutable candidate must be rebuilt from current scoped Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83.",
         "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate."
       ],
@@ -731,7 +732,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/334",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -764,16 +765,16 @@
       "commit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
       "codeCommit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
-      "summary": "PR #332 merged as 28d4b139514e46fbc787e64acf0552d17fc03b83. Native CI now emits bounded deterministic SPDX 2.3 evidence from the exact Debian package metadata, declared runtime dependencies and Go module graph, plus a SHA-256 sidecar. Main Native source/package checks, real-etcd, Kubernetes contracts and Source/Privacy audit passed; real-vm and real-PITR were skipped. The SBOM is evidence plumbing only: OS vulnerability completeness, signing, provenance, Ubuntu installation, backup/restore, upgrade/rollback, load/soak, user feedback and production qualification remain open. productionReady=false with decision no-go.",
+      "summary": "PR #334 merged as fd439384a19b8aa0a170864675bc6f9e9ddead30; it extends the experimental test-release workflow to ship a bounded Native SPDX 2.3 document and SHA-256 sidecar in the manifest/checksum set. The candidate-bearing Native runtime remains 28d4b139514e46fbc787e64acf0552d17fc03b83; Main CI source/package, real-etcd, Kubernetes contracts and Source/Privacy checks passed for the preceding code commit, while real-vm and real-PITR were skipped. The SBOM is evidence plumbing only: OS vulnerability completeness, signing, provenance, Ubuntu installation, backup/restore, upgrade/rollback, load/soak, user feedback and production qualification remain open. productionReady=false with decision no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/334"
     },
     "commit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
     "codeCommit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/333",
-    "summary": "PR #332 merged as 28d4b139514e46fbc787e64acf0552d17fc03b83. Native CI now emits bounded deterministic SPDX 2.3 evidence from the exact Debian package metadata, declared runtime dependencies and Go module graph, plus a SHA-256 sidecar. Main Native source/package checks, real-etcd, Kubernetes contracts and Source/Privacy audit passed; real-vm and real-PITR were skipped. The SBOM is evidence plumbing only: OS vulnerability completeness, signing, provenance, Ubuntu installation, backup/restore, upgrade/rollback, load/soak, user feedback and production qualification remain open. productionReady=false with decision no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/335",
+    "summary": "PR #334 merged as fd439384a19b8aa0a170864675bc6f9e9ddead30; it extends the experimental test-release workflow to ship a bounded Native SPDX 2.3 document and SHA-256 sidecar in the manifest/checksum set. The candidate-bearing Native runtime remains 28d4b139514e46fbc787e64acf0552d17fc03b83; Main CI source/package, real-etcd, Kubernetes contracts and Source/Privacy checks passed for the preceding code commit, while real-vm and real-PITR were skipped. The SBOM is evidence plumbing only: OS vulnerability completeness, signing, provenance, Ubuntu installation, backup/restore, upgrade/rollback, load/soak, user feedback and production qualification remain open. productionReady=false with decision no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/334",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
