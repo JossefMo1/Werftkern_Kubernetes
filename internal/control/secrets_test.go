@@ -54,6 +54,43 @@ func TestVaultAPIVersionReplayAndNoReadback(t *testing.T) {
 		t.Fatal("node write allowed")
 	}
 }
+func TestVaultExpiredReceiptKeyCanBeReused(t *testing.T) {
+	h := makeHarness(t)
+	ctx := context.Background()
+	key := model.ID()
+	first := control.SecretInput{Value: []byte("first")}
+	var ref model.SecretRef
+	if e := h.admin.Call(ctx, "PUT", "/v1/secrets/db", first, &ref, key); e != nil {
+		t.Fatal(e)
+	}
+	if ref.Version != 1 {
+		t.Fatalf("first version = %d", ref.Version)
+	}
+	if _, _, e := h.s.Update(ctx, func(s *model.State) error {
+		r, ok := s.Receipts[key]
+		if !ok {
+			return model.ErrNotFound
+		}
+		r.At = time.Now().Add(-25 * time.Hour)
+		s.Receipts[key] = r
+		return nil
+	}); e != nil {
+		t.Fatal(e)
+	}
+	second := control.SecretInput{Value: []byte("second"), ExpectedVersion: 1}
+	var next model.SecretRef
+	if e := h.admin.Call(ctx, "PUT", "/v1/secrets/db", second, &next, key); e != nil {
+		t.Fatal(e)
+	}
+	if next.Version != 2 {
+		t.Fatalf("reused key created version %d, want 2", next.Version)
+	}
+	raw, _, e := h.s.Read(ctx)
+	if e != nil || raw.Secrets["db/2"].Sealed == "" {
+		t.Fatalf("new secret version missing: %v", e)
+	}
+}
+
 func TestVaultPerAllocationAuthorizationAndReferenceProtection(t *testing.T) {
 	h := makeHarness(t)
 	ctx := context.Background()
