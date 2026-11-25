@@ -1,3 +1,14 @@
+# Failover replay-safety handoff — PR #356 (2026-11-25)
+
+- Code: [PR #356](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/356), merged commit [bc17c84](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bc17c840e8acf22c91f47f354b338f97a8a5a050).
+- Runtime/state change: failover retries are allowlisted to GET/HEAD, sequence-safe heartbeat/etcd-range requests, and receipt-backed workload/secret mutations; keyed maintenance, registration, restore and unknown mutations are not replayed after an ambiguous acknowledgement.
+- Regression coverage: keyed maintenance is not replayed; keyed secret mutation retries remain supported.
+- PR checks: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45598966389), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45598966331), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45598966221) — all successful; real-etcd passed, real-vm/PITR skipped.
+- Main checks: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45599427641), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45599428071), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45599427813) — all successful; real-etcd passed, real-vm/PITR skipped.
+- No Single-Host production gate closed. productionReady=false, decision no-go; the published v0.2.0-dev.4-test.17 remains stale, mutable and unsigned.
+- HA/multi-host/quorum and Kubernetes-Production remain deferred outside the first Native scope.
+- Next handoff: build one immutable candidate from [bc17c84](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bc17c840e8acf22c91f47f354b338f97a8a5a050), then run candidate-bound Ubuntu installation, backup/restore, upgrade/rollback, bounded soak and signing/provenance checks. The current connector cannot create tags or dispatch workflow_dispatch; that blocker is recorded and not repeated.
+
 # Allocation spec-integrity handoff — PR #354 (2026-11-25)
 
 - Code: [PR #354](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/354), merged commit [39183a8](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/39183a82fb1062674799a3483f5ae30a9e4b2e92).
