@@ -165,13 +165,11 @@ func (s *State) ValidateInventory() error {
 		addrs[n.Address] = true
 	}
 	for id, a := range s.Allocations {
-		w := workloadByUID[func() string {
-			if a == nil {
-				return ""
-			}
-			return a.WorkloadUID
-		}()]
-		if a == nil || id != a.ID || !ValidID(id) || s.Nodes[a.NodeID] == nil || w == nil || a.Name != w.Name || a.Generation < 1 || a.Generation > w.Generation || (a.Desired != "run" && a.Desired != "stop") || !allocationSpecMatchesWorkload(a.Spec, a.Generation, w) {
+		if a == nil {
+			return errors.New("ALLOCATION_RECORD_INVALID")
+		}
+		w := workloadByUID[a.WorkloadUID]
+		if id != a.ID || !ValidID(id) || s.Nodes[a.NodeID] == nil || w == nil || a.Name != w.Name || a.Generation < 1 || a.Generation > w.Generation || (a.Desired != "run" && a.Desired != "stop") || !allocationSpecMatchesWorkload(a.Spec, a.Generation, w) {
 			return errors.New("ALLOCATION_RECORD_INVALID")
 		}
 		if e := a.Spec.Validate(); e != nil {
