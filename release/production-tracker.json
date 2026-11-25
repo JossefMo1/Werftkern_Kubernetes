@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T14:07:00Z",
+  "updatedAt": "2026-11-25T14:30:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "97d2fd03d551df707aeff8895a79e8a179382458",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/362",
-    "summary": "PR #362 merged as 97d2fd03d551df707aeff8895a79e8a179382458. The Native volume restore CLI now records a deterministic digest of the extracted data tree (paths, types, permissions, sizes and file bytes) in the restore receipt and verifies that digest before every completion acknowledgement. Lost-ACK retries and completed replays now fail closed when the target tree drifts, while no data tree is replaced. Regression coverage is in internal/cli/volume_archive_test.go. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127583 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127066 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629128409. Post-merge Main checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629751096 (real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750862 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750919. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "fc16c9978741fc9d792da781d1b697b2612af653",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365",
+    "summary": "PR #365 merged as fc16c9978741fc9d792da781d1b697b2612af653. Secret staging now writes a manifest containing the spec hash plus per-file content digests, and every reuse verifies regular-file type, mode, bounded size and bytes before returning the staged material. Content drift fails closed with SECRET_MATERIAL_CONTENT_MISMATCH; the regression test TestSecretManifestReuseRejectsContentDrift covers tampering. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285219 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285314 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285257. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -41,7 +41,7 @@
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
       "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes through PR #358.",
-      "The exact candidate must be rebuilt from current Main commit 97d2fd03d551df707aeff8895a79e8a179382458; the test-release workflow only prepares experimental assets and does not qualify production.",
+      "The exact candidate must be rebuilt from current Main commit fc16c9978741fc9d792da781d1b697b2612af653; the test-release workflow only prepares experimental assets and does not qualify production.",
       "PR and post-merge Main checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open.",
@@ -54,7 +54,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main commit 97d2fd03d551df707aeff8895a79e8a179382458, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from current Main commit fc16c9978741fc9d792da781d1b697b2612af653, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -528,7 +528,13 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45550035506",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45550035510",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45550035546",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365",
+        "PR #365 Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285219",
+        "PR #365 Kubernetes checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285314",
+        "PR #365 Source/Privacy checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285257",
+        "PR #365 checks succeeded; real-etcd passed, real-vm/PITR skipped; no Single-Host qualification gate closed.",
+        "Current Main code commit after PR #365: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from current scoped Main commit 39183a82fb1062674799a3483f5ae30a9e4b2e92; the published test.17 artifact is stale.",
@@ -752,14 +758,20 @@
         "PR #362 Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127583 (real-etcd passed; real-vm/PITR skipped)",
         "PR #362 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127066",
         "PR #362 Source/Privacy: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629128409",
-        "Post-merge Main checks for #362: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629751096, Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750862, Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750919; real-vm/PITR skipped and no live production gate closed."
+        "Post-merge Main checks for #362: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629751096, Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750862, Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750919; real-vm/PITR skipped and no live production gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365",
+        "PR #365 Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285219",
+        "PR #365 Kubernetes checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285314",
+        "PR #365 Source/Privacy checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285257",
+        "PR #365 checks succeeded; real-etcd passed, real-vm/PITR skipped; no Single-Host qualification gate closed.",
+        "Current Main code commit after PR #365: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653"
       ],
       "blockers": [
-        "The exact immutable candidate must be rebuilt from current scoped Main commit 7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f; the published test.17 artifact is stale.",
+        "The exact immutable candidate must be rebuilt from current scoped Main commit fc16c9978741fc9d792da781d1b697b2612af653; the published test.17 artifact is stale.",
         "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate; Main real-vm and real-PITR jobs for PR #343 were skipped.",
         "The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; this blocker is recorded once and is not retried."
       ],
-      "nextStep": "Build the next immutable candidate from current Main commit c8d06d30dc0b8bcf40f7b93892efe3984afeea67, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
+      "nextStep": "Build the next immutable candidate from current Main commit fc16c9978741fc9d792da781d1b697b2612af653, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "Post-merge Main Native test and real-etcd passed (not Ubuntu installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45550035506",
@@ -827,7 +839,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/362",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -857,20 +869,20 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "97d2fd03d551df707aeff8895a79e8a179382458",
-      "codeCommit": "97d2fd03d551df707aeff8895a79e8a179382458",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/362",
-      "summary": "PR #362 merged as 97d2fd03d551df707aeff8895a79e8a179382458. The Native volume restore CLI now records a deterministic digest of the extracted data tree (paths, types, permissions, sizes and file bytes) in the restore receipt and verifies that digest before every completion acknowledgement. Lost-ACK retries and completed replays now fail closed when the target tree drifts, while no data tree is replaced. Regression coverage is in internal/cli/volume_archive_test.go. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127583 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127066 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629128409. Post-merge Main checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629751096 (real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750862 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750919. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "fc16c9978741fc9d792da781d1b697b2612af653",
+      "codeCommit": "fc16c9978741fc9d792da781d1b697b2612af653",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365",
+      "summary": "PR #365 merged as fc16c9978741fc9d792da781d1b697b2612af653. Secret staging now writes a manifest containing the spec hash plus per-file content digests, and every reuse verifies regular-file type, mode, bounded size and bytes before returning the staged material. Content drift fails closed with SECRET_MATERIAL_CONTENT_MISMATCH; the regression test TestSecretManifestReuseRejectsContentDrift covers tampering. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285219 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285314 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285257. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
       "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/362",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/361"
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/364"
     },
-    "commit": "97d2fd03d551df707aeff8895a79e8a179382458",
-    "codeCommit": "97d2fd03d551df707aeff8895a79e8a179382458",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/362",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/361",
-    "summary": "PR #362 merged as 97d2fd03d551df707aeff8895a79e8a179382458. The Native volume restore CLI now records a deterministic digest of the extracted data tree (paths, types, permissions, sizes and file bytes) in the restore receipt and verifies that digest before every completion acknowledgement. Lost-ACK retries and completed replays now fail closed when the target tree drifts, while no data tree is replaced. Regression coverage is in internal/cli/volume_archive_test.go. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127583 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127066 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629128409. Post-merge Main checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629751096 (real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750862 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750919. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/362",
+    "commit": "fc16c9978741fc9d792da781d1b697b2612af653",
+    "codeCommit": "fc16c9978741fc9d792da781d1b697b2612af653",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/364",
+    "summary": "PR #365 merged as fc16c9978741fc9d792da781d1b697b2612af653. Secret staging now writes a manifest containing the spec hash plus per-file content digests, and every reuse verifies regular-file type, mode, bounded size and bytes before returning the staged material. Content drift fails closed with SECRET_MATERIAL_CONTENT_MISMATCH; the regression test TestSecretManifestReuseRejectsContentDrift covers tampering. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285219 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285314 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285257. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
