@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T08:07:30Z",
+  "updatedAt": "2026-11-25T09:04:08.127Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "c8d06d30dc0b8bcf40f7b93892efe3984afeea67",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/347",
-    "summary": "PR #347 merged as c8d06d30dc0b8bcf40f7b93892efe3984afeea67. The Dashboard health view now rejects invalid or more-than-5-second future node heartbeats, matching the Native Node.Ready scheduling tolerance; previously a future timestamp produced a negative age and was shown as healthy although the controller would not schedule that node. Browser fixture coverage adds a 6-second future-heartbeat regression and recovery to a current heartbeat. PR checks passed: Native 45572381574 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45572381543, Source/Privacy 45572381529. Post-merge Main checks passed: Native 45572767523 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45572767551, and Source/Privacy 45572767538. This is CI evidence only; productionReady remains false and the decision remains no-go."
+    "commit": "5d9813c02d243854d9fa33127b7236274a01257c",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/349",
+    "summary": "PR #349 merged as 5d9813c02d243854d9fa33127b7236274a01257c. Persisted idempotency receipts are now validated fail-closed before reconciliation or backup: request ID, SHA-256 hash, workload or validated secret owner, positive generation, and timestamp are required. Secret mutation receipts retain their explicit secret:<name>/<version> owner namespace with name/version validation. Negative coverage covers malformed hash, owner, generation and timestamp plus valid secret-owner compatibility. PR checks passed: Native 45580938962 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45580938903, Source/Privacy 45580938754. Post-merge Main checks passed: Native 45581360321 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45581360550, and Source/Privacy 45581360619. This is CI evidence only; productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes after PR #347.",
-      "The exact candidate must be rebuilt from current Main commit c8d06d30dc0b8bcf40f7b93892efe3984afeea67; the test-release workflow only prepares experimental assets and does not qualify production.",
+      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes after PR #349.",
+      "The exact candidate must be rebuilt from current Main commit 5d9813c02d243854d9fa33127b7236274a01257c; the test-release workflow only prepares experimental assets and does not qualify production.",
       "PR and post-merge Main checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -53,7 +53,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main commit c8d06d30dc0b8bcf40f7b93892efe3984afeea67, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from current Main commit 5d9813c02d243854d9fa33127b7236274a01257c, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -834,19 +834,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "c8d06d30dc0b8bcf40f7b93892efe3984afeea67",
-      "codeCommit": "c8d06d30dc0b8bcf40f7b93892efe3984afeea67",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/347",
-      "summary": "PR #347 merged as c8d06d30dc0b8bcf40f7b93892efe3984afeea67. The Dashboard health view now rejects invalid or more-than-5-second future node heartbeats, matching the Native Node.Ready scheduling tolerance; previously a future timestamp produced a negative age and was shown as healthy although the controller would not schedule that node. Browser fixture coverage adds a 6-second future-heartbeat regression and recovery to a current heartbeat. PR checks passed: Native 45572381574 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45572381543, Source/Privacy 45572381529. Post-merge Main checks passed: Native 45572767523 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45572767551, and Source/Privacy 45572767538. This is CI evidence only; productionReady remains false and the decision remains no-go. Rebuild a fresh immutable candidate; published test.17 remains stale and unsigned.",
+      "commit": "5d9813c02d243854d9fa33127b7236274a01257c",
+      "codeCommit": "5d9813c02d243854d9fa33127b7236274a01257c",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/349",
+      "summary": "PR #349 merged as 5d9813c02d243854d9fa33127b7236274a01257c. Persisted idempotency receipts are now validated fail-closed before reconciliation or backup: request ID, SHA-256 hash, workload or validated secret owner, positive generation, and timestamp are required. Secret mutation receipts retain their explicit secret:<name>/<version> owner namespace with name/version validation. Negative coverage covers malformed hash, owner, generation and timestamp plus valid secret-owner compatibility. PR checks passed: Native 45580938962 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45580938903, Source/Privacy 45580938754. Post-merge Main checks passed: Native 45581360321 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45581360550, and Source/Privacy 45581360619. This is CI evidence only; productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/347"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/349"
     },
-    "commit": "c8d06d30dc0b8bcf40f7b93892efe3984afeea67",
-    "codeCommit": "c8d06d30dc0b8bcf40f7b93892efe3984afeea67",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/347",
+    "commit": "5d9813c02d243854d9fa33127b7236274a01257c",
+    "codeCommit": "5d9813c02d243854d9fa33127b7236274a01257c",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/349",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/348",
-    "summary": "PR #347 merged as c8d06d30dc0b8bcf40f7b93892efe3984afeea67. The Dashboard health view now rejects invalid or more-than-5-second future node heartbeats, matching the Native Node.Ready scheduling tolerance; previously a future timestamp produced a negative age and was shown as healthy although the controller would not schedule that node. Browser fixture coverage adds a 6-second future-heartbeat regression and recovery to a current heartbeat. PR checks passed: Native 45572381574 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45572381543, Source/Privacy 45572381529. Post-merge Main checks passed: Native 45572767523 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45572767551, and Source/Privacy 45572767538. This is CI evidence only; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/347",
+    "summary": "PR #349 merged as 5d9813c02d243854d9fa33127b7236274a01257c. Persisted idempotency receipts are now validated fail-closed before reconciliation or backup: request ID, SHA-256 hash, workload or validated secret owner, positive generation, and timestamp are required. Secret mutation receipts retain their explicit secret:<name>/<version> owner namespace with name/version validation. Negative coverage covers malformed hash, owner, generation and timestamp plus valid secret-owner compatibility. PR checks passed: Native 45580938962 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45580938903, Source/Privacy 45580938754. Post-merge Main checks passed: Native 45581360321 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45581360550, and Source/Privacy 45581360619. This is CI evidence only; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/349",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
