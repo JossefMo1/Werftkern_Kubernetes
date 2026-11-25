@@ -1,3 +1,11 @@
+# Post-Merge-Nachweis — Native systemd hardening (2026-11-25)
+
+- PR [#337](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/337) merged as [0c26c3cdae9cbe51086de85b7cae71cbf63c85ff](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/0c26c3cdae9cbe51086de85b7cae71cbf63c85ff); the tracker and status now point to the hardened code handoff [#336](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336).
+- Post-merge Main: Native test/package + real-etcd passed ([run 45541303215](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215), jobs [138960205766](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215/job/138960205766) and [138960206134](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215/job/138960206134)); Kubernetes contracts ([45541303232](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303232)) and Source/Privacy ([45541303259](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303259)) passed.
+- Main real-vm ([138961198396](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215/job/138961198396)) and real-PITR ([138961198875](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215/job/138961198875)) were skipped because this was a normal push, not an authorized immutable-candidate qualification.
+- The private-alpha publisher ([run 45541619379](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541619379)) correctly created no release because the repository is public. The existing v0.2.0-dev.4-test.17 release remains mutable/unsigned.
+- No production gate is closed by this documentation update; Ubuntu installation, exact-candidate restart/recovery, backup/restore, upgrade/rollback, bounded load/soak, signing/provenance, user feedback and maintainer Go/No-Go remain open. `productionReady=false` / `no-go` remain unchanged.
+
 # Native single-host operations handoff — PR #336 (2026-11-25)
 
 [PR #336](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336) merged as [293d6c76923830ac64df8b67c6cafcdb02396739](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/293d6c76923830ac64df8b67c6cafcdb02396739).
