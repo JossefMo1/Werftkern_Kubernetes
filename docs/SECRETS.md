@@ -23,7 +23,9 @@ Allein ein eigenes Nodezertifikat berechtigt nicht zum Lesen fremder Allocationw
 ## Auf dem Worker
 
 `/run/werftkern/secrets` muss tmpfs und privat (0700) sein. Staging erzeugt zunächst
-vollständige Dateien und Identitätsmanifest, danach erfolgt Rename. Der Container erhält nur
+vollständige Dateien und ein Identitätsmanifest mit Spec-Hash und einem Digest je Secretdatei,
+danach erfolgt Rename. Bei jeder Wiederverwendung werden Dateityp, Modus, Größe und Bytes erneut
+geprüft; fehlende oder veränderte Dateien blockieren fail-closed. Der Container erhält nur
 seine Allocation als read-only Bind unter `/run/secrets`. Einzeldateien sind für seine Non-root-UID
 lesbar; der private Hostelternpfad verhindert Zugriff anderer normaler Hostbenutzer.
 Root bzw. der Container selbst können ihre Werte weiterhin lesen.
