@@ -16,6 +16,8 @@ from pathlib import Path
 EXPECTED_ASSETS = (
     "werftkern_0.2.0.dev4_amd64.deb",
     "werftkern-kubernetes_0.1.0.dev3_all.deb",
+    "werftkern-native.spdx.json",
+    "werftkern-native.spdx.sha256",
 )
 LEGACY_ASSETS = (
     "werftkern_0.2.0~dev4_amd64.deb",
@@ -34,6 +36,8 @@ RELEASE_DOWNLOAD_FRAGMENTS = (
     "wget \\\n",
     '"${BASE}/release-manifest.json"',
     '"${BASE}/SHA256SUMS"',
+    '"${BASE}/werftkern-native.spdx.json"',
+    '"${BASE}/werftkern-native.spdx.sha256"',
     'tar -xzf "werftkern-test-kit-${TAG}.tar.gz"',
 )
 NATIVE_AUTO_FRAGMENTS = (
@@ -171,8 +175,11 @@ def validate(root: Path) -> list[str]:
     required_workflow_fragments = (
         'native_release_name="$(basename "$native" | tr \'~\' \'.\')"',
         'manager_release_name="$(basename "$manager" | tr \'~\' \'.\')"',
-        "sha256sum *.deb *.tar.gz release-manifest.json > SHA256SUMS",
-        "release-assets/*.deb release-assets/*.tar.gz release-assets/release-manifest.json release-assets/SHA256SUMS",
+        "python3 scripts/generate-native-sbom.py",
+        "--output dist/werftkern-native.spdx.json",
+        "sha256sum werftkern-native.spdx.json > werftkern-native.spdx.sha256",
+        "sha256sum *.deb *.tar.gz *.spdx.json *.spdx.sha256 release-manifest.json > SHA256SUMS",
+        "release-assets/*.deb release-assets/*.tar.gz release-assets/*.spdx.json release-assets/*.spdx.sha256 release-assets/release-manifest.json release-assets/SHA256SUMS",
         'release_notes="$PWD/.test-release-notes.md"',
         'docs/TEST-RELEASE-DE.md > "$release_notes"',
         'install -D -m 0644 "$release_notes" "$kit/README-DE.md"',
