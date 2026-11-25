@@ -136,19 +136,36 @@ func TestVolumeArchiveCLIPhysicalRestoreAfterLostAcknowledgment(t *testing.T) {
 	if e != nil || !bytes.Equal(got, expected) {
 		t.Fatal("physical data not restored", e)
 	}
+	// A lost-ACK retry must fail closed when the staged tree was modified.
+	sentinel := filepath.Join(targetRoot, target.ID, "data", "sentinel")
+	if e = os.WriteFile(sentinel, []byte("keep"), 0600); e != nil {
+		t.Fatal(e)
+	}
+	if e = volumeArchiveCommand(ctx, args); e == nil || !strings.Contains(e.Error(), "DATA_INTEGRITY") {
+		t.Fatalf("modified restore tree was acknowledged: %v", e)
+	}
+	s, _, e = db.Read(ctx)
+	if e != nil || s.Volumes[target.Name].RestoreComplete {
+		t.Fatal("failed integrity check acknowledged restore", e)
+	}
+	if e = os.Remove(sentinel); e != nil {
+		t.Fatal(e)
+	}
 	if e = volumeArchiveCommand(ctx, args); e != nil {
-		t.Fatal("retry failed", e)
+		t.Fatal("retry failed after restoring the tree", e)
 	}
 	s, _, e = db.Read(ctx)
 	if e != nil || !s.Volumes[target.Name].RestoreComplete {
 		t.Fatal("restore not acknowledged", e)
 	}
-	// A completed replay must not replace or truncate existing data.
-	os.WriteFile(filepath.Join(targetRoot, target.ID, "data", "sentinel"), []byte("keep"), 0600)
-	if e = volumeArchiveCommand(ctx, args); e != nil {
+	// Even after completion, a replay never replaces data and rejects drift.
+	if e = os.WriteFile(sentinel, []byte("keep"), 0600); e != nil {
 		t.Fatal(e)
 	}
-	if _, e = os.Stat(filepath.Join(targetRoot, target.ID, "data", "sentinel")); e != nil {
+	if e = volumeArchiveCommand(ctx, args); e == nil || !strings.Contains(e.Error(), "DATA_INTEGRITY") {
+		t.Fatalf("completed replay accepted modified data: %v", e)
+	}
+	if _, e = os.Stat(sentinel); e != nil {
 		t.Fatal("replay replaced tree")
 	}
 	t.Log("Executed real CLI, files, encryption, mTLS and UNIX HTTP with injected ACK failure; etcd/Docker remained explicit adapters, not live services.")
