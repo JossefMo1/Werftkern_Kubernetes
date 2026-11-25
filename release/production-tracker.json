@@ -711,7 +711,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/324",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/325",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -751,7 +751,7 @@
     "commit": "9671c64edbe67f02ca18a21244abdd0833c55c5b",
     "codeCommit": "9671c64edbe67f02ca18a21244abdd0833c55c5b",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/324",
-    "documentationPullRequest": null,
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/325",
     "summary": "PR #324 hardens Operations/Platform state safety: atomic JSON writes and operation locks now create parent components without following symlinks, reject redirected parents before state creation, and add regression coverage in tests/ops/test_common.py. Local Python Operations tests (92) passed; PR and post-merge Native/real-etcd, Kubernetes contract and Source/Privacy checks passed; real-vm and real-PITR were skipped. No Single-Host production gate closed. The mutable v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 with immutable=false and unsigned assets; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/324",
     "nextCandidateRequired": true
