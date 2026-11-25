@@ -21,7 +21,8 @@ New routes:
 | POST `/v1/maintenance` | Admin; id,enabled,reason; only the owning operation releases an active lock |
 
 Workload spec adds `volumes[{name,mountPath,readOnly}]`, `runAsUid`, `runAsGid`, `probe`,
-`profile`. Check Go JSON tags as the source of truth. A volume requires one pinned node,
+`profile`. The only supported probe values are empty (process-only), `tcp`, and `postgres`; unknown values are rejected.
+Check Go JSON tags as the source of truth. A volume requires one pinned node,
 max1 replica, no host path freedom and a valid nonroot identity. `postgres17` requires
 exact data mount and `postgres-password` SecretRef. Old specs without these fields retain
 stateless behavior. Unknown fields are rejected by JSON decoding.

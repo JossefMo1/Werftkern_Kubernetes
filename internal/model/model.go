@@ -100,6 +100,13 @@ func (s Spec) Validate() error {
 	if err := s.ValidateStorage(); err != nil {
 		return err
 	}
+	// The Docker worker has explicit implementations for the supported probes.
+	// Rejecting unknown values prevents a typo from silently bypassing readiness.
+	switch s.Probe {
+	case "", "tcp", "postgres":
+	default:
+		return errors.New("PROBE_INVALID")
+	}
 	if len(s.Image) > 300 || !digestRE.MatchString(s.Image) {
 		return errors.New("IMAGE_DIGEST_REQUIRED")
 	}

@@ -21,6 +21,7 @@ func TestSpecValidation(t *testing.T) {
 		{"uppercase_digest", func(s *Spec) { s.Image = "sha256:" + strings.Repeat("F", 64) }, false}, {"negative_replicas", func(s *Spec) { s.Replicas = -1 }, false}, {"too_many_replicas", func(s *Spec) { s.Replicas = 21 }, false},
 		{"zero_replicas", func(s *Spec) { s.Replicas = 0 }, true}, {"zero_cpu", func(s *Spec) { s.CPUMilli = 0 }, false}, {"excess_cpu", func(s *Spec) { s.CPUMilli = 128001 }, false}, {"too_little_memory", func(s *Spec) { s.MemoryMiB = 31 }, false},
 		{"privileged_port", func(s *Spec) { s.Port = 80 }, false}, {"invalid_port", func(s *Spec) { s.Port = 65536 }, false}, {"missing_probe", func(s *Spec) { s.ReadinessPath = "" }, false},
+		{"unknown_probe", func(s *Spec) { s.Probe = "http" }, false}, {"tcp_probe", func(s *Spec) { s.Probe = "tcp" }, true}, {"postgres_probe", func(s *Spec) { s.Probe = "postgres" }, true},
 		{"ssrf_probe", func(s *Spec) { s.ReadinessPath = "http://169.254.169.254/" }, false}, {"network_probe", func(s *Spec) { s.ReadinessPath = "//evil.example/" }, false},
 		{"probe_without_port", func(s *Spec) { s.Port = 0 }, false}, {"background_process", func(s *Spec) { s.Port = 0; s.ReadinessPath = "" }, true},
 		{"bad_selector", func(s *Spec) { s.Node = "../node" }, false}, {"null_command", func(s *Spec) { s.Command = []string{"a\x00b"} }, false}, {"huge_command", func(s *Spec) { s.Command = []string{strings.Repeat("a", 513)} }, false},
