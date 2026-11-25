@@ -1,3 +1,14 @@
+# Native single-host operations handoff — PR #336 (2026-11-25)
+
+[PR #336](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336) merged as [293d6c76923830ac64df8b67c6cafcdb02396739](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/293d6c76923830ac64df8b67c6cafcdb02396739).
+
+- All five Native systemd units now require consistent kernel/privilege hardening (ProtectKernel*, ProtectClock, LockPersonality, RestrictSUIDSGID, RestrictRealtime, SystemCallArchitectures=native).
+- Package-layout contract coverage was added; the pull-request Native test/package and real-etcd jobs passed ([run 45540442228](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442228), jobs [138957372510](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442228/job/138957372510) and [138957373145](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442228/job/138957373145)). Kubernetes contracts ([45540442256](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442256)) and Source/Privacy ([45540442304](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442304)) passed.
+- Real-vm and real-PITR were skipped because this was a pull-request check, not an authorized immutable-candidate qualification run. productionReady=false and the decision remains no-go.
+- This hardening does not close Ubuntu installation, exact-candidate Docker/etcd restart, backup/restore, upgrade/rollback, bounded load/soak, signing/provenance, user feedback or maintainer Go/No-Go gates. The existing v0.2.0-dev.4-test.17 artifact set remains mutable and unsigned.
+
+Next handoff: build the next immutable candidate from Main commit 293d6c76923830ac64df8b67c6cafcdb02396739; the current connector cannot create the authorized tag or dispatch workflow_dispatch, so no live-vm claim is made.
+
 # Native single-host release handoff — PR #334 (2026-11-25)
 
 [PR #334](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/334) merged as [fd439384](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fd439384a19b8aa0a170864675bc6f9e9ddead30). The experimental `-test.N` release workflow now carries the bounded Native SPDX 2.3 document and its SHA-256 sidecar in the manifest and checksum set, and the German runbook documents both assets. This remains experimental evidence plumbing: it does not close OS vulnerability completeness, signing/provenance, exact-candidate Ubuntu installation, Docker/etcd workload lifecycle, backup/restore, upgrade/rollback, load/soak, user feedback or maintainer Go/No-Go.
