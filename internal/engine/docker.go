@@ -124,6 +124,11 @@ func (d *Docker) version(ctx context.Context) (string, error) {
 	return d.api, nil
 }
 func (d *Docker) request(ctx context.Context, method, path string, in any, out any) (int, error) {
+	// ClusterID is used both for ownership labels and the container-name prefix.
+	// Fail closed before name() can slice an invalid value or touch Docker.
+	if !model.ValidID(d.ClusterID) {
+		return 0, errors.New("CLUSTER_ID_INVALID")
+	}
 	v, e := d.version(ctx)
 	if e != nil {
 		return 0, e
