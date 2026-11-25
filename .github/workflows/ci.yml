@@ -94,6 +94,14 @@ jobs:
           SOURCE_DATE_EPOCH="$epoch" bash scripts/build-deb.sh
           second_sha="$(sha256sum dist/werftkern_0.2.0~dev4_amd64.deb | awk '{print $1}')"
           test "$first_sha" = "$second_sha"
+          go list -m -json all > evidence/go-modules.json
+          python3 scripts/generate-native-sbom.py \
+            --package dist/werftkern_0.2.0~dev4_amd64.deb \
+            --modules evidence/go-modules.json \
+            --source-commit "$GITHUB_SHA" \
+            --source-date-epoch "$epoch" \
+            --output evidence/native-sbom.spdx.json
+          sha256sum evidence/native-sbom.spdx.json > evidence/native-sbom.sha256
           printf '%s\n' "{\"sourceCommit\":\"$GITHUB_SHA\",\"sourceDateEpoch\":$epoch,\"packageSha256\":\"$second_sha\",\"reproducible\":true}" > evidence/reproducible-build.json
       - name: Smoke-test extracted native package command wrapper
         run: |
@@ -144,6 +152,7 @@ jobs:
             dist/
             evidence/*.jsonl
             evidence/*.json
+            evidence/*.sha256
             evidence/agent-compat/*.txt
             evidence/agent-compat/*.log
   real-etcd:
