@@ -2,6 +2,13 @@
 (() => {
   let token = '', state = null, busy = false, connected = false, connectionError = false;
   const $ = id => document.getElementById(id);
+  const announce = message => {
+    const node = $('operation-status');
+    if (!node) return;
+    node.textContent = '';
+    if (message) window.setTimeout(() => { node.textContent = message; }, 0);
+  };
+  const scrollBehavior = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
   const text = (tag, value, cls) => { const e = document.createElement(tag); e.textContent = value; if (cls) e.className = cls; return e; };
   const errorText = Object.freeze({
     STATE_UNAVAILABLE: 'Der Zustandsdienst ist nicht erreichbar. Prüfe den lokalen Controllerdienst und die etcd-Verbindung.',
@@ -51,8 +58,15 @@
   function healthy(n) { return !!n && !n.revoked && n.healthy && Date.now() - Date.parse(n.lastSeen) < 30000; }
   async function refresh() {
     if (!token || busy) return;
-    try { state = await api('/api/state'); render(); connected = true; $('create-form').querySelector('button[type=submit]').disabled = false; $('connection').textContent = 'Verbunden · Live-Zustand'; if (connectionError) { clearError(); connectionError = false; } $('show-create').disabled = false; }
-    catch (e) { connected = false; connectionError = true; $('create-form').querySelector('button[type=submit]').disabled = true; $('connection').textContent = 'Verbindung unterbrochen'; $('show-create').disabled = true; document.querySelectorAll('.actions button,.node button').forEach(b => b.disabled = true); error(`Status konnte nicht aktualisiert werden. Angezeigte Daten können veraltet sein. ${describeError(e.message)}`, e.message); }
+    const wasConnected = connected;
+    $('workspace').setAttribute('aria-busy', 'true');
+    try {
+      state = await api('/api/state'); render(); connected = true; $('create-form').querySelector('button[type=submit]').disabled = false; $('connection').textContent = 'Verbunden · Live-Zustand'; if (connectionError) { clearError(); connectionError = false; } $('show-create').disabled = false;
+      if (!wasConnected) announce('Dashboard verbunden. Der aktuelle Zustand ist geladen.');
+    } catch (e) {
+      connected = false; connectionError = true; $('create-form').querySelector('button[type=submit]').disabled = true; $('connection').textContent = 'Verbindung unterbrochen'; $('show-create').disabled = true; document.querySelectorAll('.actions button,.node button').forEach(b => b.disabled = true); error(`Status konnte nicht aktualisiert werden. Angezeigte Daten können veraltet sein. ${describeError(e.message)}`, e.message);
+      if (wasConnected) announce('Verbindung zum Controller unterbrochen.');
+    } finally { $('workspace').setAttribute('aria-busy', 'false'); }
   }
   function render() {
     const nodes = Object.values(state.nodes), apps = Object.values(state.workloads).sort((a,b)=>a.name.localeCompare(b.name)), allocations = Object.values(state.allocations);
@@ -72,8 +86,8 @@
       const ready = allocations.filter(a=>a.workloadUid===w.uid && a.desired==='run' && a.phase==='ready' && healthy(state.nodes[a.nodeId])).length;
       actions.className='actions';
       for (const [label, action] of [[w.paused?'Fortsetzen':'Pausieren',w.paused?'resume':'pause'],['Rollback','rollback'],['Löschen','delete']]) {
-        const b=text('button',label,'secondary'); b.disabled=w.deleting||(action==='rollback'&&!(w.history||[]).length);
-        b.addEventListener('click',async()=>{if(!confirm(`${label}: ${w.name}?`))return;busy=true;b.disabled=true;try{await api(`/api/workloads/${w.name}/${action}`,{expectedGeneration:w.generation});}catch(e){error(describeError(e.message),e.message)}finally{busy=false;await refresh()}});actions.append(b);
+        const b=text('button',label,'secondary'); b.disabled=w.deleting||(action==='rollback'&&!(w.history||[]).length); b.setAttribute('aria-label', `${label} ${w.name}`);
+        b.addEventListener('click',async()=>{if(!confirm(`${label}: ${w.name}?`))return;busy=true;b.disabled=true;b.setAttribute('aria-busy','true');announce(`${label} für ${w.name} wird ausgeführt.`);try{await api(`/api/workloads/${w.name}/${action}`,{expectedGeneration:w.generation});announce(`${label} für ${w.name} wurde angenommen.`);}catch(e){error(describeError(e.message),e.message)}finally{busy=false;await refresh()}});actions.append(b);
       }
       row.append(name,status,text('td',`${ready} / ${w.spec.replicas}`),text('td',`r${w.generation}`),actions);$('workload-rows').append(row);
     });
@@ -81,16 +95,16 @@
     nodes.sort((a,b)=>a.name.localeCompare(b.name)).forEach(n=>{
       const card=text('article','','node'), badge=text('span',n.revoked?'Gesperrt':n.drain?'Drain':healthy(n)?'Bereit':'Unbekannt',`status ${healthy(n)?'ready':'blocked'}`);
       card.append(text('h3',n.name),badge,text('p',`${n.address} · ${n.cpuMilli} mCPU · ${n.memoryMiB} MiB planbare Kapazität`),text('code',n.id));
-      const b=text('button',n.drain?'Drain aufheben':'Sicher drainen','secondary');b.addEventListener('click',async()=>{if(!confirm(`Node ${n.name}: ${n.drain?'Drain aufheben':'Drain starten'}?`))return;try{await api(`/api/nodes/${n.id}`,{drain:!n.drain});clearError();await refresh()}catch(e){error(describeError(e.message),e.message)}});card.append(text('p','Kapazität abzüglich Hostreserve.'),b);$('node-grid').append(card);
+      const b=text('button',n.drain?'Drain aufheben':'Sicher drainen','secondary');b.setAttribute('aria-label', `${n.drain?'Drain aufheben':'Sicher drainen'} ${n.name}`);b.addEventListener('click',async()=>{if(!confirm(`Node ${n.name}: ${n.drain?'Drain aufheben':'Drain starten'}?`))return;try{await api(`/api/nodes/${n.id}`,{drain:!n.drain});clearError();announce(`Node ${n.name} wird aktualisiert.`);await refresh()}catch(e){error(describeError(e.message),e.message)}});card.append(text('p','Kapazität abzüglich Hostreserve.'),b);$('node-grid').append(card);
     });
     $('events').replaceChildren();(state.events||[]).slice(-12).reverse().forEach(e=>{const r=text('div','','event');r.append(text('time',new Date(e.at).toLocaleString('de-DE')),text('span',e.action),text('code',e.target));$('events').append(r)});
     $('updated').textContent=`Aktualisiert: ${new Date().toLocaleTimeString('de-DE')}`;
   }
   $('login-form').addEventListener('submit',async e=>{e.preventDefault();try{const r=await fetch('/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:$('login-code').value}),credentials:'omit',cache:'no-store'});if(!r.ok)throw new Error('Anmeldecode ungültig oder zu viele Versuche.');token=(await r.json()).token;$('login-code').value='';$('login').hidden=true;$('login-error').hidden=true;$('workspace').hidden=false;$('refresh').disabled=false;await refresh()}catch(e){$('login-error').textContent=e.message;$('login-error').hidden=false}});
   $('refresh').addEventListener('click',refresh);
-  $('show-create').addEventListener('click',()=>{$('create-panel').hidden=false;$('create-panel').scrollIntoView({behavior:'smooth',block:'start'})});
-  $('close-create').addEventListener('click',()=>{$('create-panel').hidden=true});
+  $('show-create').addEventListener('click',()=>{$('create-panel').hidden=false;$('create-panel').scrollIntoView({behavior:scrollBehavior(),block:'start'});$('create-form').querySelector('input').focus();announce('Formular zum Ausrollen einer Anwendung geöffnet.')});
+  $('close-create').addEventListener('click',()=>{$('create-panel').hidden=true;$('show-create').focus();announce('Formular geschlossen.')});
   $('create-form').addEventListener('submit',async e=>{e.preventDefault();if(!state || !connected)return;const data=new FormData(e.target);const name=String(data.get('name'));const existing=state.workloads[name];const req={apiVersion:'werftkern/v1alpha1',name,expectedGeneration:existing?existing.generation:0,spec:{...(existing?.spec||{}),image:String(data.get('image')),replicas:Number(data.get('replicas')),cpuMilli:Number(data.get('cpuMilli')),memoryMiB:Number(data.get('memoryMiB')),port:Number(data.get('port')),readinessPath:String(data.get('readinessPath'))}};
-    busy=true;const button=e.target.querySelector('button[type=submit]');button.disabled=true;try{await api('/api/workloads',req);clearError();$('create-panel').hidden=true}catch(e){error(describeError(e.message),e.message)}finally{busy=false;button.disabled=false;await refresh()}});
+    busy=true;const button=e.target.querySelector('button[type=submit]');button.disabled=true;announce(`Anwendung ${name} wird ausgerollt.`);try{await api('/api/workloads',req);clearError();$('create-panel').hidden=true;$('show-create').focus();announce(`Anwendung ${name} wurde zur Bereitstellung eingereicht.`)}catch(e){error(describeError(e.message),e.message);announce(`Ausrollen von ${name} fehlgeschlagen.`)}finally{busy=false;button.disabled=false;await refresh()}});
   setInterval(refresh,3000);
 })();
