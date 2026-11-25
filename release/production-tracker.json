@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T12:06:00Z",
+  "updatedAt": "2026-11-25T13:58:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "3c485fb92ee4a5c8dc017aec555e5adcb873d8e7",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/358",
-    "summary": "PR #358 merged as 3c485fb92ee4a5c8dc017aec555e5adcb873d8e7. Idempotency receipts now expire before generic replay checks, and the Secret API prunes its direct receipt lookup before replay validation, so keys older than the bounded 24-hour window can be reused instead of remaining permanently occupied. Regression coverage is in internal/model/model_test.go. PR checks: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45609603951 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45609604084, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45609603974. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "6d766d44b6c8366e89d812b50ad9006b28797008",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/360",
+    "summary": "PR #360 merged as 6d766d44b6c8366e89d812b50ad9006b28797008. Added control/API regression coverage for expired Secret idempotency receipts: after a receipt is older than the bounded 24-hour replay window, the same key can be reused for the next expected secret version instead of being treated as a stale replay conflict. PR checks: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45617899164 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45617899253, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45617899229. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -851,20 +851,20 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "3c485fb92ee4a5c8dc017aec555e5adcb873d8e7",
-      "codeCommit": "3c485fb92ee4a5c8dc017aec555e5adcb873d8e7",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/358",
-      "summary": "PR #358 merged as 3c485fb92ee4a5c8dc017aec555e5adcb873d8e7. Idempotency receipts now expire before generic replay checks, and the Secret API prunes its direct receipt lookup before replay validation, so keys older than the bounded 24-hour window can be reused instead of remaining permanently occupied. Regression coverage is in internal/model/model_test.go. PR checks: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45609603951 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45609604084, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45609603974. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "6d766d44b6c8366e89d812b50ad9006b28797008",
+      "codeCommit": "6d766d44b6c8366e89d812b50ad9006b28797008",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/360",
+      "summary": "PR #360 merged as 6d766d44b6c8366e89d812b50ad9006b28797008. Added control/API regression coverage for expired Secret idempotency receipts: after a receipt is older than the bounded 24-hour replay window, the same key can be reused for the next expected secret version instead of being treated as a stale replay conflict. PR checks: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45617899164 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45617899253, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45617899229. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/358",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/359"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/360",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/361"
     },
-    "commit": "3c485fb92ee4a5c8dc017aec555e5adcb873d8e7",
-    "codeCommit": "3c485fb92ee4a5c8dc017aec555e5adcb873d8e7",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/358",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/359",
-    "summary": "PR #358 merged as 3c485fb92ee4a5c8dc017aec555e5adcb873d8e7. Idempotency receipts now expire before generic replay checks, and the Secret API prunes its direct receipt lookup before replay validation, so keys older than the bounded 24-hour window can be reused instead of remaining permanently occupied. Regression coverage is in internal/model/model_test.go. PR checks: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45609603951 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45609604084, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45609603974. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/358",
+    "commit": "6d766d44b6c8366e89d812b50ad9006b28797008",
+    "codeCommit": "6d766d44b6c8366e89d812b50ad9006b28797008",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/360",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/361",
+    "summary": "PR #360 merged as 6d766d44b6c8366e89d812b50ad9006b28797008. Added control/API regression coverage for expired Secret idempotency receipts: after a receipt is older than the bounded 24-hour replay window, the same key can be reused for the next expected secret version instead of being treated as a stale replay conflict. PR checks: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45617899164 (compile, race, static, Go vulnerability, package/CLI smoke and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45617899253, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45617899229. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/360",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
