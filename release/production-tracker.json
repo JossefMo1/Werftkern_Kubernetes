@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T08:06:00Z",
+  "updatedAt": "2026-11-25T08:07:30Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -804,7 +804,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/345",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/347",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -844,7 +844,7 @@
     "commit": "c8d06d30dc0b8bcf40f7b93892efe3984afeea67",
     "codeCommit": "c8d06d30dc0b8bcf40f7b93892efe3984afeea67",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/347",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/337",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/348",
     "summary": "PR #347 merged as c8d06d30dc0b8bcf40f7b93892efe3984afeea67. The Dashboard health view now rejects invalid or more-than-5-second future node heartbeats, matching the Native Node.Ready scheduling tolerance; previously a future timestamp produced a negative age and was shown as healthy although the controller would not schedule that node. Browser fixture coverage adds a 6-second future-heartbeat regression and recovery to a current heartbeat. PR checks passed: Native 45572381574 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45572381543, Source/Privacy 45572381529. Post-merge Main checks passed: Native 45572767523 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45572767551, and Source/Privacy 45572767538. This is CI evidence only; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/347",
     "nextCandidateRequired": true
