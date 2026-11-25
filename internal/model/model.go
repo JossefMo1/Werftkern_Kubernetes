@@ -331,20 +331,27 @@ func (s *State) Event(action, target string, now time.Time) {
 		s.Events = append([]Event{}, s.Events[len(s.Events)-160:]...)
 	}
 }
+// ExpireReceipts removes idempotency receipts older than the bounded
+// replay window. Callers that inspect Receipts directly (for example the
+// secret API) must invoke this before replay checks as well.
+func (s *State) ExpireReceipts(now time.Time) {
+	for k, r := range s.Receipts {
+		if now.Sub(r.At) > 24*time.Hour {
+			delete(s.Receipts, k)
+		}
+	}
+}
+
 func (s *State) Request(id, hash string, now time.Time) (*Receipt, error) {
 	if !ValidRequestID(id) {
 		return nil, errors.New("IDEMPOTENCY_KEY_REQUIRED")
 	}
+	s.ExpireReceipts(now)
 	if r, ok := s.Receipts[id]; ok {
 		if r.Hash != hash {
 			return nil, errors.New("IDEMPOTENCY_CONFLICT")
 		}
 		return &r, nil
-	}
-	for k, r := range s.Receipts {
-		if now.Sub(r.At) > 24*time.Hour {
-			delete(s.Receipts, k)
-		}
 	}
 	if len(s.Receipts) >= 256 {
 		return nil, ErrCapacity
