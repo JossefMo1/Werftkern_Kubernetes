@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T03:42:00Z",
+  "updatedAt": "2026-11-25T04:06:49.735Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "293d6c76923830ac64df8b67c6cafcdb02396739",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
-    "summary": "PR #336 merged as 293d6c76923830ac64df8b67c6cafcdb02396739; PR #337 merged as 0c26c3cdae9cbe51086de85b7cae71cbf63c85ff to synchronize tracker/status. The post-merge Main checks for the hardened candidate passed: Native test/package and real-etcd (run 45541303215, jobs 138960205766 and 138960206134), Kubernetes contracts (45541303232) and Source/Privacy (45541303259). Real-vm and real-PITR were skipped; private-alpha publisher run 45541619379 created no release because the repository is public. The artifact candidate remains mutable/unsigned and productionReady=false with decision no-go."
+    "commit": "de52c82d69f796e826e7d754d046e09568e9a2de",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/339",
+    "summary": "PR #339 merged as de52c82d69f796e826e7d754d046e09568e9a2de. Dashboard UX now announces connection and mutation state through a polite live region, adds contextual labels to workload/node actions, adds table caption/header scopes, restores focus after form close/submit, and honors prefers-reduced-motion. PR Native run 45543659980 (test and real-etcd success), Kubernetes contracts 45543659774 and Source/Privacy 45543659723 passed; real-vm/PITR were skipped. Local node/HTML/Python syntax checks passed; local Chromium was blocked by TargetClosedError, so no browser pass is claimed. The existing development artifact remains mutable/unsigned and productionReady=false with decision no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes after PR #336.",
-      "The exact candidate must be rebuilt from current Main commit 293d6c76923830ac64df8b67c6cafcdb02396739; the test-release workflow only prepares experimental assets and does not qualify production.",
+      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes after PR #339.",
+      "The exact candidate must be rebuilt from current Main commit de52c82d69f796e826e7d754d046e09568e9a2de; the test-release workflow only prepares experimental assets and does not qualify production.",
       "PR and post-merge Main checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -53,7 +53,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main commit 293d6c76923830ac64df8b67c6cafcdb02396739, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from current Main commit de52c82d69f796e826e7d754d046e09568e9a2de, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -510,22 +510,27 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412649",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412758",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412880",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/334"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/334",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/339",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543659980",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543659774",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543659723",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/de52c82d69f796e826e7d754d046e09568e9a2de",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543977277",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543978665",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543977135",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45544027831"
       ],
       "blockers": [
         "The experimental test-release workflow now packages bounded SBOM evidence, but no immutable production candidate has been rebuilt or qualified.",
         "The released development artifacts remain unsigned; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Build the next immutable candidate from merged Main commit 545cf797b30958d1d60e8cf5177ee13c37566e00; CI now proves two package builds have the same SHA-256 under SOURCE_DATE_EPOCH, but CI-only checks do not close the live Ubuntu installation gate.",
+      "nextStep": "Build the next immutable candidate from merged Main commit de52c82d69f796e826e7d754d046e09568e9a2de; CI-only checks and the accessibility fixture contract do not close the live Ubuntu installation gate.",
       "lastEvidence": [
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442228",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442256",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442304",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303232",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303259",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541619379"
+        "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/de52c82d69f796e826e7d754d046e09568e9a2de",
+        "Post-merge Main Native test: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543977277/job/138968997492",
+        "Post-merge Main real-etcd passed (not Ubuntu installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543977277/job/138968996914",
+        "Post-merge Main real-vm and real-PITR were skipped; publisher created no public release."
       ]
     },
     {
@@ -687,15 +692,16 @@
         "Current Main real-etcd passed (not installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45523787625/job/138901958457"
       ],
       "blockers": [
-        "Workflow #1662 real-vm evidence is bound to prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903; it is not evidence for current candidate-bearing commit 28d4b139514e46fbc787e64acf0552d17fc03b83.",
-        "The exact immutable candidate must be rebuilt from current scoped Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83.",
-        "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate."
+        "The exact immutable candidate must be rebuilt from current scoped Main commit de52c82d69f796e826e7d754d046e09568e9a2de; the published test.17 artifact is stale.",
+        "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate; Main real-vm and real-PITR jobs for PR #339 were skipped.",
+        "The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; this blocker is recorded once and is not retried."
       ],
-      "nextStep": "Build the next immutable candidate from 545cf797b30958d1d60e8cf5177ee13c37566e00, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
+      "nextStep": "Build the next immutable candidate from de52c82d69f796e826e7d754d046e09568e9a2de, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
       "lastEvidence": [
-        "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/293d6c76923830ac64df8b67c6cafcdb02396739",
-        "Post-merge Main real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215/job/138961198396",
-        "Post-merge Main real-etcd passed (not Ubuntu installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215/job/138960206134"
+        "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/de52c82d69f796e826e7d754d046e09568e9a2de",
+        "Post-merge Main real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543977277/job/138969934478",
+        "Post-merge Main real-etcd passed (not Ubuntu installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45543977277/job/138968996914",
+        "Private alpha publisher skipped release creation for public repository: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45544027831"
       ]
     },
     {
@@ -747,7 +753,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/337",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/339",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -777,19 +783,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "293d6c76923830ac64df8b67c6cafcdb02396739",
-      "codeCommit": "293d6c76923830ac64df8b67c6cafcdb02396739",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
-      "summary": "PR #336 code merged as 293d6c76923830ac64df8b67c6cafcdb02396739; PR #337 documentation merged as 0c26c3cdae9cbe51086de85b7cae71cbf63c85ff. Post-merge Main Native test/package and real-etcd passed (45541303215), Kubernetes contracts passed (45541303232), Source/Privacy passed (45541303259); real-vm/PITR were skipped. The private-alpha publisher (45541619379) correctly created no release because the repository is public. Rebuild a fresh immutable candidate from the code commit 293d6c76923830ac64df8b67c6cafcdb02396739; productionReady remains false and decision no-go.",
+      "commit": "de52c82d69f796e826e7d754d046e09568e9a2de",
+      "codeCommit": "de52c82d69f796e826e7d754d046e09568e9a2de",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/339",
+      "summary": "PR #339 code merged as de52c82d69f796e826e7d754d046e09568e9a2de. Post-merge Main Native run 45543977277 passed (test job 138968997492 and real-etcd job 138968996914); Kubernetes contracts run 45543978665 passed; Source/Privacy audit run 45543977135 passed. Main real-vm job 138969934478 and real-PITR job 138969935044 were skipped. Private-alpha publisher run 45544027831 completed successfully but skipped release creation because the repository is public. Rebuild a fresh immutable candidate from de52c82d69f796e826e7d754d046e09568e9a2de; productionReady remains false and decision no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/337"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/339"
     },
-    "commit": "293d6c76923830ac64df8b67c6cafcdb02396739",
-    "codeCommit": "293d6c76923830ac64df8b67c6cafcdb02396739",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
+    "commit": "de52c82d69f796e826e7d754d046e09568e9a2de",
+    "codeCommit": "de52c82d69f796e826e7d754d046e09568e9a2de",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/339",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/337",
-    "summary": "PR #336 merged as 293d6c76923830ac64df8b67c6cafcdb02396739; all five Native systemd units now carry consistent kernel/privilege hardening and package-layout tests enforce it. PR and post-merge Main checks passed for source/package, real-etcd, Kubernetes contracts and Source/Privacy (Main Native run 45541303215; Kubernetes 45541303232; Source/Privacy 45541303259). Real-vm/PITR were skipped. The private-alpha publisher run 45541619379 created no release because this repository is public. The existing v0.2.0-dev.4-test.17 artifact set remains mutable/unsigned; a fresh immutable candidate from 293d6c76923830ac64df8b67c6cafcdb02396739 is required. productionReady=false with decision no-go; Ubuntu installation, restart/recovery, backup/restore, upgrade/rollback, load/soak, signing/provenance and maintainer approval remain open.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
+    "summary": "PR #339 merged as de52c82d69f796e826e7d754d046e09568e9a2de. Dashboard UX now announces connection and mutation state through a polite live region, adds contextual labels to workload/node actions, adds table caption/header scopes, restores focus after form close/submit, and honors prefers-reduced-motion. PR Native run 45543659980 (test and real-etcd success), Kubernetes contracts 45543659774 and Source/Privacy 45543659723 passed; real-vm/PITR were skipped. Local node/HTML/Python syntax checks passed; local Chromium was blocked by TargetClosedError, so no browser pass is claimed. The existing development artifact remains mutable/unsigned and productionReady=false with decision no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/339",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
