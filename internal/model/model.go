@@ -270,6 +270,36 @@ func (s *State) Validate() error {
 			return errors.New("VOLUME_INVENTORY_INVALID")
 		}
 	}
+	// Index maps are part of the persisted aggregate contract. Reject a record
+	// whose map key does not match its identity before reconciliation or backup.
+	for id, g := range s.Gateways {
+		if g == nil || g.ID != id {
+			return errors.New("GATEWAY_INDEX_INVALID")
+		}
+	}
+	for name, w := range s.Workloads {
+		if w == nil || w.Name != name {
+			return errors.New("WORKLOAD_INDEX_INVALID")
+		}
+	}
+	for id, n := range s.Nodes {
+		if n == nil || n.ID != id {
+			return errors.New("NODE_INDEX_INVALID")
+		}
+	}
+	for id, a := range s.Allocations {
+		if a == nil || a.ID != id {
+			return errors.New("ALLOCATION_INDEX_INVALID")
+		}
+	}
+	for id, r := range s.Receipts {
+		if r.ID != id {
+			return errors.New("RECEIPT_INDEX_INVALID")
+		}
+	}
+	if len(s.Events) > 160 {
+		return errors.New("EVENT_LOG_LIMIT")
+	}
 	if len(s.Nodes) > MaxNodes || len(s.Workloads) > MaxWorkloads || len(s.Allocations) > MaxAllocations || len(s.Receipts) > 256 {
 		return ErrCapacity
 	}
