@@ -165,6 +165,23 @@ func TestReceiptRetentionAndCapacity(t *testing.T) {
 		t.Fatal(e)
 	}
 }
+func TestExpiredReceiptKeyCanBeReused(t *testing.T) {
+	now := time.Now()
+	s := NewState(ID(), "test", now)
+	key := ID()
+	oldHash := strings.Repeat("a", 64)
+	s.Receipts[key] = Receipt{ID: key, Hash: oldHash, WorkloadUID: ID(), Generation: 1, At: now}
+
+	q := ApplyRequest{APIVersion: APIVersion, Name: "demo", Spec: validSpec()}
+	r, err := Apply(s, q, key, now.Add(25*time.Hour))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r.ID != key || r.Hash == oldHash || s.Receipts[key].Hash != r.Hash {
+		t.Fatalf("expired receipt was not replaced: %+v", r)
+	}
+}
+
 func TestBoundedEventsAndState(t *testing.T) {
 	s := NewState(ID(), "test", time.Now())
 	for i := 0; i < 1000; i++ {
