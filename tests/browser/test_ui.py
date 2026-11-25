@@ -7,7 +7,7 @@ from playwright.sync_api import sync_playwright
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 assets=ROOT/'internal/dashboard/assets';out=ROOT/'evidence';out.mkdir(exist_ok=True)
 fixture=r'''
-window.fixtureRequests=[];
+window.fixtureRequests=[];window.fixtureStateError=false;window.fixtureMutationError=false;
 window.fixtureState={name:'UI-Testcluster — synthetische Daten',nodes:{aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:{id:'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',name:'worker-1',address:'10.10.0.11',healthy:true,lastSeen:new Date().toISOString(),cpuMilli:1750,memoryMiB:3584,drain:false,revoked:false}},workloads:{},allocations:{},events:[]};
 // about:blank has no secure-origin randomUUID. This fixture only supplies test IDs;
 // the shipped application uses the browser's native cryptographic implementation.
@@ -15,8 +15,9 @@ let fixtureSeq=0;if(!crypto.randomUUID)Object.defineProperty(crypto,'randomUUID'
 window.fetch=async(path,options={})=>{
  const data=options.body?JSON.parse(options.body):null;
  if(path==='/session')return new Response(JSON.stringify({token:'browser-test-token'}),{status:data.code==='ui-test-code'?200:403});
- if(path==='/api/state')return new Response(JSON.stringify(window.fixtureState),{status:200});
+ if(path==='/api/state'){if(window.fixtureStateError)return new Response(JSON.stringify({code:'STATE_UNAVAILABLE'}),{status:503,headers:{'Content-Type':'application/json'}});return new Response(JSON.stringify(window.fixtureState),{status:200});}
  window.fixtureRequests.push({path,payload:data,hasIdempotencyKey:!!options.headers['Idempotency-Key']});
+ if(path==='/api/workloads'&&window.fixtureMutationError)return new Response(JSON.stringify({code:'VERSION_CONFLICT'}),{status:409,headers:{'Content-Type':'application/json'}});
  if(path==='/api/workloads')window.fixtureState.workloads[data.name]={uid:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',name:data.name,generation:1,spec:data.spec,phase:'pending',history:[],deleting:false};
  return new Response(JSON.stringify({accepted:true}),{status:202});
 };
@@ -38,9 +39,14 @@ with sync_playwright() as p:
  page.fill('#login-code','wrong');page.click('#login-form button');page.wait_for_selector('#login-error:not([hidden])');checks.append('invalid-login-feedback')
  page.fill('#login-code','ui-test-code');page.click('#login-form button');page.wait_for_selector('#workspace:not([hidden])')
  page.wait_for_function("document.querySelector('#metric-nodes').textContent==='1 / 1'");checks.append('node-state-rendered')
+ assert page.locator('#connection').get_attribute('aria-live')=='polite';assert page.locator('#error').get_attribute('aria-atomic')=='true';checks.append('live-status-announcements')
+ page.evaluate("window.fixtureStateError=true");page.click('#refresh');page.wait_for_function("document.querySelector('#connection').textContent==='Verbindung unterbrochen'");assert 'Zustandsdienst' in page.locator('#error').text_content();assert page.locator('#error').get_attribute('data-error-code')=='STATE_UNAVAILABLE';checks.append('bounded-state-error-feedback')
+ page.evaluate("window.fixtureStateError=false");page.click('#refresh');page.wait_for_function("document.querySelector('#connection').textContent.includes('Verbunden')")
  assert page.locator('#empty-apps').is_visible();checks.append('empty-state')
- page.click('#show-create');page.fill('[name=name]','shop');page.fill('[name=image]','sha256:'+'c'*64);page.click('#create-form button[type=submit]')
- page.wait_for_function("document.querySelector('#workload-rows').textContent.includes('shop')");checks.append('workload-form-post-and-render')
+ page.evaluate("window.fixtureMutationError=true");page.click('#show-create');page.fill('[name=name]','shop');page.fill('[name=image]','sha256:'+'c'*64);page.click('#create-form button[type=submit]')
+ page.wait_for_function("document.querySelector('#error').getAttribute('data-error-code')==='VERSION_CONFLICT'");assert 'Zustand hat sich geändert' in page.locator('#error').text_content();checks.append('bounded-mutation-error-feedback')
+ page.evaluate("window.fixtureMutationError=false");page.click('#create-form button[type=submit]')
+ page.wait_for_function("document.querySelector('#workload-rows').textContent.includes('shop')");assert page.locator('#error').is_hidden();checks.append('workload-form-post-and-render-and-clears-error')
  request=page.evaluate('window.fixtureRequests.at(-1)');assert request['hasIdempotencyKey'] and request['payload']['expectedGeneration']==0;checks.append('version-and-idempotency-fields')
  assert page.get_by_role('button',name='Rollback',exact=True).is_disabled();checks.append('rollback-disabled-without-history')
  page.evaluate("window.fixtureState.workloads.shop.spec.secrets=[{name:'db',version:2}];window.fixtureState.workloads.shop.spec.command=['/app'];window.fixtureState.workloads.shop.spec.node='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';window.fixtureState.workloads.shop.spec.replacementPolicy='duplicate-safe';window.fixtureState.workloads.shop.generation=3")

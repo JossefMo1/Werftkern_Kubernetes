@@ -3,19 +3,56 @@
   let token = '', state = null, busy = false, connected = false, connectionError = false;
   const $ = id => document.getElementById(id);
   const text = (tag, value, cls) => { const e = document.createElement(tag); e.textContent = value; if (cls) e.className = cls; return e; };
-  const error = message => { $('error').textContent = message; $('error').hidden = false; };
+  const errorText = Object.freeze({
+    STATE_UNAVAILABLE: 'Der Zustandsdienst ist nicht erreichbar. Prüfe den lokalen Controllerdienst und die etcd-Verbindung.',
+    CONTROL_PLANE_UNREACHABLE: 'Der Controller ist nicht erreichbar. Prüfe den lokalen Dienst und die etcd-Verbindung.',
+    LOGIN_REQUIRED: 'Die Dashboard-Anmeldung ist abgelaufen. Lade die Seite neu und melde dich erneut an.',
+    ADMIN_IDENTITY_REQUIRED: 'Der Controller hat die Admin-Anmeldung abgelehnt. Starte eine neue Dashboard-Sitzung.',
+    VERSION_CONFLICT: 'Der Zustand hat sich geändert. Aktualisiere die Ansicht und wiederhole die Aktion.',
+    IDEMPOTENCY_CONFLICT: 'Die Anfrage-ID wurde bereits mit anderen Daten verwendet. Prüfe den Vorgang, statt ihn zu wiederholen.',
+    NOT_FOUND: 'Das angeforderte Objekt existiert nicht mehr. Aktualisiere die Ansicht.',
+    ACTION_INVALID: 'Die angeforderte Aktion ist für dieses Objekt nicht zulässig.',
+    MAINTENANCE_BLOCKS_NEW_MUTATIONS: 'Der Controller führt gerade Wartung aus. Wiederhole die Änderung nach Abschluss.',
+    NODE_NOT_AUTHORIZED: 'Der Node ist nicht mehr autorisiert. Prüfe Zertifikat und Node-Status.',
+    JSON_REQUIRED: 'Die Anfrage war kein gültiges JSON.',
+    INVALID_OR_OVERSIZED_JSON: 'Die Anfrage ist ungültig oder zu groß.'
+  });
+  const describeError = code => {
+    const normalized = String(code || 'UNKNOWN_ERROR').trim().slice(0, 80);
+    return (errorText[normalized] || 'Der Controller hat die Aktion abgelehnt.') + ` (Fehlercode: ${normalized})`;
+  };
+  const error = (message, code) => {
+    const node = $('error'), normalized = String(code || 'UNKNOWN_ERROR').trim().slice(0, 80);
+    node.dataset.errorCode = normalized;
+    node.textContent = message;
+    node.hidden = false;
+  };
+  const clearError = () => {
+    const node = $('error');
+    node.hidden = true;
+    delete node.dataset.errorCode;
+  };
   async function api(path, body) {
     const headers = {Authorization: `Bearer ${token}`};
     if (body !== undefined) { headers['Content-Type'] = 'application/json'; headers['Idempotency-Key'] = crypto.randomUUID().replaceAll('-', ''); }
     const response = await fetch(path, {method: body === undefined ? 'GET' : 'POST', headers, body: body === undefined ? undefined : JSON.stringify(body), cache: 'no-store', credentials: 'omit'});
-    if (!response.ok) { const raw = await response.text(); let message = raw; try { message = JSON.parse(raw).code || raw; } catch {} throw new Error(message); }
+    if (!response.ok) {
+      const raw = await response.text();
+      let code = `HTTP_${response.status}`;
+      try {
+        const problem = JSON.parse(raw);
+        if (problem && typeof problem.code === 'string' && problem.code.trim()) code = problem.code;
+        else if (problem && typeof problem.title === 'string' && problem.title.trim()) code = problem.title;
+      } catch {}
+      throw new Error(code.trim().slice(0, 80));
+    }
     return response.json();
   }
   function healthy(n) { return !!n && !n.revoked && n.healthy && Date.now() - Date.parse(n.lastSeen) < 30000; }
   async function refresh() {
     if (!token || busy) return;
-    try { state = await api('/api/state'); render(); connected = true; $('create-form').querySelector('button[type=submit]').disabled = false; $('connection').textContent = 'Verbunden · Live-Zustand'; if (connectionError) { $('error').hidden = true; connectionError = false; } $('show-create').disabled = false; }
-    catch (e) { connected = false; connectionError = true; $('create-form').querySelector('button[type=submit]').disabled = true; $('connection').textContent = 'Verbindung unterbrochen'; $('show-create').disabled = true; document.querySelectorAll('.actions button,.node button').forEach(b => b.disabled = true); error(`Status konnte nicht aktualisiert werden. Angezeigte Daten können veraltet sein. ${e.message}`); }
+    try { state = await api('/api/state'); render(); connected = true; $('create-form').querySelector('button[type=submit]').disabled = false; $('connection').textContent = 'Verbunden · Live-Zustand'; if (connectionError) { clearError(); connectionError = false; } $('show-create').disabled = false; }
+    catch (e) { connected = false; connectionError = true; $('create-form').querySelector('button[type=submit]').disabled = true; $('connection').textContent = 'Verbindung unterbrochen'; $('show-create').disabled = true; document.querySelectorAll('.actions button,.node button').forEach(b => b.disabled = true); error(`Status konnte nicht aktualisiert werden. Angezeigte Daten können veraltet sein. ${describeError(e.message)}`, e.message); }
   }
   function render() {
     const nodes = Object.values(state.nodes), apps = Object.values(state.workloads).sort((a,b)=>a.name.localeCompare(b.name)), allocations = Object.values(state.allocations);
@@ -36,7 +73,7 @@
       actions.className='actions';
       for (const [label, action] of [[w.paused?'Fortsetzen':'Pausieren',w.paused?'resume':'pause'],['Rollback','rollback'],['Löschen','delete']]) {
         const b=text('button',label,'secondary'); b.disabled=w.deleting||(action==='rollback'&&!(w.history||[]).length);
-        b.addEventListener('click',async()=>{if(!confirm(`${label}: ${w.name}?`))return;busy=true;b.disabled=true;try{await api(`/api/workloads/${w.name}/${action}`,{expectedGeneration:w.generation});}catch(e){error(e.message)}finally{busy=false;await refresh()}});actions.append(b);
+        b.addEventListener('click',async()=>{if(!confirm(`${label}: ${w.name}?`))return;busy=true;b.disabled=true;try{await api(`/api/workloads/${w.name}/${action}`,{expectedGeneration:w.generation});}catch(e){error(describeError(e.message),e.message)}finally{busy=false;await refresh()}});actions.append(b);
       }
       row.append(name,status,text('td',`${ready} / ${w.spec.replicas}`),text('td',`r${w.generation}`),actions);$('workload-rows').append(row);
     });
@@ -44,7 +81,7 @@
     nodes.sort((a,b)=>a.name.localeCompare(b.name)).forEach(n=>{
       const card=text('article','','node'), badge=text('span',n.revoked?'Gesperrt':n.drain?'Drain':healthy(n)?'Bereit':'Unbekannt',`status ${healthy(n)?'ready':'blocked'}`);
       card.append(text('h3',n.name),badge,text('p',`${n.address} · ${n.cpuMilli} mCPU · ${n.memoryMiB} MiB planbare Kapazität`),text('code',n.id));
-      const b=text('button',n.drain?'Drain aufheben':'Sicher drainen','secondary');b.addEventListener('click',async()=>{if(!confirm(`Node ${n.name}: ${n.drain?'Drain aufheben':'Drain starten'}?`))return;try{await api(`/api/nodes/${n.id}`,{drain:!n.drain});await refresh()}catch(e){error(e.message)}});card.append(text('p','Kapazität abzüglich Hostreserve.'),b);$('node-grid').append(card);
+      const b=text('button',n.drain?'Drain aufheben':'Sicher drainen','secondary');b.addEventListener('click',async()=>{if(!confirm(`Node ${n.name}: ${n.drain?'Drain aufheben':'Drain starten'}?`))return;try{await api(`/api/nodes/${n.id}`,{drain:!n.drain});clearError();await refresh()}catch(e){error(describeError(e.message),e.message)}});card.append(text('p','Kapazität abzüglich Hostreserve.'),b);$('node-grid').append(card);
     });
     $('events').replaceChildren();(state.events||[]).slice(-12).reverse().forEach(e=>{const r=text('div','','event');r.append(text('time',new Date(e.at).toLocaleString('de-DE')),text('span',e.action),text('code',e.target));$('events').append(r)});
     $('updated').textContent=`Aktualisiert: ${new Date().toLocaleTimeString('de-DE')}`;
@@ -54,6 +91,6 @@
   $('show-create').addEventListener('click',()=>{$('create-panel').hidden=false;$('create-panel').scrollIntoView({behavior:'smooth',block:'start'})});
   $('close-create').addEventListener('click',()=>{$('create-panel').hidden=true});
   $('create-form').addEventListener('submit',async e=>{e.preventDefault();if(!state || !connected)return;const data=new FormData(e.target);const name=String(data.get('name'));const existing=state.workloads[name];const req={apiVersion:'werftkern/v1alpha1',name,expectedGeneration:existing?existing.generation:0,spec:{...(existing?.spec||{}),image:String(data.get('image')),replicas:Number(data.get('replicas')),cpuMilli:Number(data.get('cpuMilli')),memoryMiB:Number(data.get('memoryMiB')),port:Number(data.get('port')),readinessPath:String(data.get('readinessPath'))}};
-    busy=true;const button=e.target.querySelector('button[type=submit]');button.disabled=true;try{await api('/api/workloads',req);$('create-panel').hidden=true}catch(e){error(e.message)}finally{busy=false;button.disabled=false;await refresh()}});
+    busy=true;const button=e.target.querySelector('button[type=submit]');button.disabled=true;try{await api('/api/workloads',req);clearError();$('create-panel').hidden=true}catch(e){error(describeError(e.message),e.message)}finally{busy=false;button.disabled=false;await refresh()}});
   setInterval(refresh,3000);
 })();
