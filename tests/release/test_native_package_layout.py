@@ -22,6 +22,17 @@ NATIVE_SERVICES = (
     "werftkern-control.service",
     "werftkern-etcd.service",
 )
+SYSTEMD_HARDENING = (
+    "ProtectKernelTunables=true",
+    "ProtectKernelModules=true",
+    "ProtectControlGroups=true",
+    "ProtectKernelLogs=true",
+    "ProtectClock=true",
+    "LockPersonality=true",
+    "RestrictSUIDSGID=true",
+    "RestrictRealtime=true",
+    "SystemCallArchitectures=native",
+)
 
 
 class NativePackageLayoutTests(unittest.TestCase):
@@ -38,6 +49,14 @@ class NativePackageLayoutTests(unittest.TestCase):
         for service in NATIVE_SERVICES:
             self.assertIn(service, content)
         self.assertIn("Managed containers and all persisted keys/data are retained", content)
+
+    def test_native_services_keep_kernel_and_privilege_hardening(self):
+        root = pathlib.Path(__file__).parents[2] / "packaging" / "systemd"
+        for service in NATIVE_SERVICES:
+            content = (root / service).read_text()
+            for directive in SYSTEMD_HARDENING:
+                with self.subTest(service=service, directive=directive):
+                    self.assertIn(directive, content)
 
     def test_remove_scripts_never_delete_persisted_state_or_workloads(self):
         for script in (PRERM, POSTRM):
