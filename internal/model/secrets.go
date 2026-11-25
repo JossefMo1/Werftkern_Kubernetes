@@ -113,6 +113,7 @@ func (s *State) ValidateInventory() error {
 		}
 	}
 	uids := map[string]bool{}
+	workloadByUID := map[string]*Workload{}
 	names := map[string]bool{}
 	addrs := map[string]bool{}
 	for name, w := range s.Workloads {
@@ -120,6 +121,7 @@ func (s *State) ValidateInventory() error {
 			return errors.New("WORKLOAD_RECORD_INVALID")
 		}
 		uids[w.UID] = true
+		workloadByUID[w.UID] = w
 		if e := w.Spec.Validate(); e != nil {
 			return e
 		}
@@ -146,7 +148,8 @@ func (s *State) ValidateInventory() error {
 		addrs[n.Address] = true
 	}
 	for id, a := range s.Allocations {
-		if a == nil || id != a.ID || !ValidID(id) || s.Nodes[a.NodeID] == nil || !uids[a.WorkloadUID] || a.Generation < 1 || (a.Desired != "run" && a.Desired != "stop") {
+		w := workloadByUID[a.WorkloadUID]
+		if a == nil || id != a.ID || !ValidID(id) || s.Nodes[a.NodeID] == nil || w == nil || a.Name != w.Name || a.Generation < 1 || a.Generation > w.Generation || (a.Desired != "run" && a.Desired != "stop") {
 			return errors.New("ALLOCATION_RECORD_INVALID")
 		}
 		if e := a.Spec.Validate(); e != nil {

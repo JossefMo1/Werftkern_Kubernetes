@@ -259,3 +259,31 @@ func TestHashMapOrder(t *testing.T) {
 		t.Fatal("unstable hash")
 	}
 }
+
+func TestStateRejectsAllocationCrossIndexMismatch(t *testing.T) {
+	now := time.Now()
+	nodeID, workloadID, allocationID := ID(), ID(), ID()
+	s := NewState(ID(), "test", now)
+	s.Nodes[nodeID] = &Node{ID: nodeID, Name: "node", Address: "10.0.0.1", CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+	s.Workloads["demo"] = &Workload{UID: workloadID, Name: "demo", Generation: 1, Spec: validSpec(), Phase: "pending", CreatedAt: now}
+	s.Allocations[allocationID] = &Allocation{ID: allocationID, WorkloadUID: workloadID, Name: "demo", Generation: 1, NodeID: nodeID, Spec: validSpec(), Desired: "run", Phase: "assigned", CreatedAt: now, UpdatedAt: now}
+	if err := s.ValidateInventory(); err != nil {
+		t.Fatalf("valid inventory rejected: %v", err)
+	}
+	for name, change := range map[string]func(*Allocation){
+		"name":       func(a *Allocation) { a.Name = "other" },
+		"generation": func(a *Allocation) { a.Generation = 2 },
+	} {
+		t.Run(name, func(t *testing.T) {
+			copy := *s.Allocations[allocationID]
+			change(&copy)
+			s.Allocations[allocationID] = &copy
+			if err := s.ValidateInventory(); err == nil {
+				t.Fatal("cross-index allocation mismatch accepted")
+			}
+			s.Allocations[allocationID] = &copy
+			copy.Name = "demo"
+			copy.Generation = 1
+		})
+	}
+}
