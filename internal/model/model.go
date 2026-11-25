@@ -232,6 +232,16 @@ type Receipt struct {
 	Generation  int64     `json:"generation"`
 	At          time.Time `json:"at"`
 }
+
+// Validate rejects malformed idempotency receipts before they can be replayed as
+// successful mutations. Receipts are persisted state, so each field must retain
+// the invariants established by Apply and MutateWorkload.
+func (r Receipt) Validate() error {
+	if !ValidRequestID(r.ID) || !ValidSHA256(r.Hash) || !ValidID(r.WorkloadUID) || r.Generation < 1 || r.At.IsZero() {
+		return errors.New("RECEIPT_INVALID")
+	}
+	return nil
+}
 type State struct {
 	MigrationSourceHash string                   `json:"migrationSourceHash,omitempty"`
 	Gateways            map[string]*Gateway      `json:"gateways,omitempty"`
@@ -295,6 +305,9 @@ func (s *State) Validate() error {
 	for id, r := range s.Receipts {
 		if r.ID != id {
 			return errors.New("RECEIPT_INDEX_INVALID")
+		}
+		if err := r.Validate(); err != nil {
+			return err
 		}
 	}
 	if len(s.Events) > 160 {
