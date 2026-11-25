@@ -287,3 +287,41 @@ func TestStateRejectsAllocationCrossIndexMismatch(t *testing.T) {
 		})
 	}
 }
+
+func TestStateRejectsAllocationSpecCrossIndexMismatch(t *testing.T) {
+	now := time.Now()
+	nodeID, workloadID, allocationID := ID(), ID(), ID()
+	s := NewState(ID(), "test", now)
+	s.Nodes[nodeID] = &Node{ID: nodeID, Name: "node", Address: "10.0.0.1", CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+	s.Workloads["demo"] = &Workload{UID: workloadID, Name: "demo", Generation: 1, Spec: validSpec(), Phase: "pending", CreatedAt: now}
+	s.Allocations[allocationID] = &Allocation{ID: allocationID, WorkloadUID: workloadID, Name: "demo", Generation: 1, NodeID: nodeID, Spec: validSpec(), Desired: "run", Phase: "assigned", CreatedAt: now, UpdatedAt: now}
+	if err := s.ValidateInventory(); err != nil {
+		t.Fatalf("valid inventory rejected: %v", err)
+	}
+	copy := *s.Allocations[allocationID]
+	copy.Spec.Image = "sha256:" + strings.Repeat("b", 64)
+	s.Allocations[allocationID] = &copy
+	if err := s.ValidateInventory(); err == nil {
+		t.Fatal("allocation spec diverging from current workload accepted")
+	}
+}
+
+func TestStateAcceptsKnownHistoricalAllocationSpec(t *testing.T) {
+	now := time.Now()
+	nodeID, workloadID, allocationID := ID(), ID(), ID()
+	oldSpec, currentSpec := validSpec(), validSpec()
+	oldSpec.Image = "sha256:" + strings.Repeat("b", 64)
+	s := NewState(ID(), "test", now)
+	s.Nodes[nodeID] = &Node{ID: nodeID, Name: "node", Address: "10.0.0.1", CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+	s.Workloads["demo"] = &Workload{UID: workloadID, Name: "demo", Generation: 2, Spec: currentSpec, History: []Spec{oldSpec}, Phase: "updating", CreatedAt: now}
+	s.Allocations[allocationID] = &Allocation{ID: allocationID, WorkloadUID: workloadID, Name: "demo", Generation: 1, NodeID: nodeID, Spec: oldSpec, Desired: "run", Phase: "ready", CreatedAt: now, UpdatedAt: now}
+	if err := s.ValidateInventory(); err != nil {
+		t.Fatalf("known historical allocation rejected: %v", err)
+	}
+	copy := *s.Allocations[allocationID]
+	copy.Spec.Image = "sha256:" + strings.Repeat("c", 64)
+	s.Allocations[allocationID] = &copy
+	if err := s.ValidateInventory(); err == nil {
+		t.Fatal("allocation spec absent from workload history accepted")
+	}
+}
