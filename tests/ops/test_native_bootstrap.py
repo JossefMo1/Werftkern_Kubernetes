@@ -31,15 +31,15 @@ class NativeBootstrapTests(unittest.TestCase):
 
     def test_probe_parser_rejects_invalid_utf8(self):
         with self.assertRaisesRegex(Blocked, "^REMOTE_PREFLIGHT_ENCODING_INVALID$"):
-            native_bootstrap._parse_probe(b"\\xff")
+            native_bootstrap._parse_probe(bytes([0xff]))
 
     def test_hosts_inputs_reject_invalid_utf8(self):
         with tempfile.TemporaryDirectory() as d:
             root = pathlib.Path(d)
             hosts = root / "hosts"
             known = root / "known_hosts"
-            hosts.write_bytes(b"\\xff")
-            known.write_bytes(b"\\xff")
+            hosts.write_bytes(bytes([0xff]))
+            known.write_bytes(bytes([0xff]))
             with self.assertRaisesRegex(Blocked, "^INPUT_FILE_ENCODING_INVALID$"):
                 native_bootstrap._hosts_file(hosts)
             with self.assertRaisesRegex(Blocked, "^INPUT_FILE_ENCODING_INVALID$"):
