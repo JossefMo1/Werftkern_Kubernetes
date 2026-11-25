@@ -12,11 +12,13 @@ Ein Testrelease enthält:
 
 - `werftkern_0.2.0.dev4_amd64.deb` für den getrennten Native-Runtime-Pfad,
 - `werftkern-kubernetes_0.1.0.dev3_all.deb` für den getrennten Kubernetes-Manager,
+- `werftkern-native.spdx.json` als gebundene SPDX-2.3-Übersicht des Native-Pakets,
+- `werftkern-native.spdx.sha256` als Hash des SBOM-Dokuments,
 - `werftkern-test-kit-<tag>.tar.gz` mit den passenden Runbooks, Inventaren und
   E2E-Skripten,
 - `release-manifest.json` mit Commitbindung und Paket-Hashes sowie `SHA256SUMS`.
 
-Lade alle fünf Release-Assets ausschließlich aus dem GitHub-Release herunter.
+Lade alle sieben Release-Assets ausschließlich aus dem GitHub-Release herunter.
 `release-manifest.json` gehört absichtlich zum Prüfumfang von `SHA256SUMS`; wenn
 diese Datei fehlt, ist die Hashprüfung unvollständig.
 
@@ -30,18 +32,19 @@ BASE="https://github.com/JossefMo1/Werftkern_Kubernetes/releases/download/${TAG}
 wget \
   "${BASE}/werftkern_0.2.0.dev4_amd64.deb" \
   "${BASE}/werftkern-kubernetes_0.1.0.dev3_all.deb" \
+  "${BASE}/werftkern-native.spdx.json" \
+  "${BASE}/werftkern-native.spdx.sha256" \
   "${BASE}/werftkern-test-kit-${TAG}.tar.gz" \
   "${BASE}/release-manifest.json" \
   "${BASE}/SHA256SUMS"
 
 sha256sum -c SHA256SUMS
+sha256sum -c werftkern-native.spdx.sha256
 cat release-manifest.json
 tar -xzf "werftkern-test-kit-${TAG}.tar.gz"
 ```
 
-Die Release-Assets verwenden für GitHub kompatible Dateinamen (Versions-Tilde als Punkt); die lokale Paketversion bleibt davon unberührt. Die Pakete sind unsignierte Entwicklungsartefakte. Der Hash schützt vor
-Übertragungsfehlern, ersetzt aber keine Signatur-, Herkunfts- oder
-Schwachstellenprüfung.
+Die Release-Assets verwenden für GitHub kompatible Dateinamen (Versions-Tilde als Punkt); die lokale Paketversion bleibt davon unberührt. Die Pakete sind unsignierte Entwicklungsartefakte. Das SBOM ist absichtlich auf Paketmetadaten, deklarierte Debian-Abhängigkeiten und den Go-Modulgraphen begrenzt; es ersetzt weder eine vollständige OS-Schwachstellenprüfung noch Signatur-, Herkunfts- oder Produktionsfreigaben. Die Hashes schützen vor Übertragungsfehlern.
 
 ## Native 3-Controller/3-Worker-Labor
 

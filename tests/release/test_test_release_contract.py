@@ -47,8 +47,8 @@ class TestReleaseContract(unittest.TestCase):
         root = self.make_fixture()
         path = root / CONTRACT.WORKFLOW
         content = path.read_text().replace(
-            "sha256sum *.deb *.tar.gz release-manifest.json > SHA256SUMS",
-            "sha256sum release-assets/*.deb *.tar.gz release-manifest.json > SHA256SUMS",
+            "sha256sum *.deb *.tar.gz *.spdx.json *.spdx.sha256 release-manifest.json > SHA256SUMS",
+            "sha256sum release-assets/*.deb *.tar.gz *.spdx.json *.spdx.sha256 release-manifest.json > SHA256SUMS",
         )
         path.write_text(content)
         self.assertIn("CHECKSUMS_MUST_USE_BASENAMES", CONTRACT.validate(root))
