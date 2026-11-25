@@ -342,3 +342,20 @@ func TestStateAcceptsKnownHistoricalAllocationSpec(t *testing.T) {
 		t.Fatal("allocation spec absent from workload history accepted")
 	}
 }
+
+func TestStateRejectsUnknownAllocationPhase(t *testing.T) {
+	now := time.Now()
+	nodeID, workloadID, allocationID := ID(), ID(), ID()
+	s := NewState(ID(), "test", now)
+	s.Nodes[nodeID] = &Node{ID: nodeID, Name: "node", Address: "10.0.0.1", CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+	s.Workloads["demo"] = &Workload{UID: workloadID, Name: "demo", Generation: 1, Spec: validSpec(), Phase: "pending", CreatedAt: now}
+	for _, phase := range []string{"", "unknown", "running"} {
+		t.Run("phase="+phase, func(t *testing.T) {
+			s.Allocations[allocationID] = &Allocation{ID: allocationID, WorkloadUID: workloadID, Name: "demo", Generation: 1, NodeID: nodeID, Spec: validSpec(), Desired: "run", Phase: phase, CreatedAt: now, UpdatedAt: now}
+			if err := s.ValidateInventory(); err == nil {
+				t.Fatalf("unknown allocation phase %q was accepted", phase)
+			}
+			delete(s.Allocations, allocationID)
+		})
+	}
+}

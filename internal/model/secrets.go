@@ -169,7 +169,7 @@ func (s *State) ValidateInventory() error {
 			return errors.New("ALLOCATION_RECORD_INVALID")
 		}
 		w := workloadByUID[a.WorkloadUID]
-		if id != a.ID || !ValidID(id) || s.Nodes[a.NodeID] == nil || w == nil || a.Name != w.Name || a.Generation < 1 || a.Generation > w.Generation || (a.Desired != "run" && a.Desired != "stop") || !allocationSpecMatchesWorkload(a.Spec, a.Generation, w) {
+		if id != a.ID || !ValidID(id) || s.Nodes[a.NodeID] == nil || w == nil || a.Name != w.Name || a.Generation < 1 || a.Generation > w.Generation || (a.Desired != "run" && a.Desired != "stop") || !validAllocationPhase(a.Phase) || !allocationSpecMatchesWorkload(a.Spec, a.Generation, w) {
 			return errors.New("ALLOCATION_RECORD_INVALID")
 		}
 		if e := a.Spec.Validate(); e != nil {

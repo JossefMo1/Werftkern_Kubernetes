@@ -183,6 +183,18 @@ func (n Node) Ready(now time.Time) bool {
 	return !n.Revoked && n.Healthy && !n.LastSeen.IsZero() && now.Sub(n.LastSeen) >= -5*time.Second && now.Sub(n.LastSeen) < HeartbeatTimeout
 }
 
+// validAllocationPhase defines the only lifecycle values accepted from persisted state.
+// Reports are validated at the API boundary, but state validation must also fail closed
+// when an etcd record or restore payload contains an unknown phase.
+func validAllocationPhase(phase string) bool {
+	switch phase {
+	case "assigned", "starting", "ready", "failed", "stopped":
+		return true
+	default:
+		return false
+	}
+}
+
 type Allocation struct {
 	ContainerIP string    `json:"containerIp,omitempty"`
 	ID          string    `json:"id"`
