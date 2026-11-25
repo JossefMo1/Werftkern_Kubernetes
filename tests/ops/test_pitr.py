@@ -13,7 +13,8 @@ class PITRTests(unittest.TestCase):
  def test_prepare_rejects_invalid_cipher_secret_encoding(self):
   with tempfile.TemporaryDirectory() as d:
    root=pathlib.Path(d);secret=root/'cipher';atomic(secret,bytes([0xff]));file=root/'pgbackrest.conf'
-   with self.assertRaisesRegex(Blocked,'^PITR_CIPHER_SECRET_ENCODING_INVALID  with tempfile.TemporaryDirectory() as d:
+   with self.assertRaisesRegex(Blocked,'^PITR_CIPHER_SECRET_ENCODING_INVALID
+  with tempfile.TemporaryDirectory() as d:
    file=self.config(pathlib.Path(d));pitr.configuration(file,'shop')
    self.assertEqual(file.stat().st_mode&0o777,0o600)
    atomic(file,file.read_bytes().replace(b'archive-check=y',b'archive-check=n'))
@@ -117,8 +118,7 @@ class PITRTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    file=self.config(pathlib.Path(d))
    (pathlib.Path(str(file)+'.d')/'bad.conf').write_text('[global]\narchive-check=n\n')
-   with self.assertRaisesRegex(Blocked,'INCLUDE'):pitr.configuration(file,'shop')
-):
+   with self.assertRaisesRegex(Blocked,'INCLUDE'):pitr.configuration(file,'shop')):
     pitr.prepare({'format':'werftkern-pitr/v1','name':'shop','pgPath':str(root/'source'),'socketDir':str(root/'socket'),'pgPort':5432,'repositoryPath':str(root/'repository')},secret,file)
  def test_config_preserves_encryption_and_archive_checks(self):
   with tempfile.TemporaryDirectory() as d:
