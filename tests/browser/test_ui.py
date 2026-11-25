@@ -39,6 +39,8 @@ with sync_playwright() as p:
  page.fill('#login-code','wrong');page.click('#login-form button');page.wait_for_selector('#login-error:not([hidden])');checks.append('invalid-login-feedback')
  page.fill('#login-code','ui-test-code');page.click('#login-form button');page.wait_for_selector('#workspace:not([hidden])')
  page.wait_for_function("document.querySelector('#metric-nodes').textContent==='1 / 1'");checks.append('node-state-rendered')
+ page.evaluate("window.fixtureState.nodes.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.lastSeen=new Date(Date.now()+6000).toISOString()");page.click('#refresh');page.wait_for_function("document.querySelector('#metric-nodes').textContent==='0 / 1'");checks.append('future-heartbeat-marked-unknown')
+ page.evaluate("window.fixtureState.nodes.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.lastSeen=new Date().toISOString()");page.click('#refresh');page.wait_for_function("document.querySelector('#metric-nodes').textContent==='1 / 1'")
  assert page.locator('#connection').get_attribute('aria-live')=='polite';assert page.locator('#error').get_attribute('aria-atomic')=='true';checks.append('live-status-announcements')
  page.wait_for_function("document.querySelector('#operation-status').textContent.includes('Dashboard verbunden')");assert page.locator('#operation-status').get_attribute('aria-live')=='polite';checks.append('screen-reader-operation-announcement')
  assert all(page.locator('th').nth(i).get_attribute('scope')=='col' for i in range(page.locator('th').count()));assert page.get_by_role('button',name='Sicher drainen worker-1',exact=True).count()==1;checks.append('table-and-node-action-context')
