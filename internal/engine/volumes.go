@@ -218,9 +218,11 @@ func (d *Docker) AssertVolumeOffline(ctx context.Context, data string) error {
 			if !filepath.IsAbs(p) {
 				return errors.New("VOLUME_MOUNT_SOURCE_UNRESOLVED")
 			}
-			if canonical, e := filepath.EvalSymlinks(p); e == nil {
-				p = canonical
+			canonical, e := filepath.EvalSymlinks(p)
+			if e != nil {
+				return errors.New("VOLUME_MOUNT_SOURCE_UNRESOLVED")
 			}
+			p = canonical
 			if overlappingPaths(p, data) {
 				return errors.New("VOLUME_MOUNTED_BY_RUNNING_OR_RESTARTABLE_CONTAINER")
 			}
