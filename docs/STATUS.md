@@ -1,3 +1,13 @@
+# Secret staging content-integrity handoff — PR #365 (2026-11-25)
+
+- Code: [PR #365](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365), merged commit [fc16c997](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653).
+- Runtime/security change: reusable secret staging now binds a manifest to the spec hash and a digest for every secret file; reuse rechecks regular-file type, mode, bounded size and bytes. Content drift fails closed with SECRET_MATERIAL_CONTENT_MISMATCH.
+- Regression coverage: TestSecretManifestReuseRejectsContentDrift mutates staged secret bytes and verifies fail-closed reuse.
+- PR checks: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285219), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285314) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285257) — all successful; real-vm/PITR skipped.
+- No Single-Host production gate closed. productionReady=false, decision no-go; test.17 remains stale, mutable and unsigned.
+- HA/multi-host/quorum and Kubernetes-Production remain deferred outside the first Native scope.
+- Next handoff: build one immutable candidate from [fc16c997](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653), then run candidate-bound Ubuntu installation, backup/restore, upgrade/rollback, bounded soak and signing/provenance checks. The current connector cannot create tags or dispatch workflow_dispatch; that blocker is recorded and not repeated.
+
 # Restore receipt tree-integrity handoff — PR #362 (2026-11-25)
 
 - Code: [PR #362](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/362), merged commit [97d2fd0](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/97d2fd03d551df707aeff8895a79e8a179382458).
