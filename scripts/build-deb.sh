@@ -16,9 +16,24 @@ mkdir -p build dist
 commit="$(git rev-parse HEAD 2>/dev/null || printf uncommitted)"
 dirty=false
 [[ -z "$(git status --porcelain 2>/dev/null || true)" ]] || dirty=true
-time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w -X github.com/JossefMo1/Werftkern_Kubernetes/internal/cli.BuildCommit=$commit -X github.com/JossefMo1/Werftkern_Kubernetes/internal/cli.BuildTime=$time" -o build/werft ./cmd/werft
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags='-s -w' -o build/demo-server ./cmd/demo
+
+# A release build must be reproducible from an explicit source timestamp.  Keep
+# the wall clock fallback for local exploratory builds, but never let it look
+# like release evidence: CI and release tooling always provide
+# SOURCE_DATE_EPOCH from the candidate commit.
+if [[ -n "${SOURCE_DATE_EPOCH:-}" ]]; then
+  [[ "$SOURCE_DATE_EPOCH" =~ ^[0-9]+$ ]] || {
+    echo 'SOURCE_DATE_EPOCH must be an integer Unix timestamp' >&2
+    exit 2
+  }
+  source_epoch="$SOURCE_DATE_EPOCH"
+else
+  source_epoch="$(date +%s)"
+fi
+time="$(date -u -d "@$source_epoch" +%Y-%m-%dT%H:%M:%SZ)"
+build_flags=(-trimpath -buildvcs=false)
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build "${build_flags[@]}" -ldflags="-s -w -X github.com/JossefMo1/Werftkern_Kubernetes/internal/cli.BuildCommit=$commit -X github.com/JossefMo1/Werftkern_Kubernetes/internal/cli.BuildTime=$time" -o build/werft ./cmd/werft
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build "${build_flags[@]}" -ldflags='-s -w' -o build/demo-server ./cmd/demo
 python3 scripts/make-demo-image.py
 stage="$(mktemp -d)"; trap 'rm -rf "$stage"' EXIT
 install -d "$stage/DEBIAN" "$stage/usr/bin" "$stage/usr/lib/systemd/system" "$stage/usr/share/werftkern" "$stage/usr/share/doc/werftkern"
@@ -49,7 +64,11 @@ import json, os, pathlib
 pathlib.Path('build/BUILD-INFO.json').write_text(json.dumps({'version':'0.2.0-dev.4','commit':os.environ['COMMIT'],'sourceDirty':os.environ['DIRTY']=='true','builtAt':os.environ['BUILDTIME'],'compiler':os.environ['COMPILER'],'target':'linux/amd64','qualified':False,'signed':False,'externalGoModules':[],'ubuntuVMEndToEnd':'not-run-in-authoring-environment','runtimeAdapter':'docker-engine-http','controlPlane':'single-or-three-controller-etcd-unqualified','stateSchema':2,'archiveFormat':'WERFTVOL1','upgradeFromDev1':'explicit-offline-schema-migration-required','upgradeFromDev2':'same-schema-coordinated-offline-uniform-version-required','upgradeFromDev3':'bounded-signed-worker-waves-after-all-controllers-target-unqualified','workerBinaryCompatibility':'actual-dev3-and-dev4-agent-processes-with-Docker-etcd-fixtures','databaseHAAdapter':'native-Patroni-profile-not-live-qualified','pitrAdapter':'pgBackRest-no-real-WAL-proof','leafRenewal':'offline-issuer-combined-PEM-live-reload-local-TLS-tested'},indent=2)+'\n')
 PY
 install -m 0644 build/BUILD-INFO.json "$stage/usr/share/werftkern/"
-dpkg-deb --root-owner-group --build "$stage" 'dist/werftkern_0.2.0~dev4_amd64.deb'
+# Normalize every package input timestamp and pass the same epoch to dpkg.  A
+# caller that omits SOURCE_DATE_EPOCH still gets a useful lab artifact, but it
+# is intentionally timestamped and therefore not reproducible evidence.
+find "$stage" -exec touch -d "@$source_epoch" {} +
+SOURCE_DATE_EPOCH="$source_epoch" dpkg-deb --root-owner-group --build "$stage" 'dist/werftkern_0.2.0~dev4_amd64.deb'
 python3 scripts/check-native-package-layout.py 'dist/werftkern_0.2.0~dev4_amd64.deb'
 cp build/BUILD-INFO.json dist/BUILD-INFO.json
 cp build/demo.workload.json dist/demo.workload.json

@@ -64,6 +64,27 @@ am 2026-10-15 hat bestehende Tags, Releases und erreichbare Historie öffentlich
 gemacht. Bei jeder weiteren Veröffentlichung müssen daher nicht nur die aktuelle
 README, sondern auch alle erreichbaren Refs geprüft werden.
 
+## Reproduzierbarer Native-Build
+
+Ein Native-Paket ist nur dann ein möglicher Release-Kandidat, wenn sein
+Buildzeitpunkt an den unveränderten Quell-Commit gebunden ist. Für lokale
+Prüfungen kann das Paket weiterhin ohne Variable gebaut werden; dadurch bleibt
+es absichtlich ein zeitabhängiges Laborartefakt. Für Evidence und Releases
+verwende:
+
+```bash
+SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)" \
+  bash scripts/build-deb.sh
+```
+
+`scripts/build-deb.sh` normalisiert damit die eingebettete Build-Zeit, Go-VCS-
+Metadaten, Paketdatei-Zeitstempel und `dpkg-deb` auf denselben Epoch-Wert. Die
+Native-CI baut das Paket zweimal mit diesem Wert und vergleicht die SHA-256-
+Digests. Ein erfolgreicher Vergleich ist notwendige Build-Evidence, aber keine
+Freigabe: Installation, Backup/Restore, Upgrade/Rollback, Load/Soak, Signatur,
+Provenienz und Maintainer-Go/No-Go müssen weiterhin für denselben unveränderten
+Kandidaten nachgewiesen werden.
+
 ## Go module identity
 
 For commits after the issue #6 module migration, the canonical Go module and
