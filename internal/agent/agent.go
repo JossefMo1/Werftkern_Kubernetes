@@ -38,6 +38,39 @@ type Agent struct {
 	Persist  func(Journal) error
 }
 
+func validJournalAllocation(x model.Allocation, key, nodeID string) bool {
+	if key != x.ID || !model.ValidID(x.ID) || x.NodeID != nodeID || !model.ValidID(x.WorkloadUID) || !model.ValidName(x.Name) || x.Generation < 1 {
+		return false
+	}
+	if x.Desired != "run" && x.Desired != "stop" {
+		return false
+	}
+	switch x.Phase {
+	case "assigned", "starting", "ready", "failed", "stopped":
+	default:
+		return false
+	}
+	if x.Spec.Port > 0 && (x.HostPort < 22000 || x.HostPort >= 23000) || x.Spec.Port == 0 && x.HostPort != 0 {
+		return false
+	}
+	if x.CreatedAt.IsZero() || x.UpdatedAt.IsZero() {
+		return false
+	}
+	return x.Spec.Validate() == nil
+}
+
+func validateJournal(j Journal, clusterID, nodeID string) error {
+	if j.ClusterID != clusterID || j.Revision < 0 || j.Allocations == nil || len(j.Allocations) > model.MaxAllocations {
+		return errors.New("JOURNAL_RECORD_INVALID")
+	}
+	for key, allocation := range j.Allocations {
+		if !validJournalAllocation(allocation, key, nodeID) {
+			return errors.New("JOURNAL_RECORD_INVALID")
+		}
+	}
+	return nil
+}
+
 func New(c config.Agent, cl *apiclient.Client, eng engine.Runtime) (*Agent, error) {
 	a := &Agent{Config: c, Client: cl, Engine: eng, reports: map[string]model.Report{}, failures: map[string]failure{}, journal: Journal{ClusterID: c.Client.ClusterID, Allocations: map[string]model.Allocation{}}}
 	if !model.ValidID(c.NodeID) || !model.ValidID(c.InstanceID) || !model.PrivateAddress(c.Address) {
@@ -46,8 +79,11 @@ func New(c config.Agent, cl *apiclient.Client, eng engine.Runtime) (*Agent, erro
 	if e := safefile.ReadJSON(c.Journal, &a.journal); e != nil && !os.IsNotExist(e) {
 		return nil, e
 	}
-	if a.journal.ClusterID != c.Client.ClusterID || a.journal.Allocations == nil {
+	if a.journal.ClusterID != c.Client.ClusterID {
 		return nil, errors.New("JOURNAL_CLUSTER_MISMATCH")
+	}
+	if err := validateJournal(a.journal, c.Client.ClusterID, c.NodeID); err != nil {
+		return nil, err
 	}
 	a.Persist = func(j Journal) error { return safefile.JSON(c.Journal, j, 0600) }
 	return a, nil
@@ -112,6 +148,9 @@ func (a *Agent) Accept(snapshot model.AssignmentSnapshot) error {
 				return errors.New("ALLOCATION_IDENTITY_REUSE_BLOCKED")
 			}
 		}
+	}
+	if err := validateJournal(j, a.journal.ClusterID, a.Config.NodeID); err != nil {
+		return err
 	}
 	// Intention must be durable before the executor can observe a new assignment.
 	if err := a.Persist(j); err != nil {
