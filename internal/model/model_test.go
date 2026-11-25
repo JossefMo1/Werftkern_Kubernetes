@@ -217,6 +217,43 @@ func TestStateRejectsIndexMismatches(t *testing.T) {
 	}
 }
 
+func TestStateRejectsMalformedReceipts(t *testing.T) {
+	now := time.Now()
+	cases := []struct {
+		name   string
+		change func(*Receipt)
+	}{
+		{"hash", func(r *Receipt) { r.Hash = "not-a-sha256" }},
+		{"workload", func(r *Receipt) { r.WorkloadUID = "invalid" }},
+		{"generation", func(r *Receipt) { r.Generation = 0 }},
+		{"timestamp", func(r *Receipt) { r.At = time.Time{} }},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := NewState(ID(), "test", now)
+			key := ID()
+			r := Receipt{ID: key, Hash: strings.Repeat("a", 64), WorkloadUID: ID(), Generation: 1, At: now}
+			tc.change(&r)
+			s.Receipts[key] = r
+			if err := s.Validate(); err == nil {
+				t.Fatal("malformed receipt accepted")
+			}
+		})
+	}
+}
+
+func TestStateAcceptsSecretReceiptOwner(t *testing.T) {
+	now := time.Now()
+	s := NewState(ID(), "test", now)
+	key := ID()
+	s.Receipts[key] = Receipt{
+		ID: key, Hash: strings.Repeat("a", 64), WorkloadUID: "secret:api/3", Generation: 3, At: now,
+	}
+	if err := s.Validate(); err != nil {
+		t.Fatalf("secret receipt owner rejected: %v", err)
+	}
+}
+
 func TestHashMapOrder(t *testing.T) {
 	if Hash(map[string]int{"a": 1, "b": 2}) != Hash(map[string]int{"b": 2, "a": 1}) {
 		t.Fatal("unstable hash")

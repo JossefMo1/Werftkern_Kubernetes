@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 type SecretRef struct {
@@ -17,6 +18,23 @@ type SecretVersion struct {
 }
 
 func (s SecretRef) Key() string { return s.Name + "/" + strconv.Itoa(s.Version) }
+
+// validReceiptWorkloadUID accepts either a workload UID or the explicit owner
+// namespace used by secret mutation receipts.
+func validReceiptWorkloadUID(uid string) bool {
+	if ValidID(uid) {
+		return true
+	}
+	if !strings.HasPrefix(uid, "secret:") {
+		return false
+	}
+	parts := strings.Split(strings.TrimPrefix(uid, "secret:"), "/")
+	if len(parts) != 2 {
+		return false
+	}
+	version, err := strconv.Atoi(parts[1])
+	return err == nil && ValidateSecretRefs([]SecretRef{{Name: parts[0], Version: version}}) == nil
+}
 func SecretAAD(cluster string, ref SecretRef) string {
 	return "clusterpilot/secret/v1/" + cluster + "/" + ref.Key()
 }
