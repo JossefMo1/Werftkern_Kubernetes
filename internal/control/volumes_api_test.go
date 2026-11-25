@@ -23,7 +23,7 @@ func TestVolumeAPIEnrollmentOwnershipReleaseAndRevocation(t *testing.T) {
 	}
 	id := model.ID()
 	h.s.Update(ctx, func(s *model.State) error {
-		s.Allocations[id] = &model.Allocation{ID: id, NodeID: h.nodeID, Name: "web", WorkloadUID: s.Workloads["web"].UID, Spec: req.Spec, Generation: 1, Desired: "run"}
+		s.Allocations[id] = &model.Allocation{ID: id, NodeID: h.nodeID, Name: "web", WorkloadUID: s.Workloads["web"].UID, Spec: req.Spec, Generation: 1, Desired: "run", Phase: "assigned"}
 		return nil
 	})
 	var vs []model.Volume
