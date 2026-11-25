@@ -1,3 +1,11 @@
+# Native single-host release handoff — PR #330 (2026-11-25)
+
+[PR #330](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/330) merged as [545cf797](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/545cf797b30958d1d60e8cf5177ee13c37566e00). The release path now treats reproducibility as a build property: `scripts/build-deb.sh` accepts a validated `SOURCE_DATE_EPOCH`, uses deterministic metadata and `-buildvcs=false`, normalizes package mtimes and passes the epoch to `dpkg-deb`. CI performs two clean package builds and compares their SHA-256 digests before writing reproducible-build evidence.
+
+This improves the Release/Supply Chain and Operations layers without overstating qualification. Main evidence: [Native test and real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45530071813) passed; [real-vm](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45530071813/job/138923825870) and [real-PITR](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45530071813/job/138923826982) were skipped. [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45530071723) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45530071869) passed. The next product step is to build an immutable candidate from `545cf797b30958d1d60e8cf5177ee13c37566e00` and run the existing Ubuntu 24.04 real-vm workflow with the exact candidate identity.
+
+No Single-Host gate is closed by this handoff: installation, workload/restart, backup/restore, upgrade/rollback, bounded load/soak, signing/provenance, maintainer approval and user feedback remain open. HA, multi-host, quorum and Kubernetes-production stay on the later roadmap.
+
 # Native single-host release handoff — PR #326 (2026-11-25)
 
 [PR #326](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/326) merged as [204f5de](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/204f5de445c275efab544ebe1e5c21f900ca1e68). Dashboard errors are now bounded to API codes and presented with German operator guidance; status/error/update announcements are accessible live regions, successful mutations clear stale alerts, and Werftkern branding is consistent.
