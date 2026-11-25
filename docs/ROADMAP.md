@@ -1,3 +1,9 @@
+# Native single-host release handoff — PR #324 (2026-11-25)
+
+[PR #324](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/324) merged as [9671c64](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/9671c64edbe67f02ca18a21244abdd0833c55c5b). State/journal writes and operation locks now fail closed on symlinked parent components, preventing redirected local state creation.
+
+PR and post-merge Main checks passed for Native, real-etcd, Kubernetes contracts and Source/Privacy; real-vm and real-PITR remain skipped, so no Single-Host production gate closed. Rebuild an immutable candidate from [9671c64edbe67f02ca18a21244abdd0833c55c5b](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/9671c64edbe67f02ca18a21244abdd0833c55c5b) before installation, backup/restore, upgrade/rollback, bounded load/soak and signing evidence. HA, multi-host and Kubernetes-production remain deferred.
+
 # Native single-host release handoff — PR #322 (2026-11-24)
 
 [PR #322](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/322) merged as [80c091e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/80c091e03d1c7687c46a7ca4543f55b34d281bfe). Secret staging and cleanup now fail closed when the configured SecretRoot or any parent is a symlink; the default root is applied consistently and a regression test covers operator-provided redirection.
