@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T01:06:42Z",
+  "updatedAt": "2026-11-25T01:15:18Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -508,10 +508,10 @@
         "Post-merge Main Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45522810623/job/138898645365"
       ],
       "blockers": [
-        "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs; the PR #282 real-vm job was skipped.",
+        "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs; the current Main real-vm job was skipped.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Build the next immutable candidate from merged Main commit dd94bb41f4264b0b463d522d282050c646b52e5c; no live Single-Host production gate is closed by PR #318."
+      "nextStep": "Build the next immutable candidate from merged Main commit 204f5de445c275efab544ebe1e5c21f900ca1e68; CI-only checks do not close the live Ubuntu installation gate."
     },
     {
       "id": "E2E-K01",
@@ -666,14 +666,17 @@
         "Main merge commit verified as 479f4beaecb919b7b376300927282262a7213530",
         "Historical live evidence (not current candidate): workflow #1662 https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45372806861 was manually dispatched with run_real_vm_e2e=true from Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903.",
         "Artifact actual-ubuntu-vm-evidence (workflow artifact 14909024562) contains ubuntu-vm-result.json status=passed, exitCode=0, Ubuntu 24.04 amd64, Docker 28.0.4, etcd 3.4.30 and package SHA-256 05042f7c02465c012a34a230a00185b77f014f778de874ed10937e457deb3623.",
-        "The run record explicitly excludes HA/multi-node certification; this evidence is valid only for 7f1a81ae8eba7042c3c1440ba4151a5a84acd903 and is not evidence for current candidate 479f4beaecb919b7b376300927282262a7213530."
+        "The run record explicitly excludes HA/multi-node certification; this evidence is valid only for 7f1a81ae8eba7042c3c1440ba4151a5a84acd903 and is not evidence for current candidate 479f4beaecb919b7b376300927282262a7213530.",
+        "Current Main commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/204f5de445c275efab544ebe1e5c21f900ca1e68",
+        "Current Main real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45523787625/job/138902933476",
+        "Current Main real-etcd passed (not installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45523787625/job/138901958457"
       ],
       "blockers": [
-        "Workflow #1662 real-vm evidence is bound to prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903; current candidate 22aacc9082832c5debdfd6d4753af5e627a7f8c8 requires a fresh exact-candidate run.",
-        "The exact candidate must be rebuilt from the current scoped Main line at 22aacc9082832c5debdfd6d4753af5e627a7f8c8.",
-        "The ephemeral Ubuntu real-vm job has not yet been run for current candidate 22aacc9082832c5debdfd6d4753af5e627a7f8c8."
+        "Workflow #1662 real-vm evidence is bound to prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903; it is not evidence for current Main 204f5de445c275efab544ebe1e5c21f900ca1e68.",
+        "The exact immutable candidate must be rebuilt from current scoped Main commit 204f5de445c275efab544ebe1e5c21f900ca1e68.",
+        "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate."
       ],
-      "nextStep": "Build the next immutable candidate from 22aacc9082832c5debdfd6d4753af5e627a7f8c8; dispatch the existing ephemeral Ubuntu real-vm path with run_real_vm_e2e=true when workflow access is available."
+      "nextStep": "Build the next immutable candidate from 204f5de445c275efab544ebe1e5c21f900ca1e68, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true."
     },
     {
       "id": "E2E-H01",
