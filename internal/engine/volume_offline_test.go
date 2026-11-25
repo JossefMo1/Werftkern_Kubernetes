@@ -38,8 +38,30 @@ func TestOfflineVolumeGuardIncludesForeignAndRootMounts(t *testing.T) {
 		{"unresolved", "__temp_missing_mount__", "always", true, false, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			data := filepath.Join(root, "volumes", "v", "data")
+			if err := os.MkdirAll(data, 0700); err != nil {
+				t.Fatal(err)
+			}
 			source := tc.source
-			if tc.name == "unresolved" {
+		switch tc.name {
+			case "foreign-running", "restartable", "restarting", "stopped-no-restart":
+				source = data
+			case "ancestor-root":
+				source = root
+			case "ancestor":
+				source = filepath.Dir(filepath.Dir(data))
+			case "descendant":
+				source = filepath.Join(data, "sub")
+				if err := os.MkdirAll(source, 0700); err != nil {
+					t.Fatal(err)
+				}
+			case "sibling":
+				source = filepath.Join(filepath.Dir(data), "database")
+				if err := os.MkdirAll(source, 0700); err != nil {
+					t.Fatal(err)
+				}
+			case "unresolved":
 				source = filepath.Join(t.TempDir(), "missing", "data")
 			}
 			id := strings.Repeat("a", 64)
@@ -66,7 +88,7 @@ func TestOfflineVolumeGuardIncludesForeignAndRootMounts(t *testing.T) {
 			defer server.Close()
 			d := NewDocker("unused", strings.Repeat("b", 32))
 			d.Client = &http.Client{Transport: redirectTransport{server.URL}}
-			e := d.AssertVolumeOffline(context.Background(), "/var/lib/werftkern/volumes/v/data")
+			e := d.AssertVolumeOffline(context.Background(), data)
 			if (e != nil) != tc.deny {
 				t.Fatalf("denied=%t, expected=%t error=%v", e != nil, tc.deny, e)
 			}
