@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T09:04:08.127Z",
+  "updatedAt": "2026-11-25T09:11:32.826Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -844,7 +844,7 @@
     "commit": "5d9813c02d243854d9fa33127b7236274a01257c",
     "codeCommit": "5d9813c02d243854d9fa33127b7236274a01257c",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/349",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/348",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/350",
     "summary": "PR #349 merged as 5d9813c02d243854d9fa33127b7236274a01257c. Persisted idempotency receipts are now validated fail-closed before reconciliation or backup: request ID, SHA-256 hash, workload or validated secret owner, positive generation, and timestamp are required. Secret mutation receipts retain their explicit secret:<name>/<version> owner namespace with name/version validation. Negative coverage covers malformed hash, owner, generation and timestamp plus valid secret-owner compatibility. PR checks passed: Native 45580938962 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45580938903, Source/Privacy 45580938754. Post-merge Main checks passed: Native 45581360321 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45581360550, and Source/Privacy 45581360619. This is CI evidence only; productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/349",
     "nextCandidateRequired": true
