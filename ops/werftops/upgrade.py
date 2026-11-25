@@ -11,6 +11,14 @@ from .common import Blocked, digest_file, host_preflight, lock, read_json, run, 
 ROOT=pathlib.Path("/var/lib/werftkern")
 CONFIG=pathlib.Path("/etc/werftkern")
 
+# A recovery command is only valid for an interrupted update.  Completed or
+# unknown journals must fail closed before any verification or host mutation.
+RECOVERABLE_PHASES=frozenset({
+    "prepared", "frozen", "backed-up", "stopping", "installing", "installed",
+    "awaiting-runtime-qualification", "explicit-recovery",
+    "runtime-verified-unlock-pending",
+})
+
 def verify(package, manifest, signature, key, runner=run):
     return json.loads(runner(["werft","release","verify","--manifest",str(manifest),"--signature",str(signature),"--public-key",str(key),"--package",str(package)]))
 
@@ -61,7 +69,12 @@ def apply(package,manifest,signature,key,confirm,runner=run):
 
 def recover(journal_path,package,manifest,signature,key,confirm,runner=run):
     """Explicit same-schema forward repair or rollback with another signed package."""
-    host_preflight();old=read_json(journal_path,private=True);m=verify(package,manifest,signature,key,runner)
+    host_preflight()
+    old=read_json(journal_path,private=True)
+    phase=old.get("phase")
+    if not isinstance(phase,str) or phase not in RECOVERABLE_PHASES:
+        raise Blocked("RECOVERY_PHASE_NOT_INTERRUPTED")
+    m=verify(package,manifest,signature,key,runner)
     if old.get("format")!="werftkern-host-update/v1" or confirm!=old.get("id"):raise Blocked("RECOVERY_OPERATION_CONFIRMATION_REQUIRED")
     if m["stateSchema"]!=old["target"]["stateSchema"]:raise Blocked("STATE_SCHEMA_DOWNGRADE_FORBIDDEN")
     actual=runner(["dpkg-query","-W","-f=${Version}","werftkern"]).decode().strip()

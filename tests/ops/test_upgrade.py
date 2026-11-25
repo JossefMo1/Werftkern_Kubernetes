@@ -2,7 +2,7 @@ import hashlib,json,pathlib,sys,tempfile,unittest
 from unittest import mock
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[2]/'ops'))
 from werftops import upgrade
-from werftops.common import Blocked,read_json
+from werftops.common import Blocked,read_json,write_json
 class Upgrades(unittest.TestCase):
  def exercise(self, fail=False):
   with tempfile.TemporaryDirectory() as d:
@@ -38,3 +38,15 @@ class Upgrades(unittest.TestCase):
   with mock.patch.object(upgrade,'host_preflight',lambda:None):
    with self.assertRaises(Blocked):upgrade.apply('pkg','m','s','k','wrong',runner)
    self.assertEqual(len(calls),1)
+ def test_recover_rejects_completed_journal_before_external_commands(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);journal=root/'journal.json'
+   write_json(journal,{'format':'werftkern-host-update/v1','id':'a'*32,'phase':'completed-runtime-verified'})
+   calls=[]
+   def runner(args,**kw):
+    calls.append(args)
+    raise AssertionError(args)
+   with mock.patch.object(upgrade,'host_preflight',lambda:None):
+    with self.assertRaisesRegex(Blocked,'RECOVERY_PHASE_NOT_INTERRUPTED'):
+     upgrade.recover(journal,'pkg','manifest','sig','key','a'*32,runner)
+   self.assertEqual(calls,[])
