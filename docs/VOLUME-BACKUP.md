@@ -71,8 +71,7 @@ kann ein abgebrochener Restore nicht als leeres Initialvolume gestartet werden.
 Entschlüsselung läuft in ein neues verborgenes Verzeichnis. Nach vollständiger Integritäts-
 und Pfadprüfung: Eigentum, fsync, Identitätsmarker und Receipt, atomare Umbenennung, API-ACK.
 Bei verlorener Abschlussantwort exakt dieselbe ID, Datei, Ziel- und Maintenance-ID wiederholen.
-Eine passende dauerhafte Receipt erlaubt ACK-Wiederholung ohne erneutes Überschreiben.
-Widerspruch blockiert. Fehlerhafte Archive löschen nur ihre neue Staging-Kopie, nie das Ziel.
+Eine passende dauerhafte Receipt enthält zusätzlich einen deterministischen Digest des entpackten Datenbaums. Jede ACK-Wiederholung verifiziert Pfade, Typen, Modi, Größen und Bytes erneut, ohne das Ziel zu überschreiben; fehlende/alte Receipts oder Datenbaum-Drift blockieren. Widerspruch blockiert. Fehlerhafte Archive löschen nur ihre neue Staging-Kopie, nie das Ziel.
 
 Maintenance kontrolliert freigeben; Zielmanifest auf das neue Volume/Node abbilden; Quelle
 weiter isoliert lassen; Anwendung starten und SQL/Datei-/Transaktionsprüfungen durchführen.
