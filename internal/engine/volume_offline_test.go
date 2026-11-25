@@ -45,7 +45,7 @@ func TestOfflineVolumeGuardIncludesForeignAndRootMounts(t *testing.T) {
 				t.Fatal(err)
 			}
 			source := tc.source
-		switch tc.name {
+			switch tc.name {
 			case "foreign-running", "restartable", "restarting", "stopped-no-restart":
 				source = data
 			case "ancestor-root":
