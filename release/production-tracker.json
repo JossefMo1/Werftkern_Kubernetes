@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T02:07:39Z",
+  "updatedAt": "2026-11-25T03:06:05Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "545cf797b30958d1d60e8cf5177ee13c37566e00",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/330",
-    "summary": "PR #330 merged as 545cf797b30958d1d60e8cf5177ee13c37566e00. Native Debian builds now accept and validate SOURCE_DATE_EPOCH, derive deterministic build metadata, disable VCS stamping, normalize staging mtimes and build with a fixed epoch; CI builds the package twice and compares SHA-256 digests, writing reproducible-build evidence. Local release contract tests (139) passed with shell/Python syntax, diff, YAML, tracker and scope checks; the local Go compiler is unavailable. Main Native test/real-etcd passed, Kubernetes contracts and Source/Privacy audit passed; real-vm and real-PITR were skipped. No Single-Host production gate closed; v0.2.0-dev.4-test.17 remains unsigned/non-immutable and productionReady=false with decision no-go."
+    "commit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
+    "summary": "PR #332 merged as 28d4b139514e46fbc787e64acf0552d17fc03b83. Native CI now emits bounded deterministic SPDX 2.3 evidence from the exact Debian package metadata, declared runtime dependencies and Go module graph, plus a SHA-256 sidecar. Main Native source/package checks, real-etcd, Kubernetes contracts and Source/Privacy audit passed; real-vm and real-PITR were skipped. The SBOM is evidence plumbing only: OS vulnerability completeness, signing, provenance, Ubuntu installation, backup/restore, upgrade/rollback, load/soak, user feedback and production qualification remain open. productionReady=false with decision no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The tagged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes the merged dashboard and reproducible-build changes through PR #330.",
-      "The exact candidate must now be rebuilt from merged Main commit 545cf797b30958d1d60e8cf5177ee13c37566e00.",
+      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes after PR #332.",
+      "The exact candidate must now be rebuilt from merged Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83; CI-only SBOM evidence is not a live Ubuntu qualification.",
       "PR and post-merge Main checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -53,7 +53,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from merged Main commit 545cf797b30958d1d60e8cf5177ee13c37566e00, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from merged Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -505,10 +505,14 @@
         "Post-merge Main real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45522810685/job/138899740715",
         "Post-merge Main real-PITR skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45522810685/job/138899741045",
         "Post-merge Main Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45522810663/job/138898646069",
-        "Post-merge Main Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45522810623/job/138898645365"
+        "Post-merge Main Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45522810623/job/138898645365",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412649",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412758",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45537412880"
       ],
       "blockers": [
-        "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs; the current Main real-vm job was skipped.",
+        "Live Ubuntu installation and package lifecycle evidence are not available in CI-only runs; the Main real-vm job was skipped.",
         "The released artifacts are unsigned development packages; provenance/signature and production qualification remain open."
       ],
       "nextStep": "Build the next immutable candidate from merged Main commit 545cf797b30958d1d60e8cf5177ee13c37566e00; CI now proves two package builds have the same SHA-256 under SOURCE_DATE_EPOCH, but CI-only checks do not close the live Ubuntu installation gate."
@@ -672,8 +676,8 @@
         "Current Main real-etcd passed (not installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45523787625/job/138901958457"
       ],
       "blockers": [
-        "Workflow #1662 real-vm evidence is bound to prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903; it is not evidence for current Main 545cf797b30958d1d60e8cf5177ee13c37566e00.",
-        "The exact immutable candidate must be rebuilt from current scoped Main commit 545cf797b30958d1d60e8cf5177ee13c37566e00.",
+        "Workflow #1662 real-vm evidence is bound to prior Main 7f1a81ae8eba7042c3c1440ba4151a5a84acd903; it is not evidence for current Main 28d4b139514e46fbc787e64acf0552d17fc03b83.",
+        "The exact immutable candidate must be rebuilt from current scoped Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83.",
         "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate."
       ],
       "nextStep": "Build the next immutable candidate from 545cf797b30958d1d60e8cf5177ee13c37566e00, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true."
@@ -727,7 +731,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/331",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -757,19 +761,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "545cf797b30958d1d60e8cf5177ee13c37566e00",
-      "codeCommit": "545cf797b30958d1d60e8cf5177ee13c37566e00",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/330",
-      "summary": "PR #330 merged as 545cf797b30958d1d60e8cf5177ee13c37566e00. Native Debian builds now accept and validate SOURCE_DATE_EPOCH, derive deterministic build metadata, disable VCS stamping, normalize staging mtimes and build with a fixed epoch; CI builds the package twice and compares SHA-256 digests, writing reproducible-build evidence. Local release contract tests (139) passed with shell/Python syntax, diff, YAML, tracker and scope checks; the local Go compiler is unavailable. Main Native test/real-etcd passed, Kubernetes contracts and Source/Privacy audit passed; real-vm and real-PITR were skipped. No Single-Host production gate closed; v0.2.0-dev.4-test.17 remains unsigned/non-immutable and productionReady=false with decision no-go.",
+      "commit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
+      "codeCommit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
+      "summary": "PR #332 merged as 28d4b139514e46fbc787e64acf0552d17fc03b83. Native CI now emits bounded deterministic SPDX 2.3 evidence from the exact Debian package metadata, declared runtime dependencies and Go module graph, plus a SHA-256 sidecar. Main Native source/package checks, real-etcd, Kubernetes contracts and Source/Privacy audit passed; real-vm and real-PITR were skipped. The SBOM is evidence plumbing only: OS vulnerability completeness, signing, provenance, Ubuntu installation, backup/restore, upgrade/rollback, load/soak, user feedback and production qualification remain open. productionReady=false with decision no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/330"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332"
     },
-    "commit": "545cf797b30958d1d60e8cf5177ee13c37566e00",
-    "codeCommit": "545cf797b30958d1d60e8cf5177ee13c37566e00",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/330",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/331",
-    "summary": "PR #330 merged as 545cf797b30958d1d60e8cf5177ee13c37566e00. Native Debian builds now accept and validate SOURCE_DATE_EPOCH, derive deterministic build metadata, disable VCS stamping, normalize staging mtimes and build with a fixed epoch; CI builds the package twice and compares SHA-256 digests, writing reproducible-build evidence. Local release contract tests (139) passed with shell/Python syntax, diff, YAML, tracker and scope checks; the local Go compiler is unavailable. Main Native test/real-etcd passed, Kubernetes contracts and Source/Privacy audit passed; real-vm and real-PITR were skipped. No Single-Host production gate closed; v0.2.0-dev.4-test.17 remains unsigned/non-immutable and productionReady=false with decision no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/330",
+    "commit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
+    "codeCommit": "28d4b139514e46fbc787e64acf0552d17fc03b83",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/333",
+    "summary": "PR #332 merged as 28d4b139514e46fbc787e64acf0552d17fc03b83. Native CI now emits bounded deterministic SPDX 2.3 evidence from the exact Debian package metadata, declared runtime dependencies and Go module graph, plus a SHA-256 sidecar. Main Native source/package checks, real-etcd, Kubernetes contracts and Source/Privacy audit passed; real-vm and real-PITR were skipped. The SBOM is evidence plumbing only: OS vulnerability completeness, signing, provenance, Ubuntu installation, backup/restore, upgrade/rollback, load/soak, user feedback and production qualification remain open. productionReady=false with decision no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/332",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
