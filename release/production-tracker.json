@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T03:34:00Z",
+  "updatedAt": "2026-11-25T03:42:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -32,7 +32,7 @@
   "lastCompleted": {
     "commit": "293d6c76923830ac64df8b67c6cafcdb02396739",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
-    "summary": "PR #336 merged as 293d6c76923830ac64df8b67c6cafcdb02396739; it adds consistent ProtectKernel*, personality, SUID/real-time and native syscall-architecture hardening to all five Native systemd units and enforces that contract in the package-layout tests. Pull-request Native test/package and real-etcd checks passed (run 45540442228, jobs 138957372510 and 138957373145); Kubernetes contracts and source/privacy checks passed (runs 45540442256 and 45540442304). Real-vm and real-PITR were skipped because this was not an authorized candidate qualification run. The artifact candidate remains mutable/unsigned and productionReady=false with decision no-go."
+    "summary": "PR #336 merged as 293d6c76923830ac64df8b67c6cafcdb02396739; PR #337 merged as 0c26c3cdae9cbe51086de85b7cae71cbf63c85ff to synchronize tracker/status. The post-merge Main checks for the hardened candidate passed: Native test/package and real-etcd (run 45541303215, jobs 138960205766 and 138960206134), Kubernetes contracts (45541303232) and Source/Privacy (45541303259). Real-vm and real-PITR were skipped; private-alpha publisher run 45541619379 created no release because the repository is public. The artifact candidate remains mutable/unsigned and productionReady=false with decision no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -521,7 +521,11 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442228",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442256",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442304"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45540442304",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303232",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303259",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541619379"
       ]
     },
     {
@@ -687,7 +691,12 @@
         "The exact immutable candidate must be rebuilt from current scoped Main commit 28d4b139514e46fbc787e64acf0552d17fc03b83.",
         "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate."
       ],
-      "nextStep": "Build the next immutable candidate from 545cf797b30958d1d60e8cf5177ee13c37566e00, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true."
+      "nextStep": "Build the next immutable candidate from 545cf797b30958d1d60e8cf5177ee13c37566e00, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
+      "lastEvidence": [
+        "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/293d6c76923830ac64df8b67c6cafcdb02396739",
+        "Post-merge Main real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215/job/138961198396",
+        "Post-merge Main real-etcd passed (not Ubuntu installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45541303215/job/138960206134"
+      ]
     },
     {
       "id": "E2E-H01",
@@ -738,7 +747,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/337",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -771,15 +780,15 @@
       "commit": "293d6c76923830ac64df8b67c6cafcdb02396739",
       "codeCommit": "293d6c76923830ac64df8b67c6cafcdb02396739",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
-      "summary": "PR #336 merged as 293d6c76923830ac64df8b67c6cafcdb02396739. It hardens all five Native systemd units with kernel/privilege restrictions and adds package-layout contract coverage. PR checks passed: Native test/package and real-etcd (run 45540442228), Kubernetes contracts (45540442256) and Source/Privacy (45540442304); real-vm/PITR were skipped. A fresh immutable candidate from this commit is required; productionReady remains false and decision no-go.",
+      "summary": "PR #336 code merged as 293d6c76923830ac64df8b67c6cafcdb02396739; PR #337 documentation merged as 0c26c3cdae9cbe51086de85b7cae71cbf63c85ff. Post-merge Main Native test/package and real-etcd passed (45541303215), Kubernetes contracts passed (45541303232), Source/Privacy passed (45541303259); real-vm/PITR were skipped. The private-alpha publisher (45541619379) correctly created no release because the repository is public. Rebuild a fresh immutable candidate from the code commit 293d6c76923830ac64df8b67c6cafcdb02396739; productionReady remains false and decision no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/337"
     },
     "commit": "293d6c76923830ac64df8b67c6cafcdb02396739",
     "codeCommit": "293d6c76923830ac64df8b67c6cafcdb02396739",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
-    "documentationPullRequest": null,
-    "summary": "PR #336 merged as 293d6c76923830ac64df8b67c6cafcdb02396739; all five Native systemd units now carry consistent kernel/privilege hardening and package-layout tests enforce it. The existing v0.2.0-dev.4-test.17 release remains the prior mutable/unsigned artifact set; no new candidate has been built. PR checks passed for source/package, real-etcd, Kubernetes contracts and Source/Privacy; real-vm/PITR were skipped. ProductionReady=false with decision no-go; Ubuntu installation, restart/recovery, backup/restore, upgrade/rollback, load/soak, signing/provenance and maintainer approval remain open.",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/337",
+    "summary": "PR #336 merged as 293d6c76923830ac64df8b67c6cafcdb02396739; all five Native systemd units now carry consistent kernel/privilege hardening and package-layout tests enforce it. PR and post-merge Main checks passed for source/package, real-etcd, Kubernetes contracts and Source/Privacy (Main Native run 45541303215; Kubernetes 45541303232; Source/Privacy 45541303259). Real-vm/PITR were skipped. The private-alpha publisher run 45541619379 created no release because this repository is public. The existing v0.2.0-dev.4-test.17 artifact set remains mutable/unsigned; a fresh immutable candidate from 293d6c76923830ac64df8b67c6cafcdb02396739 is required. productionReady=false with decision no-go; Ubuntu installation, restart/recovery, backup/restore, upgrade/rollback, load/soak, signing/provenance and maintainer approval remain open.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/336",
     "nextCandidateRequired": true
   },
