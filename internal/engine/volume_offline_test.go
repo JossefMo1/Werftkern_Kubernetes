@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"path/filepath"
 )
 
 type redirectTransport struct{ base string }
@@ -34,8 +35,13 @@ func TestOfflineVolumeGuardIncludesForeignAndRootMounts(t *testing.T) {
 		{"stopped-no-restart", "/var/lib/werftkern/volumes/v/data", "no", false, false, false},
 		{"sibling", "/var/lib/werftkern/volumes/v/database", "always", true, false, false},
 		{"tmpfs", "", "no", true, false, false},
+		{"unresolved", "__temp_missing_mount__", "always", true, false, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
+			source := tc.source
+			if tc.name == "unresolved" {
+				source = filepath.Join(t.TempDir(), "missing", "data")
+			}
 			id := strings.Repeat("a", 64)
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.Method != "GET" {
@@ -50,7 +56,7 @@ func TestOfflineVolumeGuardIncludesForeignAndRootMounts(t *testing.T) {
 					json.NewEncoder(w).Encode([]map[string]string{{"Id": id}})
 				case "/v1.51/containers/" + id + "/json":
 					json.NewEncoder(w).Encode(map[string]any{
-						"Mounts": []map[string]string{{"Source": tc.source}}, "State": map[string]bool{"Running": tc.running, "Restarting": tc.restarting},
+						"Mounts": []map[string]string{{"Source": source}}, "State": map[string]bool{"Running": tc.running, "Restarting": tc.restarting},
 						"HostConfig": map[string]any{"RestartPolicy": map[string]string{"Name": tc.policy}},
 					})
 				default:
