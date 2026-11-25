@@ -29,6 +29,22 @@ class NativeBootstrapTests(unittest.TestCase):
         )
         self.assertEqual(parsed["package"], "present")
 
+    def test_probe_parser_rejects_invalid_utf8(self):
+        with self.assertRaisesRegex(Blocked, "^REMOTE_PREFLIGHT_ENCODING_INVALID$"):
+            native_bootstrap._parse_probe(b"\\xff")
+
+    def test_hosts_inputs_reject_invalid_utf8(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            hosts = root / "hosts"
+            known = root / "known_hosts"
+            hosts.write_bytes(b"\\xff")
+            known.write_bytes(b"\\xff")
+            with self.assertRaisesRegex(Blocked, "^INPUT_FILE_ENCODING_INVALID$"):
+                native_bootstrap._hosts_file(hosts)
+            with self.assertRaisesRegex(Blocked, "^INPUT_FILE_ENCODING_INVALID$"):
+                native_bootstrap._known_hosts_candidates(known)
+
     def inventory(self, root):
         hosts = root / "hosts"
         hosts.write_text(
