@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T05:59:45.537Z",
+  "updatedAt": "2026-11-25T07:03:21.507Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/343",
-    "summary": "PR #343 merged as 7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f. Native volume-offline maintenance now fails closed when a Docker mount source is non-absolute or cannot be canonicalized; previously the unresolved lexical path could bypass overlap detection. Regression fixtures use real temporary paths and cover an unresolved source. Initial PR run 45556326419 failed because the existing synthetic sibling fixture did not exist on the runner; the failure was corrected in the follow-up commit and the final PR checks passed: Native 45556658841 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45556658615, Source/Privacy 45556658688. Post-merge Main checks passed: Native 45556987066 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45556987133, and Source/Privacy 45556987395. This is CI evidence only; productionReady remains false and the decision remains no-go."
+    "commit": "a2615800318d582997746f77fc7c4646bb98854c",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/345",
+    "summary": "PR #345 merged as a2615800318d582997746f77fc7c4646bb98854c. The Native state validator now rejects malformed gateway, workload, node, allocation and receipt index keys and rejects event logs above the 160-entry bound before reconciliation or backup. Regression coverage is in internal/model/model_test.go (TestStateRejectsIndexMismatches). PR checks passed: Native 45564320179 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45564320159, Source/Privacy 45564320314. Post-merge Main checks passed: Native 45564642192 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45564642195, and Source/Privacy 45564642260. This is CI evidence only; productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes after PR #343.",
-      "The exact candidate must be rebuilt from current Main commit 7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f; the test-release workflow only prepares experimental assets and does not qualify production.",
+      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes after PR #345.",
+      "The exact candidate must be rebuilt from current Main commit a2615800318d582997746f77fc7c4646bb98854c; the test-release workflow only prepares experimental assets and does not qualify production.",
       "PR and post-merge Main checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -53,7 +53,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main commit 7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from current Main commit a2615800318d582997746f77fc7c4646bb98854c, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -533,7 +533,7 @@
         "The experimental test-release workflow now packages bounded SBOM evidence, but no immutable production candidate has been rebuilt or qualified.",
         "The released development artifacts remain unsigned; provenance/signature and production qualification remain open."
       ],
-      "nextStep": "Build the next immutable candidate from merged Main commit 7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f; PR #343 CI checks and the volume guard regression do not close the live Ubuntu installation gate.",
+      "nextStep": "Build the next immutable candidate from merged Main commit a2615800318d582997746f77fc7c4646bb98854c; PR #345 CI checks and the volume guard regression do not close the live Ubuntu installation gate.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "PR #341 Native test and real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45549728444",
@@ -551,7 +551,10 @@
         "Post-merge Main Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45556987066",
         "Post-merge Main Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45556987133",
         "Post-merge Main Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45556987395",
-        "Post-merge Main real-vm and real-PITR skipped; no live single-host gate closed."
+        "Post-merge Main real-vm and real-PITR skipped; no live single-host gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/345",
+        "PR #345 Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45564320179",
+        "Post-merge Main Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45564642192"
       ]
     },
     {
@@ -729,7 +732,7 @@
         "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate; Main real-vm and real-PITR jobs for PR #343 were skipped.",
         "The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; this blocker is recorded once and is not retried."
       ],
-      "nextStep": "Build the next immutable candidate from current Main commit 7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
+      "nextStep": "Build the next immutable candidate from current Main commit a2615800318d582997746f77fc7c4646bb98854c, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "Post-merge Main Native test and real-etcd passed (not Ubuntu installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45550035506",
@@ -737,7 +740,11 @@
         "PR #341 and post-merge checks are CI evidence only: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/341",
         "Current Main commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f",
         "PR #343 CI evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback or soak gate closed.",
-        "Post-merge Main real-vm and real-PITR skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45556987066"
+        "Post-merge Main real-vm and real-PITR skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45556987066",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/345",
+        "PR #345 Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45564320179",
+        "Post-merge Main Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45564642192",
+        "Post-merge Main real-vm and real-PITR skipped; no live single-host gate closed."
       ]
     },
     {
@@ -789,7 +796,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/343",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/345",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -819,19 +826,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f",
-      "codeCommit": "7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/343",
-      "summary": "PR #343 merged as 7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f. PR #343 merged as 7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f. Native volume-offline maintenance now fails closed when a Docker mount source is non-absolute or cannot be canonicalized; previously the unresolved lexical path could bypass overlap detection. Regression fixtures use real temporary paths and cover an unresolved source. Initial PR run 45556326419 failed because the existing synthetic sibling fixture did not exist on the runner; the failure was corrected in the follow-up commit and the final PR checks passed: Native 45556658841 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45556658615, Source/Privacy 45556658688. Post-merge Main checks passed: Native 45556987066 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45556987133, and Source/Privacy 45556987395. This is CI evidence only; productionReady remains false and the decision remains no-go. Rebuild a fresh immutable candidate; published test.17 remains stale and unsigned.",
+      "commit": "a2615800318d582997746f77fc7c4646bb98854c",
+      "codeCommit": "a2615800318d582997746f77fc7c4646bb98854c",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/345",
+      "summary": "PR #345 merged as a2615800318d582997746f77fc7c4646bb98854c. The Native state validator now rejects malformed gateway, workload, node, allocation and receipt index keys and rejects event logs above the 160-entry bound before reconciliation or backup. Regression coverage is in internal/model/model_test.go (TestStateRejectsIndexMismatches). PR checks passed: Native 45564320179 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45564320159, Source/Privacy 45564320314. Post-merge Main checks passed: Native 45564642192 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45564642195, and Source/Privacy 45564642260. This is CI evidence only; productionReady remains false and the decision remains no-go. Rebuild a fresh immutable candidate; published test.17 remains stale and unsigned.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/343"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/345"
     },
-    "commit": "7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f",
-    "codeCommit": "7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/343",
+    "commit": "a2615800318d582997746f77fc7c4646bb98854c",
+    "codeCommit": "a2615800318d582997746f77fc7c4646bb98854c",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/345",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/337",
-    "summary": "PR #343 merged as 7ca9f5a603a8b69a99b850b74bbe2dd5d2d9ff4f. Native volume-offline maintenance now fails closed when a Docker mount source is non-absolute or cannot be canonicalized; previously the unresolved lexical path could bypass overlap detection. Regression fixtures use real temporary paths and cover an unresolved source. Initial PR run 45556326419 failed because the existing synthetic sibling fixture did not exist on the runner; the failure was corrected in the follow-up commit and the final PR checks passed: Native 45556658841 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45556658615, Source/Privacy 45556658688. Post-merge Main checks passed: Native 45556987066 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45556987133, and Source/Privacy 45556987395. This is CI evidence only; productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/343",
+    "summary": "PR #345 merged as a2615800318d582997746f77fc7c4646bb98854c. The Native state validator now rejects malformed gateway, workload, node, allocation and receipt index keys and rejects event logs above the 160-entry bound before reconciliation or backup. Regression coverage is in internal/model/model_test.go (TestStateRejectsIndexMismatches). PR checks passed: Native 45564320179 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45564320159, Source/Privacy 45564320314. Post-merge Main checks passed: Native 45564642192 (test and real-etcd success; real-vm/PITR skipped), Kubernetes 45564642195, and Source/Privacy 45564642260. This is CI evidence only; productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/345",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
