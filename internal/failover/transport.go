@@ -47,11 +47,24 @@ func New(base http.RoundTripper, endpoints []string) (*Transport, error) {
 	return t, nil
 }
 func replaySafe(r *http.Request) bool {
-	// An explicit idempotency key is required before retrying arbitrary POSTs.
-	// etcd transactions may mutate state and are not safe to replay after a lost
-	// acknowledgement unless the caller supplied that key.
-	return r.Method == "GET" || r.Method == "HEAD" || r.Header.Get("Idempotency-Key") != "" ||
-		r.Method == "POST" && (r.URL.Path == "/v1/heartbeat" || r.URL.Path == "/v3/kv/range")
+	if r.Method == "GET" || r.Method == "HEAD" {
+		return true
+	}
+	// These POST endpoints are read-only or sequence-protected by contract.
+	if r.Method == "POST" && (r.URL.Path == "/v1/heartbeat" || r.URL.Path == "/v3/kv/range") {
+		return true
+	}
+	// A header alone does not prove that an endpoint implements idempotency.
+	// Keep retries restricted to the API mutations that persist and verify a
+	// receipt keyed by Idempotency-Key; maintenance, registration and restore
+	// endpoints must not be replayed after an ambiguous acknowledgement.
+	if r.Header.Get("Idempotency-Key") == "" {
+		return false
+	}
+	if r.Method == "POST" && (r.URL.Path == "/v1/workloads" || strings.HasPrefix(r.URL.Path, "/v1/workloads/")) {
+		return true
+	}
+	return r.Method == "PUT" && strings.HasPrefix(r.URL.Path, "/v1/secrets/")
 }
 func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if r.Body != nil && r.GetBody != nil {
