@@ -55,7 +55,7 @@
     }
     return response.json();
   }
-  function healthy(n) { return !!n && !n.revoked && n.healthy && Date.now() - Date.parse(n.lastSeen) < 30000; }
+  function healthy(n) { const age = n ? Date.now() - Date.parse(n.lastSeen) : Infinity; return !!n && !n.revoked && n.healthy && Number.isFinite(age) && age >= -5000 && age < 30000; }
   async function refresh() {
     if (!token || busy) return;
     const wasConnected = connected;
