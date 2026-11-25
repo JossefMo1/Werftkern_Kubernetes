@@ -90,7 +90,10 @@ def configuration(file,scope):
     if not re.fullmatch(r'[A-Za-z0-9_+/-]{32,128}={0,2}',g['repo1-cipher-pass']):raise Blocked('PITR_RANDOM_CIPHER_SECRET_REQUIRED')
     pg=path_value(local['pg1-path']);repo=path_value(g['repo1-path']);sock=path_value(local['pg1-socket-path'])
     if not independent(pg,repo):raise Blocked('PITR_REPO_OVERLAPS_DATA')
-    port=int(local['pg1-port'])
+    try:
+        port=int(local['pg1-port'])
+    except (TypeError,ValueError):
+        raise Blocked('PITR_PORT_INVALID') from None
     if not 1024<=port<=65535:raise Blocked('PITR_PORT_INVALID')
     return {'source':pg,'repository':repo,'socket':sock,'port':port,'sha256':hashlib.sha256(raw).hexdigest()}
 
