@@ -120,7 +120,6 @@ class PITRTests(unittest.TestCase):
    with self.assertRaisesRegex(Blocked,'INCLUDE'):pitr.configuration(file,'shop')
 ):
     pitr.prepare({'format':'werftkern-pitr/v1','name':'shop','pgPath':str(root/'source'),'socketDir':str(root/'socket'),'pgPort':5432,'repositoryPath':str(root/'repository')},secret,file)
-
  def test_config_preserves_encryption_and_archive_checks(self):
   with tempfile.TemporaryDirectory() as d:
    file=self.config(pathlib.Path(d));pitr.configuration(file,'shop')

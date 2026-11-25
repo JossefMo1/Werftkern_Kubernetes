@@ -66,7 +66,10 @@ def prepare(plan,passfile,out):
     scope=name(plan['name']);pg=path_value(plan['pgPath']);repo=path_value(plan['repositoryPath']);sock=path_value(plan['socketDir'])
     if not independent(pg,repo) or type(plan['pgPort']) is not int or not 1024<=plan['pgPort']<=65535:raise Blocked('PITR_REPOSITORY_OR_PORT_INVALID')
     try:
+        try:
         secret=private_read(passfile,256).decode().strip()
+    except UnicodeDecodeError:
+        raise Blocked('PITR_CIPHER_SECRET_ENCODING_INVALID') from None
     except UnicodeDecodeError:
         raise Blocked('PITR_CIPHER_SECRET_ENCODING_INVALID') from None
     if not re.fullmatch(r'[A-Za-z0-9_+/-]{32,128}={0,2}',secret):raise Blocked('PITR_RANDOM_CIPHER_SECRET_REQUIRED')
