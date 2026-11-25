@@ -413,13 +413,16 @@ func MutateWorkload(s *State, name, kind, key string, expected int64, now time.T
 			return Receipt{}, errors.New("NO_ROLLBACK_REVISION")
 		}
 		previous := w.History[len(w.History)-1]
-		w.History = append(w.History[:len(w.History)-1], w.Spec)
+		// Validate the archived revision before changing history or the active spec.
+		// Callers execute mutations inside a transactional state update; keeping this
+		// branch side-effect free on validation failure also protects direct callers.
 		if err := s.ValidateSecretAvailability(previous); err != nil {
 			return Receipt{}, err
 		}
 		if err := s.ValidateVolumeAvailability(previous, w.UID); err != nil {
 			return Receipt{}, err
 		}
+		w.History = append(w.History[:len(w.History)-1], w.Spec)
 		w.Spec = previous
 		w.Generation++
 		w.Phase = "pending"
