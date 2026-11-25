@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T15:06:00Z",
+  "updatedAt": "2026-11-25T15:20:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -856,7 +856,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -892,12 +892,12 @@
       "summary": "PR #368 merged as 79c8688286aacd916156dfb638e86c5372812976. Upgrade recovery now validates a recoverable interrupted-journal phase before signature verification or any host mutation; completed or unknown phases fail closed with RECOVERY_PHASE_NOT_INTERRUPTED. The regression test test_recover_rejects_completed_journal_before_external_commands verifies that no runner command executes for a completed journal. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952 (test, race/static/package checks and real-etcd success; real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427 and real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747 skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555833 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904. This is CI/code-hardening evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
       "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
-      "documentationPullRequest": "pending"
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369"
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/364",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
     "summary": "PR #368 merged as 79c8688286aacd916156dfb638e86c5372812976. Upgrade recovery now validates a recoverable interrupted-journal phase before signature verification or any host mutation; completed or unknown phases fail closed with RECOVERY_PHASE_NOT_INTERRUPTED. The regression test test_recover_rejects_completed_journal_before_external_commands verifies that no runner command executes for a completed journal. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952 (test, race/static/package checks and real-etcd success; real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427 and real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747 skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555833 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904. This is CI/code-hardening evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365",
     "nextCandidateRequired": true
