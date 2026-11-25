@@ -92,6 +92,9 @@ func (a *Agent) Accept(snapshot model.AssignmentSnapshot) error {
 		if x.NodeID != a.Config.NodeID || !model.ValidID(x.ID) || (x.Desired != "run" && x.Desired != "stop") {
 			return errors.New("ASSIGNMENT_SCOPE_INVALID")
 		}
+		if x.Spec.Node != "" && x.Spec.Node != x.NodeID {
+			return errors.New("ASSIGNMENT_NODE_SELECTOR_MISMATCH")
+		}
 		if x.Spec.Port > 0 && (x.HostPort < 22000 || x.HostPort >= 23000) || x.Spec.Port == 0 && x.HostPort != 0 {
 			return errors.New("ASSIGNMENT_PORT_INVALID")
 		}
