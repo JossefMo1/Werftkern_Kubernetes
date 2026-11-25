@@ -1,3 +1,15 @@
+# Allocation spec-integrity handoff — PR #354 (2026-11-25)
+
+- Code: [PR #354](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/354), merged commit [39183a8](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/39183a82fb1062674799a3483f5ae30a9e4b2e92).
+- Runtime/state change: allocation specs must match the referenced workload's current generation or a retained historical revision; divergent state is rejected before reconciliation and secret/volume authorization.
+- PR checks: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345023), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345226), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345089) — all successful; real-etcd passed, real-vm/PITR skipped.
+- Main checks: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590771288), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770738), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770191) — all successful; real-etcd passed, real-vm/PITR skipped.
+- No Single-Host production gate closed. productionReady=false, decision no-go; the published v0.2.0-dev.4-test.17 remains stale, mutable and unsigned.
+- HA/multi-host/quorum and Kubernetes-Production remain deferred outside the first Native scope.
+- Next handoff: create one immutable candidate from [39183a8](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/39183a82fb1062674799a3483f5ae30a9e4b2e92), then run candidate-bound Ubuntu installation, backup/restore, upgrade/rollback, bounded soak and signing/provenance checks. The current connector cannot create tags or dispatch workflow_dispatch; that blocker is recorded and not retried.
+
+---
+
 # Allocation cross-index handoff — PR #352 (2026-11-25)
 
 - Code: [PR #352](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/352), merged commit [408aee6](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/408aee69fed10b3974d6022a2e3719a9cd495981).
