@@ -1,3 +1,15 @@
+# Allocation cross-index handoff — PR #352 (2026-11-25)
+
+- Code: [PR #352](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/352), merged commit [408aee6](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/408aee69fed10b3974d6022a2e3719a9cd495981).
+- Runtime/state change: persisted allocation records are rejected before reconciliation and secret authorization when the allocation name does not match the workload or its generation is ahead of the workload generation; valid current-generation records remain accepted.
+- PR checks: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269729), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269745), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269765) — all successful; real-etcd passed, real-vm/PITR skipped.
+- Main checks: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724784), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724789), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724912) — all successful; real-etcd passed, real-vm/PITR skipped.
+- No Single-Host production gate closed. `productionReady=false`, decision `no-go`; the published `v0.2.0-dev.4-test.17` remains stale, mutable and unsigned.
+- HA/multi-host/quorum and Kubernetes-Production remain deferred outside the first Native scope.
+- Next handoff: create one immutable candidate from commit [408aee6](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/408aee69fed10b3974d6022a2e3719a9cd495981), then run candidate-bound Ubuntu installation, backup/restore, upgrade/rollback, bounded soak and signing/provenance checks. The current connector cannot create tags or dispatch workflow_dispatch; that blocker is recorded and not retried.
+
+---
+
 # Idempotency receipt state handoff — PR #349 (2026-11-25)
 
 [PR #349](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/349) merged as [5d9813c02d243854d9fa33127b7236274a01257c](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5d9813c02d243854d9fa33127b7236274a01257c). Persisted idempotency receipts are now validated fail-closed before reconciliation or backup: request ID, SHA-256 hash, workload or validated secret owner, positive generation, and timestamp are required. Secret mutation receipts retain the explicit `secret:<name>/<version>` owner namespace with name/version validation. Negative coverage covers malformed hash, owner, generation and timestamp plus valid secret-owner compatibility.
