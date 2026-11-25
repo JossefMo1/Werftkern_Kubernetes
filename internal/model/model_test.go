@@ -104,6 +104,32 @@ func TestRollbackCreatesNewGeneration(t *testing.T) {
 		t.Fatal(r, e)
 	}
 }
+func TestRollbackValidationFailureDoesNotMutateHistory(t *testing.T) {
+	now := time.Now()
+	s := NewState(ID(), "test", now)
+	s.Secrets = map[string]SecretVersion{"db/1": {Name: "db", Version: 1, Sealed: "sealed"}}
+	initial := validSpec()
+	initial.Secrets = []SecretRef{{Name: "db", Version: 1}}
+	q := ApplyRequest{APIVersion: APIVersion, Name: "demo", Spec: initial}
+	if _, e := Apply(s, q, ID(), now); e != nil {
+		t.Fatal(e)
+	}
+	q.ExpectedGeneration = 1
+	q.Spec = validSpec()
+	if _, e := Apply(s, q, ID(), now); e != nil {
+		t.Fatal(e)
+	}
+	w := s.Workloads["demo"]
+	before := append([]Spec(nil), w.History...)
+	delete(s.Secrets, "db/1")
+	if _, e := MutateWorkload(s, "demo", "rollback", ID(), 2, now); e == nil {
+		t.Fatal("rollback with unavailable secret succeeded")
+	}
+	if len(w.History) != len(before) || Hash(w.History) != Hash(before) || w.Spec.Image != q.Spec.Image || w.Generation != 2 {
+		t.Fatal("failed rollback mutated active state")
+	}
+}
+
 func TestNoRollbackHistory(t *testing.T) {
 	now := time.Now()
 	s := NewState(ID(), "test", now)
