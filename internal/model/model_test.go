@@ -181,6 +181,42 @@ func TestBoundedEventsAndState(t *testing.T) {
 		t.Fatal("unsupported schema accepted")
 	}
 }
+
+func TestStateRejectsIndexMismatches(t *testing.T) {
+	cases := []struct {
+		name   string
+		change func(*State)
+	}{
+		{"gateway", func(s *State) {
+			s.Gateways = map[string]*Gateway{ID(): {ID: ID()}}
+		}},
+		{"workload", func(s *State) {
+			s.Workloads["demo"] = &Workload{Name: "other"}
+		}},
+		{"node", func(s *State) {
+			s.Nodes[ID()] = &Node{ID: ID()}
+		}},
+		{"allocation", func(s *State) {
+			s.Allocations[ID()] = &Allocation{ID: ID()}
+		}},
+		{"receipt", func(s *State) {
+			s.Receipts[ID()] = Receipt{ID: ID()}
+		}},
+		{"event_limit", func(s *State) {
+			s.Events = make([]Event, 161)
+		}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := NewState(ID(), "test", time.Now())
+			tc.change(s)
+			if err := s.Validate(); err == nil {
+				t.Fatal("malformed persisted index accepted")
+			}
+		})
+	}
+}
+
 func TestHashMapOrder(t *testing.T) {
 	if Hash(map[string]int{"a": 1, "b": 2}) != Hash(map[string]int{"b": 2, "a": 1}) {
 		t.Fatal("unstable hash")
