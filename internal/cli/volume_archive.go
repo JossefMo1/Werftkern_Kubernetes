@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -38,8 +39,93 @@ func openVolumeArchive(path string) (*os.File, error) {
 type restoreDiskReceipt struct {
 	OperationID string               `json:"operationId"`
 	SHA256      string               `json:"sha256"`
+	DataSHA256  string               `json:"dataSha256"`
 	Identity    diskVolumeIdentity   `json:"identity"`
 	Result      volumearchive.Result `json:"result"`
+}
+
+// restoreTreeDigest binds a restore receipt to the exact extracted tree.
+// It hashes paths, types, permissions, sizes and regular-file bytes in the
+// deterministic WalkDir order. Symlinks and special files are never accepted.
+func restoreTreeDigest(root string) (string, error) {
+	info, e := os.Lstat(root)
+	if e != nil {
+		return "", e
+	}
+	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
+		return "", errors.New("RESTORE_DATA_ROOT_UNSAFE")
+	}
+	h := sha256.New()
+	writeU64 := func(v uint64) {
+		var b [8]byte
+		binary.BigEndian.PutUint64(b[:], v)
+		_, _ = h.Write(b[:])
+	}
+	writeU32 := func(v uint32) {
+		var b [4]byte
+		binary.BigEndian.PutUint32(b[:], v)
+		_, _ = h.Write(b[:])
+	}
+	e = filepath.WalkDir(root, func(path string, d os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if d.Type()&os.ModeSymlink != 0 {
+			return errors.New("RESTORE_DATA_ENTRY_UNSAFE")
+		}
+		entry, e := d.Info()
+		if e != nil {
+			return e
+		}
+		if !entry.IsDir() && !entry.Mode().IsRegular() {
+			return errors.New("RESTORE_DATA_ENTRY_UNSAFE")
+		}
+		rel, e := filepath.Rel(root, path)
+		if e != nil {
+			return e
+		}
+		rel = filepath.ToSlash(rel)
+		kind := byte('f')
+		if entry.IsDir() {
+			kind = 'd'
+		}
+		_, _ = h.Write([]byte{kind})
+		if rel == "." {
+			writeU64(0)
+		} else {
+			writeU64(uint64(len(rel)))
+			_, _ = h.Write([]byte(rel))
+		}
+		writeU32(uint32(entry.Mode().Perm()))
+		if entry.IsDir() {
+			return nil
+		}
+		writeU64(uint64(entry.Size()))
+		f, e := safefile.OpenRead(path)
+		if e != nil {
+			return e
+		}
+		n, copyErr := io.Copy(h, f)
+		after, statErr := f.Stat()
+		closeErr := f.Close()
+		if copyErr != nil {
+			return copyErr
+		}
+		if statErr != nil {
+			return statErr
+		}
+		if closeErr != nil {
+			return closeErr
+		}
+		if n != entry.Size() || after.Size() != entry.Size() {
+			return errors.New("RESTORE_DATA_CHANGED_DURING_VERIFY")
+		}
+		return nil
+	})
+	if e != nil {
+		return "", e
+	}
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 // validateVolumeArchiveBackupOutput runs before key creation so an operator
@@ -235,6 +321,13 @@ func volumeArchiveCommand(ctx context.Context, args []string) error {
 		if e != nil || !ds.IsDir() || ds.Mode()&os.ModeSymlink != 0 {
 			return errors.New("RESTORED_DATA_MISSING")
 		}
+		if receipt.DataSHA256 == "" {
+			return errors.New("RESTORE_RECEIPT_DATA_DIGEST_MISSING")
+		}
+		gotDigest, e := restoreTreeDigest(data)
+		if e != nil || gotDigest != receipt.DataSHA256 {
+			return errors.New("RESTORE_TARGET_DATA_INTEGRITY_MISMATCH")
+		}
 	} else if !os.IsNotExist(e) {
 		return e
 	} else {
@@ -253,7 +346,11 @@ func volumeArchiveCommand(ctx context.Context, args []string) error {
 		if hex.EncodeToString(hash.Sum(nil)) != digest {
 			return errors.New("VOLUME_ARCHIVE_CHANGED_DURING_RESTORE")
 		}
-		receipt = restoreDiskReceipt{*operation, digest, expected, result}
+		dataDigest, e := restoreTreeDigest(filepath.Join(stage, "data"))
+		if e != nil {
+			return e
+		}
+		receipt = restoreDiskReceipt{OperationID: *operation, SHA256: digest, DataSHA256: dataDigest, Identity: expected, Result: result}
 		if e = safefile.JSON(filepath.Join(stage, "identity.json"), expected, 0600); e != nil {
 			return e
 		}
@@ -276,7 +373,7 @@ func volumeArchiveCommand(ctx context.Context, args []string) error {
 	if e = c.Call(ctx, "POST", "/v1/volumes/"+name+"/restore", q, nil, *operation); e != nil {
 		return fmt.Errorf("DISK_RESTORED_API_ACK_PENDING_RETRY_SAME_OPERATION: %w", e)
 	}
-	return json.NewEncoder(os.Stdout).Encode(map[string]any{"operationId": *operation, "targetVolume": v.ID, "source": receipt.Result.Header, "sha256": digest, "applicationsRemainPaused": true})
+	return json.NewEncoder(os.Stdout).Encode(map[string]any{"operationId": *operation, "targetVolume": v.ID, "source": receipt.Result.Header, "sha256": digest, "dataSha256": receipt.DataSHA256, "applicationsRemainPaused": true})
 }
 func syncDir(p string) error {
 	f, e := os.Open(p)
