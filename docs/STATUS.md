@@ -1,3 +1,14 @@
+# Restore receipt tree-integrity handoff — PR #362 (2026-11-25)
+
+- Code: [PR #362](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/362), merged commit [97d2fd0](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/97d2fd03d551df707aeff8895a79e8a179382458).
+- Recovery/runtime change: Native volume restore receipts now include a deterministic digest of the extracted data tree (paths, types, permissions, sizes and regular-file bytes). Every retry verifies the receipt before sending the completion acknowledgement; drift, unsafe entries or legacy receipts without a tree digest fail closed and never replace the existing tree.
+- Regression coverage: the privileged CLI integration test mutates the extracted tree before a lost-ACK retry and after completion, verifies the integrity error, confirms the pending state is not acknowledged, then confirms a clean retry succeeds.
+- PR checks: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127583), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629127066) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629128409) — all successful; real-vm/PITR skipped.
+- Post-merge Main checks: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629751096), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750862) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45629750919) — all successful; real-vm/PITR skipped.
+- No Single-Host production gate closed. `productionReady=false`, decision `no-go`; the published v0.2.0-dev.4-test.17 remains stale, mutable and unsigned.
+- HA/multi-host/quorum and Kubernetes-Production remain deferred outside the first Native scope.
+- Next handoff: build one immutable candidate from [97d2fd0](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/97d2fd03d551df707aeff8895a79e8a179382458), then run candidate-bound Ubuntu installation, backup/restore, upgrade/rollback, bounded soak and signing/provenance checks. The current connector cannot create tags or dispatch workflow_dispatch; that blocker is recorded and not repeated.
+
 # Failover replay-safety handoff — PR #356 (2026-11-25)
 
 - Code: [PR #356](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/356), merged commit [bc17c84](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bc17c840e8acf22c91f47f354b338f97a8a5a050).
