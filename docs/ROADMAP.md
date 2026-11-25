@@ -1,3 +1,9 @@
+# Native single-host release handoff — PR #326 (2026-11-25)
+
+[PR #326](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/326) merged as [204f5de](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/204f5de445c275efab544ebe1e5c21f900ca1e68). Dashboard errors are now bounded to API codes and presented with German operator guidance; status/error/update announcements are accessible live regions, successful mutations clear stale alerts, and Werftkern branding is consistent.
+
+PR and post-merge Main Native/real-etcd, Kubernetes contract and Source/Privacy checks passed. Real-vm and real-PITR were skipped, and local Chromium could not start; these results do not close a Single-Host production gate. The mutable test.17 candidate remains unsigned/non-immutable and `productionReady=false`. Build the next immutable candidate from [204f5de](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/204f5de445c275efab544ebe1e5c21f900ca1e68) before live installation, backup/restore, upgrade/rollback, bounded soak and signing evidence. HA, multi-host and Kubernetes-production remain deferred.
+
 # Native single-host release handoff — PR #324 (2026-11-25)
 
 [PR #324](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/324) merged as [9671c64](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/9671c64edbe67f02ca18a21244abdd0833c55c5b). State/journal writes and operation locks now fail closed on symlinked parent components, preventing redirected local state creation.
