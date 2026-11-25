@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T09:34:20.602Z",
+  "updatedAt": "2026-11-25T10:05:25.871Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "408aee69fed10b3974d6022a2e3719a9cd495981",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/352",
-    "summary": "PR #352 merged as 408aee69fed10b3974d6022a2e3719a9cd495981. Allocation records are now validated against the referenced workload name and generation before reconciliation or secret authorization; cross-index name mismatches and future generations fail closed. Negative coverage verifies both corruption paths while a valid baseline remains accepted. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269729 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269745, Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269765. Post-merge Main checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724784 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724789, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724912. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "39183a82fb1062674799a3483f5ae30a9e4b2e92",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/354",
+    "summary": "PR #354 merged as 39183a82fb1062674799a3483f5ae30a9e4b2e92. Persisted allocation records now require their specification to match the referenced workload's current generation or one of its retained historical revisions; divergent current and unknown historical specs fail closed before reconciliation or secret/volume authorization. Negative coverage verifies current and historical mismatch rejection while a known historical allocation remains accepted. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345023 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345226, Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345089. Post-merge Main checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590771288 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770738, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770191. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,8 +40,8 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes through PR #352.",
-      "The exact candidate must be rebuilt from current Main commit 408aee69fed10b3974d6022a2e3719a9cd495981; the test-release workflow only prepares experimental assets and does not qualify production.",
+      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes through PR #354.",
+      "The exact candidate must be rebuilt from current Main commit 39183a82fb1062674799a3483f5ae30a9e4b2e92; the test-release workflow only prepares experimental assets and does not qualify production.",
       "PR and post-merge Main checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open."
@@ -53,7 +53,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main commit 408aee69fed10b3974d6022a2e3719a9cd495981, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from current Main commit 39183a82fb1062674799a3483f5ae30a9e4b2e92, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -530,11 +530,11 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b"
       ],
       "blockers": [
-        "The exact immutable candidate must be rebuilt from current scoped Main commit 408aee69fed10b3974d6022a2e3719a9cd495981; the published test.17 artifact is stale.",
-        "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate; Main real-vm and real-PITR jobs for PR #352 were skipped.",
+        "The exact immutable candidate must be rebuilt from current scoped Main commit 39183a82fb1062674799a3483f5ae30a9e4b2e92; the published test.17 artifact is stale.",
+        "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate; Main real-vm and real-PITR jobs for PR #354 were skipped.",
         "The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; this blocker is recorded once and is not retried."
       ],
-      "nextStep": "Build the next immutable candidate from current Main commit 408aee69fed10b3974d6022a2e3719a9cd495981, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
+      "nextStep": "Build the next immutable candidate from current Main commit 39183a82fb1062674799a3483f5ae30a9e4b2e92, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "PR #341 Native test and real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45549728444",
@@ -567,7 +567,15 @@
         "Post-merge Main Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724784",
         "Post-merge Main Kubernetes checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724789",
         "Post-merge Main Source/Privacy checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724912",
-        "PR #352 and post-merge Main checks are CI evidence only; real-vm and PITR were skipped and no live Single-Host gate closed."
+        "PR #352 and post-merge Main checks are CI evidence only; real-vm and PITR were skipped and no live Single-Host gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/354",
+        "PR #354 Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345023",
+        "PR #354 Kubernetes checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345226",
+        "PR #354 Source/Privacy checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345089",
+        "Post-merge Main Native checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590771288",
+        "Post-merge Main Kubernetes checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770738",
+        "Post-merge Main Source/Privacy checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770191",
+        "PR #354 and post-merge Main checks are CI evidence only; real-vm and PITR were skipped and no live Single-Host gate closed."
       ]
     },
     {
@@ -813,7 +821,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/352",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/354",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -843,19 +851,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "408aee69fed10b3974d6022a2e3719a9cd495981",
-      "codeCommit": "408aee69fed10b3974d6022a2e3719a9cd495981",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/352",
-      "summary": "PR #352 merged as 408aee69fed10b3974d6022a2e3719a9cd495981. Allocation records are now validated against the referenced workload name and generation before reconciliation or secret authorization; cross-index name mismatches and future generations fail closed. Negative coverage verifies both corruption paths while a valid baseline remains accepted. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269729 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269745, Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269765. Post-merge Main checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724784 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724789, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724912. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "39183a82fb1062674799a3483f5ae30a9e4b2e92",
+      "codeCommit": "39183a82fb1062674799a3483f5ae30a9e4b2e92",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/354",
+      "summary": "PR #354 merged as 39183a82fb1062674799a3483f5ae30a9e4b2e92. Persisted allocation records now require their specification to match the referenced workload's current generation or one of its retained historical revisions; divergent current and unknown historical specs fail closed before reconciliation or secret/volume authorization. Negative coverage verifies current and historical mismatch rejection while a known historical allocation remains accepted. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345023 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345226, Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345089. Post-merge Main checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590771288 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770738, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770191. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/352"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/354"
     },
-    "commit": "408aee69fed10b3974d6022a2e3719a9cd495981",
-    "codeCommit": "408aee69fed10b3974d6022a2e3719a9cd495981",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/352",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/353",
-    "summary": "PR #352 merged as 408aee69fed10b3974d6022a2e3719a9cd495981. Allocation records are now validated against the referenced workload name and generation before reconciliation or secret authorization; cross-index name mismatches and future generations fail closed. Negative coverage verifies both corruption paths while a valid baseline remains accepted. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269729 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269745, Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585269765. Post-merge Main checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724784 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724789, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45585724912. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/352",
+    "commit": "39183a82fb1062674799a3483f5ae30a9e4b2e92",
+    "codeCommit": "39183a82fb1062674799a3483f5ae30a9e4b2e92",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/354",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/355",
+    "summary": "PR #354 merged as 39183a82fb1062674799a3483f5ae30a9e4b2e92. Persisted allocation records now require their specification to match the referenced workload's current generation or one of its retained historical revisions; divergent current and unknown historical specs fail closed before reconciliation or secret/volume authorization. Negative coverage verifies current and historical mismatch rejection while a known historical allocation remains accepted. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345023 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345226, Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590345089. Post-merge Main checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590771288 (test and real-etcd success; real-vm/PITR skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770738, and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45590770191. This is CI evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/354",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
