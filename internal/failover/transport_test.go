@@ -39,6 +39,41 @@ func TestFailoverReplayAndSticky(t *testing.T) {
 		t.Fatal(calls.Load())
 	}
 }
+func TestKeyedNonIdempotentMutationDoesNotReplay(t *testing.T) {
+	n := 0
+	tr, _ := New(rt(func(*http.Request) (*http.Response, error) {
+		n++
+		return nil, errors.New("lost ack")
+	}), []string{"https://a", "https://b"})
+	r, _ := http.NewRequest("POST", "https://a/v1/maintenance", strings.NewReader("body"))
+	r.Header.Set("Idempotency-Key", "present-but-insufficient")
+	_, _ = tr.RoundTrip(r)
+	if n != 1 {
+		t.Fatalf("keyed non-idempotent mutation replayed %d times", n)
+	}
+}
+
+func TestKeyedSecretMutationReplays(t *testing.T) {
+	var calls atomic.Int32
+	tr, _ := New(rt(func(r *http.Request) (*http.Response, error) {
+		calls.Add(1)
+		if calls.Load() == 1 {
+			return nil, errors.New("lost ack")
+		}
+		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader("ok"))}, nil
+	}), []string{"https://a", "https://b"})
+	r, _ := http.NewRequest("PUT", "https://a/v1/secrets/db", strings.NewReader("payload"))
+	r.Header.Set("Idempotency-Key", "same-id")
+	out, e := tr.RoundTrip(r)
+	if e != nil {
+		t.Fatal(e)
+	}
+	out.Body.Close()
+	if calls.Load() != 2 {
+		t.Fatalf("keyed secret mutation was not retried: %d", calls.Load())
+	}
+}
+
 func TestNoAmbiguousMutationReplay(t *testing.T) {
 	n := 0
 	tr, _ := New(rt(func(r *http.Request) (*http.Response, error) { n++; return nil, errors.New("lost ack") }), []string{"https://a", "https://b"})
