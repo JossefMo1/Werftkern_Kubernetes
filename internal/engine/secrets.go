@@ -16,6 +16,52 @@ const DefaultSecretRoot = "/run/werftkern/secrets"
 
 type SecretSource func(context.Context, model.Allocation) (map[string][]byte, error)
 
+type secretManifest struct {
+	SpecHash string            `json:"specHash"`
+	Digests  map[string]string `json:"digests"`
+}
+
+func secretDigest(value []byte) string {
+	return model.Hash(value)
+}
+
+func verifySecretMaterial(dir string, spec model.Spec) error {
+	manifestPath := filepath.Join(dir, ".manifest")
+	info, e := os.Lstat(manifestPath)
+	if e != nil || !info.Mode().IsRegular() || info.Mode().Perm() != 0400 || info.Size() < 1 || info.Size() > 64<<10 {
+		return errors.New("SECRET_MATERIAL_IDENTITY_MISMATCH")
+	}
+	var manifest secretManifest
+	if e = safefile.ReadJSON(manifestPath, &manifest); e != nil || manifest.SpecHash != model.Hash(spec) || len(manifest.Digests) != len(spec.Secrets) {
+		return errors.New("SECRET_MATERIAL_IDENTITY_MISMATCH")
+	}
+	names, e := os.ReadDir(dir)
+	if e != nil || len(names) != len(spec.Secrets)+1 {
+		return errors.New("SECRET_DIRECTORY_CONTENT_MISMATCH")
+	}
+	for _, ref := range spec.Secrets {
+		expected, ok := manifest.Digests[ref.Name]
+		if !ok || !model.ValidSHA256(expected) {
+			return errors.New("SECRET_MATERIAL_IDENTITY_MISMATCH")
+		}
+		f, e := safefile.OpenRead(filepath.Join(dir, ref.Name))
+		if e != nil {
+			return errors.New("SECRET_FILE_UNAVAILABLE")
+		}
+		st, statErr := f.Stat()
+		if statErr != nil || !st.Mode().IsRegular() || st.Mode().Perm() != 0444 || st.Size() < 1 || st.Size() > 4096 {
+			f.Close()
+			return errors.New("SECRET_FILE_UNSAFE")
+		}
+		b, readErr := io.ReadAll(io.LimitReader(f, 4097))
+		f.Close()
+		if readErr != nil || len(b) == 0 || len(b) > 4096 || secretDigest(b) != expected {
+			return errors.New("SECRET_MATERIAL_CONTENT_MISMATCH")
+		}
+	}
+	return nil
+}
+
 func (d *Docker) secretRoot() string {
 	if d.SecretRoot == "" {
 		return DefaultSecretRoot
@@ -70,30 +116,8 @@ func (d *Docker) secretDirectory(ctx context.Context, a model.Allocation) (strin
 		if !st.IsDir() || st.Mode()&os.ModeSymlink != 0 {
 			return "", errors.New("SECRET_DIRECTORY_UNSAFE")
 		}
-		expectedManifest := model.Hash(a.Spec)
-		manifest, e := safefile.OpenRead(filepath.Join(dir, ".manifest"))
-		if e != nil {
-			return "", errors.New("SECRET_MATERIAL_IDENTITY_MISMATCH")
-		}
-		manifestInfo, statErr := manifest.Stat()
-		if statErr != nil || manifestInfo.Mode().Perm() != 0400 || manifestInfo.Size() != int64(len(expectedManifest)) {
-			manifest.Close()
-			return "", errors.New("SECRET_MATERIAL_IDENTITY_MISMATCH")
-		}
-		b, readErr := io.ReadAll(io.LimitReader(manifest, int64(len(expectedManifest)+1)))
-		manifest.Close()
-		if readErr != nil || len(b) != len(expectedManifest) || string(b) != expectedManifest {
-			return "", errors.New("SECRET_MATERIAL_IDENTITY_MISMATCH")
-		}
-		names, e := os.ReadDir(dir)
-		if e != nil || len(names) != len(a.Spec.Secrets)+1 {
-			return "", errors.New("SECRET_DIRECTORY_CONTENT_MISMATCH")
-		}
-		for _, ref := range a.Spec.Secrets {
-			st, e := os.Lstat(filepath.Join(dir, ref.Name))
-			if e != nil || !st.Mode().IsRegular() || st.Mode().Perm() != 0444 {
-				return "", errors.New("SECRET_FILE_UNSAFE")
-			}
+		if e := verifySecretMaterial(dir, a.Spec); e != nil {
+			return "", e
 		}
 		return dir, nil
 	} else if !os.IsNotExist(e) {
@@ -114,6 +138,7 @@ func (d *Docker) secretDirectory(ctx context.Context, a model.Allocation) (strin
 		return "", e
 	}
 	defer os.RemoveAll(tmp)
+	manifest := secretManifest{SpecHash: model.Hash(a.Spec), Digests: map[string]string{}}
 	for _, ref := range a.Spec.Secrets {
 		b, ok := values[ref.Name]
 		if !ok || len(b) == 0 || len(b) > 4096 {
@@ -122,8 +147,9 @@ func (d *Docker) secretDirectory(ctx context.Context, a model.Allocation) (strin
 		if e = safefile.Write(filepath.Join(tmp, ref.Name), b, 0444); e != nil {
 			return "", e
 		}
+		manifest.Digests[ref.Name] = secretDigest(b)
 	}
-	if e = safefile.Write(filepath.Join(tmp, ".manifest"), []byte(model.Hash(a.Spec)), 0400); e != nil {
+	if e = safefile.JSON(filepath.Join(tmp, ".manifest"), manifest, 0400); e != nil {
 		return "", e
 	}
 	if e = os.Chmod(tmp, 0755); e != nil {
