@@ -43,6 +43,8 @@ func (a *API) putSecret(w http.ResponseWriter, r *http.Request) {
 		if !model.ValidRequestID(key) {
 			return errors.New("IDEMPOTENCY_KEY_REQUIRED")
 		}
+		now := a.now()
+		s.ExpireReceipts(now)
 		if receipt, ok := s.Receipts[key]; ok {
 			target, exists := s.Secrets[ref.Key()]
 			if !exists || receipt.WorkloadUID != "secret:"+ref.Key() {
@@ -54,7 +56,7 @@ func (a *API) putSecret(w http.ResponseWriter, r *http.Request) {
 			}
 			return nil
 		}
-		if _, err := s.Request(key, "", a.now()); err != nil {
+		if _, err := s.Request(key, "", now); err != nil {
 			return err
 		}
 		max := 0
@@ -73,8 +75,8 @@ func (a *API) putSecret(w http.ResponseWriter, r *http.Request) {
 			s.Secrets = map[string]model.SecretVersion{}
 		}
 		s.Secrets[ref.Key()] = model.SecretVersion{Name: name, Version: ref.Version, Sealed: sealed}
-		s.Receipts[key] = model.Receipt{ID: key, Hash: model.Hash(sealed), WorkloadUID: "secret:" + ref.Key(), Generation: int64(ref.Version), At: a.now()}
-		s.Event("secret.version-created", name, a.now())
+		s.Receipts[key] = model.Receipt{ID: key, Hash: model.Hash(sealed), WorkloadUID: "secret:" + ref.Key(), Generation: int64(ref.Version), At: now}
+		s.Event("secret.version-created", name, now)
 		return nil
 	})
 	if e != nil {
