@@ -1,3 +1,13 @@
+# Upgrade recovery phase guard handoff — PR #368 (2026-11-25)
+
+- Code: [PR #368](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368), merged commit [79c8688](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/79c8688286aacd916156dfb638e86c5372812976).
+- Runtime/operations change: `werft-ops upgrade recover` now accepts only explicitly interrupted journal phases. Completed or unknown phases fail closed with `RECOVERY_PHASE_NOT_INTERRUPTED` before signature verification or any host mutation.
+- Regression coverage: `test_recover_rejects_completed_journal_before_external_commands` writes a completed private journal, asserts the phase error and proves the command runner was never called.
+- PR checks: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555833) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904) — all successful. [real-vm](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427) and [real-PITR](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747) were skipped because the candidate-input flag was not enabled.
+- No Single-Host production gate closed. `productionReady=false`, decision `no-go`; published test.17 remains stale, mutable and unsigned. The tracker records the exact current Main commit and the connector's tag/dispatch blocker.
+- HA/multi-host/quorum and Kubernetes-Production remain deferred outside the first Native scope.
+- Next handoff: build one immutable candidate from [79c8688](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/79c8688286aacd916156dfb638e86c5372812976), then run candidate-bound Ubuntu installation, backup/restore, upgrade/rollback, bounded soak and signing/provenance checks. The current connector cannot create the authorized tag or dispatch `workflow_dispatch`; that blocker is recorded and not repeated.
+
 # Secret staging content-integrity handoff — PR #365 (2026-11-25)
 
 - Code: [PR #365](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365), merged commit [fc16c997](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653).
