@@ -71,7 +71,10 @@ def _regular(path: pathlib.Path, limit: int, *, private: bool = False) -> bytes:
 
 
 def _hosts_file(path: pathlib.Path) -> dict[str, str]:
-    raw = _regular(path, MAX_HOSTS_FILE_BYTES).decode("utf-8", "strict")
+    try:
+        raw = _regular(path, MAX_HOSTS_FILE_BYTES).decode("utf-8", "strict")
+    except UnicodeDecodeError:
+        raise Blocked("INPUT_FILE_ENCODING_INVALID") from None
     result: dict[str, str] = {}
     for line_no, line in enumerate(raw.splitlines(), 1):
         line = line.split("#", 1)[0].strip()
@@ -157,7 +160,10 @@ def _known_hosts_candidates(path: pathlib.Path) -> list[dict]:
     to derive a safe endpoint and are deliberately ignored. A hostname is only
     accepted when local name resolution produces a private IPv4 address.
     """
-    raw = _regular(path, MAX_KNOWN_HOSTS_BYTES).decode("utf-8", "strict")
+    try:
+        raw = _regular(path, MAX_KNOWN_HOSTS_BYTES).decode("utf-8", "strict")
+    except UnicodeDecodeError:
+        raise Blocked("INPUT_FILE_ENCODING_INVALID") from None
     candidates: dict[tuple[str, int], dict] = {}
     for line in raw.splitlines():
         line = line.strip()
@@ -409,7 +415,10 @@ def _target(spec: dict) -> str:
 def _parse_probe(raw: bytes) -> dict:
     if len(raw) > MAX_REMOTE_JSON_BYTES:
         raise Blocked("REMOTE_PREFLIGHT_OUTPUT_TOO_LARGE")
-    lines = raw.decode("utf-8", "strict").splitlines()
+    try:
+        lines = raw.decode("utf-8", "strict").splitlines()
+    except UnicodeDecodeError:
+        raise Blocked("REMOTE_PREFLIGHT_ENCODING_INVALID") from None
     if not lines or lines[0] != REMOTE_SENTINEL:
         raise Blocked("REMOTE_PREFLIGHT_SENTINEL_MISSING")
     result: dict[str, str] = {}
