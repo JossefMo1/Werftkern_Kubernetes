@@ -28,6 +28,42 @@ var ErrStale = errors.New("ALLOCATION_SUPERSEDED")
 const dockerVersionResponseLimit = 64 << 10
 const dockerJSONResponseLimit = 4 << 20
 
+func readBounded(r io.Reader, limit int) ([]byte, error) {
+	if limit < 0 {
+		return nil, errors.New("RESPONSE_LIMIT_INVALID")
+	}
+	raw, err := io.ReadAll(io.LimitReader(r, int64(limit)+1))
+	if err != nil || len(raw) > limit {
+		return nil, errors.New("RESPONSE_BODY_LIMIT_EXCEEDED")
+	}
+	return raw, nil
+}
+
+func consumeJSONStream(raw []byte) error {
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	for {
+		var message json.RawMessage
+		if err := dec.Decode(&message); err == io.EOF {
+			return nil
+		} else if err != nil || strictjson.Validate(message) != nil {
+			return errors.New("JSON_STREAM_INVALID")
+		}
+		var object map[string]json.RawMessage
+		if err := json.Unmarshal(message, &object); err != nil || object == nil {
+			return errors.New("JSON_STREAM_INVALID")
+		}
+		var status struct {
+			Error string `json:"error"`
+		}
+		if err := json.Unmarshal(message, &status); err != nil {
+			return errors.New("JSON_STREAM_INVALID")
+		}
+		if status.Error != "" {
+			return errors.New("JSON_STREAM_ERROR")
+		}
+	}
+}
+
 type Docker struct {
 	Network            string
 	Volumes            VolumeSource
@@ -244,21 +280,15 @@ func (d *Docker) image(ctx context.Context, image string, refs []model.VolumeRef
 	if r.StatusCode != 200 {
 		return errors.New("IMAGE_PULL_FAILED")
 	}
-	decoder := json.NewDecoder(io.LimitReader(r.Body, 8<<20))
-	for {
-		var x struct {
-			Error string `json:"error"`
-		}
-		e = decoder.Decode(&x)
-		if e == io.EOF {
-			break
-		}
-		if e != nil {
-			return errors.New("IMAGE_PULL_STREAM_INVALID")
-		}
-		if x.Error != "" {
+	raw, e := readBounded(r.Body, 8<<20)
+	if e != nil {
+		return errors.New("IMAGE_PULL_STREAM_INVALID")
+	}
+	if e = consumeJSONStream(raw); e != nil {
+		if e.Error() == "JSON_STREAM_ERROR" {
 			return errors.New("IMAGE_PULL_FAILED")
 		}
+		return errors.New("IMAGE_PULL_STREAM_INVALID")
 	}
 	_, e = d.request(ctx, "GET", "/images/"+url.PathEscape(image)+"/json", nil, &meta)
 	if e != nil {
@@ -505,19 +535,11 @@ func (d *Docker) Load(ctx context.Context, path string) error {
 	if resp.StatusCode != 200 {
 		return errors.New("DEMO_IMAGE_LOAD_FAILED")
 	}
-	dec := json.NewDecoder(io.LimitReader(resp.Body, 1<<20))
-	for {
-		var m struct {
-			Error string `json:"error"`
-		}
-		e := dec.Decode(&m)
-		if e == io.EOF {
-			return nil
-		}
-		if e != nil || m.Error != "" {
-			return errors.New("DEMO_IMAGE_LOAD_FAILED")
-		}
+	raw, e := readBounded(resp.Body, 1<<20)
+	if e != nil || consumeJSONStream(raw) != nil {
+		return errors.New("DEMO_IMAGE_LOAD_FAILED")
 	}
+	return nil
 }
 func (d *Docker) Logs(ctx context.Context, id string) ([]byte, error) {
 	c, _, e := d.inspect(ctx, id)
@@ -539,5 +561,9 @@ func (d *Docker) Logs(ctx context.Context, id string) ([]byte, error) {
 	if r.StatusCode != 200 {
 		return nil, errors.New("LOG_READ_FAILED")
 	}
-	return io.ReadAll(io.LimitReader(r.Body, 65536))
+	data, e := readBounded(r.Body, 65536)
+	if e != nil {
+		return nil, errors.New("LOG_READ_FAILED")
+	}
+	return data, nil
 }
