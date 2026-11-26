@@ -26,6 +26,19 @@ func callTestResponse(t *testing.T, payload string) (testResponse, error) {
 	return out, err
 }
 
+func callTestErrorResponse(t *testing.T, payload string) error {
+	t.Helper()
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadGateway)
+		_, _ = w.Write([]byte(payload))
+	}))
+	t.Cleanup(server.Close)
+
+	client := &Client{HTTP: server.Client(), Base: server.URL}
+	return client.Call(context.Background(), http.MethodGet, "/response", nil, nil, "")
+}
+
 func TestCallRejectsAmbiguousControlPlaneResponses(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -69,3 +82,19 @@ func TestCallRejectsOversizedControlPlaneResponse(t *testing.T) {
 		t.Fatalf("Call() error = %v, want CONTROL_PLANE_RESPONSE_TOO_LARGE", err)
 	}
 }
+
+func TestCallRejectsAmbiguousControlPlaneErrorResponses(t *testing.T) {
+	for _, payload := range []string{
+		`{"code":"STATE_UNAVAILABLE"}{"code":"OTHER"}`,
+		`{"code":"STATE_UNAVAILABLE","Code":"OTHER"}`,
+		strings.Repeat(" ", maxErrorResponseBytes+1),
+	} {
+		t.Run(payload[:min(len(payload), 24)], func(t *testing.T) {
+			err := callTestErrorResponse(t, payload)
+			if err == nil || !strings.Contains(err.Error(), "CONTROL_PLANE_ERROR_RESPONSE_INVALID") {
+				t.Fatalf("Call() error = %v, want CONTROL_PLANE_ERROR_RESPONSE_INVALID", err)
+			}
+		})
+	}
+}
+

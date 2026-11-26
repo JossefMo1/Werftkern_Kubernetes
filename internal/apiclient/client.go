@@ -17,7 +17,10 @@ import (
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 )
 
-const maxResponseBytes = 2 * model.MaxStateBytes
+const (
+	maxResponseBytes      = 2 * model.MaxStateBytes
+	maxErrorResponseBytes = 8192
+)
 
 type Client struct {
 	HTTP      *http.Client
@@ -65,11 +68,14 @@ func (c *Client) Call(ctx context.Context, method, path string, in, out any, key
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		raw, readErr := io.ReadAll(io.LimitReader(resp.Body, maxErrorResponseBytes+1))
+		if readErr != nil || len(raw) > maxErrorResponseBytes || strictjson.Validate(raw) != nil {
+			return fmt.Errorf("CONTROL_PLANE_ERROR_RESPONSE_INVALID (HTTP %d)", resp.StatusCode)
+		}
 		var p struct {
 			Code string `json:"code"`
 		}
-		json.NewDecoder(io.LimitReader(resp.Body, 8192)).Decode(&p)
-		if p.Code == "" {
+		if json.Unmarshal(raw, &p) != nil || p.Code == "" {
 			p.Code = "UNEXPECTED_HTTP_STATUS"
 		}
 		return fmt.Errorf("%s (HTTP %d)", p.Code, resp.StatusCode)
