@@ -289,6 +289,17 @@ func TestAPINumberRequiresCanonicalCompleteVersion(t *testing.T) {
 	}
 }
 
+func TestEngineRejectsInvalidClusterIDBeforeAPIRequest(t *testing.T) {
+	f := dockerTest(t)
+	f.d.ClusterID = "short"
+	if e := f.d.Health(context.Background()); e == nil || e.Error() != "CLUSTER_ID_INVALID" {
+		t.Fatalf("invalid cluster ID was not rejected: %v", e)
+	}
+	if f.d.api != "" || f.creates+f.starts+f.stops+f.deletes != 0 {
+		t.Fatal("invalid cluster ID reached Docker adapter")
+	}
+}
+
 func TestEngineReadinessAndPrivatePortBinding(t *testing.T) {
 	f := dockerTest(t)
 	var listener net.Listener
