@@ -5,7 +5,10 @@ import (
 	"errors"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/testutil"
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -124,5 +127,25 @@ func TestStateLimitRejectedBeforeEtcdWrite(t *testing.T) {
 	s.Schema = 99
 	if err := e.Initialize(context.Background(), s); err == nil {
 		t.Fatal("invalid state accepted")
+	}
+}
+
+func TestEtcdCallRejectsAmbiguousAndTrailingJSON(t *testing.T) {
+	responses := []string{"{\"kvs\":[]}{}", "{\"kvs\":[],\"Kvs\":[]}"}
+	index := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(responses[index]))
+		index++
+	}))
+	defer server.Close()
+
+	e := NewEtcd(server.URL, server.Client(), model.ID())
+	for _, want := range responses {
+		var out map[string]any
+		err := e.call(context.Background(), "/v3/kv/range", map[string]any{}, &out)
+		if err == nil || !strings.Contains(err.Error(), "invalid response") {
+			t.Fatalf("response %q was accepted: %v", want, err)
+		}
 	}
 }
