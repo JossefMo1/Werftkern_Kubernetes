@@ -53,7 +53,8 @@ func makeAgent(t *testing.T) (*Agent, *fakeEngine, model.AssignmentSnapshot) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	created := time.Now().UTC()\n\ts := model.AssignmentSnapshot{ClusterID: c.Client.ClusterID, Revision: 5, Allocations: []model.Allocation{{ID: model.ID(), WorkloadUID: model.ID(), Name: "demo", NodeID: c.NodeID, Generation: 1, Desired: "run", Phase: "assigned", CreatedAt: created, UpdatedAt: created, Spec: model.Spec{Image: "sha256:" + strings.Repeat("a", 64), Replicas: 1, CPUMilli: 100, MemoryMiB: 32}}}}
+	created := time.Now().UTC()
+	s := model.AssignmentSnapshot{ClusterID: c.Client.ClusterID, Revision: 5, Allocations: []model.Allocation{{ID: model.ID(), WorkloadUID: model.ID(), Name: "demo", NodeID: c.NodeID, Generation: 1, Desired: "run", Phase: "assigned", CreatedAt: created, UpdatedAt: created, Spec: model.Spec{Image: "sha256:" + strings.Repeat("a", 64), Replicas: 1, CPUMilli: 100, MemoryMiB: 32}}}}
 	return a, f, s
 }
 func TestAgentReplaysAndRecoversDurableJournal(t *testing.T) {
