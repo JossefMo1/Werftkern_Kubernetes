@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 type fakeEngine struct {
@@ -52,7 +53,8 @@ func makeAgent(t *testing.T) (*Agent, *fakeEngine, model.AssignmentSnapshot) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	s := model.AssignmentSnapshot{ClusterID: c.Client.ClusterID, Revision: 5, Allocations: []model.Allocation{{ID: model.ID(), NodeID: c.NodeID, Generation: 1, Desired: "run", Spec: model.Spec{Image: "sha256:" + strings.Repeat("a", 64), Replicas: 1, CPUMilli: 100, MemoryMiB: 32}}}}
+	created := time.Now().UTC()
+	s := model.AssignmentSnapshot{ClusterID: c.Client.ClusterID, Revision: 5, Allocations: []model.Allocation{{ID: model.ID(), WorkloadUID: model.ID(), Name: "demo", NodeID: c.NodeID, Generation: 1, Desired: "run", Phase: "assigned", CreatedAt: created, UpdatedAt: created, Spec: model.Spec{Image: "sha256:" + strings.Repeat("a", 64), Replicas: 1, CPUMilli: 100, MemoryMiB: 32}}}}
 	return a, f, s
 }
 func TestAgentReplaysAndRecoversDurableJournal(t *testing.T) {
@@ -178,6 +180,25 @@ func TestAgentWrongClusterJournalRejected(t *testing.T) {
 	c.Client.ClusterID = model.ID()
 	if _, e := New(c, nil, f); e == nil {
 		t.Fatal("foreign journal used")
+	}
+}
+
+func TestAgentRejectsMalformedDurableJournal(t *testing.T) {
+	a, _, _ := makeAgent(t)
+	badKey := model.ID()
+	bad := Journal{
+		HeartbeatSequence: 1,
+		ClusterID:         a.Config.Client.ClusterID,
+		Revision:          1,
+		Allocations: map[string]model.Allocation{
+			badKey: {ID: model.ID(), NodeID: a.Config.NodeID},
+		},
+	}
+	if err := a.Persist(bad); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := New(a.Config, nil, &fakeEngine{items: map[string]bool{}}); err == nil || !strings.Contains(err.Error(), "JOURNAL_RECORD_INVALID") {
+		t.Fatalf("malformed durable journal accepted: %v", err)
 	}
 }
 
