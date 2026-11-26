@@ -1,13 +1,16 @@
 """Logical PostgreSQL backup and isolated restore. No PITR or database HA claim."""
 from __future__ import annotations
 import contextlib, datetime, ipaddress, json, os, pathlib, re, tempfile
-from .common import Blocked, atomic, digest_file, fingerprint, lock, private_read, read_json, run, sha, write_json
+from .common import Blocked, atomic, digest_file, fingerprint, lock, parse_json, private_read, read_json, run, sha, write_json
 
 @contextlib.contextmanager
 def connection(config, passfile, runner=run):
     allowed={"host","port","user","database","transport","rootCA"}
-    if not set(config)<=allowed or not {"host","port","user","database","transport"}<=set(config):raise Blocked("DATABASE_CONFIG_INVALID")
-    host=ipaddress.IPv4Address(config["host"])
+    if not isinstance(config,dict) or not set(config)<=allowed or not {"host","port","user","database","transport"}<=set(config):raise Blocked("DATABASE_CONFIG_INVALID")
+    try:
+        host=ipaddress.IPv4Address(config["host"])
+    except (ValueError,TypeError):
+        raise Blocked("PRIVATE_DATABASE_ENDPOINT_REQUIRED") from None
     if not host.is_private or type(config["port"]) is not int or not 1024<=config["port"]<=65535:raise Blocked("PRIVATE_DATABASE_ENDPOINT_REQUIRED")
     for k in ("user","database"):
         if not re.fullmatch(r"[a-z_][a-z0-9_]{0,39}",config[k]):raise Blocked("DATABASE_IDENTIFIER_INVALID")
@@ -17,8 +20,13 @@ def connection(config, passfile, runner=run):
         if not host.is_loopback:raise Blocked("LOOPBACK_REQUIRED")
         sslmode="disable"
     elif transport=="wireguard":
-        route=json.loads(runner(["ip","-j","route","get",str(host)]))
-        if not route or route[0].get("dev")!="wgwerft":raise Blocked("WIREGUARD_ROUTE_REQUIRED")
+        try:
+            route=parse_json(runner(["ip","-j","route","get",str(host)]))
+        except (TypeError,UnicodeDecodeError,ValueError):
+            raise Blocked("WIREGUARD_ROUTE_INVALID") from None
+        if not isinstance(route,list) or not route or not isinstance(route[0],dict):
+            raise Blocked("WIREGUARD_ROUTE_INVALID")
+        if route[0].get("dev")!="wgwerft":raise Blocked("WIREGUARD_ROUTE_REQUIRED")
         sslmode="disable"
     elif transport=="tls":
         ca=pathlib.Path(config.get("rootCA",""))
@@ -34,7 +42,10 @@ def connection(config, passfile, runner=run):
         yield env
 
 def major(runner,tool):
-    value=runner([tool,"--version"]).decode()
+    try:
+        value=runner([tool,"--version"]).decode()
+    except UnicodeDecodeError:
+        raise Blocked("POSTGRES_CLIENT_VERSION_INVALID") from None
     m=re.search(r"\(PostgreSQL\) (\d+)",value)
     if not m or int(m.group(1))<17:raise Blocked("POSTGRES_CLIENT_17_OR_NEWER_REQUIRED")
     return int(m.group(1))
