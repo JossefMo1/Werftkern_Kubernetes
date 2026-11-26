@@ -30,7 +30,7 @@ func TestReadRejectsUnknownPersistedStateFields(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	raw = append(raw[:len(raw)-1], []byte(","unknown":true}")...)
+	raw = append(raw[:len(raw)-1], []byte(",\"unknown\":true}")...)
 	if err := safefile.JSON(path, testutil.KV{Revision: 1, Value: base64.StdEncoding.EncodeToString(raw)}, 0600); err != nil {
 		t.Fatal(err)
 	}
