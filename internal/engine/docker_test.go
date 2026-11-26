@@ -251,7 +251,7 @@ func TestEngineNegotiationRejectsIncompatibleAPI(t *testing.T) {
 }
 func TestEngineRejectsAmbiguousJSONResponses(t *testing.T) {
 	f := dockerTest(t)
-	for _, body := range []string{"[{"Labels":{}}]{}", "[{"Labels":{},"labels":{}}]"} {
+	for _, body := range []string{"[{\"Labels\":{}}]{}", "[{\"Labels\":{},\"labels\":{}}]"} {
 		f.containersBody = body
 		if _, err := f.d.Owned(context.Background()); err == nil || err.Error() != "ENGINE_RESPONSE_INVALID" {
 			t.Fatalf("ambiguous Docker response accepted: %q err=%v", body, err)
