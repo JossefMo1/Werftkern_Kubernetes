@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T16:13:55.849Z",
+  "updatedAt": "2026-11-26T16:59:41.439Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/408",
-    "summary": "Main now includes PR #408, merged as cc0c5b5e835712b819ec227c5d6ca4d7094467ee. The agent validates persisted journal records before startup and before accepting new assignments, rejecting malformed or out-of-scope allocation identity, node, desired/phase, port, timestamp, resource and map-key data. Native/runtime and real-etcd checks, Kubernetes contracts and source/publication audit passed for the PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410",
+    "summary": "Main now includes PR #410, merged as 247dd11a32cfbedd7fb4f7f056b49f0f672e2144. Persisted etcd state is decoded with the strict JSON contract, so unknown fields fail closed before inventory validation and reconciliation. The first PR attempt exposed an incorrectly escaped test fixture and failed compile; corrected commit 998bef39 passed Native/runtime, real-etcd, Contracts and Source/Privacy checks. real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -584,7 +584,15 @@
         "PR #408 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235446",
         "PR #408 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235860",
         "PR #408 Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
-        "PR #408 validates durable journal allocations before startup and before persistence; no Single-Host qualification gate closed."
+        "PR #408 validates durable journal allocations before startup and before persistence; no Single-Host qualification gate closed.",
+        "PR #410: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410",
+        "PR #410 merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
+        "PR #410 initial compile failure was corrected in commit 998bef39f58ec5d29002405b4adcc38f0f2a2c17 (escaped unknown-field fixture).",
+        "PR #410 corrected Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201801",
+        "PR #410 corrected Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201851",
+        "PR #410 corrected Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201751",
+        "PR #410 corrected Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
+        "PR #410 rejects unknown persisted state fields before validation or reconciliation; no Single-Host qualification gate closed."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -648,7 +656,15 @@
         "PR #408 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235446",
         "PR #408 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235860",
         "PR #408 Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
-        "PR #408 validates durable journal allocations before startup and before persistence; no Single-Host qualification gate closed."
+        "PR #408 validates durable journal allocations before startup and before persistence; no Single-Host qualification gate closed.",
+        "PR #410: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410",
+        "PR #410 merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
+        "PR #410 initial compile failure was corrected in commit 998bef39f58ec5d29002405b4adcc38f0f2a2c17 (escaped unknown-field fixture).",
+        "PR #410 corrected Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201801",
+        "PR #410 corrected Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201851",
+        "PR #410 corrected Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201751",
+        "PR #410 corrected Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
+        "PR #410 rejects unknown persisted state fields before validation or reconciliation; no Single-Host qualification gate closed."
       ]
     },
     {
@@ -914,9 +930,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/408",
-      "mergedCommit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
-      "summary": "Durable agent journal records are validated fail-closed before startup and before persistence; Native/real-etcd, Contracts and Publication checks passed; real-vm/PITR skipped; no production gate closed."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410",
+      "mergedCommit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
+      "summary": "Persisted etcd state now uses strict JSON; the first fixture attempt failed compile, corrected commit 998bef39 passed Native/real-etcd, Contracts and Publication; real-vm/PITR skipped; no production gate closed."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -925,9 +941,9 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/409",
-      "baseCommit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
-      "summary": "Tracker, STATUS and ROADMAP will be synchronized for PR #408; live production gates remain open."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/411",
+      "baseCommit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
+      "summary": "Tracker, STATUS and ROADMAP will be synchronized for PR #410, including the corrected test evidence and the first failed fixture run."
     }
   },
   "candidate": {
@@ -952,11 +968,11 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
-      "codeCommit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/408",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/409",
-      "summary": "Main includes PR #408, merged as cc0c5b5e835712b819ec227c5d6ca4d7094467ee. Durable journal records are validated fail-closed before startup and persistence; exact Native/real-etcd, Contracts and Publication checks passed; real-vm and real-PITR were skipped. No live Single-Host gate is closed and a new immutable candidate remains required.",
+      "commit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
+      "codeCommit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/411",
+      "summary": "Main includes PR #410, merged as 247dd11a32cfbedd7fb4f7f056b49f0f672e2144. Persisted etcd state now rejects unknown fields via strict JSON; corrected CI checks passed, while real-vm and real-PITR were skipped. No live Single-Host gate is closed and a new immutable candidate remains required.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
