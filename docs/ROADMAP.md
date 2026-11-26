@@ -781,3 +781,12 @@ Corrected checks: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werf
 
 The old v0.2.0-dev.4-test.17 candidate remains non-immutable and unsigned, so a new immutable candidate is required from [247dd11a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/247dd11a32cfbedd7fb4f7f056b49f0f672e2144) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. productionReady remains false and Go/No-Go remains no-go. HA, multi-host and Kubernetes-production remain deferred.
 
+
+
+## Native single-host release handoff — PR #412 (2026-11-26)
+
+PR [#412](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412) merged as [`1f722497`](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1f722497196366881136689d6dad30659abb22e8). Docker cluster identities are now validated before Docker API negotiation and before the name prefix slices the identifier; malformed values fail closed with `CLUSTER_ID_INVALID`, with a regression test proving no Docker adapter call occurs.
+
+The exact PR checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614939), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614507) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614434). `real-vm` and `real-PITR` were skipped, so this handoff closes no live Single-Host production gate.
+
+The next release step is to rebuild one immutable candidate from `1f722497196366881136689d6dad30659abb22e8` and run the authorized Ubuntu 24.04 real-vm path, then collect same-candidate installation, backup/restore, upgrade/rollback, bounded load/soak and signed-provenance evidence. HA, multi-host and Kubernetes-production remain deferred.

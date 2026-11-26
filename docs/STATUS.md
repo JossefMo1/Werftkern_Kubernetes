@@ -1022,3 +1022,12 @@ Corrected checks: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werf
 
 The published `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, with non-immutable metadata and unsigned assets. A new immutable candidate must be built from [247dd11a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/247dd11a32cfbedd7fb4f7f056b49f0f672e2144) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
 
+
+
+## Latest Native runtime hardening — PR #412 (2026-11-26)
+
+PR [#412](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412) merged as [`1f722497`](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1f722497196366881136689d6dad30659abb22e8). The Docker adapter now validates the cluster identity with `model.ValidID` before API negotiation or container-name prefix slicing and returns `CLUSTER_ID_INVALID` without touching Docker for malformed identities. A negative regression test verifies that no adapter request is made.
+
+Exact checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614939), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614507) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614434). The Native run's `real-vm` and `real-PITR` jobs were skipped. This is runtime/security hardening evidence only; no live Single-Host production gate closed.
+
+The published `v0.2.0-dev.4-test.17` candidate remains stale, non-immutable and unsigned. A new immutable candidate must be built from `1f722497196366881136689d6dad30659abb22e8` before live Ubuntu installation, backup/restore, upgrade/rollback or load/soak evidence can cover this change. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
