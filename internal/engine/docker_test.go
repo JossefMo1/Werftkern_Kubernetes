@@ -23,6 +23,7 @@ type dockerFixture struct {
 	create                          map[string]any
 	imageExists, volumes            bool
 	api, min                        string
+	containersBody                  string
 }
 
 func dockerTest(t *testing.T) *dockerFixture {
@@ -95,6 +96,10 @@ func (f *dockerFixture) serve(w http.ResponseWriter, r *http.Request) {
 		f.c = nil
 		w.WriteHeader(204)
 	case p == "/containers/json":
+		if f.containersBody != "" {
+			_, _ = w.Write([]byte(f.containersBody))
+			return
+		}
 		if f.c == nil {
 			w.Write([]byte(`[]`))
 			return
@@ -244,6 +249,16 @@ func TestEngineNegotiationRejectsIncompatibleAPI(t *testing.T) {
 		t.Fatal("unsupported API accepted")
 	}
 }
+func TestEngineRejectsAmbiguousJSONResponses(t *testing.T) {
+	f := dockerTest(t)
+	for _, body := range []string{"[{"Labels":{}}]{}", "[{"Labels":{},"labels":{}}]"} {
+		f.containersBody = body
+		if _, err := f.d.Owned(context.Background()); err == nil || err.Error() != "ENGINE_RESPONSE_INVALID" {
+			t.Fatalf("ambiguous Docker response accepted: %q err=%v", body, err)
+		}
+	}
+}
+
 func TestAPINumberRequiresCanonicalCompleteVersion(t *testing.T) {
 	for _, tc := range []struct {
 		value string
