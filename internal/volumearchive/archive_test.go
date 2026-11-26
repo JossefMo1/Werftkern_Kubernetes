@@ -5,11 +5,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
 	"syscall"
 	"testing"
+	"time"
 
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 )
@@ -136,6 +138,42 @@ func TestRejectSymlinkHardlinkAndFIFOOnBackup(t *testing.T) {
 		})
 	}
 }
+func TestRejectAmbiguousHeaderJSON(t *testing.T) {
+	h := identity()
+	h.Version = 1
+	h.BackupID = model.ID()
+	h.CreatedAt = time.Now().UTC()
+	h.Salt = bytes.Repeat([]byte{7}, 32)
+	raw, e := json.Marshal(h)
+	if e != nil {
+		t.Fatal(e)
+	}
+	cases := map[string][]byte{}
+	duplicate := append([]byte{}, raw[:len(raw)-1]...)
+	duplicate = append(duplicate, []byte(",\"ClusterId\":\""+h.ClusterID+"\"}")...)
+	cases["case-fold-duplicate"] = duplicate
+	cases["trailing-object"] = append(append([]byte{}, raw...), []byte("{}")...)
+	for name, header := range cases {
+		t.Run(name, func(t *testing.T) {
+			var archive bytes.Buffer
+			archive.WriteString(magic)
+			if e := binary.Write(&archive, binary.BigEndian, uint32(len(header))); e != nil {
+				t.Fatal(e)
+			}
+			if _, e := archive.Write(header); e != nil {
+				t.Fatal(e)
+			}
+			if _, _, e := newReader(bytes.NewReader(archive.Bytes()), bytes.Repeat([]byte{1}, 32)); e == nil {
+				t.Fatal("accepted ambiguous header JSON")
+			} else if name == "case-fold-duplicate" && !strings.Contains(e.Error(), "JSON_DUPLICATE_MEMBER") {
+				t.Fatalf("unexpected duplicate error: %v", e)
+			} else if name == "trailing-object" && !strings.Contains(e.Error(), "JSON_TRAILING_DATA") {
+				t.Fatalf("unexpected trailing-data error: %v", e)
+			}
+		})
+	}
+}
+
 func makeTar(t testing.TB, headers []*tar.Header, payload []byte) []byte {
 	t.Helper()
 	var b bytes.Buffer
