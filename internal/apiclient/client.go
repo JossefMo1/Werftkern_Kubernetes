@@ -74,7 +74,7 @@ func (c *Client) Call(ctx context.Context, method, path string, in, out any, key
 			return fmt.Errorf("CONTROL_PLANE_ERROR_RESPONSE_INVALID (HTTP %d)", resp.StatusCode)
 		}
 		var p struct {
-			Code string \`json:"code"\`
+			Code string `json:"code"`
 		}
 		if json.Unmarshal(raw, &p) != nil || p.Code == "" {
 			p.Code = "UNEXPECTED_HTTP_STATUS"
