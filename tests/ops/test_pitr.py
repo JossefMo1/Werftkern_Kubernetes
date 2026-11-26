@@ -10,12 +10,24 @@ class PITRTests(unittest.TestCase):
   secret=root/'cipher';atomic(secret,b'A'*48)
   file=root/'pgbackrest.conf';pitr.prepare({'format':'werftkern-pitr/v1','name':'shop','pgPath':str(root/'source'),'socketDir':str(root/'socket'),'pgPort':5432,'repositoryPath':str(root/'repository')},secret,file)
   return file
+ def test_prepare_rejects_invalid_cipher_secret_encoding(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);secret=root/'cipher';atomic(secret,bytes([0xff]));file=root/'pgbackrest.conf'
+   with self.assertRaises(Blocked) as ctx:
+    pitr.prepare({'format':'werftkern-pitr/v1','name':'shop','pgPath':str(root/'source'),'socketDir':str(root/'socket'),'pgPort':5432,'repositoryPath':str(root/'repository')},secret,file)
+   self.assertEqual(str(ctx.exception),'PITR_CIPHER_SECRET_ENCODING_INVALID')
  def test_config_preserves_encryption_and_archive_checks(self):
   with tempfile.TemporaryDirectory() as d:
    file=self.config(pathlib.Path(d));pitr.configuration(file,'shop')
    self.assertEqual(file.stat().st_mode&0o777,0o600)
    atomic(file,file.read_bytes().replace(b'archive-check=y',b'archive-check=n'))
    with self.assertRaises(Blocked):pitr.configuration(file,'shop')
+ def test_invalid_port_is_reported_as_blocked_configuration_error(self):
+  with tempfile.TemporaryDirectory() as d:
+   file=self.config(pathlib.Path(d))
+   atomic(file,file.read_bytes().replace(b'pg1-port=5432',b'pg1-port=not-a-port'))
+   with self.assertRaisesRegex(Blocked,'PITR_PORT_INVALID'):
+    pitr.configuration(file,'shop')
  def test_system_id_uses_integer_without_float_rounding(self):
   self.assertEqual(pitr.backup_identity(info()[0],LABEL)['systemId'],SYSID)
  def test_restore_never_promotes_or_overwrites_source(self):
