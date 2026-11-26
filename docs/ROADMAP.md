@@ -1,3 +1,11 @@
+# Native Single-Host Release-Handoff — PR #416 (2026-11-26)
+
+[PR #416](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416) wurde als [2627e37201db7ebfdbc31b0a05c9f331d9eef6df](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2627e37201db7ebfdbc31b0a05c9f331d9eef6df) gemergt. Persistierte Allocation-Phasen werden jetzt vor Inventory-Validierung und Reconciliation gegen die explizite State-Machine geprüft; leere oder unbekannte Werte failen geschlossen. Regressionstests decken die ungültigen Phasen ab und aktualisieren die State-Fixtures.
+
+Die exakten Prüfungen [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037586), [Kubernetes-Contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037581) und [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037638) waren erfolgreich; `real-vm` und `real-PITR` waren übersprungen. Das ist CI-/Code-Härtung und schließt kein Single-Host-Production-Gate. Der Kandidat `v0.2.0-dev.4-test.17` bleibt stale, unsigniert und nicht unveränderlich; `productionReady=false`, Entscheidung `no-go`.
+
+Nächster Schritt: einen neuen unveränderlichen Kandidaten aus Main 2627e37201db7ebfdbc31b0a05c9f331d9eef6df bauen und alle kandidatengebundenen Ubuntu-, Backup/Restore-, Upgrade/Rollback-, Load/Soak- und Signatur-/Provenance-Gates ausführen. HA/Multi-Host/Quorum und Kubernetes-Production bleiben späterer Erweiterungspfad.
+
 # Native single-host release handoff — PR #330 (2026-11-25)
 
 [PR #330](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/330) merged as [545cf797](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/545cf797b30958d1d60e8cf5177ee13c37566e00). The release path now treats reproducibility as a build property: `scripts/build-deb.sh` accepts a validated `SOURCE_DATE_EPOCH`, uses deterministic metadata and `-buildvcs=false`, normalizes package mtimes and passes the epoch to `dpkg-deb`. CI performs two clean package builds and compares their SHA-256 digests before writing reproducible-build evidence.

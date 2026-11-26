@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T18:56:06.776Z",
+  "updatedAt": "2026-11-26T20:00:00.000Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "940682d868cce16e77bc4f6549c2bd14e6e25b3c",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/414",
-    "summary": "PR #414 merged as 940682d868cce16e77bc4f6549c2bd14e6e25b3c. Allocation node selectors are now enforced consistently: the agent rejects an assignment whose pinned selector differs from its selected node, and persisted state validation rejects the same mismatch before reconciliation. Regression tests cover both boundaries. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "2627e37201db7ebfdbc31b0a05c9f331d9eef6df",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416",
+    "summary": "PR #416 merged as 2627e37201db7ebfdbc31b0a05c9f331d9eef6df. Persisted allocation lifecycle phases are now validated against the explicit native state machine before inventory validation and reconciliation; empty or unknown phases fail closed. Regression coverage covers empty, unknown and unsupported phase values, and affected state fixtures now carry the assigned phase. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -47,7 +47,8 @@
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open.",
       "PR #368 hardens upgrade-recovery journal phase handling; its CI evidence did not close a live single-host gate.",
       "PR #412 changed candidate-bearing Docker runtime code; the current test.17 candidate is stale and cannot carry this evidence.",
-      "PR #414 changed candidate-bearing scheduling/state validation; the published test.17 candidate is stale and cannot carry this evidence."
+      "PR #414 changed candidate-bearing scheduling/state validation; the published test.17 candidate is stale and cannot carry this evidence.",
+      "PR #416 merged candidate-bearing persisted-state validation; the published test.17 candidate is stale and cannot carry this evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -56,7 +57,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main at execution time (code merge 940682d868cce16e77bc4f6549c2bd14e6e25b3c), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from current Main at execution time (code merge 2627e37201db7ebfdbc31b0a05c9f331d9eef6df, PR #416), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -606,15 +607,23 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376876 (Native/runtime + real-etcd passed; real-vm and real-PITR skipped)",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376935 (Kubernetes contracts passed)",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879377042 (Source/Privacy audit passed)",
-        "PR #414 is CI/code-hardening evidence only; no Single-Host qualification gate closed."
+        "PR #414 is CI/code-hardening evidence only; no Single-Host qualification gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416",
+        "PR #416 merge commit verified as 2627e37201db7ebfdbc31b0a05c9f331d9eef6df",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037586 (Native/runtime + real-etcd passed; real-vm and real-PITR skipped)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037581 (Kubernetes contracts passed)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037638 (Source/Privacy audit passed)",
+        "PR #416 is CI/code-hardening evidence only; no Single-Host qualification gate closed."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
         "The ephemeral Ubuntu real-vm job has not yet been run for the exact candidate; Main real-vm and real-PITR jobs for PR #354 were skipped.",
-        "The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; this blocker is recorded once and is not retried."
+        "The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; this blocker is recorded once and is not retried.",
+        "PR #416 changes candidate-bearing persisted-state validation; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence.",
+        "The exact immutable candidate must include PR #416 before any live qualification evidence can be reused."
       ],
-      "nextStep": "Build the next immutable candidate from the current Main ref at execution time, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
+      "nextStep": "Build the next immutable candidate from current Main including PR #416 (source commit 2627e37201db7ebfdbc31b0a05c9f331d9eef6df), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "PR #341 Native test and real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45549728444",
@@ -678,7 +687,14 @@
         "PR #410 corrected Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201851",
         "PR #410 corrected Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201751",
         "PR #410 corrected Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
-        "PR #410 rejects unknown persisted state fields before validation or reconciliation; no Single-Host qualification gate closed."
+        "PR #410 rejects unknown persisted state fields before validation or reconciliation; no Single-Host qualification gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2627e37201db7ebfdbc31b0a05c9f331d9eef6df",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037586",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037581",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037638",
+        "PR #416 Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks succeeded; real-vm and real-PITR were skipped.",
+        "PR #416 is CI/code-hardening evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback, bounded-soak or signed-artifact gate closed."
       ]
     },
     {
@@ -864,14 +880,18 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412 (runtime hardening; candidate rebuild required)",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614939 (real-etcd passed; real-vm/PITR skipped; no live installation evidence)",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/414",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376876 (real-etcd passed; real-vm/PITR skipped; no live installation evidence)"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376876 (real-etcd passed; real-vm/PITR skipped; no live installation evidence)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037586 (real-etcd passed; real-vm/PITR skipped; no live installation evidence)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037581 (contracts passed)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037638 (Source/Privacy passed)"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
         "The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; this blocker is recorded once and is not retried."
       ],
-      "nextStep": "Build the next immutable candidate from the current Main ref at execution time, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu real-vm path with run_real_vm_e2e=true.",
+      "nextStep": "Build an immutable candidate from current Main including PR #416, then run the candidate-bound Ubuntu 24.04 path with run_real_vm_e2e=true; do not treat skipped real-vm/PITR jobs or CI-only evidence as production qualification.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "Post-merge Main Native test and real-etcd passed (not Ubuntu installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45550035506",
@@ -895,7 +915,13 @@
         "PR #368 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904",
         "PR #368 real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427",
         "PR #368 real-PITR skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747",
-        "PR #368 is CI/code-hardening evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback, bounded-soak or signed-artifact gate closed."
+        "PR #368 is CI/code-hardening evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback, bounded-soak or signed-artifact gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2627e37201db7ebfdbc31b0a05c9f331d9eef6df",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037586 (real-etcd passed; real-vm/PITR skipped; no live installation evidence)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037581 (contracts passed)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037638 (Source/Privacy passed)",
+        "PR #416 did not close any Single-Host qualification gate; a new immutable candidate is required."
       ]
     },
     {
@@ -948,9 +974,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/414",
-      "mergedCommit": "940682d868cce16e77bc4f6549c2bd14e6e25b3c",
-      "summary": "PR #414 merged as 940682d868cce16e77bc4f6549c2bd14e6e25b3c. Allocation node selectors are now enforced consistently: the agent rejects an assignment whose pinned selector differs from its selected node, and persisted state validation rejects the same mismatch before reconciliation. Regression tests cover both boundaries. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416",
+      "mergedCommit": "2627e37201db7ebfdbc31b0a05c9f331d9eef6df",
+      "summary": "PR #416 merged as 2627e37201db7ebfdbc31b0a05c9f331d9eef6df. Persisted allocation lifecycle phases are now validated against the explicit native state machine before inventory validation and reconciliation; empty or unknown phases fail closed. Regression coverage covers empty, unknown and unsupported phase values, and affected state fixtures now carry the assigned phase. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -959,9 +985,9 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/415",
-      "baseCommit": "940682d868cce16e77bc4f6549c2bd14e6e25b3c",
-      "summary": "Tracker, STATUS and ROADMAP will be synchronized for PR #414, with exact CI evidence and open live-gate status."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/417",
+      "baseCommit": "2627e37201db7ebfdbc31b0a05c9f331d9eef6df",
+      "summary": "Tracker, STATUS and ROADMAP are synchronized for PR #416 with exact CI evidence and open live-gate status."
     }
   },
   "candidate": {
@@ -986,19 +1012,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "940682d868cce16e77bc4f6549c2bd14e6e25b3c",
-      "codeCommit": "940682d868cce16e77bc4f6549c2bd14e6e25b3c",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/414",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/415",
-      "summary": "PR #414 merged as 940682d868cce16e77bc4f6549c2bd14e6e25b3c. Allocation node selectors are now enforced consistently: the agent rejects an assignment whose pinned selector differs from its selected node, and persisted state validation rejects the same mismatch before reconciliation. Regression tests cover both boundaries. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "2627e37201db7ebfdbc31b0a05c9f331d9eef6df",
+      "codeCommit": "2627e37201db7ebfdbc31b0a05c9f331d9eef6df",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/417",
+      "summary": "PR #416 merged as 2627e37201db7ebfdbc31b0a05c9f331d9eef6df. Persisted allocation lifecycle phases are now validated against the explicit native state machine before inventory validation and reconciliation; empty or unknown phases fail closed. Regression coverage covers empty, unknown and unsupported phase values, and affected state fixtures now carry the assigned phase. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
-    "summary": "Main now includes PR #401, merged as 07c5d127687fdd9948919cacde6e9ad6f404a349. Dashboard login payloads are now validated with the strict JSON contract before code comparison; trailing JSON and case-fold duplicate members fail closed while the 2 KiB request bound remains. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed for the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/401",
+    "summary": "PR #416 merged as 2627e37201db7ebfdbc31b0a05c9f331d9eef6df. Persisted allocation lifecycle phases are now validated against the explicit native state machine before inventory validation and reconciliation; empty or unknown phases fail closed. Regression coverage covers empty, unknown and unsupported phase values, and affected state fixtures now carry the assigned phase. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416",
     "nextCandidateRequired": true
   },
   "previousCandidates": [

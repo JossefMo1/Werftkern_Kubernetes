@@ -1,3 +1,12 @@
+## 2026-11-26 — Persistierte Allocation-Phasen fail-closed (PR #416)
+
+- [PR #416](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416) wurde als [2627e37201db7ebfdbc31b0a05c9f331d9eef6df](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2627e37201db7ebfdbc31b0a05c9f331d9eef6df) gemergt. Persistierte Allocation-Phasen werden vor Inventory-Validierung und Reconciliation gegen die explizite Native-State-Machine geprüft; leere oder unbekannte Werte werden fail-closed abgewiesen.
+- Regressionen decken leere, unbekannte und nicht unterstützte Phasen ab; die betroffenen State-Fixtures tragen jetzt die gültige Phase `assigned`.
+- Exakte CI-Prüfung des Heads: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037586) erfolgreich, [Kubernetes-Contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037581) erfolgreich und [Source/Privacy-Audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45887037638) erfolgreich. `real-vm` und `real-PITR` waren übersprungen.
+- Diese Runtime-/State-Härtung schließt kein Live-Production-Gate. Der veröffentlichte `v0.2.0-dev.4-test.17`-Kandidat bleibt stale, unsigniert und nicht unveränderlich; `productionReady=false`, Entscheidung `no-go`.
+- HA/Multi-Host/Quorum und Kubernetes-Production bleiben außerhalb des ersten Native-Single-Host-Scope.
+- Nächster Handoff: neuen unveränderlichen Kandidaten aus Main 2627e37201db7ebfdbc31b0a05c9f331d9eef6df bauen und darauf die Ubuntu-, Backup/Restore-, Upgrade/Rollback-, Load/Soak- sowie Signatur-/Provenance-Gates mit `run_real_vm_e2e=true` ausführen; der Tag-/Dispatch-Blocker ist dokumentiert und wird nicht wiederholt.
+
 ## 2026-11-26 — Dashboard-Login strikt validiert
 
 - PR #401 wurde aus Main `029b2d4ff29e590f2621adb574c14381dcf254f9` rebasiert und als `07c5d127687fdd9948919cacde6e9ad6f404a349` gemergt: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/401
