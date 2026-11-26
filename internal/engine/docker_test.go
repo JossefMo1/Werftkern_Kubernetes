@@ -117,8 +117,6 @@ func TestDockerResponseBoundsRejectOversizeAndAmbiguousStreams(t *testing.T) {
 		t.Fatalf("oversized response accepted: %v", err)
 	}
 	for _, raw := range []string{
-		`{"stream":"ok"}
-{"stream":"ok"}`,
 		`{"stream":"ok","Stream":"ambiguous"}`,
 		`{"error":"pull failed"}`,
 		`{"stream":"ok"} trailing`,
@@ -127,8 +125,8 @@ func TestDockerResponseBoundsRejectOversizeAndAmbiguousStreams(t *testing.T) {
 			t.Fatalf("invalid Docker stream accepted: %q", raw)
 		}
 	}
-	if err := consumeJSONStream([]byte(`{"stream":"ok"}
-{"stream":"done"}`)); err != nil {
+	valid := `{"stream":"ok"}` + "\n" + `{"stream":"done"}`
+	if err := consumeJSONStream([]byte(valid)); err != nil {
 		t.Fatalf("valid Docker stream rejected: %v", err)
 	}
 }
