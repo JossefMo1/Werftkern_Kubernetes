@@ -75,6 +75,18 @@ func TestDashboardLoginNoCookieAndBoundedRouteProxy(t *testing.T) {
 		t.Fatal("arbitrary proxy executed")
 	}
 }
+func TestDashboardProxyRejectsOversizedResponse(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = io.WriteString(w, strings.Repeat("x", maxProxyResponseBytes+1))
+	}))
+	defer upstream.Close()
+	s := New(&apiclient.Client{Base: upstream.URL, HTTP: upstream.Client()}, "127.0.0.1:8787")
+	response := request(s, "GET", "/api/state", "", "Bearer "+s.token, "")
+	if response.Code != 502 || !strings.Contains(response.Body.String(), "CONTROL_PLANE_RESPONSE_TOO_LARGE") {
+		t.Fatalf("oversized response was not rejected: status=%d body=%q", response.Code, response.Body.String())
+	}
+}
+
 func TestDashboardBruteForceIsBounded(t *testing.T) {
 	s := New(nil, "127.0.0.1:8787")
 	for i := 0; i < 10; i++ {
