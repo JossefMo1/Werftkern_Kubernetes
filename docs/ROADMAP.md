@@ -790,3 +790,12 @@ PR [#412](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412) merged as 
 The exact PR checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614939), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614507) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614434). `real-vm` and `real-PITR` were skipped, so this handoff closes no live Single-Host production gate.
 
 The next release step is to rebuild one immutable candidate from `1f722497196366881136689d6dad30659abb22e8` and run the authorized Ubuntu 24.04 real-vm path, then collect same-candidate installation, backup/restore, upgrade/rollback, bounded load/soak and signed-provenance evidence. HA, multi-host and Kubernetes-production remain deferred.
+
+
+## Native single-host release handoff — PR #414 (2026-11-26)
+
+PR [#414](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/414) merged as [`940682d8`](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/940682d868cce16e77bc4f6549c2bd14e6e25b3c). The selected node and an optional workload node selector must now agree in both the agent assignment boundary and persisted inventory validation; otherwise reconciliation fails closed. Regression coverage was added for each boundary.
+
+The exact PR checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376876), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376935) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879377042). `real-vm` and `real-PITR` were skipped, so this handoff closes no live Single-Host production gate.
+
+The next release step is to rebuild one immutable candidate from `940682d868cce16e77bc4f6549c2bd14e6e25b3c` and run the authorized Ubuntu 24.04 real-vm path, then collect same-candidate installation, backup/restore, upgrade/rollback, bounded load/soak and signed-provenance evidence. HA, multi-host and Kubernetes-production remain deferred.
