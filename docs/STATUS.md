@@ -1,3 +1,13 @@
+# Recovery and archive integrity handoff — PRs #392/#393 (2026-11-26)
+
+- Code: [PR #392](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/392) merged as [0723e98](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/0723e9863db9fdd25f9b3463e4efee1d7421a7cd); [PR #393](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/393) merged as [b5da254](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b5da254fcd4aea95d504dc578a45ab6187d480a2).
+- Operations/recovery boundary: #392 validates the journal-controlled service list before signature verification, maintenance-lock acquisition or phase writes, so malformed recovery state cannot strand a host in explicit recovery.
+- Backup/restore boundary: #393 validates authenticated volume-archive headers with strict JSON decoding before deriving archive keys; duplicate/case-folded members and trailing JSON are rejected.
+- CI evidence: #392 Native/runtime + real-etcd [workflow](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45787124269), Kubernetes contracts [workflow](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45787124345), source/publication [workflow](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45787124208); #393 Native/runtime + real-etcd [workflow](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45806589464), Kubernetes contracts [workflow](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45806589543), source/publication [workflow](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45806589398) — all successful. Real-vm and real-PITR jobs were skipped for #393 because candidate-input execution was not enabled.
+- No Single-Host production gate closed. The published test.17 candidate remains stale, unsigned and mutable; productionReady=false and the decision remains no-go.
+- HA/multi-host/quorum and Kubernetes-Production remain deferred outside the first Native scope.
+- Next handoff: build one immutable candidate from current Main b5da254fcd4aea95d504dc578a45ab6187d480a2 and run candidate-bound Ubuntu installation, backup/restore, upgrade/rollback, bounded soak and signing/provenance checks. The connector cannot create the authorized tag or dispatch workflow_dispatch; that blocker is recorded once and is not repeated.
+
 # Upgrade recovery phase guard handoff — PR #368 (2026-11-25)
 
 - Code: [PR #368](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368), merged commit [79c8688](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/79c8688286aacd916156dfb638e86c5372812976).
