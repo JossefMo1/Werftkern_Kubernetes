@@ -112,6 +112,25 @@ func (f *dockerFixture) serve(w http.ResponseWriter, r *http.Request) {
 func allocation() model.Allocation {
 	return model.Allocation{ID: strings.Repeat("b", 32), Spec: model.Spec{Image: "sha256:" + strings.Repeat("c", 64), Replicas: 1, CPUMilli: 500, MemoryMiB: 64}}
 }
+func TestDockerResponseBoundsRejectOversizeAndAmbiguousStreams(t *testing.T) {
+	if _, err := readBounded(strings.NewReader(strings.Repeat("x", 4)), 3); err == nil || err.Error() != "RESPONSE_BODY_LIMIT_EXCEEDED" {
+		t.Fatalf("oversized response accepted: %v", err)
+	}
+	for _, raw := range []string{
+		`{"stream":"ok","Stream":"ambiguous"}`,
+		`{"error":"pull failed"}`,
+		`{"stream":"ok"} trailing`,
+	} {
+		if err := consumeJSONStream([]byte(raw)); err == nil {
+			t.Fatalf("invalid Docker stream accepted: %q", raw)
+		}
+	}
+	valid := `{"stream":"ok"}` + "\n" + `{"stream":"done"}`
+	if err := consumeJSONStream([]byte(valid)); err != nil {
+		t.Fatalf("valid Docker stream rejected: %v", err)
+	}
+}
+
 func TestEngineCreatesConstrainedContainerAndReplays(t *testing.T) {
 	f := dockerTest(t)
 	a := allocation()
