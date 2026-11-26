@@ -1103,9 +1103,9 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/423",
-      "baseCommit": "796f26e2ddcf754b02c007af4ce0f025d4a87da9",
-      "summary": "Tracker, STATUS and ROADMAP were synchronized for PR #422; the next documentation sync will bind PR #424 and Main 7e07433ca88a8c00dba699260a2f97f2394deb4a."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/425",
+      "baseCommit": "7e07433ca88a8c00dba699260a2f97f2394deb4a",
+      "summary": "Tracker, STATUS and ROADMAP synchronized for PR #424 at Main 7e07433ca88a8c00dba699260a2f97f2394deb4a; exact CI evidence recorded and no live Single-Host gate claimed."
     }
   },
   "candidate": {
@@ -1133,7 +1133,7 @@
       "commit": "7e07433ca88a8c00dba699260a2f97f2394deb4a",
       "codeCommit": "7e07433ca88a8c00dba699260a2f97f2394deb4a",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/424",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/423",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/425",
       "summary": "PR #424 merged as 7e07433ca88a8c00dba699260a2f97f2394deb4a. Docker image-pull and image-load JSON streams are now bounded and strict-validated; duplicate/case-ambiguous, malformed, trailing and oversized responses fail closed, explicit Docker error events preserve IMAGE_PULL_FAILED, and container logs are bounded. Exact PR head ee2f90a166760369a89d64cb8ce46850bc7f6963 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is runtime/security hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true
     },
