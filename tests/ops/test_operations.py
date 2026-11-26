@@ -143,6 +143,19 @@ class FileTests(unittest.TestCase):
             self.assertTrue(read_json(p)['original'])
 class PostgreSQLTests(unittest.TestCase):
     def config(self):return {'host':'127.0.0.1','port':5432,'user':'postgres','database':'app','transport':'loopback'}
+    def test_invalid_database_endpoint_is_blocked(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('test');p.chmod(0o600);c=self.config();c['host']='not-an-ip'
+            with self.assertRaisesRegex(Blocked,'^PRIVATE_DATABASE_ENDPOINT_REQUIRED$'):
+                with postgres.connection(c,p):pass
+    def test_malformed_wireguard_route_is_blocked(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('test');p.chmod(0o600);c=self.config();c.update(host='10.70.0.4',transport='wireguard')
+            with self.assertRaisesRegex(Blocked,'^WIREGUARD_ROUTE_INVALID$'):
+                with postgres.connection(c,p,lambda *a,**k:b'{"dev":"wgwerft"}'):pass
+    def test_invalid_postgres_client_encoding_is_blocked(self):
+        with self.assertRaisesRegex(Blocked,'^POSTGRES_CLIENT_VERSION_INVALID$'):
+            postgres.major(lambda *a,**k:bytes([255]),'pg_dump')
     def test_backup_and_isolated_restore_commands(self):
         calls=[]
         def runner(args,**kw):
