@@ -2,8 +2,11 @@ package store
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/testutil"
 	"net/http"
 	"net/http/httptest"
@@ -20,6 +23,24 @@ func fixture(t *testing.T) (*Etcd, *testutil.EtcdFixture) {
 	e := NewEtcd(f.URL(), f.Server.Client(), model.ID())
 	return e, f
 }
+func TestReadRejectsUnknownPersistedStateFields(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "state.json")
+	clusterID := model.ID()
+	raw, err := json.Marshal(model.NewState(clusterID, "test", time.Now()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw = append(raw[:len(raw)-1], []byte(",\"unknown\":true}")...)
+	if err := safefile.JSON(path, testutil.KV{Revision: 1, Value: base64.StdEncoding.EncodeToString(raw)}, 0600); err != nil {
+		t.Fatal(err)
+	}
+	f := testutil.NewEtcd(t, path)
+	e := NewEtcd(f.URL(), f.Server.Client(), clusterID)
+	if _, _, err := e.Read(context.Background()); err == nil {
+		t.Fatal("unknown persisted state field accepted")
+	}
+}
+
 func TestEtcdInitializeAndRestart(t *testing.T) {
 	e, f := fixture(t)
 	ctx := context.Background()
