@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T11:55:56.011Z",
+  "updatedAt": "2026-11-26T12:52:20.159Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "98cc94be7b7b6866c49a544b6a484af5dbea6879",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
-    "summary": "Main now includes PR #395, merged as 98cc94be7b7b6866c49a544b6a484af5dbea6879. The control-plane client now bounds and strictly validates non-2xx error responses, rejecting trailing JSON, case-fold duplicate members and oversized payloads before exposing an error code. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "fd585204c834bcd3f80c53aad61bac831ba39a13",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/397",
+    "summary": "Main now includes PR #397, merged as fd585204c834bcd3f80c53aad61bac831ba39a13. Docker Engine version and JSON responses are bounded and strictly validated before runtime decoding; trailing JSON, case-fold duplicate members and oversized payloads fail closed. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -549,7 +549,12 @@
         "PR #395 merged Main commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/98cc94be7b7b6866c49a544b6a484af5dbea6879",
         "PR #395 Native checks (test + real-etcd; real-vm/PITR skipped): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527042",
         "PR #395 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527078",
-        "PR #395 source/publication audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527001"
+        "PR #395 source/publication audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527001",
+        "PR #397: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/397",
+        "PR #397 merged Main commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fd585204c834bcd3f80c53aad61bac831ba39a13",
+        "PR #397 Native checks (test + real-etcd; real-vm/PITR skipped): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45823173437",
+        "PR #397 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45823173749",
+        "PR #397 source/publication audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45823173424"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -871,7 +876,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/397",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -901,20 +906,20 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "98cc94be7b7b6866c49a544b6a484af5dbea6879",
-      "codeCommit": "98cc94be7b7b6866c49a544b6a484af5dbea6879",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
-      "summary": "Main now includes PR #395, merged as 98cc94be7b7b6866c49a544b6a484af5dbea6879. The control-plane client now bounds and strictly validates non-2xx error responses, rejecting trailing JSON, case-fold duplicate members and oversized payloads before exposing an error code. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "fd585204c834bcd3f80c53aad61bac831ba39a13",
+      "codeCommit": "fd585204c834bcd3f80c53aad61bac831ba39a13",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/397",
+      "summary": "Main now includes PR #397, merged as fd585204c834bcd3f80c53aad61bac831ba39a13. Docker Engine version and JSON responses are bounded and strictly validated before runtime decoding; trailing JSON, case-fold duplicate members and oversized payloads fail closed. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/396"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/397",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/398"
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
-    "summary": "Main now includes PR #395, merged as 98cc94be7b7b6866c49a544b6a484af5dbea6879. The control-plane client now bounds and strictly validates non-2xx error responses, rejecting trailing JSON, case-fold duplicate members and oversized payloads before exposing an error code. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
+    "summary": "Main now includes PR #397, merged as fd585204c834bcd3f80c53aad61bac831ba39a13. Docker Engine version and JSON responses are bounded and strictly validated before runtime decoding; trailing JSON, case-fold duplicate members and oversized payloads fail closed. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/397",
     "nextCandidateRequired": true
   },
   "previousCandidates": [

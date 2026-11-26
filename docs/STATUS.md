@@ -1,3 +1,11 @@
+# Docker Engine response boundary handoff — PR #397 (2026-11-26)
+
+- Code: [PR #397](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/397), merged commit [fd58520](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fd585204c834bcd3f80c53aad61bac831ba39a13).
+- Runtime change: Docker Engine version responses are bounded to 64 KiB and API JSON responses to 4 MiB; strict validation rejects trailing JSON and case-fold duplicate members before decoding.
+- Regression coverage: [Native runtime / Real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45823173437), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45823173749) and [Source/Publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45823173424) passed. Real-vm and real-PITR were skipped because candidate-input execution was not enabled.
+- No Single-Host production gate closed. productionReady=false, decision no-go; test.17 remains stale, unsigned and mutable.
+- HA/multi-host/quorum and Kubernetes-Production remain deferred outside the first Native scope.
+- Next handoff: build one immutable candidate from current Main fd585204c834bcd3f80c53aad61bac831ba39a13 and run candidate-bound Ubuntu installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded soak and signing/provenance checks.
 # Control-plane error boundary handoff — PR #395 (2026-11-26)
 
 - Code: [PR #395](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395), merged commit [98cc94b](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/98cc94be7b7b6866c49a544b6a484af5dbea6879).
