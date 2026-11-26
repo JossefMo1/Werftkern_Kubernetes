@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T14:59:25.092Z",
+  "updatedAt": "2026-11-26T15:59:22.354Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "96dff4f49427c3baa2e131272c6455dbda3651e4",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/403",
-    "summary": "Main now includes PR #403, merged as 96dff4f49427c3baa2e131272c6455dbda3651e4. The etcd JSON response path now bounds reads to the state response budget plus one byte, rejects trailing data and case-fold duplicate members with strictjson validation, and decodes only after validation. Package regression coverage exercises both ambiguous response forms. Exact Native/runtime and real-etcd checks, Kubernetes contracts and source/publication audit passed for the PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "6ce5423ef2a848e64a69387610f99d20ba4a607e",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/405",
+    "summary": "Main now includes PR #405, merged as 6ce5423ef2a848e64a69387610f99d20ba4a607e. Native setup no longer treats a positive-revision local agent journal as proof of worker connectivity; it now requires the authenticated /v1/health response to report the exact cluster ID, ready status and state schema. Regression coverage rejects wrong cluster, status and schema. Exact Native/runtime and real-etcd checks, Kubernetes contracts and source/publication audit passed for the PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -571,7 +571,13 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45843642774",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45843642926",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45843642920",
-        "PR #403 exact-head evidence: Native test and real-etcd success; Contracts and Publication success; real-vm and real-PITR skipped; no live gate."
+        "PR #403 exact-head evidence: Native test and real-etcd success; Contracts and Publication success; real-vm and real-PITR skipped; no live gate.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/405",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6ce5423ef2a848e64a69387610f99d20ba4a607e",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45853993836",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45853993755",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45853993732",
+        "PR #405 exact-head evidence: Native test and real-etcd success; Contracts and Publication success; real-vm and real-PITR skipped; no live gate."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -894,9 +900,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/403",
-      "mergedCommit": "96dff4f49427c3baa2e131272c6455dbda3651e4",
-      "summary": "Strict, bounded etcd response validation rebased and merged; Native/real-etcd, Contracts and Publication checks passed; real-vm/PITR skipped; no production gate closed."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/405",
+      "mergedCommit": "6ce5423ef2a848e64a69387610f99d20ba4a607e",
+      "summary": "Worker readiness now requires authenticated health identity/readiness/schema; Native/real-etcd, Contracts and Publication checks passed; real-vm/PITR skipped; no production gate closed."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -927,11 +933,11 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "96dff4f49427c3baa2e131272c6455dbda3651e4",
-      "codeCommit": "96dff4f49427c3baa2e131272c6455dbda3651e4",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/403",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/404",
-      "summary": "Main includes PR #403, merged as 96dff4f49427c3baa2e131272c6455dbda3651e4. Strict, bounded etcd response validation and ambiguous-response regression tests passed exact Native/real-etcd, Contracts and Publication checks; real-vm and real-PITR were skipped. No live Single-Host gate is closed and a new immutable candidate remains required.",
+      "commit": "6ce5423ef2a848e64a69387610f99d20ba4a607e",
+      "codeCommit": "6ce5423ef2a848e64a69387610f99d20ba4a607e",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/405",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/406",
+      "summary": "Main includes PR #405, merged as 6ce5423ef2a848e64a69387610f99d20ba4a607e. Worker setup readiness now verifies authenticated health identity, readiness and state schema; exact Native/real-etcd, Contracts and Publication checks passed; real-vm and real-PITR were skipped. No live Single-Host gate is closed and a new immutable candidate remains required.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
