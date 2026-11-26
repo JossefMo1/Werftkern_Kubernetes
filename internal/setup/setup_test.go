@@ -2,6 +2,7 @@ package setup
 
 import (
 	"bytes"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"net"
 	"os"
 	"path/filepath"
@@ -33,6 +34,23 @@ func TestPreflightDoesNotMutateUnsupportedSystem(t *testing.T) {
 	if !strings.Contains(string(b), "ID=ubuntu") {
 		if Preflight() == nil {
 			t.Fatal("unsupported system admitted")
+		}
+	}
+}
+
+func TestWorkerHealthReadyRequiresExactClusterAndSchema(t *testing.T) {
+	cluster := model.ID()
+	good := healthResponse{Status: "ready", ClusterID: cluster, StateSchema: model.StateSchema}
+	if !workerHealthReady(good, cluster) {
+		t.Fatal("accepted health response rejected")
+	}
+	for _, bad := range []healthResponse{
+		{Status: "ready", ClusterID: model.ID(), StateSchema: model.StateSchema},
+		{Status: "not-ready", ClusterID: cluster, StateSchema: model.StateSchema},
+		{Status: "ready", ClusterID: cluster, StateSchema: model.StateSchema + 1},
+	} {
+		if workerHealthReady(bad, cluster) {
+			t.Fatalf("accepted untrusted health response: %#v", bad)
 		}
 	}
 }
