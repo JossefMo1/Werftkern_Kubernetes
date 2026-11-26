@@ -342,3 +342,24 @@ func TestStateAcceptsKnownHistoricalAllocationSpec(t *testing.T) {
 		t.Fatal("allocation spec absent from workload history accepted")
 	}
 }
+
+func TestStateRejectsAllocationNodeSelectorMismatch(t *testing.T) {
+	now := time.Now()
+	nodeID, selectedID, workloadID, allocationID := ID(), ID(), ID(), ID()
+	spec := validSpec()
+	spec.Node = selectedID
+	s := NewState(ID(), "test", now)
+	s.Nodes[nodeID] = &Node{ID: nodeID, Name: "node", Address: "10.0.0.1", CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+	s.Nodes[selectedID] = &Node{ID: selectedID, Name: "node-2", Address: "10.0.0.2", CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+	s.Workloads["demo"] = &Workload{UID: workloadID, Name: "demo", Generation: 1, Spec: spec, Phase: "pending", CreatedAt: now}
+	s.Allocations[allocationID] = &Allocation{ID: allocationID, WorkloadUID: workloadID, Name: "demo", Generation: 1, NodeID: selectedID, Spec: spec, Desired: "run", Phase: "assigned", CreatedAt: now, UpdatedAt: now}
+	if err := s.ValidateInventory(); err != nil {
+		t.Fatalf("valid pinned allocation rejected: %v", err)
+	}
+	copy := *s.Allocations[allocationID]
+	copy.NodeID = nodeID
+	s.Allocations[allocationID] = &copy
+	if err := s.ValidateInventory(); err == nil {
+		t.Fatal("allocation on a node different from its selector accepted")
+	}
+}
