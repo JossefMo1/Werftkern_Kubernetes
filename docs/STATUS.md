@@ -1,3 +1,11 @@
+# Current Main handoff — PR #373 and open PR #390 (2026-11-26)
+
+- Current Main commit: [e47430f](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e47430ffdf355f2ab07119eb371004c1d5150a72), merged through [PR #373](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/373).
+- [PR #390](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/390) hardens authenticated volume-archive header parsing with strict JSON and adds duplicate/trailing-header regression tests. Its head is [e87e8bad](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e87e8bad33a4c8141fe40e58aebff2f4302be705).
+- PR #390 checks passed for Native runtime/package, real-etcd, Kubernetes contracts and publication audit; real-vm and real-PITR were skipped. This is code/etcd/contract evidence only.
+- The stale test.17 candidate remains unsigned and is not evidence for current Main. A new immutable candidate is required before live installation, backup/restore, upgrade/rollback, load/soak, SBOM, signing/provenance or maintainer approval.
+- production decision remains no-go; `productionReady=false`. HA, multi-host/quorum and Kubernetes Production remain deferred outside the first Native Single-Host scope.
+
 # Upgrade recovery phase guard handoff — PR #368 (2026-11-25)
 
 - Code: [PR #368](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368), merged commit [79c8688](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/79c8688286aacd916156dfb638e86c5372812976).
