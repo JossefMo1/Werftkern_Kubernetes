@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T16:59:41.439Z",
+  "updatedAt": "2026-11-26T17:57:47.362Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410",
-    "summary": "Main now includes PR #410, merged as 247dd11a32cfbedd7fb4f7f056b49f0f672e2144. Persisted etcd state is decoded with the strict JSON contract, so unknown fields fail closed before inventory validation and reconciliation. The first PR attempt exposed an incorrectly escaped test fixture and failed compile; corrected commit 998bef39 passed Native/runtime, real-etcd, Contracts and Source/Privacy checks. real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "1f722497196366881136689d6dad30659abb22e8",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412",
+    "summary": "PR #412 merged as 1f722497196366881136689d6dad30659abb22e8. Docker now validates ClusterID with model.ValidID before API negotiation or container-name prefix slicing and returns CLUSTER_ID_INVALID without touching the Docker adapter; regression coverage verifies no request is sent for an invalid identity. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -45,7 +45,8 @@
       "PR and post-merge Main checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
       "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open.",
-      "PR #368 hardens upgrade-recovery journal phase handling; its CI evidence did not close a live single-host gate."
+      "PR #368 hardens upgrade-recovery journal phase handling; its CI evidence did not close a live single-host gate.",
+      "PR #412 changed candidate-bearing Docker runtime code; the current test.17 candidate is stale and cannot carry this evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -54,7 +55,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from the current Main ref at execution time (the merged runtime hardening is already in history), create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from the current Main ref at execution time (now 1f722497196366881136689d6dad30659abb22e8), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -592,7 +593,13 @@
         "PR #410 corrected Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201851",
         "PR #410 corrected Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201751",
         "PR #410 corrected Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
-        "PR #410 rejects unknown persisted state fields before validation or reconciliation; no Single-Host qualification gate closed."
+        "PR #410 rejects unknown persisted state fields before validation or reconciliation; no Single-Host qualification gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412",
+        "PR #412 merge commit verified as 1f722497196366881136689d6dad30659abb22e8",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614939 (Native/runtime + real-etcd passed; real-vm and real-PITR skipped)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614507 (Kubernetes contracts passed)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614434 (Source/Privacy audit passed)",
+        "PR #412 is CI/code-hardening evidence only; no Single-Host qualification gate closed."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -846,7 +853,9 @@
         "PR #365 Kubernetes checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285314",
         "PR #365 Source/Privacy checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285257",
         "PR #365 checks succeeded; real-etcd passed, real-vm/PITR skipped; no Single-Host qualification gate closed.",
-        "Current Main code commit after PR #365: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653"
+        "Current Main code commit after PR #365: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412 (runtime hardening; candidate rebuild required)",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614939 (real-etcd passed; real-vm/PITR skipped; no live installation evidence)"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -930,9 +939,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410",
-      "mergedCommit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
-      "summary": "Persisted etcd state now uses strict JSON; the first fixture attempt failed compile, corrected commit 998bef39 passed Native/real-etcd, Contracts and Publication; real-vm/PITR skipped; no production gate closed."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412",
+      "mergedCommit": "1f722497196366881136689d6dad30659abb22e8",
+      "summary": "PR #412 merged as 1f722497196366881136689d6dad30659abb22e8. Docker now validates ClusterID with model.ValidID before API negotiation or container-name prefix slicing and returns CLUSTER_ID_INVALID without touching the Docker adapter; regression coverage verifies no request is sent for an invalid identity. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -941,9 +950,9 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/411",
-      "baseCommit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
-      "summary": "Tracker, STATUS and ROADMAP will be synchronized for PR #410, including the corrected test evidence and the first failed fixture run."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/413",
+      "baseCommit": "1f722497196366881136689d6dad30659abb22e8",
+      "summary": "Tracker, STATUS and ROADMAP are synchronized for PR #412; exact checks, skipped live jobs, stale candidate identity and no-go status are recorded."
     }
   },
   "candidate": {
@@ -968,11 +977,11 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
-      "codeCommit": "247dd11a32cfbedd7fb4f7f056b49f0f672e2144",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/411",
-      "summary": "Main includes PR #410, merged as 247dd11a32cfbedd7fb4f7f056b49f0f672e2144. Persisted etcd state now rejects unknown fields via strict JSON; corrected CI checks passed, while real-vm and real-PITR were skipped. No live Single-Host gate is closed and a new immutable candidate remains required.",
+      "commit": "1f722497196366881136689d6dad30659abb22e8",
+      "codeCommit": "1f722497196366881136689d6dad30659abb22e8",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/413",
+      "summary": "PR #412 merged as 1f722497196366881136689d6dad30659abb22e8. Docker now validates ClusterID with model.ValidID before API negotiation or container-name prefix slicing and returns CLUSTER_ID_INVALID without touching the Docker adapter; regression coverage verifies no request is sent for an invalid identity. Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks passed on the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
