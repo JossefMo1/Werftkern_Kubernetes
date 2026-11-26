@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T22:00:00.000Z",
+  "updatedAt": "2026-11-26T23:00:00.000Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "15ceb4ec891387268e816a79366dec1768917c0e",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/420",
-    "summary": "PR #420 merged as 15ceb4ec891387268e816a79366dec1768917c0e. PITR configuration now fails closed for invalid UTF-8 in the private cipher secret (PITR_CIPHER_SECRET_ENCODING_INVALID) and malformed pg1-port values (PITR_PORT_INVALID); regression tests cover both inputs. Exact PR head f5f5f3dfaff0d444bd316ab9fd7b4cf75cb77d0b passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is Operations/recovery input-validation evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "796f26e2ddcf754b02c007af4ce0f025d4a87da9",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422",
+    "summary": "PR #422 merged as 796f26e2ddcf754b02c007af4ce0f025d4a87da9. PostgreSQL operations now fail closed for invalid endpoint values (PRIVATE_DATABASE_ENDPOINT_REQUIRED), malformed WireGuard route JSON (WIREGUARD_ROUTE_INVALID) and invalid client-version UTF-8 (POSTGRES_CLIENT_VERSION_INVALID); negative regression tests cover all three paths. Exact PR head 318f46820542aa05c0f91b199e2ec3ceae1052c7 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is Operations/security input-validation evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -50,7 +50,8 @@
       "PR #414 changed candidate-bearing scheduling/state validation; the published test.17 candidate is stale and cannot carry this evidence.",
       "PR #416 merged candidate-bearing persisted-state validation; the published test.17 candidate is stale and cannot carry this evidence.",
       "PR #418 merged candidate-bearing native bootstrap encoding validation; the published test.17 candidate is stale and cannot carry this evidence.",
-      "PR #420 changes candidate-bearing PITR configuration validation; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence."
+      "PR #420 changes candidate-bearing PITR configuration validation; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence.",
+      "PR #422 changes candidate-bearing PostgreSQL endpoint, WireGuard route and client-output validation; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -59,7 +60,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main at execution time (code merge 15ceb4ec891387268e816a79366dec1768917c0e, PR #420), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from current Main at execution time (code merge 796f26e2ddcf754b02c007af4ce0f025d4a87da9, PR #422), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -628,7 +629,14 @@
         "PR #420 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689080 (succeeded)",
         "PR #420 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689051 (succeeded)",
         "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/15ceb4ec891387268e816a79366dec1768917c0e",
-        "PR #420 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
+        "PR #420 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422",
+        "PR #422 head: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/318f46820542aa05c0f91b199e2ec3ceae1052c7",
+        "PR #422 Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729007 (test and real-etcd succeeded; real-vm and real-PITR skipped)",
+        "PR #422 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907728933 (succeeded)",
+        "PR #422 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729047 (succeeded)",
+        "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/796f26e2ddcf754b02c007af4ce0f025d4a87da9",
+        "PR #422 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -639,9 +647,10 @@
         "The exact immutable candidate must include PR #416 before any live qualification evidence can be reused.",
         "PR #418 changes candidate-bearing native bootstrap input handling; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence.",
         "The exact immutable candidate must include PR #418 before any live qualification evidence can be reused.",
-        "The exact immutable candidate must include PR #420 PITR validation changes; test.17 is stale and cannot carry live qualification evidence."
+        "The exact immutable candidate must include PR #420 PITR validation changes; test.17 is stale and cannot carry live qualification evidence.",
+        "The exact immutable candidate must include PR #422 PostgreSQL validation changes; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry live qualification evidence."
       ],
-      "nextStep": "Build an immutable candidate from current Main including PR #420 (source commit 15ceb4ec891387268e816a79366dec1768917c0e), then run the candidate-bound Ubuntu 24.04 path with run_real_vm_e2e=true; do not treat skipped real-vm/PITR jobs or CI-only evidence as production qualification.",
+      "nextStep": "Build an immutable candidate from current Main including PR #422 (source commit 796f26e2ddcf754b02c007af4ce0f025d4a87da9), then run the candidate-bound Ubuntu 24.04 path with run_real_vm_e2e=true; do not treat skipped real-vm/PITR jobs or CI-only evidence as production qualification.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "PR #341 Native test and real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45549728444",
@@ -726,7 +735,14 @@
         "PR #420 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689080 (succeeded)",
         "PR #420 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689051 (succeeded)",
         "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/15ceb4ec891387268e816a79366dec1768917c0e",
-        "PR #420 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
+        "PR #420 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422",
+        "PR #422 head: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/318f46820542aa05c0f91b199e2ec3ceae1052c7",
+        "PR #422 Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729007 (test and real-etcd succeeded; real-vm and real-PITR skipped)",
+        "PR #422 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907728933 (succeeded)",
+        "PR #422 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729047 (succeeded)",
+        "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/796f26e2ddcf754b02c007af4ce0f025d4a87da9",
+        "PR #422 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
       ]
     },
     {
@@ -927,15 +943,23 @@
         "PR #420 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689080 (succeeded)",
         "PR #420 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689051 (succeeded)",
         "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/15ceb4ec891387268e816a79366dec1768917c0e",
-        "PR #420 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
+        "PR #420 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422",
+        "PR #422 head: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/318f46820542aa05c0f91b199e2ec3ceae1052c7",
+        "PR #422 Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729007 (test and real-etcd succeeded; real-vm and real-PITR skipped)",
+        "PR #422 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907728933 (succeeded)",
+        "PR #422 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729047 (succeeded)",
+        "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/796f26e2ddcf754b02c007af4ce0f025d4a87da9",
+        "PR #422 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
         "The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; this blocker is recorded once and is not retried.",
-        "The exact immutable candidate must include PR #420 PITR validation changes; test.17 is stale and cannot carry live qualification evidence."
+        "The exact immutable candidate must include PR #420 PITR validation changes; test.17 is stale and cannot carry live qualification evidence.",
+        "The exact immutable candidate must include PR #422 PostgreSQL validation changes; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry live qualification evidence."
       ],
-      "nextStep": "Build an immutable candidate from current Main including PR #420 (source commit 15ceb4ec891387268e816a79366dec1768917c0e), then run the candidate-bound Ubuntu 24.04 path with run_real_vm_e2e=true; do not treat skipped real-vm/PITR jobs or CI-only evidence as production qualification.",
+      "nextStep": "Build an immutable candidate from current Main including PR #422 (source commit 796f26e2ddcf754b02c007af4ce0f025d4a87da9), then run the candidate-bound Ubuntu 24.04 path with run_real_vm_e2e=true; do not treat skipped real-vm/PITR jobs or CI-only evidence as production qualification.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "Post-merge Main Native test and real-etcd passed (not Ubuntu installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45550035506",
@@ -978,7 +1002,14 @@
         "PR #420 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689080 (succeeded)",
         "PR #420 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689051 (succeeded)",
         "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/15ceb4ec891387268e816a79366dec1768917c0e",
-        "PR #420 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
+        "PR #420 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422",
+        "PR #422 head: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/318f46820542aa05c0f91b199e2ec3ceae1052c7",
+        "PR #422 Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729007 (test and real-etcd succeeded; real-vm and real-PITR skipped)",
+        "PR #422 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907728933 (succeeded)",
+        "PR #422 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729047 (succeeded)",
+        "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/796f26e2ddcf754b02c007af4ce0f025d4a87da9",
+        "PR #422 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
       ]
     },
     {
@@ -1031,9 +1062,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/420",
-      "mergedCommit": "15ceb4ec891387268e816a79366dec1768917c0e",
-      "summary": "PR #420 merged as 15ceb4ec891387268e816a79366dec1768917c0e. PITR configuration now fails closed for invalid UTF-8 in the private cipher secret (PITR_CIPHER_SECRET_ENCODING_INVALID) and malformed pg1-port values (PITR_PORT_INVALID); regression tests cover both inputs. Exact PR head f5f5f3dfaff0d444bd316ab9fd7b4cf75cb77d0b passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is Operations/recovery input-validation evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422",
+      "mergedCommit": "796f26e2ddcf754b02c007af4ce0f025d4a87da9",
+      "summary": "PR #422 merged as 796f26e2ddcf754b02c007af4ce0f025d4a87da9. PostgreSQL operations now fail closed for invalid endpoint values (PRIVATE_DATABASE_ENDPOINT_REQUIRED), malformed WireGuard route JSON (WIREGUARD_ROUTE_INVALID) and invalid client-version UTF-8 (POSTGRES_CLIENT_VERSION_INVALID); negative regression tests cover all three paths. Exact PR head 318f46820542aa05c0f91b199e2ec3ceae1052c7 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is Operations/security input-validation evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -1042,9 +1073,9 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/421",
-      "baseCommit": "15ceb4ec891387268e816a79366dec1768917c0e",
-      "summary": "Tracker, STATUS and ROADMAP synchronized for PR #420 with exact CI evidence and open live-gate status."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/423",
+      "baseCommit": "796f26e2ddcf754b02c007af4ce0f025d4a87da9",
+      "summary": "Tracker, STATUS and ROADMAP synchronized for PR #422 at 796f26e2ddcf754b02c007af4ce0f025d4a87da9 with exact CI evidence and open live-gate status."
     }
   },
   "candidate": {
@@ -1069,19 +1100,19 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "15ceb4ec891387268e816a79366dec1768917c0e",
-      "codeCommit": "15ceb4ec891387268e816a79366dec1768917c0e",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/420",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/421",
-      "summary": "PR #420 merged as 15ceb4ec891387268e816a79366dec1768917c0e. PITR configuration now fails closed for invalid UTF-8 in the private cipher secret (PITR_CIPHER_SECRET_ENCODING_INVALID) and malformed pg1-port values (PITR_PORT_INVALID); regression tests cover both inputs. Exact PR head f5f5f3dfaff0d444bd316ab9fd7b4cf75cb77d0b passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is Operations/recovery input-validation evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "796f26e2ddcf754b02c007af4ce0f025d4a87da9",
+      "codeCommit": "796f26e2ddcf754b02c007af4ce0f025d4a87da9",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/423",
+      "summary": "PR #422 merged as 796f26e2ddcf754b02c007af4ce0f025d4a87da9. PostgreSQL operations now fail closed for invalid endpoint values (PRIVATE_DATABASE_ENDPOINT_REQUIRED), malformed WireGuard route JSON (WIREGUARD_ROUTE_INVALID) and invalid client-version UTF-8 (POSTGRES_CLIENT_VERSION_INVALID); negative regression tests cover all three paths. Exact PR head 318f46820542aa05c0f91b199e2ec3ceae1052c7 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is Operations/security input-validation evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
-    "summary": "PR #420 merged as 15ceb4ec891387268e816a79366dec1768917c0e. PITR configuration now fails closed for invalid UTF-8 in the private cipher secret (PITR_CIPHER_SECRET_ENCODING_INVALID) and malformed pg1-port values (PITR_PORT_INVALID); regression tests cover both inputs. Exact PR head f5f5f3dfaff0d444bd316ab9fd7b4cf75cb77d0b passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is Operations/recovery input-validation evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/420",
+    "summary": "PR #422 merged as 796f26e2ddcf754b02c007af4ce0f025d4a87da9. PostgreSQL operations now fail closed for invalid endpoint values (PRIVATE_DATABASE_ENDPOINT_REQUIRED), malformed WireGuard route JSON (WIREGUARD_ROUTE_INVALID) and invalid client-version UTF-8 (POSTGRES_CLIENT_VERSION_INVALID); negative regression tests cover all three paths. Exact PR head 318f46820542aa05c0f91b199e2ec3ceae1052c7 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is Operations/security input-validation evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422",
     "nextCandidateRequired": true
   },
   "previousCandidates": [

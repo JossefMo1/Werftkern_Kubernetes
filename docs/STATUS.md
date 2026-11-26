@@ -1,3 +1,11 @@
+## 2026-11-26 — PostgreSQL-Operationspfade fail-closed (PR #422)
+
+- [PR #422](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422) wurde als [796f26e2ddcf754b02c007af4ce0f025d4a87da9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/796f26e2ddcf754b02c007af4ce0f025d4a87da9) gemergt. Ungültige Datenbank-Endpunkte werden mit `PRIVATE_DATABASE_ENDPOINT_REQUIRED`, fehlerhafte WireGuard-Routen mit `WIREGUARD_ROUTE_INVALID` und ungültige UTF-8-Ausgaben der PostgreSQL-Clients mit `POSTGRES_CLIENT_VERSION_INVALID` fail-closed abgewiesen; negative Regressionstests decken alle drei Pfade ab.
+- Exakter PR-Head [318f46820542aa05c0f91b199e2ec3ceae1052c7](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/318f46820542aa05c0f91b199e2ec3ceae1052c7): [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729007) erfolgreich (Test und real-etcd erfolgreich; real-vm und real-PITR übersprungen), [Kubernetes-Contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907728933) erfolgreich und [Source/Privacy-Audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45907729047) erfolgreich.
+- Diese Operations-/Security-Härtung schließt kein Live-Production-Gate. `v0.2.0-dev.4-test.17` bleibt stale, unsigniert und nicht unveränderlich; `productionReady=false`, Entscheidung `no-go`.
+- Der nächste Kandidat muss aus Main [796f26e2ddcf754b02c007af4ce0f025d4a87da9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/796f26e2ddcf754b02c007af4ce0f025d4a87da9) gebaut und anschließend mit `run_real_vm_e2e=true` auf Ubuntu 24.04 qualifiziert werden. Der Connector kann Tag/`workflow_dispatch` nicht ausführen; der Blocker wird nicht wiederholt.
+- HA/Multi-Host/Quorum und Kubernetes-Production bleiben Erweiterungspfade außerhalb des ersten Native-Single-Host-Scopes.
+
 ## 2026-11-26 — PITR-Konfiguration fail-closed (PR #420)
 
 - [PR #420](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/420) wurde als [15ceb4ec891387268e816a79366dec1768917c0e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/15ceb4ec891387268e816a79366dec1768917c0e) gemergt. PITR weist ungültiges UTF-8 im privaten Cipher-Secret mit `PITR_CIPHER_SECRET_ENCODING_INVALID` zurück und normalisiert nicht numerische `pg1-port`-Werte auf `PITR_PORT_INVALID`; beide Pfade haben Regressionstests.

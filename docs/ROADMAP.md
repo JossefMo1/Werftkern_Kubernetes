@@ -1,3 +1,9 @@
+## Release-Handoff 2026-11-26 — PR #422
+
+PostgreSQL-Operationspfade behandeln jetzt ungültige Endpunkte, WireGuard-Routen und Client-Ausgaben fail-closed. [PR #422](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/422) wurde als [796f26e2ddcf754b02c007af4ce0f025d4a87da9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/796f26e2ddcf754b02c007af4ce0f025d4a87da9) gemergt; der exakte Head [318f46820542aa05c0f91b199e2ec3ceae1052c7](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/318f46820542aa05c0f91b199e2ec3ceae1052c7) lief durch Native/runtime + real-etcd, Kubernetes-Contracts und Source/Privacy erfolgreich. real-vm und real-PITR wurden übersprungen.
+
+Diese Härtung ist kein Production-Gate. Der nächste priorisierte Schritt bleibt ein unveränderlicher Kandidat aus Main [796f26e2ddcf754b02c007af4ce0f025d4a87da9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/796f26e2ddcf754b02c007af4ce0f025d4a87da9) mit kandidatengebundener Ubuntu-Installation, Docker-/etcd-Lifecycle, Backup/Restore, Upgrade/Rollback, Load/Soak sowie signierten Artefakten und Provenienz. Der Connector kann den autorisierten Tag bzw. `workflow_dispatch` nicht ausführen; der Blocker wird nicht wiederholt. HA/Multi-Host und Kubernetes-Production bleiben Erweiterungspfade.
+
 ## Release-Handoff 2026-11-26 — PR #420
 
 PITR-Konfigurationsfehler werden im aktuellen Main fail-closed behandelt: ungültiges UTF-8 im privaten Cipher-Secret und nicht numerische Ports erhalten stabile Blocked-Codes. [PR #420](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/420) ist als [15ceb4ec891387268e816a79366dec1768917c0e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/15ceb4ec891387268e816a79366dec1768917c0e) gemergt; Native/runtime + real-etcd, Kubernetes-Contracts und Source/Privacy liefen erfolgreich, real-vm und real-PITR waren übersprungen.
