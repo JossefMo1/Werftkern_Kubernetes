@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 	"io"
 	"net"
 	"net/http"
@@ -23,6 +24,9 @@ const allocationLabel = "org.werftkern.runtime.allocation"
 const specLabel = "org.werftkern.runtime.spec"
 
 var ErrStale = errors.New("ALLOCATION_SUPERSEDED")
+
+const dockerVersionResponseLimit = 64 << 10
+const dockerJSONResponseLimit = 4 << 20
 
 type Docker struct {
 	Network            string
@@ -99,8 +103,12 @@ func (d *Docker) version(ctx context.Context) (string, error) {
 		APIVersion string `json:"ApiVersion"`
 		Minimum    string `json:"MinAPIVersion"`
 	}
-	if e = json.NewDecoder(io.LimitReader(r.Body, 65536)).Decode(&v); e != nil {
-		return "", e
+	raw, readErr := io.ReadAll(io.LimitReader(r.Body, dockerVersionResponseLimit+1))
+	if readErr != nil || len(raw) > dockerVersionResponseLimit || strictjson.Validate(raw) != nil {
+		return "", errors.New("ENGINE_VERSION_RESPONSE_INVALID")
+	}
+	if e = json.Unmarshal(raw, &v); e != nil {
+		return "", errors.New("ENGINE_VERSION_RESPONSE_INVALID")
 	}
 	max, e := apiNumber(v.APIVersion)
 	if e != nil {
@@ -146,7 +154,11 @@ func (d *Docker) request(ctx context.Context, method, path string, in any, out a
 		return r.StatusCode, fmt.Errorf("ENGINE_HTTP_%d", r.StatusCode)
 	}
 	if out != nil {
-		e = json.NewDecoder(io.LimitReader(r.Body, 4<<20)).Decode(out)
+		raw, readErr := io.ReadAll(io.LimitReader(r.Body, dockerJSONResponseLimit+1))
+		if readErr != nil || len(raw) > dockerJSONResponseLimit || strictjson.Validate(raw) != nil {
+			return r.StatusCode, errors.New("ENGINE_RESPONSE_INVALID")
+		}
+		e = json.Unmarshal(raw, out)
 	} else {
 		_, e = io.Copy(io.Discard, io.LimitReader(r.Body, 4096))
 	}
