@@ -19,6 +19,18 @@ RECOVERABLE_PHASES=frozenset({
     "runtime-verified-unlock-pending",
 })
 
+ALLOWED_RECOVERY_SERVICES=frozenset({"werftkern-control", "werftkern-agent"})
+
+def _recovery_services(value):
+    if type(value) is not list or len(value) > len(ALLOWED_RECOVERY_SERVICES):
+        raise Blocked("RECOVERY_SERVICE_LIST_INVALID")
+    for service in value:
+        if type(service) is not str or service not in ALLOWED_RECOVERY_SERVICES:
+            raise Blocked("RECOVERY_SERVICE_NOT_ALLOWED")
+    if len(value) != len(set(value)):
+        raise Blocked("RECOVERY_SERVICE_LIST_INVALID")
+    return value
+
 def verify(package, manifest, signature, key, runner=run):
     return json.loads(runner(["werft","release","verify","--manifest",str(manifest),"--signature",str(signature),"--public-key",str(key),"--package",str(package)]))
 
@@ -74,6 +86,10 @@ def recover(journal_path,package,manifest,signature,key,confirm,runner=run):
     phase=old.get("phase")
     if not isinstance(phase,str) or phase not in RECOVERABLE_PHASES:
         raise Blocked("RECOVERY_PHASE_NOT_INTERRUPTED")
+    # Validate journal-controlled service targets before any verification,
+    # maintenance mutation, or phase write. An inconsistent journal must not
+    # strand the cluster in explicit-recovery.
+    services=_recovery_services(old.get("services", []))
     m=verify(package,manifest,signature,key,runner)
     if old.get("format")!="werftkern-host-update/v1" or confirm!=old.get("id"):raise Blocked("RECOVERY_OPERATION_CONFIRMATION_REQUIRED")
     if m["stateSchema"]!=old["target"]["stateSchema"]:raise Blocked("STATE_SCHEMA_DOWNGRADE_FORBIDDEN")
@@ -83,17 +99,15 @@ def recover(journal_path,package,manifest,signature,key,confirm,runner=run):
     with lock(ROOT/"update.lock"):
         runner(["werft","maintenance","on","--id",old["id"],"--reason","signed-host-recovery"])
         old["phase"]="explicit-recovery";write_json(journal_path,old)
-        for service in old.get("services",[]):
-            if service not in ("werftkern-control","werftkern-agent"):raise Blocked("RECOVERY_SERVICE_NOT_ALLOWED")
         staged=pathlib.Path(journal_path).parent/("repair-"+m["packageSha256"]+".deb")
         if not staged.exists():shutil.copyfile(package,staged);os.chmod(staged,0o600)
         if digest_file(staged)!=m["packageSha256"]:raise Blocked("RECOVERY_PACKAGE_CHANGED")
         pv=runner(["dpkg-deb","-f",str(staged),"Version"]).decode().strip()
         pn=runner(["dpkg-deb","-f",str(staged),"Package"]).decode().strip()
         if pv!=m["packageVersion"] or pn!="werftkern":raise Blocked("RECOVERY_PACKAGE_IDENTITY_MISMATCH")
-        for service in old.get("services",[]):runner(["systemctl","stop",service])
+        for service in services:runner(["systemctl","stop",service])
         runner(["dpkg","--install",str(staged)],timeout=600)
-        for service in old.get("services",[]):runner(["systemctl","start",service])
+        for service in services:runner(["systemctl","start",service])
         runner(["werft","status","--json"],timeout=90)
         old["phase"]="awaiting-runtime-qualification";old["recoveryTarget"]=m;write_json(journal_path,old)
         return old
