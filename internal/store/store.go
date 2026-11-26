@@ -97,7 +97,7 @@ func (e *Etcd) Read(ctx context.Context) (*model.State, int64, error) {
 		return nil, 0, err
 	}
 	var s model.State
-	if err = json.Unmarshal(b, &s); err != nil {
+	if err = strictjson.Unmarshal(b, &s); err != nil {
 		return nil, 0, err
 	}
 	if err = s.ValidateInventory(); err != nil {
