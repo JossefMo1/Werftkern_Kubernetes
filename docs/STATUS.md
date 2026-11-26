@@ -1,3 +1,11 @@
+## 2026-11-26 — PITR-Konfiguration fail-closed (PR #420)
+
+- [PR #420](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/420) wurde als [15ceb4ec891387268e816a79366dec1768917c0e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/15ceb4ec891387268e816a79366dec1768917c0e) gemergt. PITR weist ungültiges UTF-8 im privaten Cipher-Secret mit `PITR_CIPHER_SECRET_ENCODING_INVALID` zurück und normalisiert nicht numerische `pg1-port`-Werte auf `PITR_PORT_INVALID`; beide Pfade haben Regressionstests.
+- Exakte CI-Nachweise für den PR-Head [f5f5f3dfaff0d444bd316ab9fd7b4cf75cb77d0b](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f5f5f3dfaff0d444bd316ab9fd7b4cf75cb77d0b): [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689098) erfolgreich (real-vm und real-PITR übersprungen), [Kubernetes-Contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689080) erfolgreich und [Source/Privacy-Audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45900689051) erfolgreich.
+- Diese Operations-/Recovery-Input-Validation schließt kein Live-Production-Gate. `v0.2.0-dev.4-test.17` bleibt stale, unsigniert und nicht unveränderlich; `productionReady=false`, Entscheidung `no-go`.
+- HA/Multi-Host/Quorum und Kubernetes-Production bleiben außerhalb des ersten Native-Single-Host-Scope.
+- Nächster Handoff: unveränderlichen Kandidaten aus Main [15ceb4ec891387268e816a79366dec1768917c0e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/15ceb4ec891387268e816a79366dec1768917c0e) bauen und darauf Ubuntu-, Backup/Restore-, Upgrade/Rollback-, Load/Soak- sowie Signatur-/Provenance-Gates ausführen.
+
 ## 2026-11-26 — Native-Bootstrap-Eingaben fail-closed (PR #418)
 
 - [PR #418](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/418) wurde als [4224039d0addb0a541785a94b3dd3e3983a4b61e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/4224039d0addb0a541785a94b3dd3e3983a4b61e) gemergt. Native Bootstrap weist ungültiges UTF-8 in `/etc/hosts`, `known_hosts` und Remote-Preflight-Ausgaben mit stabilen Fehlercodes zurück.
