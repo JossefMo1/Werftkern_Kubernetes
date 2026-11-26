@@ -763,3 +763,12 @@ Exact PR checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo
 
 Next release work remains bound to a new immutable candidate built from the current Main handoff. The old `v0.2.0-dev.4-test.17` candidate is not immutable and its assets are unsigned. Backup/restore, upgrade/rollback, load/soak, signed provenance, maintainer feedback and Go/No-Go remain open. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
 
+
+## Latest runtime hardening handoff — PR #408 (2026-11-26)
+
+PR [#408](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/408) merged as [cc0c5b5e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cc0c5b5e835712b819ec227c5d6ca4d7094467ee). Durable Native agent journal records are validated fail-closed before startup and before persistence, covering allocation identity, node ownership, desired/phase values, port bounds, timestamps, resource specification and map-key consistency.
+
+Exact PR checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235848), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235446) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235860). real-vm and real-PITR were skipped; no Single-Host production gate closed.
+
+The old v0.2.0-dev.4-test.17 candidate remains non-immutable and unsigned, so a new immutable candidate is required from [cc0c5b5e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cc0c5b5e835712b819ec227c5d6ca4d7094467ee) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. productionReady remains false and Go/No-Go remains no-go. HA, multi-host and Kubernetes-production remain deferred.
+
