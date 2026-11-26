@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-25T15:45:00Z",
+  "updatedAt": "2026-11-26T07:56:27Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "79c8688286aacd916156dfb638e86c5372812976",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
-    "summary": "PR #368 merged as 79c8688286aacd916156dfb638e86c5372812976. Upgrade recovery now validates a recoverable interrupted-journal phase before signature verification or any host mutation; completed or unknown phases fail closed with RECOVERY_PHASE_NOT_INTERRUPTED. The regression test test_recover_rejects_completed_journal_before_external_commands verifies that no runner command executes for a completed journal. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952 (test, race/static/package checks and real-etcd success; real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427 and real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747 skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555833 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904. This is CI/code-hardening evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "e47430ffdf355f2ab07119eb371004c1d5150a72",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/373",
+    "summary": "Main remains at e47430ffdf355f2ab07119eb371004c1d5150a72 after PR #373. PR #390 is an open recovery-boundary hardening change on branch security/strict-volume-header-json-20261126; its successful CI is code/etcd/contract evidence only and does not close a Single-Host production gate. productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -40,12 +40,9 @@
     "status": "prepared",
     "summary": "Build and run the exact Native single-host production qualification on an ephemeral Ubuntu 24.04 runner.",
     "blockers": [
-      "The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296 and excludes merged changes through PR #368.",
-      "The exact candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the test-release workflow only prepares experimental assets and does not qualify production.",
-      "PR and post-merge Main checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
-      "Single-host installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence are not complete for one unchanged candidate.",
-      "GitHub release metadata for test.17 reports immutable=false and its assets are unsigned; server-side release immutability and signing/provenance remain open.",
-      "PR #368 hardens upgrade-recovery journal phase handling; its CI evidence did not close a live single-host gate."
+      "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
+      "PR #390 is not merged; after any merge the candidate must be rebuilt and all live evidence must bind to the resulting immutable commit and artifact digests.",
+      "The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; this blocker is recorded once and is not retried."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -54,7 +51,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from the current Main ref at execution time (the merged runtime hardening is already in history), create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available) so ci.yml can run the Ubuntu 24.04 real-vm path, then complete same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signing gates. The current connector cannot dispatch workflow_dispatch or create tags; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Review and merge the open runtime-hardening work when maintainers approve it, then build the next immutable candidate from the resulting Main ref, create an authorized v0.2.0-rc.* candidate tag (or use workflow_dispatch when available), and run the ephemeral Ubuntu 24.04 real-vm path with run_real_vm_e2e=true. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -534,7 +531,14 @@
         "PR #365 Kubernetes checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285314",
         "PR #365 Source/Privacy checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285257",
         "PR #365 checks succeeded; real-etcd passed, real-vm/PITR skipped; no Single-Host qualification gate closed.",
-        "Current Main code commit after PR #365: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653"
+        "Current Main code commit after PR #365: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653",
+        "PR #390 open: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/390",
+        "PR #390 head commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e87e8bad33a4c8141fe40e58aebff2f4302be705",
+        "PR #390 Native test/race/static/package/vulnerability success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376643/job/139767511305",
+        "PR #390 real-etcd success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376643/job/139767511705",
+        "PR #390 contracts/package success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376799/job/139767512465",
+        "PR #390 publication/source audit success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376735/job/139767512143",
+        "PR #390 real-vm and real-PITR skipped; no exact-candidate live gate closed."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -591,7 +595,14 @@
         "PR #368 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904",
         "PR #368 real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427",
         "PR #368 real-PITR skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747",
-        "PR #368 is CI/code-hardening evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback, bounded-soak or signed-artifact gate closed."
+        "PR #368 is CI/code-hardening evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback, bounded-soak or signed-artifact gate closed.",
+        "PR #390 open: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/390",
+        "PR #390 head commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e87e8bad33a4c8141fe40e58aebff2f4302be705",
+        "PR #390 Native test/race/static/package/vulnerability success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376643/job/139767511305",
+        "PR #390 real-etcd success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376643/job/139767511705",
+        "PR #390 contracts/package success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376799/job/139767512465",
+        "PR #390 publication/source audit success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376735/job/139767512143",
+        "PR #390 real-vm and real-PITR skipped; no exact-candidate live gate closed."
       ]
     },
     {
@@ -773,7 +784,14 @@
         "PR #365 Kubernetes checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285314",
         "PR #365 Source/Privacy checks: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45634285257",
         "PR #365 checks succeeded; real-etcd passed, real-vm/PITR skipped; no Single-Host qualification gate closed.",
-        "Current Main code commit after PR #365: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653"
+        "Current Main code commit after PR #365: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fc16c9978741fc9d792da781d1b697b2612af653",
+        "PR #390 open: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/390",
+        "PR #390 head commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e87e8bad33a4c8141fe40e58aebff2f4302be705",
+        "PR #390 Native test/race/static/package/vulnerability success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376643/job/139767511305",
+        "PR #390 real-etcd success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376643/job/139767511705",
+        "PR #390 contracts/package success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376799/job/139767512465",
+        "PR #390 publication/source audit success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376735/job/139767512143",
+        "PR #390 real-vm and real-PITR skipped; no exact-candidate live gate closed."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -804,7 +822,14 @@
         "PR #368 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904",
         "PR #368 real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427",
         "PR #368 real-PITR skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747",
-        "PR #368 is CI/code-hardening evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback, bounded-soak or signed-artifact gate closed."
+        "PR #368 is CI/code-hardening evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback, bounded-soak or signed-artifact gate closed.",
+        "PR #390 open: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/390",
+        "PR #390 head commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e87e8bad33a4c8141fe40e58aebff2f4302be705",
+        "PR #390 Native test/race/static/package/vulnerability success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376643/job/139767511305",
+        "PR #390 real-etcd success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376643/job/139767511705",
+        "PR #390 contracts/package success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376799/job/139767512465",
+        "PR #390 publication/source audit success: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45778376735/job/139767512143",
+        "PR #390 real-vm and real-PITR skipped; no exact-candidate live gate closed."
       ]
     },
     {
@@ -856,7 +881,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/372",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/390",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -886,20 +911,20 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "79c8688286aacd916156dfb638e86c5372812976",
-      "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
-      "summary": "PR #368 merged as 79c8688286aacd916156dfb638e86c5372812976. Upgrade recovery now validates a recoverable interrupted-journal phase before signature verification or any host mutation; completed or unknown phases fail closed with RECOVERY_PHASE_NOT_INTERRUPTED. The regression test test_recover_rejects_completed_journal_before_external_commands verifies that no runner command executes for a completed journal. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952 (test, race/static/package checks and real-etcd success; real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427 and real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747 skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555833 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904. This is CI/code-hardening evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "e47430ffdf355f2ab07119eb371004c1d5150a72",
+      "codeCommit": "e47430ffdf355f2ab07119eb371004c1d5150a72",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/373",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/373",
+      "summary": "The stale test.17 candidate predates current Main e47430ffdf355f2ab07119eb371004c1d5150a72. Main has no production qualification; PR #390 is open follow-up hardening and requires a new immutable candidate if merged.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/390"
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
-    "summary": "PR #368 merged as 79c8688286aacd916156dfb638e86c5372812976. Upgrade recovery now validates a recoverable interrupted-journal phase before signature verification or any host mutation; completed or unknown phases fail closed with RECOVERY_PHASE_NOT_INTERRUPTED. The regression test test_recover_rejects_completed_journal_before_external_commands verifies that no runner command executes for a completed journal. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952 (test, race/static/package checks and real-etcd success; real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427 and real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747 skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555833 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904. This is CI/code-hardening evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/365",
+    "summary": "PR #368 merged as 79c8688286aacd916156dfb638e86c5372812976. Upgrade recovery now validates a recoverable interrupted-journal phase before signature verification or any host mutation; completed or unknown phases fail closed with RECOVERY_PHASE_NOT_INTERRUPTED. The regression test test_recover_rejects_completed_journal_before_external_commands verifies that no runner command executes for a completed journal. PR checks passed: Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952 (test, race/static/package checks and real-etcd success; real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427 and real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747 skipped), Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555833 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904. This is CI/code-hardening evidence only; no Single-Host production gate closed, productionReady remains false and the decision remains no-go. Current Main is e47430ffdf355f2ab07119eb371004c1d5150a72; PR #390 is open and not part of test.17.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/390",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
