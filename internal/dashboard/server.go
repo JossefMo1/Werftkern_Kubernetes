@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/apiclient"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 	"io"
 	"io/fs"
 	"net"
@@ -90,9 +91,8 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 		Code string `json:"code"`
 	}
 	r.Body = http.MaxBytesReader(w, r.Body, 2048)
-	d := json.NewDecoder(r.Body)
-	d.DisallowUnknownFields()
-	if d.Decode(&in) != nil || subtle.ConstantTimeCompare([]byte(in.Code), []byte(s.Code)) != 1 {
+	raw, readErr := io.ReadAll(io.LimitReader(r.Body, 2049))
+	if readErr != nil || len(raw) > 2048 || strictjson.Unmarshal(raw, &in) != nil || subtle.ConstantTimeCompare([]byte(in.Code), []byte(s.Code)) != 1 {
 		http.Error(w, "LOGIN_FAILED", 403)
 		return
 	}

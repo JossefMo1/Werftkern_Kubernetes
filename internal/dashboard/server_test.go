@@ -128,3 +128,15 @@ func TestDashboardProxyRejectsOversizedResponse(t *testing.T) {
 		t.Fatalf("oversized response was not rejected: status=%d body=%q", response.Code, response.Body.String())
 	}
 }
+func TestDashboardLoginRejectsAmbiguousJSON(t *testing.T) {
+	s := New(nil, "127.0.0.1:8787")
+	payloads := []string{
+		`{"code":"` + s.Code + `"}{}`,
+		`{"code":"` + s.Code + `","CODE":"` + s.Code + `"}`,
+	}
+	for _, payload := range payloads {
+		if r := request(s, "POST", "/session", "http://"+s.Host, "", payload); r.Code != 403 {
+			t.Fatalf("ambiguous login payload accepted with status %d", r.Code)
+		}
+	}
+}
