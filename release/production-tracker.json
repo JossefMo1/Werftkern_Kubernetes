@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T15:59:22.354Z",
+  "updatedAt": "2026-11-26T16:13:55.849Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "6ce5423ef2a848e64a69387610f99d20ba4a607e",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/405",
-    "summary": "Main now includes PR #405, merged as 6ce5423ef2a848e64a69387610f99d20ba4a607e. Native setup no longer treats a positive-revision local agent journal as proof of worker connectivity; it now requires the authenticated /v1/health response to report the exact cluster ID, ready status and state schema. Regression coverage rejects wrong cluster, status and schema. Exact Native/runtime and real-etcd checks, Kubernetes contracts and source/publication audit passed for the PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/408",
+    "summary": "Main now includes PR #408, merged as cc0c5b5e835712b819ec227c5d6ca4d7094467ee. The agent validates persisted journal records before startup and before accepting new assignments, rejecting malformed or out-of-scope allocation identity, node, desired/phase, port, timestamp, resource and map-key data. Native/runtime and real-etcd checks, Kubernetes contracts and source/publication audit passed for the PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -577,7 +577,14 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45853993836",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45853993755",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45853993732",
-        "PR #405 exact-head evidence: Native test and real-etcd success; Contracts and Publication success; real-vm and real-PITR skipped; no live gate."
+        "PR #405 exact-head evidence: Native test and real-etcd success; Contracts and Publication success; real-vm and real-PITR skipped; no live gate.",
+        "PR #408: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/408",
+        "PR #408 merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
+        "PR #408 Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235848",
+        "PR #408 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235446",
+        "PR #408 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235860",
+        "PR #408 Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
+        "PR #408 validates durable journal allocations before startup and before persistence; no Single-Host qualification gate closed."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -634,7 +641,14 @@
         "PR #368 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555904",
         "PR #368 real-vm skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299258427",
         "PR #368 real-PITR skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45640555952/job/139299257747",
-        "PR #368 is CI/code-hardening evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback, bounded-soak or signed-artifact gate closed."
+        "PR #368 is CI/code-hardening evidence only; no exact-candidate Ubuntu installation, backup/restore, upgrade/rollback, bounded-soak or signed-artifact gate closed.",
+        "PR #408: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/408",
+        "PR #408 merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
+        "PR #408 Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235848",
+        "PR #408 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235446",
+        "PR #408 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45856235860",
+        "PR #408 Native test and real-etcd succeeded; real-vm and real-PITR were skipped.",
+        "PR #408 validates durable journal allocations before startup and before persistence; no Single-Host qualification gate closed."
       ]
     },
     {
@@ -900,16 +914,21 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/405",
-      "mergedCommit": "6ce5423ef2a848e64a69387610f99d20ba4a607e",
-      "summary": "Worker readiness now requires authenticated health identity/readiness/schema; Native/real-etcd, Contracts and Publication checks passed; real-vm/PITR skipped; no production gate closed."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/408",
+      "mergedCommit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
+      "summary": "Durable agent journal records are validated fail-closed before startup and before persistence; Native/real-etcd, Contracts and Publication checks passed; real-vm/PITR skipped; no production gate closed."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
       "Keep Native Runtime and Kubernetes manager evidence separate.",
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
-    ]
+    ],
+    "lastDocumentationHandoff": {
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/409",
+      "baseCommit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
+      "summary": "Tracker, STATUS and ROADMAP will be synchronized for PR #408; live production gates remain open."
+    }
   },
   "candidate": {
     "tag": "v0.2.0-dev.4-test.17",
@@ -933,11 +952,11 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "6ce5423ef2a848e64a69387610f99d20ba4a607e",
-      "codeCommit": "6ce5423ef2a848e64a69387610f99d20ba4a607e",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/405",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/406",
-      "summary": "Main includes PR #405, merged as 6ce5423ef2a848e64a69387610f99d20ba4a607e. Worker setup readiness now verifies authenticated health identity, readiness and state schema; exact Native/real-etcd, Contracts and Publication checks passed; real-vm and real-PITR were skipped. No live Single-Host gate is closed and a new immutable candidate remains required.",
+      "commit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
+      "codeCommit": "cc0c5b5e835712b819ec227c5d6ca4d7094467ee",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/408",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/409",
+      "summary": "Main includes PR #408, merged as cc0c5b5e835712b819ec227c5d6ca4d7094467ee. Durable journal records are validated fail-closed before startup and persistence; exact Native/real-etcd, Contracts and Publication checks passed; real-vm and real-PITR were skipped. No live Single-Host gate is closed and a new immutable candidate remains required.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
