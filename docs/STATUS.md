@@ -996,3 +996,11 @@ Exact checks for the PR head passed: [Native runtime/source/package including re
 
 The published `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, with non-immutable metadata and unsigned assets. A new candidate must be built from [96dff4f49427c3baa2e131272c6455dbda3651e4](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/96dff4f49427c3baa2e131272c6455dbda3651e4) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. `productionReady=false`; the decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
 
+## Latest operations handoff — PR #405 (2026-11-26)
+
+PR [#405](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/405) merged as [6ce5423e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6ce5423ef2a848e64a69387610f99d20ba4a607e). Native setup no longer treats a positive-revision local agent journal as proof that a worker is connected. It now verifies the authenticated `GET /v1/health` response and requires the exact cluster ID, `ready` status and state schema. Regression coverage rejects wrong cluster, status and schema responses.
+
+Exact checks for the PR head passed: [Native runtime/source/package including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45853993836), [Kubernetes contracts/package](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45853993755) and [Source/Privacy publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45853993732). The Native run's `test` and `real-etcd` jobs succeeded; `real-vm` and `real-PITR` were skipped. These are code-hardening checks only: no Single-Host production gate closed.
+
+The published `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, with non-immutable metadata and unsigned assets. A new candidate must be built from [6ce5423ef2a848e64a69387610f99d20ba4a607e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6ce5423ef2a848e64a69387610f99d20ba4a607e) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. `productionReady=false`; the production decision remains no-go. HA, multi-host and Kubernetes-production remain deferred.
+
