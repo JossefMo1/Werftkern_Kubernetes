@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T14:57:35.192Z",
+  "updatedAt": "2026-11-26T14:59:25.092Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -928,10 +928,11 @@
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
       "commit": "96dff4f49427c3baa2e131272c6455dbda3651e4",
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/403",
-      "documentationPullRequest": null,
-      "nextCandidateRequired": true,
-      "reason": "Merged runtime hardening is not a release candidate and still requires same-commit live Ubuntu, recovery, upgrade/rollback, load/soak, signing and maintainer evidence."
+      "codeCommit": "96dff4f49427c3baa2e131272c6455dbda3651e4",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/403",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/404",
+      "summary": "Main includes PR #403, merged as 96dff4f49427c3baa2e131272c6455dbda3651e4. Strict, bounded etcd response validation and ambiguous-response regression tests passed exact Native/real-etcd, Contracts and Publication checks; real-vm and real-PITR were skipped. No live Single-Host gate is closed and a new immutable candidate remains required.",
+      "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
