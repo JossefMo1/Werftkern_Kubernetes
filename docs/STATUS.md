@@ -1013,3 +1013,12 @@ Exact checks for the PR head passed: [Native/runtime + real-etcd](https://github
 
 The published v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, with non-immutable metadata and unsigned assets. A new immutable candidate must be built from [cc0c5b5e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cc0c5b5e835712b819ec227c5d6ca4d7094467ee) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. productionReady=false; the production decision remains no-go. HA, multi-host and Kubernetes-production remain deferred.
 
+
+## Latest persistence hardening handoff — PR #410 (2026-11-26)
+
+PR [#410](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410) merged as [247dd11a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/247dd11a32cfbedd7fb4f7f056b49f0f672e2144). Native etcd state reads now use the strict JSON contract, so unknown persisted state fields fail closed before inventory validation or reconciliation. The first PR attempt exposed an incorrectly escaped JSON fixture and failed at compile; corrected commit `998bef39f58ec5d29002405b4adcc38f0f2a2c17` passed.
+
+Corrected checks: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201801), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201851) and [Source/Privacy publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201751). The Native test and real-etcd jobs succeeded; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no Single-Host production gate closed.
+
+The published `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, with non-immutable metadata and unsigned assets. A new immutable candidate must be built from [247dd11a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/247dd11a32cfbedd7fb4f7f056b49f0f672e2144) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
+
