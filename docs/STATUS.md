@@ -1,3 +1,11 @@
+## 2026-11-26 — Dashboard-Proxy-Grenze und CI-Runner-Evidenz
+
+- PR #399 wurde aus dem aktuellen Main b13a51f3b0e75901cd4f654def766254293ce56e rebasiert und als 3f3301ecd5d20d8dcf176aba63d5c3e6d05b8076 gemergt: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/399
+- Der Dashboard-Control-Plane-Proxy liest Antworten nur noch bis zur dokumentierten Zustandsgrenze; nicht lesbare oder zu große Antworten werden mit 502 und stabilen Fehlercodes abgewiesen, statt abgeschnitten weitergereicht zu werden.
+- Der erste Native-Lauf für #399 scheiterte ausschließlich am nicht benötigten packages.microsoft.com-APT-Repository des gehosteten Ubuntu-Runners (403, Paket nicht gefunden). Die CI isoliert solche optionalen Quellen jetzt nur für den Smoke-Test und stellt sie im Cleanup wieder her.
+- Verifikation des korrigierten Heads 5c6b6833ccdaf5d8b754841531932c9d1c9ebeb9: Native (inkl. real-etcd) https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45824933962, Kubernetes-Contracts https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45824933974 und Source-/Publication-Audit https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45824933967 erfolgreich. real-vm und real-PITR waren übersprungen.
+- Dies ist Runtime-/CI-Härtung, kein Live-Production-Gate. Der alte v0.2.0-dev.4-test.17-Kandidat bleibt stale, unsigniert und nicht unveränderlich; productionReady=false, Entscheidung no-go.
+- Aktueller Handoff: Main 3f3301ecd5d20d8dcf176aba63d5c3e6d05b8076; als Nächstes muss ein unveränderlicher RC aus diesem Main für kandidatengebundene Ubuntu-, Backup/Restore-, Upgrade/Rollback-, Load/Soak- und Signaturprüfungen bereitgestellt werden.
 # Docker Engine response boundary handoff — PR #397 (2026-11-26)
 
 - Code: [PR #397](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/397), merged commit [fd58520](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/fd585204c834bcd3f80c53aad61bac831ba39a13).
