@@ -2,14 +2,14 @@ package store
 
 import (
 	"context"
-	"net/http"
-	"net/http/httptest"
 	"errors"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/testutil"
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
-	"sync"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
