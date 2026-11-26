@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 )
 
 const magic = "WERFTVOL1\n"
@@ -189,7 +190,7 @@ func newReader(src io.Reader, key []byte) (*frameReader, Header, error) {
 	if _, e := io.ReadFull(src, raw); e != nil {
 		return nil, h, e
 	}
-	if e := json.Unmarshal(raw, &h); e != nil {
+	if e := strictjson.Unmarshal(raw, &h); e != nil {
 		return nil, h, e
 	}
 	if e := h.validate(); e != nil {
