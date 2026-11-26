@@ -150,7 +150,7 @@ func TestRejectAmbiguousHeaderJSON(t *testing.T) {
 	}
 	cases := map[string][]byte{}
 	duplicate := append([]byte{}, raw[:len(raw)-1]...)
-	duplicate = append(duplicate, []byte(\`,"ClusterId":"\`+h.ClusterID+\`"}\`)...)
+	duplicate = append(duplicate, []byte(",\"ClusterId\":\""+h.ClusterID+"\"}")...)
 	cases["case-fold-duplicate"] = duplicate
 	cases["trailing-object"] = append(append([]byte{}, raw...), []byte("{}")...)
 	for name, header := range cases {
