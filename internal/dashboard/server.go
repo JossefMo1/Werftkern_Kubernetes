@@ -25,6 +25,8 @@ import (
 //go:embed assets/*
 var assets embed.FS
 
+const maxProxyResponseBytes = 2 * model.MaxStateBytes
+
 func random() string {
 	b := make([]byte, 24)
 	if _, e := rand.Read(b); e != nil {
@@ -137,9 +139,18 @@ func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer response.Body.Close()
+	raw, readErr := io.ReadAll(io.LimitReader(response.Body, maxProxyResponseBytes+1))
+	if readErr != nil {
+		http.Error(w, "CONTROL_PLANE_RESPONSE_FAILED", 502)
+		return
+	}
+	if len(raw) > maxProxyResponseBytes {
+		http.Error(w, "CONTROL_PLANE_RESPONSE_TOO_LARGE", 502)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	io.Copy(w, io.LimitReader(response.Body, 2*model.MaxStateBytes))
+	_, _ = w.Write(raw)
 }
 func Serve(ctx context.Context, c *apiclient.Client, address string) error {
 	host, _, e := net.SplitHostPort(address)
