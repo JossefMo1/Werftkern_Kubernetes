@@ -3,6 +3,8 @@ package store
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/testutil"
 	"path/filepath"
@@ -10,6 +12,33 @@ import (
 	"testing"
 	"time"
 )
+
+func TestEtcdCallRejectsAmbiguousAndTrailingJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		payload string
+	}{
+		{name: "trailing json", payload: `{"kvs":[]}{}`},
+		{name: "case-fold duplicate", payload: `{"kvs":[],"Kvs":[]}`},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = w.Write([]byte(test.payload))
+			}))
+			t.Cleanup(server.Close)
+			e := &Etcd{URL: server.URL, Client: server.Client()}
+			var out struct {
+				Kvs []any `json:"kvs"`
+			}
+			err := e.call(context.Background(), "/v3/kv/range", map[string]any{}, &out)
+			if err == nil || !strings.Contains(err.Error(), "invalid response") {
+				t.Fatalf("call() error = %v, want invalid response", err)
+			}
+		})
+	}
+}
 
 func fixture(t *testing.T) (*Etcd, *testutil.EtcdFixture) {
 	t.Helper()

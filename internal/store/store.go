@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 	"io"
 	"net/http"
 	"strconv"
@@ -51,7 +52,11 @@ func (e *Etcd) call(ctx context.Context, path string, in, out any) error {
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("%w: HTTP_%d", ErrUnavailable, resp.StatusCode)
 	}
-	if err = json.NewDecoder(io.LimitReader(resp.Body, 2*model.MaxStateBytes)).Decode(out); err != nil {
+	raw, readErr := io.ReadAll(io.LimitReader(resp.Body, 2*model.MaxStateBytes+1))
+	if readErr != nil || len(raw) > 2*model.MaxStateBytes || strictjson.Validate(raw) != nil {
+		return fmt.Errorf("%w: invalid response", ErrUnavailable)
+	}
+	if err = json.Unmarshal(raw, out); err != nil {
 		return fmt.Errorf("%w: invalid response", ErrUnavailable)
 	}
 	return nil
