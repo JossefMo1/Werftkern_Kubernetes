@@ -1,3 +1,10 @@
+## 2026-11-26 — Dashboard-Login strikt validiert
+
+- PR #401 wurde aus Main `029b2d4ff29e590f2621adb574c14381dcf254f9` rebasiert und als `07c5d127687fdd9948919cacde6e9ad6f404a349` gemergt: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/401
+- Der lokale Dashboard-Login akzeptiert jetzt nur noch einen vollständigen, strikt validierten JSON-Wert. Nachlaufende JSON-Werte und case-fold doppelte Felder werden vor dem Vergleich des Einmalcodes abgewiesen; die 2-KiB-Eingangsgrenze bleibt aktiv.
+- Exakte Verifikation des Heads `dad2580ec927dd7389673fed54c47ead76eda6c2`: Native (inkl. real-etcd) https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45832879069, Kubernetes-Contracts https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45832878958 und Source-/Publication-Audit https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45832878968 erfolgreich. `real-vm` und `real-PITR` waren übersprungen.
+- Diese Security-/UX-Härtung schließt kein Live-Production-Gate. Der alte `v0.2.0-dev.4-test.17`-Kandidat bleibt stale, unsigniert und nicht unveränderlich; `productionReady=false`, Entscheidung `no-go`.
+- Aktueller Handoff: Main `07c5d127687fdd9948919cacde6e9ad6f404a349`; ein neuer unveränderlicher RC muss daraus für Ubuntu-, Backup/Restore-, Upgrade/Rollback-, Load/Soak- und Signaturprüfungen gebaut werden.
 ## 2026-11-26 — Dashboard-Proxy-Grenze und CI-Runner-Evidenz
 
 - PR #399 wurde aus dem aktuellen Main b13a51f3b0e75901cd4f654def766254293ce56e rebasiert und als 3f3301ecd5d20d8dcf176aba63d5c3e6d05b8076 gemergt: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/399
