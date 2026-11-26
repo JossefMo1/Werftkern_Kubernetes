@@ -131,7 +131,7 @@ func TestStateLimitRejectedBeforeEtcdWrite(t *testing.T) {
 }
 
 func TestEtcdCallRejectsAmbiguousAndTrailingJSON(t *testing.T) {
-	responses := []string{\`{"kvs":[]}{}\`, \`{"kvs":[],"Kvs":[]}\`}
+	responses := []string{"{\"kvs\":[]}{}", "{\"kvs\":[],\"Kvs\":[]}"}
 	index := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
