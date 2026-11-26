@@ -1031,3 +1031,12 @@ PR [#412](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/412) merged as 
 Exact checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614939), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614507) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45871614434). The Native run's `real-vm` and `real-PITR` jobs were skipped. This is runtime/security hardening evidence only; no live Single-Host production gate closed.
 
 The published `v0.2.0-dev.4-test.17` candidate remains stale, non-immutable and unsigned. A new immutable candidate must be built from `1f722497196366881136689d6dad30659abb22e8` before live Ubuntu installation, backup/restore, upgrade/rollback or load/soak evidence can cover this change. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
+
+
+## Latest Native allocation safety handoff — PR #414 (2026-11-26)
+
+PR [#414](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/414) merged as [`940682d8`](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/940682d868cce16e77bc4f6549c2bd14e6e25b3c). Allocation node selectors are now enforced at both boundaries: the agent rejects a pinned selector that differs from the selected node, and persisted state validation rejects the mismatch before reconciliation. Regression tests cover the assignment and inventory paths.
+
+Exact checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376876), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376935) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879377042). The Native `real-vm` and `real-PITR` jobs were skipped. This is runtime/state hardening evidence only; no live Single-Host production gate closed.
+
+The published `v0.2.0-dev.4-test.17` candidate remains stale, non-immutable and unsigned. A new immutable candidate must be built from `940682d868cce16e77bc4f6549c2bd14e6e25b3c` before live Ubuntu installation, backup/restore, upgrade/rollback or load/soak evidence can cover this change. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
