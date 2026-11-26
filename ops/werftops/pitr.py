@@ -65,7 +65,10 @@ def prepare(plan,passfile,out):
     if not isinstance(plan,dict) or set(plan)!={'format','name','pgPath','socketDir','pgPort','repositoryPath'} or plan['format']!='werftkern-pitr/v1':raise Blocked('PITR_PLAN_INVALID')
     scope=name(plan['name']);pg=path_value(plan['pgPath']);repo=path_value(plan['repositoryPath']);sock=path_value(plan['socketDir'])
     if not independent(pg,repo) or type(plan['pgPort']) is not int or not 1024<=plan['pgPort']<=65535:raise Blocked('PITR_REPOSITORY_OR_PORT_INVALID')
-    secret=private_read(passfile,256).decode().strip()
+    try:
+        secret=private_read(passfile,256).decode().strip()
+    except UnicodeDecodeError:
+        raise Blocked('PITR_CIPHER_SECRET_ENCODING_INVALID') from None
     if not re.fullmatch(r'[A-Za-z0-9_+/-]{32,128}={0,2}',secret):raise Blocked('PITR_RANDOM_CIPHER_SECRET_REQUIRED')
     raw=f'[{scope}]\npg1-path={pg}\npg1-port={plan["pgPort"]}\npg1-socket-path={sock}\n[global]\nrepo1-type=posix\nrepo1-path={repo}\nrepo1-cipher-type=aes-256-cbc\nrepo1-cipher-pass={secret}\nrepo1-retention-full=3\narchive-check=y\narchive-mode-check=y\nlog-level-console=error\nlog-level-file=off\n'.encode()
     include=path_value(str(pathlib.Path(out).absolute())+'.d')
@@ -90,7 +93,10 @@ def configuration(file,scope):
     if not re.fullmatch(r'[A-Za-z0-9_+/-]{32,128}={0,2}',g['repo1-cipher-pass']):raise Blocked('PITR_RANDOM_CIPHER_SECRET_REQUIRED')
     pg=path_value(local['pg1-path']);repo=path_value(g['repo1-path']);sock=path_value(local['pg1-socket-path'])
     if not independent(pg,repo):raise Blocked('PITR_REPO_OVERLAPS_DATA')
-    port=int(local['pg1-port'])
+    try:
+        port=int(local['pg1-port'])
+    except (TypeError,ValueError):
+        raise Blocked('PITR_PORT_INVALID') from None
     if not 1024<=port<=65535:raise Blocked('PITR_PORT_INVALID')
     return {'source':pg,'repository':repo,'socket':sock,'port':port,'sha256':hashlib.sha256(raw).hexdigest()}
 
