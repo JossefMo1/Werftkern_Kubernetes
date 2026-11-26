@@ -121,14 +121,33 @@ jobs:
           set -euo pipefail
           package="$GITHUB_WORKSPACE/dist/werftkern_0.2.0~dev4_amd64.deb"
           test -f "$package"
+          apt_source_backup="$(mktemp -d)"
+          restore_apt_sources() {
+            for backup in "$apt_source_backup"/*; do
+              if [ -f "$backup" ]; then
+                sudo mv "$backup" "/etc/apt/sources.list.d/$(basename "$backup")"
+              fi
+            done
+            rmdir "$apt_source_backup" 2>/dev/null || true
+          }
+          disable_unavailable_optional_sources() {
+            for source in /etc/apt/sources.list.d/*; do
+              if [ -f "$source" ] && sudo grep -q "packages.microsoft.com" "$source"; then
+                sudo mv "$source" "$apt_source_backup/$(basename "$source")"
+              fi
+            done
+          }
           cleanup() {
+            set +e
             sudo apt-get remove -y werftkern >/dev/null
             test "$(dpkg-query -W -f='${Status}' werftkern 2>/dev/null || true)" != "install ok installed"
             hash -r
             ! command -v werft-ops
             ! command -v werft
+            restore_apt_sources
           }
           trap cleanup EXIT
+          disable_unavailable_optional_sources
           sudo apt-get update
           sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package"
           test "$(dpkg-query -W -f='${Status}' werftkern)" = "install ok installed"
@@ -136,7 +155,7 @@ jobs:
           test "$(command -v werft)" = "/usr/bin/werft"
           werft-ops --help > "$RUNNER_TEMP/werft-ops-installed-help.txt"
           grep -q -- "native-bootstrap" "$RUNNER_TEMP/werft-ops-installed-help.txt"
-          werft --help > "$RUNNER_TEMP/werft-installed-help.txt"
+          werft --help > "$RUNNER_TEMP/werft-installed-help.txt"          werft --help > "$RUNNER_TEMP/werft-installed-help.txt"
 
       - name: Actual previous verifier authenticates target package (ephemeral test signature only)
         if: env.WERFT_COMPAT_BASE_AVAILABLE == 'true'
