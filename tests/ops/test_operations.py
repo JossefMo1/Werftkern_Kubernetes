@@ -143,6 +143,94 @@ class FileTests(unittest.TestCase):
             self.assertTrue(read_json(p)['original'])
 class PostgreSQLTests(unittest.TestCase):
     def config(self):return {'host':'127.0.0.1','port':5432,'user':'postgres','database':'app','transport':'loopback'}
+    def test_invalid_database_endpoint_is_blocked(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('test');p.chmod(0o600);c=self.config();c['host']='not-an-ip'
+            with self.assertRaisesRegex(Blocked,'^PRIVATE_DATABASE_ENDPOINT_REQUIRED    def test_backup_and_isolated_restore_commands(self):
+        calls=[]
+        def runner(args,**kw):
+            calls.append(args)
+            if '--version' in args:return b'pg_dump (PostgreSQL) 17.6\n'
+            if args[0]=='pg_dump':pathlib.Path(args[args.index('--file')+1]).write_bytes(b'PGDMP synthetic fixture');return b''
+            if args[0]=='psql' and '--tuples-only' in args:return b'0\n'
+            return b''
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('127.0.0.1:5432:*:postgres:test-fixture');p.chmod(0o600)
+            archive=pathlib.Path(d)/'backup';postgres.backup(self.config(),p,archive,runner)
+            c=self.config();c['database']='restored'
+            postgres.restore(c,p,archive,'restored',runner)
+            restore=[a for a in calls if a[0]=='pg_restore' and '--single-transaction' in a];self.assertEqual(len(restore),1)
+            self.assertFalse(any('test-fixture' in ' '.join(a) for a in calls))
+            with self.assertRaises(Blocked):postgres.restore(self.config(),p,archive,'app',runner)
+    def test_plain_remote_or_injected_identifier_denied(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('test');p.chmod(0o600);c=self.config();c['host']='10.0.0.2'
+            with self.assertRaises(Blocked):
+                with postgres.connection(c,p):pass
+            c=self.config();c['database']='app\npassword=bad'
+            with self.assertRaises(Blocked):
+                with postgres.connection(c,p):pass
+if __name__=='__main__':unittest.main()
+):
+                with postgres.connection(c,p):pass
+    def test_malformed_wireguard_route_is_blocked(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('test');p.chmod(0o600);c=self.config();c.update(host='10.70.0.4',transport='wireguard')
+            with self.assertRaisesRegex(Blocked,'^WIREGUARD_ROUTE_INVALID    def test_backup_and_isolated_restore_commands(self):
+        calls=[]
+        def runner(args,**kw):
+            calls.append(args)
+            if '--version' in args:return b'pg_dump (PostgreSQL) 17.6\n'
+            if args[0]=='pg_dump':pathlib.Path(args[args.index('--file')+1]).write_bytes(b'PGDMP synthetic fixture');return b''
+            if args[0]=='psql' and '--tuples-only' in args:return b'0\n'
+            return b''
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('127.0.0.1:5432:*:postgres:test-fixture');p.chmod(0o600)
+            archive=pathlib.Path(d)/'backup';postgres.backup(self.config(),p,archive,runner)
+            c=self.config();c['database']='restored'
+            postgres.restore(c,p,archive,'restored',runner)
+            restore=[a for a in calls if a[0]=='pg_restore' and '--single-transaction' in a];self.assertEqual(len(restore),1)
+            self.assertFalse(any('test-fixture' in ' '.join(a) for a in calls))
+            with self.assertRaises(Blocked):postgres.restore(self.config(),p,archive,'app',runner)
+    def test_plain_remote_or_injected_identifier_denied(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('test');p.chmod(0o600);c=self.config();c['host']='10.0.0.2'
+            with self.assertRaises(Blocked):
+                with postgres.connection(c,p):pass
+            c=self.config();c['database']='app\npassword=bad'
+            with self.assertRaises(Blocked):
+                with postgres.connection(c,p):pass
+if __name__=='__main__':unittest.main()
+):
+                with postgres.connection(c,p,lambda *a,**k:b'{\"dev\":\"wgwerft\"}'):pass
+    def test_invalid_postgres_client_encoding_is_blocked(self):
+        with self.assertRaisesRegex(Blocked,'^POSTGRES_CLIENT_VERSION_INVALID    def test_backup_and_isolated_restore_commands(self):
+        calls=[]
+        def runner(args,**kw):
+            calls.append(args)
+            if '--version' in args:return b'pg_dump (PostgreSQL) 17.6\n'
+            if args[0]=='pg_dump':pathlib.Path(args[args.index('--file')+1]).write_bytes(b'PGDMP synthetic fixture');return b''
+            if args[0]=='psql' and '--tuples-only' in args:return b'0\n'
+            return b''
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('127.0.0.1:5432:*:postgres:test-fixture');p.chmod(0o600)
+            archive=pathlib.Path(d)/'backup';postgres.backup(self.config(),p,archive,runner)
+            c=self.config();c['database']='restored'
+            postgres.restore(c,p,archive,'restored',runner)
+            restore=[a for a in calls if a[0]=='pg_restore' and '--single-transaction' in a];self.assertEqual(len(restore),1)
+            self.assertFalse(any('test-fixture' in ' '.join(a) for a in calls))
+            with self.assertRaises(Blocked):postgres.restore(self.config(),p,archive,'app',runner)
+    def test_plain_remote_or_injected_identifier_denied(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=pathlib.Path(d)/'pass';p.write_text('test');p.chmod(0o600);c=self.config();c['host']='10.0.0.2'
+            with self.assertRaises(Blocked):
+                with postgres.connection(c,p):pass
+            c=self.config();c['database']='app\npassword=bad'
+            with self.assertRaises(Blocked):
+                with postgres.connection(c,p):pass
+if __name__=='__main__':unittest.main()
+):
+            postgres.major(lambda *a,**k:b'\\xff','pg_dump')
     def test_backup_and_isolated_restore_commands(self):
         calls=[]
         def runner(args,**kw):
