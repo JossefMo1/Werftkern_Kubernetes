@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T13:04:13.295Z",
+  "updatedAt": "2026-11-26T13:52:41.030Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "3f3301ecd5d20d8dcf176aba63d5c3e6d05b8076",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/399",
-    "summary": "Main now includes PR #399, merged as 3f3301ecd5d20d8dcf176aba63d5c3e6d05b8076. The dashboard control-plane proxy now buffers only the bounded state response and fails closed with explicit 502 errors for unreadable or oversized responses; the CI package smoke test temporarily isolates an unavailable optional Microsoft APT source and restores it during cleanup. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed for the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "07c5d127687fdd9948919cacde6e9ad6f404a349",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/401",
+    "summary": "Main now includes PR #401, merged as 07c5d127687fdd9948919cacde6e9ad6f404a349. Dashboard login payloads are now validated with the strict JSON contract before code comparison; trailing JSON and case-fold duplicate members fail closed while the 2 KiB request bound remains. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed for the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -560,7 +560,12 @@
         "PR #399 Native workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45824933962 (test and real-etcd success; real-vm and real-PITR skipped)",
         "PR #399 Kubernetes contracts workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45824933974 (success)",
         "PR #399 source/publication audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45824933967 (success)",
-        "PR #399 package smoke-test infrastructure fix: unavailable optional packages.microsoft.com APT source isolated for the test and restored during cleanup; the first run failed with HTTP 403 before installation, the corrected run passed"
+        "PR #399 package smoke-test infrastructure fix: unavailable optional packages.microsoft.com APT source isolated for the test and restored during cleanup; the first run failed with HTTP 403 before installation, the corrected run passed",
+        "PR #401: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/401",
+        "PR #401 merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/07c5d127687fdd9948919cacde6e9ad6f404a349",
+        "PR #401 Native workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45832879069 (test and real-etcd success; real-vm and real-PITR skipped)",
+        "PR #401 Kubernetes contracts workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45832878958 (success)",
+        "PR #401 source/publication audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45832878968 (success)"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -882,7 +887,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/399",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/401",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -912,20 +917,20 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "3f3301ecd5d20d8dcf176aba63d5c3e6d05b8076",
-      "codeCommit": "3f3301ecd5d20d8dcf176aba63d5c3e6d05b8076",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/399",
-      "summary": "Main now includes PR #399, merged as 3f3301ecd5d20d8dcf176aba63d5c3e6d05b8076. The dashboard control-plane proxy now buffers only the bounded state response and fails closed with explicit 502 errors for unreadable or oversized responses; the CI package smoke test temporarily isolates an unavailable optional Microsoft APT source and restores it during cleanup. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed for the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "07c5d127687fdd9948919cacde6e9ad6f404a349",
+      "codeCommit": "07c5d127687fdd9948919cacde6e9ad6f404a349",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/401",
+      "summary": "Main now includes PR #401, merged as 07c5d127687fdd9948919cacde6e9ad6f404a349. Dashboard login payloads are now validated with the strict JSON contract before code comparison; trailing JSON and case-fold duplicate members fail closed while the 2 KiB request bound remains. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed for the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/399",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/400"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/401",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/402"
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
-    "summary": "Main now includes PR #399, merged as 3f3301ecd5d20d8dcf176aba63d5c3e6d05b8076. The dashboard control-plane proxy now buffers only the bounded state response and fails closed with explicit 502 errors for unreadable or oversized responses; the CI package smoke test temporarily isolates an unavailable optional Microsoft APT source and restores it during cleanup. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed for the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/399",
+    "summary": "Main now includes PR #401, merged as 07c5d127687fdd9948919cacde6e9ad6f404a349. Dashboard login payloads are now validated with the strict JSON contract before code comparison; trailing JSON and case-fold duplicate members fail closed while the 2 KiB request bound remains. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed for the exact PR head; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/401",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
