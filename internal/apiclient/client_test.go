@@ -9,7 +9,7 @@ import (
 )
 
 type testResponse struct {
-	Value string \`json:"value"\`
+	Value string `json:"value"`
 }
 
 func callTestResponse(t *testing.T, payload string) (testResponse, error) {
@@ -47,12 +47,12 @@ func TestCallRejectsAmbiguousControlPlaneResponses(t *testing.T) {
 	}{
 		{
 			name:    "case-fold duplicate member",
-			payload: \`{"value":"first","Value":"second"}\`,
+			payload: `{"value":"first","Value":"second"}`,
 			code:    "JSON_DUPLICATE_MEMBER",
 		},
 		{
 			name:    "trailing object",
-			payload: \`{"value":"first"}{"value":"second"}\`,
+			payload: `{"value":"first"}{"value":"second"}`,
 			code:    "JSON_TRAILING_DATA",
 		},
 	}
@@ -67,7 +67,7 @@ func TestCallRejectsAmbiguousControlPlaneResponses(t *testing.T) {
 }
 
 func TestCallPreservesForwardCompatibleUnknownFields(t *testing.T) {
-	out, err := callTestResponse(t, \`{"value":"ready","futureField":true}\`)
+	out, err := callTestResponse(t, `{"value":"ready","futureField":true}`)
 	if err != nil {
 		t.Fatalf("Call() error = %v", err)
 	}
@@ -85,8 +85,8 @@ func TestCallRejectsOversizedControlPlaneResponse(t *testing.T) {
 
 func TestCallRejectsAmbiguousControlPlaneErrorResponses(t *testing.T) {
 	for _, payload := range []string{
-		\`{"code":"STATE_UNAVAILABLE"}{"code":"OTHER"}\`,
-		\`{"code":"STATE_UNAVAILABLE","Code":"OTHER"}\`,
+		`{"code":"STATE_UNAVAILABLE"}{"code":"OTHER"}`,
+		`{"code":"STATE_UNAVAILABLE","Code":"OTHER"}`,
 		strings.Repeat(" ", maxErrorResponseBytes+1),
 	} {
 		t.Run(payload[:min(len(payload), 24)], func(t *testing.T) {
