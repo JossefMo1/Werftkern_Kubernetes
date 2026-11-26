@@ -1,3 +1,11 @@
+# Control-plane error boundary handoff — PR #395 (2026-11-26)
+
+- Code: [PR #395](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395), merged commit [98cc94b](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/98cc94be7b7b6866c49a544b6a484af5dbea6879).
+- Runtime/security change: non-2xx control-plane responses are bounded to 8 KiB and validated with the strict JSON contract before an API error code is exposed. Trailing JSON, case-fold duplicate members and oversized responses fail closed with CONTROL_PLANE_ERROR_RESPONSE_INVALID.
+- Regression coverage: [Native runtime tests](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527042) and the exact PR head's Real-etcd job passed; [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527078) and [Source/Publication audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527001) passed. Real-vm and real-PITR were skipped because candidate-input execution was not enabled.
+- No Single-Host production gate closed. productionReady=false, decision no-go; test.17 remains stale, unsigned and mutable.
+- HA/multi-host/quorum and Kubernetes-Production remain deferred outside the first Native scope.
+- Next handoff: build one immutable candidate from current Main 98cc94be7b7b6866c49a544b6a484af5dbea6879 and run candidate-bound Ubuntu installation, backup/restore, upgrade/rollback, bounded soak and signing/provenance checks. The connector cannot create the authorized tag or dispatch workflow_dispatch; the blocker remains recorded and is not repeated.
 # Recovery and archive integrity handoff — PRs #392/#393 (2026-11-26)
 
 - Code: [PR #392](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/392) merged as [0723e98](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/0723e9863db9fdd25f9b3463e4efee1d7421a7cd); [PR #393](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/393) merged as [b5da254](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b5da254fcd4aea95d504dc578a45ab6187d480a2).

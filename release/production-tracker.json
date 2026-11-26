@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-26T11:04:21.842Z",
+  "updatedAt": "2026-11-26T11:55:56.011Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "b5da254fcd4aea95d504dc578a45ab6187d480a2",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/393",
-    "summary": "Main now includes PR #392 (merged 0723e9863db9fdd25f9b3463e4efee1d7421a7cd), which validates recovery journal service targets before verification, maintenance-lock acquisition or phase writes, and PR #393 (merged b5da254fcd4aea95d504dc578a45ab6187d480a2), which strictly validates authenticated volume-archive headers before deriving archive keys. Both had successful Native, real-etcd, Kubernetes contracts and source/publication checks; real-vm and real-PITR were skipped. These are CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "98cc94be7b7b6866c49a544b6a484af5dbea6879",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
+    "summary": "Main now includes PR #395, merged as 98cc94be7b7b6866c49a544b6a484af5dbea6879. The control-plane client now bounds and strictly validates non-2xx error responses, rejecting trailing JSON, case-fold duplicate members and oversized payloads before exposing an error code. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -544,7 +544,12 @@
         "PR #393 merged Main commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b5da254fcd4aea95d504dc578a45ab6187d480a2",
         "PR #393 Native checks (test + real-etcd; real-vm/PITR skipped): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45806589464",
         "PR #393 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45806589543",
-        "PR #393 source/publication audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45806589398"
+        "PR #393 source/publication audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45806589398",
+        "PR #395: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
+        "PR #395 merged Main commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/98cc94be7b7b6866c49a544b6a484af5dbea6879",
+        "PR #395 Native checks (test + real-etcd; real-vm/PITR skipped): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527042",
+        "PR #395 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527078",
+        "PR #395 source/publication audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45814527001"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -866,7 +871,7 @@
     }
   ],
   "reporting": {
-    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/393",
+    "lastHandoff": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
       "Never set productionReady true from fixture, static or plan-only evidence.",
@@ -896,20 +901,20 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "b5da254fcd4aea95d504dc578a45ab6187d480a2",
-      "codeCommit": "b5da254fcd4aea95d504dc578a45ab6187d480a2",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/393",
-      "summary": "Main now includes PR #392 (merged 0723e9863db9fdd25f9b3463e4efee1d7421a7cd), which validates recovery journal service targets before verification, maintenance-lock acquisition or phase writes, and PR #393 (merged b5da254fcd4aea95d504dc578a45ab6187d480a2), which strictly validates authenticated volume-archive headers before deriving archive keys. Both had successful Native, real-etcd, Kubernetes contracts and source/publication checks; real-vm and real-PITR were skipped. These are CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "98cc94be7b7b6866c49a544b6a484af5dbea6879",
+      "codeCommit": "98cc94be7b7b6866c49a544b6a484af5dbea6879",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
+      "summary": "Main now includes PR #395, merged as 98cc94be7b7b6866c49a544b6a484af5dbea6879. The control-plane client now bounds and strictly validates non-2xx error responses, rejecting trailing JSON, case-fold duplicate members and oversized payloads before exposing an error code. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/393",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/394"
+      "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/396"
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
-    "summary": "Main now includes PR #392 (merged 0723e9863db9fdd25f9b3463e4efee1d7421a7cd), which validates recovery journal service targets before verification, maintenance-lock acquisition or phase writes, and PR #393 (merged b5da254fcd4aea95d504dc578a45ab6187d480a2), which strictly validates authenticated volume-archive headers before deriving archive keys. Both had successful Native, real-etcd, Kubernetes contracts and source/publication checks; real-vm and real-PITR were skipped. These are CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/393",
+    "summary": "Main now includes PR #395, merged as 98cc94be7b7b6866c49a544b6a484af5dbea6879. The control-plane client now bounds and strictly validates non-2xx error responses, rejecting trailing JSON, case-fold duplicate members and oversized payloads before exposing an error code. Native/runtime, Real-etcd, Kubernetes contracts and source/publication checks passed; real-vm and real-PITR were skipped. This is CI/code-hardening evidence only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/395",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
