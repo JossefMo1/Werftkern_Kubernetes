@@ -1,3 +1,9 @@
+## Release-Handoff 2026-11-26 — PR #420
+
+PITR-Konfigurationsfehler werden im aktuellen Main fail-closed behandelt: ungültiges UTF-8 im privaten Cipher-Secret und nicht numerische Ports erhalten stabile Blocked-Codes. [PR #420](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/420) ist als [15ceb4ec891387268e816a79366dec1768917c0e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/15ceb4ec891387268e816a79366dec1768917c0e) gemergt; Native/runtime + real-etcd, Kubernetes-Contracts und Source/Privacy liefen erfolgreich, real-vm und real-PITR waren übersprungen.
+
+Diese Härtung ist kein Production-Gate. Der nächste priorisierte Schritt bleibt ein unveränderlicher Kandidat aus diesem Main-Commit mit kandidatengebundener Ubuntu-Installation, Docker-/etcd-Lifecycle, Backup/Restore, Upgrade/Rollback, Load/Soak sowie signierten Artefakten und Provenienz. Der Connector kann den autorisierten Tag bzw. `workflow_dispatch` nicht ausführen; der Blocker ist dokumentiert und wird nicht wiederholt. HA/Multi-Host und Kubernetes-Production bleiben Erweiterungspfade.
+
 # Native Single-Host Release-Handoff — PR #418 (2026-11-26)
 
 [PR #418](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/418) wurde als [4224039d0addb0a541785a94b3dd3e3983a4b61e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/4224039d0addb0a541785a94b3dd3e3983a4b61e) gemergt. Native Bootstrap weist ungültiges UTF-8 in lokalen Hosts-/Known-Hosts-Dateien und Remote-Preflight-Ausgaben fail-closed zurück; Regressionen verwenden echte ungültige Bytes.
