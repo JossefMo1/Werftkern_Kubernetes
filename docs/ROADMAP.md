@@ -772,3 +772,12 @@ Exact PR checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo
 
 The old v0.2.0-dev.4-test.17 candidate remains non-immutable and unsigned, so a new immutable candidate is required from [cc0c5b5e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cc0c5b5e835712b819ec227c5d6ca4d7094467ee) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. productionReady remains false and Go/No-Go remains no-go. HA, multi-host and Kubernetes-production remain deferred.
 
+
+## Latest persistence hardening handoff — PR #410 (2026-11-26)
+
+PR [#410](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/410) merged as [247dd11a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/247dd11a32cfbedd7fb4f7f056b49f0f672e2144). Native etcd state reads now use the strict JSON contract and reject unknown persisted fields before inventory validation or reconciliation. The first fixture attempt failed compile because the JSON string was not escaped; corrected commit 998bef39 passed.
+
+Corrected checks: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201801), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201851) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45863201751). real-vm and real-PITR were skipped; no Single-Host production gate closed.
+
+The old v0.2.0-dev.4-test.17 candidate remains non-immutable and unsigned, so a new immutable candidate is required from [247dd11a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/247dd11a32cfbedd7fb4f7f056b49f0f672e2144) before live installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. productionReady remains false and Go/No-Go remains no-go. HA, multi-host and Kubernetes-production remain deferred.
+
