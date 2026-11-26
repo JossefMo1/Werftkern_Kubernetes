@@ -413,6 +413,16 @@ func sleep(ctx context.Context, d time.Duration) error {
 		return nil
 	}
 }
+type healthResponse struct {
+	Status      string `json:"status"`
+	ClusterID   string `json:"clusterId"`
+	StateSchema int    `json:"stateSchema"`
+}
+
+func workerHealthReady(h healthResponse, clusterID string) bool {
+	return h.Status == "ready" && h.ClusterID == clusterID && h.StateSchema == model.StateSchema
+}
+
 func waitNode(ctx context.Context, p Progress, admin bool) error {
 	path := config.Directory + "/agent.json"
 	var c config.Client
@@ -445,13 +455,9 @@ func waitNode(ctx context.Context, p Progress, admin bool) error {
 				}
 			}
 		} else {
-			j := struct {
-				ClusterID   string                      `json:"clusterId"`
-				Revision    int64                       `json:"revision"`
-				Allocations map[string]model.Allocation `json:"allocations"`
-			}{}
-			if err := safefile.ReadJSON(config.Data+"/agent/journal.json", &j); err == nil && j.ClusterID == p.ClusterID && j.Revision > 0 {
-				fmt.Println("Worker hat einen authentifizierten Cluster-Snapshot empfangen.")
+			var health healthResponse
+			if err := api.Call(ctx, "GET", "/v1/health", nil, &health, ""); err == nil && workerHealthReady(health, p.ClusterID) {
+				fmt.Println("Worker hat die verschlüsselte Control-Plane-Verbindung bestätigt.")
 				return nil
 			}
 		}
