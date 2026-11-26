@@ -1,3 +1,11 @@
+# Native Single-Host Release-Handoff — PR #418 (2026-11-26)
+
+[PR #418](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/418) wurde als [4224039d0addb0a541785a94b3dd3e3983a4b61e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/4224039d0addb0a541785a94b3dd3e3983a4b61e) gemergt. Native Bootstrap weist ungültiges UTF-8 in lokalen Hosts-/Known-Hosts-Dateien und Remote-Preflight-Ausgaben fail-closed zurück; Regressionen verwenden echte ungültige Bytes.
+
+Die exakten Prüfungen [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45893968020), [Kubernetes-Contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45893968015) und [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45893968183) waren erfolgreich. `real-vm` und `real-PITR` waren übersprungen. Dies ist Operations-/CI-Härtung und schließt kein Single-Host-Production-Gate. Der Kandidat `v0.2.0-dev.4-test.17` bleibt stale, unsigniert und nicht unveränderlich; `productionReady=false`, Entscheidung `no-go`.
+
+Nächster Schritt: neuen unveränderlichen Kandidaten aus Main 4224039d0addb0a541785a94b3dd3e3983a4b61e bauen und alle kandidatengebundenen Ubuntu-, Backup/Restore-, Upgrade/Rollback-, Load/Soak- und Signatur-/Provenance-Gates ausführen. HA/Multi-Host/Quorum und Kubernetes-Production bleiben späterer Erweiterungspfad.
+
 # Native Single-Host Release-Handoff — PR #416 (2026-11-26)
 
 [PR #416](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416) wurde als [2627e37201db7ebfdbc31b0a05c9f331d9eef6df](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2627e37201db7ebfdbc31b0a05c9f331d9eef6df) gemergt. Persistierte Allocation-Phasen werden jetzt vor Inventory-Validierung und Reconciliation gegen die explizite State-Machine geprüft; leere oder unbekannte Werte failen geschlossen. Regressionstests decken die ungültigen Phasen ab und aktualisieren die State-Fixtures.

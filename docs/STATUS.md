@@ -1,3 +1,12 @@
+## 2026-11-26 — Native-Bootstrap-Eingaben fail-closed (PR #418)
+
+- [PR #418](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/418) wurde als [4224039d0addb0a541785a94b3dd3e3983a4b61e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/4224039d0addb0a541785a94b3dd3e3983a4b61e) gemergt. Native Bootstrap weist ungültiges UTF-8 in `/etc/hosts`, `known_hosts` und Remote-Preflight-Ausgaben mit stabilen Fehlercodes zurück.
+- Regressionen verwenden echte ungültige Bytes und prüfen alle drei Eingabepfade.
+- Exakte CI-Prüfung: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45893968020), [Kubernetes-Contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45893968015) und [Source/Privacy-Audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45893968183) erfolgreich; `real-vm` und `real-PITR` übersprungen.
+- Diese Operations-/Input-Validation-Härtung schließt kein Live-Production-Gate. `v0.2.0-dev.4-test.17` bleibt stale, unsigniert und nicht unveränderlich; `productionReady=false`, Entscheidung `no-go`.
+- HA/Multi-Host/Quorum und Kubernetes-Production bleiben außerhalb des ersten Native-Single-Host-Scope.
+- Nächster Handoff: unveränderlichen Kandidaten aus Main 4224039d0addb0a541785a94b3dd3e3983a4b61e bauen und darauf Ubuntu-, Backup/Restore-, Upgrade/Rollback-, Load/Soak- sowie Signatur-/Provenance-Gates ausführen.
+
 ## 2026-11-26 — Persistierte Allocation-Phasen fail-closed (PR #416)
 
 - [PR #416](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/416) wurde als [2627e37201db7ebfdbc31b0a05c9f331d9eef6df](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/2627e37201db7ebfdbc31b0a05c9f331d9eef6df) gemergt. Persistierte Allocation-Phasen werden vor Inventory-Validierung und Reconciliation gegen die explizite Native-State-Machine geprüft; leere oder unbekannte Werte werden fail-closed abgewiesen.
