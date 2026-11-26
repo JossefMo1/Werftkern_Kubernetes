@@ -50,3 +50,17 @@ class Upgrades(unittest.TestCase):
     with self.assertRaisesRegex(Blocked,'RECOVERY_PHASE_NOT_INTERRUPTED'):
      upgrade.recover(journal,'pkg','manifest','sig','key','a'*32,runner)
    self.assertEqual(calls,[])
+
+ def test_recover_rejects_invalid_services_before_external_mutation(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);journal=root/'journal.json'
+   write_json(journal,{'format':'werftkern-host-update/v1','id':'a'*32,'phase':'installed','services':['unexpected']})
+   calls=[]
+   def runner(args,**kw):
+    calls.append(args)
+    raise AssertionError(args)
+   with mock.patch.object(upgrade,'host_preflight',lambda:None):
+    with self.assertRaisesRegex(Blocked,'RECOVERY_SERVICE_NOT_ALLOWED'):
+     upgrade.recover(journal,'pkg','manifest','sig','key','a'*32,runner)
+   self.assertEqual(calls,[])
+   self.assertEqual(read_json(journal,private=True)['phase'],'installed')
