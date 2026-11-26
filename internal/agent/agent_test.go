@@ -112,7 +112,7 @@ func TestAgentFailureReportRetainsAllocationIdentity(t *testing.T) {
 }
 
 func TestAgentRefusesScopeRollbackDuplicatesAndPorts(t *testing.T) {
-	for _, kind := range []string{"cluster", "node", "revision", "duplicate", "port", "image"} {
+	for _, kind := range []string{"cluster", "node", "selector", "revision", "duplicate", "port", "image"} {
 		t.Run(kind, func(t *testing.T) {
 			a, _, s := makeAgent(t)
 			a.Accept(s)
@@ -121,6 +121,8 @@ func TestAgentRefusesScopeRollbackDuplicatesAndPorts(t *testing.T) {
 				s.ClusterID = model.ID()
 			case "node":
 				s.Allocations[0].NodeID = model.ID()
+			case "selector":
+				s.Allocations[0].Spec.Node = model.ID()
 			case "revision":
 				s.Revision--
 			case "duplicate":
