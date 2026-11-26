@@ -642,6 +642,28 @@ class NativeBootstrapTests(unittest.TestCase):
             self.assertFalse(journal.exists())
             self.assertFalse(journal.with_name("journal.inventory.json").exists())
 
+    def test_probe_parser_rejects_invalid_utf8(self):
+        with self.assertRaisesRegex(
+            Blocked, "^REMOTE_PREFLIGHT_ENCODING_INVALID$"
+        ):
+            native_bootstrap._parse_probe(bytes([0xff]))
+
+    def test_hosts_inputs_reject_invalid_utf8(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = pathlib.Path(d)
+            hosts = root / "hosts"
+            known = root / "known_hosts"
+            hosts.write_bytes(bytes([0xff]))
+            known.write_bytes(bytes([0xff]))
+            with self.assertRaisesRegex(
+                Blocked, "^INPUT_FILE_ENCODING_INVALID$"
+            ):
+                native_bootstrap._hosts_file(hosts)
+            with self.assertRaisesRegex(
+                Blocked, "^INPUT_FILE_ENCODING_INVALID$"
+            ):
+                native_bootstrap._known_hosts_candidates(known)
+
 
 if __name__ == "__main__":
     unittest.main()
