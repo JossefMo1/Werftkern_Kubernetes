@@ -363,3 +363,31 @@ func TestMaintenanceCLIRejectsInvalidArgumentsBeforeConfigAccess(t *testing.T) {
 		})
 	}
 }
+
+
+func TestVolumeCLIRejectsInvalidArgumentsBeforeConfigAccess(t *testing.T) {
+	missing := filepath.Join(t.TempDir(), "missing-admin.json")
+	t.Setenv("WERFT_CONFIG", missing)
+	validID := model.ID()
+	checks := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{name: "list positional", args: []string{"list", "unexpected"}, want: "VOLUME_LIST_TAKES_NO_ARGUMENTS"},
+		{name: "create invalid name", args: []string{"create", "../volume", "--node", validID}, want: "VOLUME_NAME_INVALID"},
+		{name: "create missing node", args: []string{"create", "data"}, want: "VOLUME_REQUEST_INVALID"},
+		{name: "create invalid uid", args: []string{"create", "data", "--node", validID, "--uid", "0"}, want: "VOLUME_REQUEST_INVALID"},
+		{name: "create positional", args: []string{"create", "data", "--node", validID, "unexpected"}, want: "VOLUME_REQUEST_INVALID"},
+		{name: "release invalid name", args: []string{"release", "../volume", "--id", validID}, want: "VOLUME_NAME_INVALID"},
+		{name: "release invalid id", args: []string{"release", "data", "--id", "invalid"}, want: "VOLUME_REQUEST_INVALID"},
+		{name: "release positional", args: []string{"release", "data", "--id", validID, "unexpected"}, want: "VOLUME_REQUEST_INVALID"},
+	}
+	for _, tc := range checks {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := volumeCommand(context.Background(), tc.args); err == nil || err.Error() != tc.want {
+				t.Fatalf("unexpected result: %v", err)
+			}
+		})
+	}
+}
