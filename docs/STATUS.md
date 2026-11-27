@@ -1,3 +1,11 @@
+## 2026-11-27 — Discovery-Endpoints fail-closed (PR #458)
+
+[PR #458](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/458) wurde als [8e44af0](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8e44af05417c39a73610890f474180b040b3d980) gemergt. Host-geroutete Discovery-Endpunkte werden jetzt nur im Scheduler-Portbereich **22000–22999** veröffentlicht; Port 0, privilegierte Ports und Bereichsüberschreitungen werden vor CLI-/Dashboard-Ausgabe verworfen. Die Regressionen liegen in `internal/discovery/zone_test.go`.
+
+Die finalen PR-Prüfungen bestanden: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766), [Kubernetes-Verträge](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079783) und [Source/Privacy-Audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079925). Real-VM und real-PITR wurden übersprungen; damit ist **kein** Live-Single-Host-Production-Gate geschlossen. `productionReady=false`, Go/No-Go bleibt `no-go`, Countdown **9/100**. Der alte Kandidat `v0.2.0-dev.4-test.17` bleibt veraltet, unsigniert und nicht unveränderlich.
+
+Nächster Schritt: unveränderlichen Kandidaten aus Native Main `8e44af05417c39a73610890f474180b040b3d980` bauen und den autorisierten Ubuntu-24.04-`run_real_vm_e2e=true`-Pfad ausführen. Der Tag-/`workflow_dispatch`-Berechtigungsblocker bleibt dokumentiert und wird nicht wiederholt; HA/Multi-Host und Kubernetes-Production bleiben Erweiterungspfad.
+
 ## 2026-11-27 — Discovery-CLI-Eingaben fail-closed (PR #455)
 
 - [PR #455](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/455) wurde als [9411d9a421b7161348338e7a773e3e564d772cb5](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/9411d9a421b7161348338e7a773e3e564d772cb5) gemergt. Der Native-CLI-Befehl `discovery` weist unerwartete Positionsargumente jetzt vor dem Laden der Agent-Konfiguration mit `DISCOVERY_ARGUMENTS_INVALID` zurück. Der Regressionstest liegt in `internal/cli/cli_test.go`.
