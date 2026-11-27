@@ -41,5 +41,16 @@ class UbuntuE2ECandidateBindingTests(unittest.TestCase):
             self.assertIn(value, self.workflow)
 
 
+    def test_script_exercises_same_cluster_restore_rejection_without_mutation(self):
+        for value in (
+            'stage=backup-same-cluster-rejection',
+            'RESTORE_REQUIRES_A_NEW_CLUSTER_IDENTITY',
+            'same-cluster restore unexpectedly succeeded',
+            'restore_before',
+            'restore_after',
+        ):
+            self.assertIn(value, self.script)
+
+
 if __name__ == "__main__":
     unittest.main()
