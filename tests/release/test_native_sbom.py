@@ -46,7 +46,7 @@ class NativeSbomTests(unittest.TestCase):
                 "--source-date-epoch", "1700000000",
                 "--output", str(output),
             ]
-            with mock.patch.object(MODULE, "package_field", side_effect=fields.__getitem__), mock.patch.object(
+            with mock.patch.object(MODULE, "package_field", side_effect=lambda _package, field: fields[field]), mock.patch.object(
                 sys, "argv", argv
             ):
                 self.assertEqual(MODULE.main(), 0)
