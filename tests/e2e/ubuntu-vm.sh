@@ -160,6 +160,18 @@ done
 stage=encrypted-backup
 werft backup create --out "$private/config.backup" --key-file "$private/backup.key"
 werft backup inspect --file "$private/config.backup" --key-file "$private/backup.key" > /dev/null
+# A logical backup must never be replayed into its source identity.  Exercise
+# this negative authorization path on the live host and prove that the
+# rejected restore did not mutate the running workload.
+stage=backup-same-cluster-rejection
+restore_before="$(werft status --json | python3 -c 'import json,sys;s=json.load(sys.stdin)["workloads"]["demo"];print("{}:{}:{}".format(s["generation"],s["phase"],s["paused"]))')"
+if werft backup restore --file "$private/config.backup" --key-file "$private/backup.key" --target-cluster "$cluster" > "$private/restore-same-cluster.log" 2>&1; then
+ echo 'same-cluster restore unexpectedly succeeded' >&2
+ exit 1
+fi
+grep -q -- 'RESTORE_REQUIRES_A_NEW_CLUSTER_IDENTITY' "$private/restore-same-cluster.log"
+restore_after="$(werft status --json | python3 -c 'import json,sys;s=json.load(sys.stdin)["workloads"]["demo"];print("{}:{}:{}".format(s["generation"],s["phase"],s["paused"]))')"
+[[ "$restore_before" == "$restore_after" ]]
 stage=pause
 werft pause demo
 for _ in $(seq 1 120); do
