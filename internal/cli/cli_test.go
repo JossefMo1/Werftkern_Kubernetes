@@ -339,3 +339,27 @@ func TestVerifyDemoArchiveRejectsSymlinkedPaths(t *testing.T) {
 		t.Fatal("accepted parent demo archive symlink")
 	}
 }
+
+
+func TestMaintenanceCLIRejectsInvalidArgumentsBeforeConfigAccess(t *testing.T) {
+	missing := filepath.Join(t.TempDir(), "missing-admin.json")
+	t.Setenv("WERFT_CONFIG", missing)
+	validID := model.ID()
+	for _, tc := range []struct {
+		name string
+		args []string
+		want string
+	}{
+		{name: "unexpected", args: []string{"on", "--id", validID, "unexpected"}, want: "MAINTENANCE_ARGUMENTS_INVALID"},
+		{name: "missing-id", args: []string{"off"}, want: "MAINTENANCE_REQUEST_INVALID"},
+		{name: "invalid-id", args: []string{"on", "--id", "invalid"}, want: "MAINTENANCE_REQUEST_INVALID"},
+		{name: "invalid-reason", args: []string{"on", "--id", validID, "--reason", "bad_reason"}, want: "MAINTENANCE_REQUEST_INVALID"},
+		{name: "invalid-action", args: []string{"toggle", "--id", validID}, want: "MAINTENANCE_ACTION_INVALID"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := maintenanceCommand(context.Background(), tc.args); err == nil || err.Error() != tc.want {
+				t.Fatalf("got %v, want %s", err, tc.want)
+			}
+		})
+	}
+}
