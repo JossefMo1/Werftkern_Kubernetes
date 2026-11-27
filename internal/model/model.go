@@ -22,7 +22,9 @@ const APIVersion = "werftkern/v1alpha1"
 const MaxStateBytes = 900000
 const MaxNodes = 20
 const MaxWorkloads = 50
-const MaxAllocations = 200
+// Native single-host production bounds the persisted allocation inventory to the
+// declared release limit. Higher-capacity multi-host profiles are out of scope.
+const MaxAllocations = 50
 const HeartbeatTimeout = 30 * time.Second
 
 // Wire and state schema are unchanged for this explicitly bounded upgrade edge.
