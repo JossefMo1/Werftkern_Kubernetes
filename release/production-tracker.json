@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T16:03:00Z",
+  "updatedAt": "2026-11-27T16:05:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -1097,15 +1097,18 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/463",
-      "baseCommit": "72d40068e212bc16097e1e01c238bed35fb95173",
-      "mergedCommit": "44e439f56035bf05e14bd2a7e0da410c5280da5e",
-      "summary": "PR #463 merged as 44e439f56035bf05e14bd2a7e0da410c5280da5e. The tracker, STATUS.md and ROADMAP.md now record PR #462's persisted allocation endpoint hardening and exact automated checks. This documentation handoff does not close a live Single-Host production gate; productionReady remains false and Go/No-Go remains no-go.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/466",
+      "baseCommit": "e49ffb3910f2359c81fc0e4aef24165d6d061d88",
+      "mergedCommit": "1daa8ed643fbfb35d521a36393b2bc7ab6121eb1",
+      "summary": "PR #466 merged as 1daa8ed643fbfb35d521a36393b2bc7ab6121eb1. The tracker, STATUS.md and ROADMAP.md now record PR #465's persisted allocation collision hardening and exact automated checks. This documentation handoff does not close a live Single-Host production gate; productionReady remains false and Go/No-Go remains no-go.",
       "evidence": [
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46021470430",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46021470433",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46021470456",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/44e439f56035bf05e14bd2a7e0da410c5280da5e"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924150",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924150/job/140610830968",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924150/job/140610831338",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029923982",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924019",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924150",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1daa8ed643fbfb35d521a36393b2bc7ab6121eb1"
       ]
     },
     "blockers": [
@@ -1158,16 +1161,19 @@
       "codeCommit": "e49ffb3910f2359c81fc0e4aef24165d6d061d88",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/465",
       "summary": "PR #465 merged as e49ffb3910f2359c81fc0e4aef24165d6d061d88. Persisted inventory validation now rejects duplicate non-zero host ports on the same enrolled node and duplicate container IPs across allocations, while preserving zero host ports as unresolved unpublished legacy assignments. Regression coverage is in internal/model/model_test.go. Exact PR checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608304585; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608305158), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
-      "nextCandidateRequired": true
+      "nextCandidateRequired": true,
+      "documentationMergedCommit": "1daa8ed643fbfb35d521a36393b2bc7ab6121eb1",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/466",
+      "documentationSummary": "PR #466 merged as 1daa8ed643fbfb35d521a36393b2bc7ab6121eb1. The tracker, STATUS.md and ROADMAP.md now record PR #465's persisted allocation collision hardening and exact automated checks. This documentation handoff does not close a live Single-Host production gate; productionReady remains false and Go/No-Go remains no-go."
     },
     "commit": "e49ffb3910f2359c81fc0e4aef24165d6d061d88",
     "codeCommit": "e49ffb3910f2359c81fc0e4aef24165d6d061d88",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/465",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/463",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/466",
     "summary": "PR #465 merged as e49ffb3910f2359c81fc0e4aef24165d6d061d88. Persisted inventory validation now rejects duplicate non-zero host ports on the same enrolled node and duplicate container IPs across allocations, while preserving zero host ports as unresolved unpublished legacy assignments. Regression coverage is in internal/model/model_test.go. Exact PR checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608304585; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608305158), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/465",
     "nextCandidateRequired": true,
-    "updatedAt": "2026-11-27T16:03:00Z",
+    "updatedAt": "2026-11-27T16:05:00Z",
     "latestHardening": {
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/465",
       "mergeCommit": "e49ffb3910f2359c81fc0e4aef24165d6d061d88",
