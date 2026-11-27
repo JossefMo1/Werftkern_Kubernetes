@@ -47,7 +47,24 @@ type restoreDiskReceipt struct {
 // restoreTreeDigest binds a restore receipt to the exact extracted tree.
 // It hashes paths, types, permissions, sizes and regular-file bytes in the
 // deterministic WalkDir order. Symlinks and special files are never accepted.
-func restoreTreeDigest(root string) (string, error) {
+func restoreTreeDigest(root string, limits volumearchive.Limits) (string, error) {
+	maxBytes := limits.Bytes
+	maxFiles := limits.Files
+	maxDepth := limits.Depth
+	if maxBytes == 0 {
+		maxBytes = 10 << 30
+	}
+	if maxFiles == 0 {
+		maxFiles = 100000
+	}
+	if maxDepth == 0 {
+		maxDepth = 64
+	}
+	if maxBytes < 1 || maxBytes > 1<<40 || maxFiles < 1 || maxFiles > 1000000 || maxDepth < 1 || maxDepth > 128 {
+		return "", errors.New("VOLUME_ARCHIVE_LIMITS_INVALID")
+	}
+	var totalBytes int64
+	var totalEntries int
 	info, e := os.Lstat(root)
 	if e != nil {
 		return "", e
@@ -73,6 +90,10 @@ func restoreTreeDigest(root string) (string, error) {
 		if d.Type()&os.ModeSymlink != 0 {
 			return errors.New("RESTORE_DATA_ENTRY_UNSAFE")
 		}
+		totalEntries++
+		if totalEntries > maxFiles {
+			return errors.New("RESTORE_DATA_LIMIT_EXCEEDED")
+		}
 		entry, e := d.Info()
 		if e != nil {
 			return e
@@ -85,6 +106,15 @@ func restoreTreeDigest(root string) (string, error) {
 			return e
 		}
 		rel = filepath.ToSlash(rel)
+		if len(rel) > 4096 {
+			return errors.New("RESTORE_DATA_PATH_LIMIT")
+		}
+		if rel != "." {
+			depth := strings.Count(rel, "/") + 1
+			if depth > maxDepth {
+				return errors.New("RESTORE_DATA_DEPTH_LIMIT")
+			}
+		}
 		kind := byte('f')
 		if entry.IsDir() {
 			kind = 'd'
@@ -100,6 +130,10 @@ func restoreTreeDigest(root string) (string, error) {
 		if entry.IsDir() {
 			return nil
 		}
+		if entry.Size() < 0 || totalBytes > maxBytes-entry.Size() {
+			return errors.New("RESTORE_DATA_LIMIT_EXCEEDED")
+		}
+		totalBytes += entry.Size()
 		writeU64(uint64(entry.Size()))
 		f, e := safefile.OpenRead(path)
 		if e != nil {
@@ -324,7 +358,7 @@ func volumeArchiveCommand(ctx context.Context, args []string) error {
 		if receipt.DataSHA256 == "" {
 			return errors.New("RESTORE_RECEIPT_DATA_DIGEST_MISSING")
 		}
-		gotDigest, e := restoreTreeDigest(data)
+		gotDigest, e := restoreTreeDigest(data, limits)
 		if e != nil || gotDigest != receipt.DataSHA256 {
 			return errors.New("RESTORE_TARGET_DATA_INTEGRITY_MISMATCH")
 		}
@@ -346,7 +380,7 @@ func volumeArchiveCommand(ctx context.Context, args []string) error {
 		if hex.EncodeToString(hash.Sum(nil)) != digest {
 			return errors.New("VOLUME_ARCHIVE_CHANGED_DURING_RESTORE")
 		}
-		dataDigest, e := restoreTreeDigest(filepath.Join(stage, "data"))
+		dataDigest, e := restoreTreeDigest(filepath.Join(stage, "data"), limits)
 		if e != nil {
 			return e
 		}
