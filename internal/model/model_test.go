@@ -503,3 +503,23 @@ func TestStateRejectsCollidingPersistedAllocationEndpoints(t *testing.T) {
 		}
 	})
 }
+
+
+func TestStateRejectsOverlappingPersistedNodePodCIDRs(t *testing.T) {
+	now := time.Now()
+	node := func(id, name, address, podCIDR string) *Node {
+		return &Node{ID: id, Name: name, Address: address, PodCIDR: podCIDR, CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+	}
+	firstID, secondID := ID(), ID()
+	s := NewState(ID(), "test", now)
+	s.Nodes[firstID] = node(firstID, "node-a", "10.0.0.1", "10.88.1.0/24")
+	s.Nodes[secondID] = node(secondID, "node-b", "10.0.0.2", "10.88.2.0/24")
+	if err := s.ValidateInventory(); err != nil {
+		t.Fatalf("disjoint PodCIDRs rejected: %v", err)
+	}
+
+	s.Nodes[secondID].PodCIDR = "10.88.1.128/25"
+	if err := s.ValidateInventory(); err == nil || err.Error() != "NODE_POD_CIDR_CONFLICT" {
+		t.Fatalf("overlapping persisted PodCIDRs accepted: %v", err)
+	}
+}
