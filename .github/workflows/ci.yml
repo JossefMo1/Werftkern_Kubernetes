@@ -102,6 +102,13 @@ jobs:
             --source-date-epoch "$epoch" \
             --output evidence/native-sbom.spdx.json
           sha256sum evidence/native-sbom.spdx.json > evidence/native-sbom.sha256
+          python3 scripts/generate-native-release-manifest.py \
+            --package dist/werftkern_0.2.0~dev4_amd64.deb \
+            --sbom evidence/native-sbom.spdx.json \
+            --source-commit "$GITHUB_SHA" \
+            --source-date-epoch "$epoch" \
+            --output evidence/native-release-manifest.json
+          sha256sum evidence/native-release-manifest.json > evidence/native-release-manifest.sha256
           printf '%s\n' "{\"sourceCommit\":\"$GITHUB_SHA\",\"sourceDateEpoch\":$epoch,\"packageSha256\":\"$second_sha\",\"reproducible\":true}" > evidence/reproducible-build.json
       - name: Smoke-test extracted native package command wrapper
         run: |
