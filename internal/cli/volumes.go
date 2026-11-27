@@ -45,15 +45,15 @@ func volumeCommand(ctx context.Context, args []string) error {
 		node := f.String("node", "", "Node ID")
 		uid := f.Int("uid", 65532, "Container UID")
 		gid := f.Int("gid", 65532, "Container GID")
-		if e = f.Parse(args[2:]); e != nil {
-			return e
+		if err := f.Parse(args[2:]); err != nil {
+			return err
 		}
 		if f.NArg() != 0 || !model.ValidID(*node) || *uid < 1 || *uid > 65534 || *gid < 1 || *gid > 65534 {
 			return errors.New("VOLUME_REQUEST_INVALID")
 		}
-		c, e := client()
-		if e != nil {
-			return e
+		c, err := client()
+		if err != nil {
+			return err
 		}
 		var out model.Volume
 		e = c.Call(ctx, "POST", "/v1/volumes", control.VolumeCreate{Name: args[1], NodeID: *node, UID: *uid, GID: *gid}, &out, model.ID())
@@ -70,15 +70,15 @@ func volumeCommand(ctx context.Context, args []string) error {
 		}
 		f := parser("volume release")
 		id := f.String("id", "", "Volume identity confirmation")
-		if e = f.Parse(args[2:]); e != nil {
-			return e
+		if err := f.Parse(args[2:]); err != nil {
+			return err
 		}
 		if f.NArg() != 0 || !model.ValidID(*id) {
 			return errors.New("VOLUME_REQUEST_INVALID")
 		}
-		c, e := client()
-		if e != nil {
-			return e
+		c, err := client()
+		if err != nil {
+			return err
 		}
 		return c.Call(ctx, "POST", "/v1/volumes/"+args[1]+"/release", map[string]string{"id": *id}, nil, model.ID())
 	}
