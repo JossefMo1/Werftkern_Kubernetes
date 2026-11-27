@@ -1,3 +1,10 @@
+## 2026-11-27 — Native Single-Host admission profile wired to the control process (PR #439)
+
+- [PR #439](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/439) wurde als [5d848c585aa24b065bd1807aeab550482dd6ff6c](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5d848c585aa24b065bd1807aeab550482dd6ff6c) gemergt. Der echte Native-Control-Prozess setzt jetzt NativeSingleHost=true; damit gelten NativeMaxNodes=1, NativeMaxWorkloads=20 und NativeMaxAllocations=50 nur für den verbindlichen Single-Host-Pfad. Die generischen Modellgrenzen bleiben für den ausdrücklich deferred Mehrhost-Erweiterungspfad erhalten.
+- Exakte Prüfungen: [Native/runtime inklusive real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45955910147), [Kubernetes-Contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45955915226) und [Source/Privacy-Audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45955915225) erfolgreich. real-vm und real-PITR wurden übersprungen; kein Live-Single-Host-Production-Gate ist dadurch geschlossen.
+- Der veröffentlichte Kandidat v0.2.0-dev.4-test.17 bleibt auf 28efa7518e171a618d4dcf9ff3aba58cddaf3296 und ist für diese Änderung veraltet. productionReady=false, Go/No-Go bleibt No-Go; sieben-VM-HA und Kubernetes-Production bleiben außerhalb des ersten Scopes.
+- Nächster Schritt: neuer unveränderlicher Kandidat aus dem aktuellen Main und anschließend autorisierter Ubuntu-24.04-run_real_vm_e2e=true-Lauf.
+
 ## 2026-11-27 — Native allocation boundary aligned (PR #437)
 
 - [PR #437](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/437) wurde als [0ce8e8254a073464081211ad4920262d47b68cf0](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/0ce8e8254a073464081211ad4920262d47b68cf0) gemergt. Die Native-Runtime begrenzt die persistierte Allocation-Inventur jetzt auf 50 Einträge und stimmt damit mit dem verbindlichen Single-Host-Scope überein; ein Regressionstest weist den 51. Eintrag mit `STATE_CAPACITY_REACHED` zurück.
