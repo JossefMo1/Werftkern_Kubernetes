@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T14:01:29.363Z",
+  "updatedAt": "2026-11-27T14:07:41.875Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -32,7 +32,7 @@
   "lastCompleted": {
     "commit": "8e44af05417c39a73610890f474180b040b3d980",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/458",
-    "summary": "PR #458 merged as 8e44af05417c39a73610890f474180b040b3d980. Native discovery now publishes host-routed endpoints only when the scheduler host port is within the unprivileged 22000-22999 range; port 0, privileged ports and out-of-range ports are rejected before CLI/dashboard publication. Regression coverage is in internal/discovery/zone_test.go. Exact PR checks passed: Native/runtime and real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766/job/140546446562), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079783) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079925). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
+    "summary": "PR #458 merged as 8e44af05417c39a73610890f474180b040b3d980. Native discovery now publishes host-routed endpoints only when the scheduler host port is within the unprivileged 22000-22999 range; port 0, privileged ports and out-of-range ports are rejected before CLI/dashboard publication. Regression coverage is in internal/discovery/zone_test.go. Exact PR checks passed: Native/runtime and real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766/job/140546446562), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079783) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079925). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go. Post-merge Main 5cfa76e574bd2479ce9a17fe8ce260e2661020dc passed Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719683; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719117), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630329) and Source/Privacy (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630117); real-vm and real-PITR were skipped. No live Single-Host production gate closed."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -733,7 +733,7 @@
         "PR #455 changed candidate-bearing Native discovery CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
       ],
       "nextStep": "Build immutable candidate from Native Main 8e44af05417c39a73610890f474180b040b3d980; authorized Ubuntu 24.04 run_real_vm_e2e=true remains required.",
-      "lastEvidence": "Current Native runtime Main commit 8e44af05417c39a73610890f474180b040b3d980: PR #458 Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy passed; real-vm and real-PITR skipped, so no live Single-Host qualification gate closed."
+      "lastEvidence": "Current Native runtime Main commit 8e44af05417c39a73610890f474180b040b3d980: PR #458 Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy passed; real-vm and real-PITR skipped, so no live Single-Host qualification gate closed. Post-merge Main 5cfa76e574bd2479ce9a17fe8ce260e2661020dc passed Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719683; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719117), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630329) and Source/Privacy (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630117); real-vm and real-PITR were skipped. No live Single-Host production gate closed."
     },
     {
       "id": "E2E-K01",
@@ -1004,7 +1004,7 @@
         "PR #455 changed candidate-bearing Native discovery CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
       ],
       "nextStep": "Build immutable candidate from Native Main 8e44af05417c39a73610890f474180b040b3d980; authorized Ubuntu 24.04 run_real_vm_e2e=true remains required.",
-      "lastEvidence": "Current Native runtime Main commit 8e44af05417c39a73610890f474180b040b3d980: PR #458 Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy passed; real-vm and real-PITR skipped, so no live Single-Host qualification gate closed."
+      "lastEvidence": "Current Native runtime Main commit 8e44af05417c39a73610890f474180b040b3d980: PR #458 Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy passed; real-vm and real-PITR skipped, so no live Single-Host qualification gate closed. Post-merge Main 5cfa76e574bd2479ce9a17fe8ce260e2661020dc passed Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719683; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719117), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630329) and Source/Privacy (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630117); real-vm and real-PITR were skipped. No live Single-Host production gate closed."
     },
     {
       "id": "E2E-H01",
@@ -1074,7 +1074,12 @@
       "evidence": [
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011699531",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011699736",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011699603"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011699603",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5cfa76e574bd2479ce9a17fe8ce260e2661020dc",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630329",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630117",
+        "Post-merge Main 5cfa76e574bd2479ce9a17fe8ce260e2661020dc passed Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719683; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719117), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630329) and Source/Privacy (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630117); real-vm and real-PITR were skipped. No live Single-Host production gate closed."
       ]
     },
     "blockers": [
@@ -1163,7 +1168,14 @@
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766/job/140546446562",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079783",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079925",
-      "PR #458 Native/runtime and real-etcd checks passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
+      "PR #458 Native/runtime and real-etcd checks passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed.",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5cfa76e574bd2479ce9a17fe8ce260e2661020dc",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719683",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719117",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630329",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630117",
+      "Post-merge Main 5cfa76e574bd2479ce9a17fe8ce260e2661020dc passed Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719683; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630156/job/140551719117), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630329) and Source/Privacy (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46012630117); real-vm and real-PITR were skipped. No live Single-Host production gate closed."
     ]
   },
   "candidate": {
