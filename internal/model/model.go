@@ -20,10 +20,11 @@ const Version = "0.2.0-dev.4"
 const StateSchema = 2
 const APIVersion = "werftkern/v1alpha1"
 const MaxStateBytes = 900000
-const MaxNodes = 20
-const MaxWorkloads = 50
-// Native single-host production bounds the persisted allocation inventory to the
-// declared release limit. Higher-capacity multi-host profiles are out of scope.
+// Native single-host production permits exactly one persisted node and at most
+// the documented workload/allocation inventory. Higher-capacity multi-host
+// profiles are out of scope for this release.
+const MaxNodes = 1
+const MaxWorkloads = 20
 const MaxAllocations = 50
 const HeartbeatTimeout = 30 * time.Second
 
