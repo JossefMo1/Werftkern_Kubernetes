@@ -481,19 +481,23 @@ func TestStateRejectsCollidingPersistedAllocationEndpoints(t *testing.T) {
 	}
 	t.Run("host_port_per_node", func(t *testing.T) {
 		s, nodeID, workloadID := newState()
-		s.Allocations[ID()] = allocation(ID(), nodeID, workloadID, 22000, "10.88.1.2")
+		firstID := ID()
+		s.Allocations[firstID] = allocation(firstID, nodeID, workloadID, 22000, "10.88.1.2")
 		if err := s.ValidateInventory(); err != nil {
 			t.Fatalf("valid allocation rejected: %v", err)
 		}
-		s.Allocations[ID()] = allocation(ID(), nodeID, workloadID, 22000, "10.88.1.3")
+		secondID := ID()
+		s.Allocations[secondID] = allocation(secondID, nodeID, workloadID, 22000, "10.88.1.3")
 		if err := s.ValidateInventory(); err == nil {
 			t.Fatal("duplicate host port on one node accepted")
 		}
 	})
 	t.Run("container_ip_global", func(t *testing.T) {
 		s, nodeID, workloadID := newState()
-		s.Allocations[ID()] = allocation(ID(), nodeID, workloadID, 22000, "10.88.1.2")
-		s.Allocations[ID()] = allocation(ID(), nodeID, workloadID, 22001, "10.88.1.2")
+		firstID := ID()
+		secondID := ID()
+		s.Allocations[firstID] = allocation(firstID, nodeID, workloadID, 22000, "10.88.1.2")
+		s.Allocations[secondID] = allocation(secondID, nodeID, workloadID, 22001, "10.88.1.2")
 		if err := s.ValidateInventory(); err == nil {
 			t.Fatal("duplicate container IP accepted")
 		}
