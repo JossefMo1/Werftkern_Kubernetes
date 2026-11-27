@@ -1144,11 +1144,11 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
-      "codeCommit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/427",
-      "summary": "PR #426 merged as 124a176fd9a6897ae9931c32070e1b7a74fdfb43. Native volume-restore tree verification is bounded by archive byte, entry and depth limits with regression coverage; exact CI passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy, while real-vm and real-PITR were skipped. No live Single-Host gate was closed and productionReady remains false.",
+      "commit": "6cb1436fc5bf458defeb8260bc75901ae3e96599",
+      "codeCommit": "6cb1436fc5bf458defeb8260bc75901ae3e96599",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/429",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/430",
+      "summary": "PR #429 merged as 6cb1436fc5bf458defeb8260bc75901ae3e96599. Native setup now persists the private worker join bundle before node registration; regression coverage verifies ordering and fail-closed registration. Corrected PR CI passed Native/runtime including real-etcd (run 45925849361), Kubernetes contracts (run 45925849407) and Source/Privacy audit (run 45925849350). This remains reliability hardening only: no live Single-Host gate closed, productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
@@ -1156,8 +1156,9 @@
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
     "summary": "PR #424 merged as 7e07433ca88a8c00dba699260a2f97f2394deb4a. Docker image-pull and image-load JSON streams are now bounded and strict-validated; duplicate/case-ambiguous, malformed, trailing and oversized responses fail closed, explicit Docker error events preserve IMAGE_PULL_FAILED, and container logs are bounded. Exact PR head ee2f90a166760369a89d64cb8ce46850bc7f6963 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is runtime/security hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
-    "nextCandidateRequired": true
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/429",
+    "nextCandidateRequired": true,
+    "updatedAt": "2026-11-27T02:06:45.839Z"
   },
   "previousCandidates": [
     {
