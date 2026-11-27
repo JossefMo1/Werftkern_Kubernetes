@@ -391,3 +391,12 @@ func TestVolumeCLIRejectsInvalidArgumentsBeforeConfigAccess(t *testing.T) {
 		})
 	}
 }
+
+
+func TestDiscoveryCLIRejectsUnexpectedArgumentsBeforeConfigAccess(t *testing.T) {
+	missing := filepath.Join(t.TempDir(), "missing-agent.json")
+	t.Setenv("WERFT_CONFIG", missing)
+	if err := discoveryCommand(context.Background(), []string{"unexpected"}); err == nil || err.Error() != "DISCOVERY_ARGUMENTS_INVALID" {
+		t.Fatalf("discovery accepted an unexpected positional argument: %v", err)
+	}
+}
