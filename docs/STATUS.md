@@ -1097,3 +1097,12 @@ The published `v0.2.0-dev.4-test.17` candidate remains stale, non-immutable and 
 Corrected PR checks passed: [Native/runtime including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849361), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849407) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849350). A previous native attempt exposed an invalid test fixture; it was corrected before merge. real-vm and real-PITR remain skipped, so no live Single-Host production gate closed.
 
 The old v0.2.0-dev.4-test.17 candidate remains stale, non-immutable and unsigned. Build the next immutable candidate from `6cb1436fc5bf458defeb8260bc75901ae3e96599`; productionReady=false and the production decision remains no-go. HA, multi-host and Kubernetes-production remain deferred.
+
+## Latest Native security handoff — PR #431 (2026-11-27)
+
+[PR #431](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/431) merged as [e42ee2a1](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e42ee2a1f9aff03abc6a7b23d130e4d74554f22c). Native join-bundle persistence now uses exclusive creation: an existing destination or symlink cannot be replaced, and node registration remains fail-closed. Regression coverage verifies private permissions, exclusive creation, symlink rejection and that registration is not called after a destination collision.
+
+Exact checks passed: [Native/runtime including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45931400751), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45931400814) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45931400747). The Native test and real-etcd jobs succeeded; real-vm and real-PITR were skipped. This is security/reliability evidence only: no live Single-Host production gate closed.
+
+The published `v0.2.0-dev.4-test.17` candidate remains stale, non-immutable and unsigned. Build the next immutable candidate from `e42ee2a1f9aff03abc6a7b23d130e4d74554f22c` before live Ubuntu installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
+
