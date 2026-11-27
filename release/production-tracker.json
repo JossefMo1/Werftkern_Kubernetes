@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T12:51:46Z",
+  "updatedAt": "2026-11-27T12:57:24Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -1066,10 +1066,15 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/453",
-      "baseCommit": "89cd8c352d1d9d72bc3201462ac9e5a868c487fb",
-      "mergedCommit": "589465218887a73f46218e97ed7d91356513804e",
-      "summary": "PR #453 synchronizes release/production-tracker.json, docs/STATUS.md and docs/ROADMAP.md after PR #452. The handoff records the exact successful Native/runtime including real-etcd, Kubernetes and Source/Privacy checks; real-vm and real-PITR remained skipped. No live Single-Host production gate is claimed; productionReady remains false and Go/No-Go remains no-go."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/456",
+      "baseCommit": "9411d9a421b7161348338e7a773e3e564d772cb5",
+      "mergedCommit": "3569fbee713cef5bdb0a979b4458fe8dea98250f",
+      "summary": "PR #456 synchronisiert release/production-tracker.json, docs/STATUS.md und docs/ROADMAP.md für PR #455. Die finalen Native-, real-etcd-, Kubernetes- und Source/Privacy-Prüfungen sind erfolgreich; real-vm und real-PITR wurden übersprungen. Kein Live-Single-Host-Gate ist geschlossen; productionReady=false und Go/No-Go bleibt no-go.",
+      "evidence": [
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736642",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736915",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736530"
+      ]
     },
     "blockers": [
       "PR #431 merged exclusive join-bundle persistence; CI passed but real-vm and real-PITR were skipped, so no live Single-Host gate closed.",
@@ -1083,7 +1088,7 @@
       "PR #452 changed candidate-bearing Native volume CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
       "PR #455 changed candidate-bearing Native discovery CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
     ],
-    "nextStep": "Build an immutable candidate from the current Native runtime Main commit 9411d9a421b7161348338e7a773e3e564d772cb5 (including PR #455), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
+    "nextStep": "Build an immutable candidate from Native runtime Main commit 9411d9a421b7161348338e7a773e3e564d772cb5 and run the authorized Ubuntu 24.04 run_real_vm_e2e=true path. Collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak, SBOM, signing and provenance evidence. Tag/workflow_dispatch permission blocker remains documented and must not be retried; HA/multi-host/Kubernetes-production remain deferred.",
     "lastEvidence": [
       "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/431",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e42ee2a1f9aff03abc6a7b23d130e4d74554f22c",
@@ -1178,9 +1183,10 @@
       "commit": "9411d9a421b7161348338e7a773e3e564d772cb5",
       "codeCommit": "9411d9a421b7161348338e7a773e3e564d772cb5",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/455",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/453",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/456",
       "summary": "PR #455 merged as 9411d9a421b7161348338e7a773e3e564d772cb5. The Native discovery CLI now rejects unexpected positional arguments before loading agent configuration, with regression coverage in internal/cli/cli_test.go. Final PR head 2d285db9d1144d2a4a7cd067d923e9a03820fb08 passed Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736642; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736642/job/140514823272), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736915) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736530); real-vm and real-PITR were skipped. This hardening closes no live Single-Host production gate; productionReady remains false and the decision remains no-go.",
-      "nextCandidateRequired": true
+      "nextCandidateRequired": true,
+      "documentationMergedCommit": "3569fbee713cef5bdb0a979b4458fe8dea98250f"
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
