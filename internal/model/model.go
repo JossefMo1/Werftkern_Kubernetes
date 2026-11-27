@@ -368,7 +368,11 @@ func (s *State) ValidateNativeSingleHost() error {
 	if len(s.Nodes) > NativeMaxNodes || len(s.Workloads) > NativeMaxWorkloads || len(s.Allocations) > NativeMaxAllocations {
 		return ErrCapacity
 	}
-	return nil
+	// Native callers may validate a state outside the etcd CAS path (for
+	// example a backup inspector or API client). Re-run the complete persisted
+	// inventory contract so malformed workload/node/allocation records cannot
+	// escape through the weaker structural validator.
+	return s.ValidateInventory()
 }
 
 func (s *State) Event(action, target string, now time.Time) {
