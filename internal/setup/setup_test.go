@@ -192,3 +192,42 @@ func TestValidateNewBundleOutput(t *testing.T) {
 		t.Fatalf("did not reject empty output path: %v", err)
 	}
 }
+
+
+func TestPersistBundleBeforeRegistrationOrdersLocalWriteFirst(t *testing.T) {
+	d := t.TempDir()
+	out := filepath.Join(d, "join.json")
+	called := false
+	err := persistBundleBeforeRegistration(out, Bundle{NodeName: "worker-1"}, func() error {
+		called = true
+		if _, err := os.Stat(out); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("persist/register failed: %v", err)
+	}
+	if !called {
+		t.Fatal("registration callback was not invoked")
+	}
+	if info, err := os.Stat(out); err != nil || info.Mode().Perm() != 0600 {
+		t.Fatalf("bundle was not durably staged with private permissions: %v", err)
+	}
+}
+
+func TestPersistBundleBeforeRegistrationDoesNotRegisterAfterWriteFailure(t *testing.T) {
+	d := t.TempDir()
+	out := filepath.Join(d, "missing-parent", "join.json")
+	called := false
+	err := persistBundleBeforeRegistration(out, Bundle{}, func() error {
+		called = true
+		return nil
+	})
+	if err == nil {
+		t.Fatal("expected local bundle write failure")
+	}
+	if called {
+		t.Fatal("registration callback ran after local write failure")
+	}
+}
