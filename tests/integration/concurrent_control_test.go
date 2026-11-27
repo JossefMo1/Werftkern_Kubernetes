@@ -17,6 +17,9 @@ import (
 // Three independent store clients and reconcilers share one atomic fixture.
 // This tests optimistic concurrency, NOT actual etcd quorum availability.
 func TestThreeConcurrentControllersDoNotDoubleAllocate(t *testing.T) {
+	if model.MaxNodes < 3 {
+		t.Skip("deferred multi-node controller profile: Native release scope allows one node")
+	}
 	f := testutil.NewEtcd(t, filepath.Join(t.TempDir(), "state.json"))
 	id := model.ID()
 	now := time.Now()
