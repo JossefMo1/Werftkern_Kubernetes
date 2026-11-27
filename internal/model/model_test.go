@@ -179,6 +179,42 @@ func TestNativeAllocationCapacityMatchesSingleHostScope(t *testing.T) {
 	}
 }
 
+func TestNativeCapacityMatchesSingleHostScope(t *testing.T) {
+	if MaxNodes != 1 {
+		t.Fatalf("native single-host node limit changed unexpectedly: %d", MaxNodes)
+	}
+	if MaxWorkloads != 20 {
+		t.Fatalf("native single-host workload limit changed unexpectedly: %d", MaxWorkloads)
+	}
+	if MaxAllocations != 50 {
+		t.Fatalf("native single-host allocation limit changed unexpectedly: %d", MaxAllocations)
+	}
+
+	now := time.Now()
+	s := NewState(ID(), "test", now)
+	for i := 0; i < MaxNodes+1; i++ {
+		id := ID()
+		s.Nodes[id] = &Node{ID: id}
+	}
+	if !errors.Is(s.Validate(), ErrCapacity) {
+		t.Fatalf("node inventory above native limit was accepted: %d", len(s.Nodes))
+	}
+
+	s = NewState(ID(), "test", now)
+	for i := 0; i < MaxWorkloads+1; i++ {
+		name := "w" + strings.Repeat("a", i%10)
+		// Keep names unique while staying within the model's name grammar.
+		name = name + strings.Repeat("-", i/10)
+		if !ValidName(name) {
+			name = "w" + strings.Repeat("a", i%39) + "-" + string(rune('a'+i%26))
+		}
+		s.Workloads[name] = &Workload{Name: name}
+	}
+	if len(s.Workloads) <= MaxWorkloads || !errors.Is(s.Validate(), ErrCapacity) {
+		t.Fatalf("workload inventory above native limit was accepted: %d", len(s.Workloads))
+	}
+}
+
 func TestExpiredReceiptKeyCanBeReused(t *testing.T) {
 	now := time.Now()
 	s := NewState(ID(), "test", now)
