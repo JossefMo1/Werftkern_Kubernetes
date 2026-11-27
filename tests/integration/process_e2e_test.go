@@ -125,6 +125,9 @@ func (p *processRuntime) close() {
 }
 
 func TestProcessE2EDeployReplayRestartRolloutDrainDelete(t *testing.T) {
+	if model.MaxNodes < 2 {
+		t.Skip("deferred multi-worker profile: Native release scope allows one node")
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
 	defer cancel()
 	dir := t.TempDir()
