@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T00:00:00.000Z",
+  "updatedAt": "2026-11-27T00:59:34.762Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "7e07433ca88a8c00dba699260a2f97f2394deb4a",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/424",
-    "summary": "PR #424 merged as 7e07433ca88a8c00dba699260a2f97f2394deb4a. Docker image-pull and image-load JSON streams are now bounded and strict-validated; duplicate/case-ambiguous, malformed, trailing and oversized responses fail closed, explicit Docker error events preserve IMAGE_PULL_FAILED, and container logs are bounded. Exact PR head ee2f90a166760369a89d64cb8ce46850bc7f6963 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is runtime/security hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
+    "summary": "PR #426 merged as 124a176fd9a6897ae9931c32070e1b7a74fdfb43. Native volume-restore tree verification is now bounded by the same byte, entry and depth limits as archive export/extract; a regression test rejects oversized existing restore data. Exact PR head 8dd7bfd74d3b455c7a5a2ad6fa9eb9bb5ff7687 passed Native/runtime + real-etcd (test and real-etcd succeeded; real-vm and real-PITR skipped), Kubernetes contracts and Source/Privacy. This is recovery/runtime hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -51,7 +51,8 @@
       "PR #416 merged candidate-bearing persisted-state validation; the published test.17 candidate is stale and cannot carry this evidence.",
       "PR #418 merged candidate-bearing native bootstrap encoding validation; the published test.17 candidate is stale and cannot carry this evidence.",
       "PR #420 changes candidate-bearing PITR configuration validation; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence.",
-      "PR #424 changes candidate-bearing Docker response handling; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence."
+      "PR #424 changes candidate-bearing Docker response handling; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence.",
+      "PR #426 changes candidate-bearing Native volume-restore verification; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -60,7 +61,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main at execution time (code merge 7e07433ca88a8c00dba699260a2f97f2394deb4a, PR #424), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from current Main at execution time (code merge 124a176fd9a6897ae9931c32070e1b7a74fdfb43, PR #426), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -643,7 +644,14 @@
         "PR #424 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45913630058 (succeeded)",
         "PR #424 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45913630098 (succeeded)",
         "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/7e07433ca88a8c00dba699260a2f97f2394deb4a",
-        "PR #424 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
+        "PR #424 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable.",
+        "PR #426: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
+        "PR #426 head: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8dd7bfd74d3b455c7a5a2ad6fa9eb9bb5ff7687",
+        "PR #426 Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45919510060 (test and real-etcd succeeded; real-vm and real-PITR skipped)",
+        "PR #426 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45919510070 (succeeded)",
+        "PR #426 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45919510172 (succeeded)",
+        "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/124a176fd9a6897ae9931c32070e1b7a74fdfb43",
+        "PR #426 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -1092,9 +1100,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/424",
-      "mergedCommit": "7e07433ca88a8c00dba699260a2f97f2394deb4a",
-      "summary": "PR #424 merged as 7e07433ca88a8c00dba699260a2f97f2394deb4a. Docker image-pull and image-load JSON streams are now bounded and strict-validated; duplicate/case-ambiguous, malformed, trailing and oversized responses fail closed, explicit Docker error events preserve IMAGE_PULL_FAILED, and container logs are bounded. Exact PR head ee2f90a166760369a89d64cb8ce46850bc7f6963 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is runtime/security hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
+      "mergedCommit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
+      "summary": "PR #426 merged as 124a176fd9a6897ae9931c32070e1b7a74fdfb43. Native volume-restore tree verification is bounded by archive byte, entry and depth limits with regression coverage; exact CI passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy, while real-vm and real-PITR were skipped. No live Single-Host gate was closed and productionReady remains false."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -1130,11 +1138,11 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "7e07433ca88a8c00dba699260a2f97f2394deb4a",
-      "codeCommit": "7e07433ca88a8c00dba699260a2f97f2394deb4a",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/424",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/425",
-      "summary": "PR #424 merged as 7e07433ca88a8c00dba699260a2f97f2394deb4a. Docker image-pull and image-load JSON streams are now bounded and strict-validated; duplicate/case-ambiguous, malformed, trailing and oversized responses fail closed, explicit Docker error events preserve IMAGE_PULL_FAILED, and container logs are bounded. Exact PR head ee2f90a166760369a89d64cb8ce46850bc7f6963 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is runtime/security hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
+      "commit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
+      "codeCommit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
+      "summary": "PR #426 merged as 124a176fd9a6897ae9931c32070e1b7a74fdfb43. Native volume-restore tree verification is bounded by archive byte, entry and depth limits with regression coverage; exact CI passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy, while real-vm and real-PITR were skipped. No live Single-Host gate was closed and productionReady remains false.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
@@ -1142,7 +1150,7 @@
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
     "summary": "PR #424 merged as 7e07433ca88a8c00dba699260a2f97f2394deb4a. Docker image-pull and image-load JSON streams are now bounded and strict-validated; duplicate/case-ambiguous, malformed, trailing and oversized responses fail closed, explicit Docker error events preserve IMAGE_PULL_FAILED, and container logs are bounded. Exact PR head ee2f90a166760369a89d64cb8ce46850bc7f6963 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is runtime/security hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/424",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
     "nextCandidateRequired": true
   },
   "previousCandidates": [
