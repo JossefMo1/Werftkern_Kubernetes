@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"net"
 	"strconv"
 	"strings"
 )
@@ -174,6 +175,20 @@ func (s *State) ValidateInventory() error {
 		}
 		if e := a.Spec.Validate(); e != nil {
 			return e
+		}
+		// A zero host port represents an unresolved legacy assignment and is
+		// intentionally not published by discovery. Once persisted, non-zero
+		// host ports must remain in the scheduler-owned range.
+		if a.HostPort != 0 && (a.Spec.Port == 0 || a.HostPort < 22000 || a.HostPort >= 23000) {
+			return errors.New("ALLOCATION_HOST_PORT_INVALID")
+		}
+		if a.ContainerIP != "" {
+			n := s.Nodes[a.NodeID]
+			_, cidr, err := net.ParseCIDR(n.PodCIDR)
+			ip := net.ParseIP(a.ContainerIP)
+			if err != nil || ip == nil || !cidr.Contains(ip) {
+				return errors.New("CONTAINER_IP_OUTSIDE_ENROLLED_SUBNET")
+			}
 		}
 		if e := s.ValidateSecretAvailability(a.Spec); e != nil {
 			return e
