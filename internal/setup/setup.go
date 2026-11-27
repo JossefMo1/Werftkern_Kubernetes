@@ -541,7 +541,7 @@ func validateNewBundleOutput(path string) error {
 // control plane records the node. A local write failure therefore cannot leave
 // an enrolled worker without its private credentials.
 func persistBundleBeforeRegistration(out string, b Bundle, register func() error) error {
-	if e := safefile.JSON(out, b, 0600); e != nil {
+	if e := safefile.JSONExclusive(out, b, 0600); e != nil {
 		return e
 	}
 	return register()

@@ -171,6 +171,63 @@ func JSON(path string, v any, mode os.FileMode) error {
 	}
 	return Write(path, append(b, '\n'), mode)
 }
+// JSONExclusive creates a private JSON file without replacing an existing destination.
+// It is intended for credentials and other first-write-only artifacts.
+func JSONExclusive(path string, v any, mode os.FileMode) (err error) {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return err
+	}
+	d := filepath.Dir(path)
+	if err = validateParentChain(d); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	if err = os.MkdirAll(d, 0700); err != nil {
+		return err
+	}
+	if err = validateParentChain(d); err != nil {
+		return err
+	}
+	f, err := CreateExclusive(path, mode)
+	if err != nil {
+		return err
+	}
+	closed := false
+	cleanup := true
+	defer func() {
+		if cleanup {
+			if !closed {
+				_ = f.Close()
+			}
+			_ = os.Remove(path)
+		}
+	}()
+	if _, err = f.Write(append(b, '\n')); err != nil {
+		return err
+	}
+	if err = f.Sync(); err != nil {
+		return err
+	}
+	if err = f.Close(); err != nil {
+		closed = true
+		return err
+	}
+	closed = true
+	dir, err := os.Open(d)
+	if err != nil {
+		return err
+	}
+	if err = dir.Sync(); err != nil {
+		_ = dir.Close()
+		return err
+	}
+	if err = dir.Close(); err != nil {
+		return err
+	}
+	cleanup = false
+	return nil
+}
+
 func ReadJSON(path string, v any) error {
 	f, e := openTrusted(path)
 	if e != nil {

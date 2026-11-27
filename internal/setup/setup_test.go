@@ -235,3 +235,25 @@ func TestPersistBundleBeforeRegistrationDoesNotRegisterAfterWriteFailure(t *test
 		t.Fatal("registration callback ran after local write failure")
 	}
 }
+
+func TestPersistBundleBeforeRegistrationDoesNotReplaceExistingDestination(t *testing.T) {
+	d := t.TempDir()
+	out := filepath.Join(d, "join.json")
+	if err := os.WriteFile(out, []byte("existing"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	called := false
+	if err := persistBundleBeforeRegistration(out, Bundle{NodeName: "replacement"}, func() error {
+		called = true
+		return nil
+	}); err == nil {
+		t.Fatal("replaced existing bundle destination")
+	}
+	if called {
+		t.Fatal("registration callback ran for existing destination")
+	}
+	content, err := os.ReadFile(out)
+	if err != nil || string(content) != "existing" {
+		t.Fatalf("existing destination changed: %q %v", content, err)
+	}
+}
