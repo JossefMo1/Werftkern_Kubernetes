@@ -155,7 +155,7 @@ jobs:
           test "$(command -v werft)" = "/usr/bin/werft"
           werft-ops --help > "$RUNNER_TEMP/werft-ops-installed-help.txt"
           grep -q -- "native-bootstrap" "$RUNNER_TEMP/werft-ops-installed-help.txt"
-          werft --help > "$RUNNER_TEMP/werft-installed-help.txt"          werft --help > "$RUNNER_TEMP/werft-installed-help.txt"
+          werft --help > "$RUNNER_TEMP/werft-installed-help.txt"
 
       - name: Actual previous verifier authenticates target package (ephemeral test signature only)
         if: env.WERFT_COMPAT_BASE_AVAILABLE == 'true'
