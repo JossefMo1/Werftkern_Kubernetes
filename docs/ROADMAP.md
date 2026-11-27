@@ -1,3 +1,11 @@
+## 2026-11-27 — Persistierte Event-Records fail-closed (PR #471)
+
+[PR #471](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471) wurde als [bea5189499275880d66c3c486d1ebc0f98232945](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bea5189499275880d66c3c486d1ebc0f98232945) gemergt. Persistierte Events werden jetzt vor Status-/Backup-/Reconciliation-Pfaden auf gültige IDs, Zeitstempel, begrenzte Längen und control-freie Texte geprüft; Regressionen decken ungültige IDs, Zeitstempel, Steuerzeichen, leere und überlange Felder ab. Kein Live-Single-Host-Production-Gate ist geschlossen.
+
+Exakte Checks: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313), [Kubernetes-Verträge](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372); Real-VM und real-PITR wurden übersprungen. `productionReady=false`, Go/No-Go `no-go`, Countdown **9/100**.
+
+Nächster Schritt: unveränderlichen Kandidaten aus `bea5189499275880d66c3c486d1ebc0f98232945` bauen und anschließend die autorisierte Ubuntu-24.04-Qualifikation einschließlich Docker/etcd, Recovery, Upgrade/Rollback, Load/Soak und Supply-Chain-Nachweisen durchführen. HA/Multi-Host und Kubernetes-Production bleiben Erweiterungspfade.
+
 ## 2026-11-27 — Überlappende persistierte Node-PodCIDRs fail-closed (PR #468)
 
 [PR #468](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/468) wurde als [f2c13bd](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f2c13bd3360308ab516b553ae46f0f8a4ac5e857) gemergt. Die Runtime übernimmt die bestehende Registrierungsinvariante für PodCIDR-Überschneidungen jetzt auch in `ValidateInventory`: Überlappende gültige Node-Netze werden vor Reconciliation, Backup-Import oder Commit fail-closed abgelehnt; leere PodCIDRs bleiben für zurückgestellte Profile zulässig.
