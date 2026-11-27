@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T18:04:00Z",
+  "updatedAt": "2026-11-27T18:08:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -1099,16 +1099,16 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/469",
-      "baseCommit": "f2c13bd3360308ab516b553ae46f0f8a4ac5e857",
-      "mergedCommit": "c59da1d8abb944bd9a0e19f9db2abd95c672c3e9",
-      "summary": "PR #469 merged as c59da1d8abb944bd9a0e19f9db2abd95c672c3e9. docs/STATUS.md, docs/ROADMAP.md and release/production-tracker.json now record PR #468's persisted Node PodCIDR overlap hardening, exact automated checks, skipped real-vm/PITR jobs and the unchanged productionReady=false/no-go status. This documentation handoff closes no live Single-Host production gate.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/472",
+      "baseCommit": "bea5189499275880d66c3c486d1ebc0f98232945",
+      "mergedCommit": "042d984adf90bedef7d9d12c24e2dc7ae57bb8a4",
+      "summary": "PR #472 merged as 042d984adf90bedef7d9d12c24e2dc7ae57bb8a4. docs/STATUS.md, docs/ROADMAP.md and release/production-tracker.json now record PR #471 persisted event-record validation, exact automated checks, skipped real-vm/PITR jobs and the unchanged productionReady=false/no-go status. This documentation handoff closes no live Single-Host production gate.",
       "evidence": [
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/469",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/c59da1d8abb944bd9a0e19f9db2abd95c672c3e9",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46038639208",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46038639089",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46038639147"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/472",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/042d984adf90bedef7d9d12c24e2dc7ae57bb8a4",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046598019",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046597761",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046597818"
       ]
     },
     "blockers": [
@@ -1144,7 +1144,12 @@
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bea5189499275880d66c3c486d1ebc0f98232945",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314",
-      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372"
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/472",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/042d984adf90bedef7d9d12c24e2dc7ae57bb8a4",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046598019",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046597761",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046597818"
     ]
   },
   "candidate": {
@@ -1174,9 +1179,9 @@
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
       "summary": "PR #471 merged as bea5189499275880d66c3c486d1ebc0f98232945. Persisted event records now require valid IDs and timestamps plus bounded control-free action/target text before status output, reconciliation or backup. Tampered log/terminal injection data fails closed with EVENT_RECORD_INVALID. Regression coverage is in internal/model/model_test.go. Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "documentationMergedCommit": "c59da1d8abb944bd9a0e19f9db2abd95c672c3e9",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/469",
-      "documentationSummary": "PR #469 merged as c59da1d8abb944bd9a0e19f9db2abd95c672c3e9. docs/STATUS.md, docs/ROADMAP.md and release/production-tracker.json now record PR #468's persisted Node PodCIDR overlap hardening, exact automated checks, skipped real-vm/PITR jobs and the unchanged productionReady=false/no-go status. This documentation handoff closes no live Single-Host production gate.",
+      "documentationMergedCommit": "042d984adf90bedef7d9d12c24e2dc7ae57bb8a4",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/472",
+      "documentationSummary": "PR #472 merged as 042d984adf90bedef7d9d12c24e2dc7ae57bb8a4. docs/STATUS.md, docs/ROADMAP.md and release/production-tracker.json now record PR #471 persisted event-record validation, exact automated checks, skipped real-vm/PITR jobs and the unchanged productionReady=false/no-go status. This documentation handoff closes no live Single-Host production gate.",
       "latestHardening": {
         "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
         "mergeCommit": "bea5189499275880d66c3c486d1ebc0f98232945",
@@ -1187,7 +1192,7 @@
     "commit": "bea5189499275880d66c3c486d1ebc0f98232945",
     "codeCommit": "bea5189499275880d66c3c486d1ebc0f98232945",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/469",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/472",
     "summary": "PR #471 merged as bea5189499275880d66c3c486d1ebc0f98232945. Persisted event records now require valid IDs and timestamps plus bounded control-free action/target text before status output, reconciliation or backup. Tampered log/terminal injection data fails closed with EVENT_RECORD_INVALID. Regression coverage is in internal/model/model_test.go. Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
     "nextCandidateRequired": true,
