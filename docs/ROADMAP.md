@@ -1,3 +1,11 @@
+## 2026-11-27 — Docker-Engine-Neustart als kandidatengebundener E2E-Schritt (PR #479)
+
+[PR #479](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/479) ergänzt im Native-Ubuntu-E2E einen echten Docker-Dienstneustart nach dem Workload-Lifecycle. Nach `systemctl restart docker.service` werden Workload-Zustand, Endpunkte und Container-Identitäten erneut verglichen. Die Standardprüfungen bestanden; real-vm und real-PITR waren übersprungen, daher bleibt dieser Schritt Vorbereitung und keine Live-Production-Evidenz.
+
+[PR #480](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/480) synchronisierte den Tracker auf Main [05365d711f1e7a0b3a09ed8407aa0749b78e7488](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/05365d711f1e7a0b3a09ed8407aa0749b78e7488). Für die Kandidatenbindung ist der runtime-relevante Stand [ba2b820d735c71a2681fc7b0636fecac5800890e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/ba2b820d735c71a2681fc7b0636fecac5800890e) maßgeblich. Countdown bleibt **9/100**, `productionReady=false`; Backup/Restore, Upgrade/Rollback, Load/Soak, SBOM, Signierung/Provenienz und Maintainer-Go/No-Go bleiben offen. Der erste Release bleibt auf Native Single-Host begrenzt; HA/Multi-Host und Kubernetes-Production sind später.
+
+Nächster Handoff: unveränderlichen Kandidaten aus dem runtime-relevanten Commit bauen, Digests/Manifest/SBOM/Signierung vorbereiten und anschließend den autorisierten Ubuntu-24.04-Lauf mit `run_real_vm_e2e=true` durchführen.
+
 ## 2026-11-27 — Native-Inventur und redigierte State-Antworten fail-closed (PR #474)
 
 [PR #474](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474) wurde als [d6d730d6f9e4825023a5bbf47cc9ffde62911340](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d6d730d6f9e4825023a5bbf47cc9ffde62911340) gemergt. Native-State-Antworten validieren jetzt die vollständige Workload-/Node-/Allocation-Inventur; der Go-Client behandelt redigierte Secret-Projektionen separat und weist exponierten Ciphertext zurück. Damit sind Architecture, Backend/Runtime, Security und QA gegen manipulierte Inventur außerhalb des etcd-CAS-Pfads abgesichert.
