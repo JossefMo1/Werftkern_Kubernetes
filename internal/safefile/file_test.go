@@ -165,3 +165,36 @@ func TestValidateCreateParent(t *testing.T) {
 		t.Fatal("accepted symlinked parent")
 	}
 }
+
+func TestJSONExclusiveDoesNotReplaceExistingDestination(t *testing.T) {
+	d := t.TempDir()
+	path := filepath.Join(d, "nested", "bundle.json")
+	if err := JSONExclusive(path, map[string]string{"value": "first"}, 0600); err != nil {
+		t.Fatal(err)
+	}
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	info, err := os.Stat(path)
+	if err != nil || info.Mode().Perm() != 0600 {
+		t.Fatalf("exclusive JSON file invalid: %v", err)
+	}
+	if err := JSONExclusive(path, map[string]string{"value": "second"}, 0600); err == nil {
+		t.Fatal("replaced existing destination")
+	}
+	after, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(after) != string(before) {
+		t.Fatal("existing destination changed")
+	}
+	link := filepath.Join(d, "bundle-link.json")
+	if err := os.Symlink(path, link); err != nil {
+		t.Fatal(err)
+	}
+	if err := JSONExclusive(link, map[string]string{"value": "link"}, 0600); err == nil {
+		t.Fatal("followed destination symlink")
+	}
+}
