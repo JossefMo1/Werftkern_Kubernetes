@@ -64,3 +64,29 @@ class Upgrades(unittest.TestCase):
      upgrade.recover(journal,'pkg','manifest','sig','key','a'*32,runner)
    self.assertEqual(calls,[])
    self.assertEqual(read_json(journal,private=True)['phase'],'installed')
+
+ def test_recover_package_identity_mismatch_keeps_explicit_recovery_locked(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);journal=root/'journal.json';backup=journal.parent/'config.backup'
+   backup.write_bytes(b'private-test-backup')
+   pkg=root/'repair.deb';pkg.write_bytes(b'fixture-repair-package');sha=hashlib.sha256(pkg.read_bytes()).hexdigest()
+   operation='b'*32
+   manifest={'format':'werftkern-release/v1','version':'0.2.0-dev.2','packageVersion':'0.2.0~dev2','packageSha256':sha,'stateSchema':2,'architecture':'amd64','sources':['0.2.1~dev1']}
+   write_json(journal,{'format':'werftkern-host-update/v1','id':operation,'clusterId':'c'*32,'from':'0.2.1~dev1','target':{'version':'0.2.1-dev.1','packageVersion':'0.2.1~dev1','stateSchema':2},'phase':'installed','services':['werftkern-control']})
+   calls=[]
+   def runner(args,**kw):
+    calls.append(args)
+    if args[:3]==['werft','release','verify']:return json.dumps(manifest).encode()
+    if args[0]=='dpkg-query':return b'0.2.1~dev1'
+    if args[:3]==['werft','maintenance','on']:return b'{}'
+    if args[0]=='dpkg-deb':
+     return (b'not-werftkern' if args[-1]=='Package' else manifest['packageVersion'].encode())
+    raise AssertionError(args)
+   with mock.patch.object(upgrade,'ROOT',root/'var'),mock.patch.object(upgrade,'host_preflight',lambda:None):
+    with self.assertRaisesRegex(Blocked,'RECOVERY_PACKAGE_IDENTITY_MISMATCH'):
+     upgrade.recover(journal,pkg,'manifest','sig','key',operation,runner)
+   persisted=read_json(journal,private=True)
+   self.assertEqual(persisted['phase'],'explicit-recovery')
+   self.assertTrue(any(a[:3]==['werft','maintenance','on'] for a in calls))
+   self.assertFalse(any(a[:2]==['systemctl','stop'] or a[:2]==['systemctl','start'] for a in calls))
+   self.assertFalse(any(a[0]=='dpkg' for a in calls))
