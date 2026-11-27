@@ -165,6 +165,20 @@ func TestReceiptRetentionAndCapacity(t *testing.T) {
 		t.Fatal(e)
 	}
 }
+func TestNativeAllocationCapacityMatchesSingleHostScope(t *testing.T) {
+	s := NewState(ID(), "test", time.Now())
+	for i := 0; i <= MaxAllocations; i++ {
+		id := ID()
+		s.Allocations[id] = &Allocation{ID: id}
+	}
+	if !errors.Is(s.Validate(), ErrCapacity) {
+		t.Fatalf("allocation inventory above native limit was accepted: %d", len(s.Allocations))
+	}
+	if MaxAllocations != 50 {
+		t.Fatalf("native single-host allocation limit changed unexpectedly: %d", MaxAllocations)
+	}
+}
+
 func TestExpiredReceiptKeyCanBeReused(t *testing.T) {
 	now := time.Now()
 	s := NewState(ID(), "test", now)
