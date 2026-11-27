@@ -218,7 +218,11 @@ func TestPersistBundleBeforeRegistrationOrdersLocalWriteFirst(t *testing.T) {
 
 func TestPersistBundleBeforeRegistrationDoesNotRegisterAfterWriteFailure(t *testing.T) {
 	d := t.TempDir()
-	out := filepath.Join(d, "missing-parent", "join.json")
+	parent := filepath.Join(d, "not-a-directory")
+	if err := os.WriteFile(parent, []byte("sentinel"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(parent, "join.json")
 	called := false
 	err := persistBundleBeforeRegistration(out, Bundle{}, func() error {
 		called = true
