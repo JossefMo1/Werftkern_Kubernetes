@@ -19,6 +19,9 @@ func discoveryCommand(ctx context.Context, args []string) error {
 	if e := f.Parse(args); e != nil {
 		return e
 	}
+	if f.NArg() != 0 {
+		return errors.New("DISCOVERY_ARGUMENTS_INVALID")
+	}
 	c, e := config.Load[config.Agent](*path)
 	if e != nil {
 		return e
