@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T01:03:01.134Z",
+  "updatedAt": "2026-11-27T02:04:33.851Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
-    "summary": "PR #426 merged as 124a176fd9a6897ae9931c32070e1b7a74fdfb43. Native volume-restore tree verification is now bounded by the same byte, entry and depth limits as archive export/extract; a regression test rejects oversized existing restore data. Exact PR head 8dd7bfd74d3b455c7a5a2adf6da9eb9bb5ff7687 passed Native/runtime + real-etcd (test and real-etcd succeeded; real-vm and real-PITR skipped), Kubernetes contracts and Source/Privacy. This is recovery/runtime hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "commit": "6cb1436fc5bf458defeb8260bc75901ae3e96599",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/429",
+    "summary": "PR #429 merged as 6cb1436fc5bf458defeb8260bc75901ae3e96599. Native setup now persists the worker join bundle with private permissions before registering the node, preventing an orphaned control-plane node when the local bundle write fails. Regression coverage verifies write-before-register ordering and fail-closed registration. Corrected PR checks passed: Native/runtime including real-etcd (run 45925849361), Kubernetes contracts (run 45925849407) and Source/Privacy audit (run 45925849350). These are CI/reliability checks only: real Ubuntu installation, backup/restore, upgrade/rollback, load/soak, signing/provenance and maintainer approval remain open; productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -52,7 +52,8 @@
       "PR #418 merged candidate-bearing native bootstrap encoding validation; the published test.17 candidate is stale and cannot carry this evidence.",
       "PR #420 changes candidate-bearing PITR configuration validation; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence.",
       "PR #424 changes candidate-bearing Docker response handling; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence.",
-      "PR #426 changes candidate-bearing Native volume-restore verification; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence."
+      "PR #426 changes candidate-bearing Native volume-restore verification; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this evidence.",
+      "PR #429 merged setup ordering hardening; its CI evidence does not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -61,7 +62,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build the next immutable candidate from current Main at execution time (code merge 124a176fd9a6897ae9931c32070e1b7a74fdfb43, PR #426), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build the next immutable candidate from current Main at execution time (code merge 6cb1436fc5bf458defeb8260bc75901ae3e96599, PR #429), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -651,7 +652,12 @@
         "PR #426 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45919510070 (succeeded)",
         "PR #426 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45919510172 (succeeded)",
         "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/124a176fd9a6897ae9931c32070e1b7a74fdfb43",
-        "PR #426 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable."
+        "PR #426 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable.",
+        "PR #429: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/429",
+        "Post-merge Main commit verified as 6cb1436fc5bf458defeb8260bc75901ae3e96599",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849361",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849407",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849350"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
