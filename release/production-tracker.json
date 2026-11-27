@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T17:02:12Z",
+  "updatedAt": "2026-11-27T17:09:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -1098,18 +1098,16 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/466",
-      "baseCommit": "e49ffb3910f2359c81fc0e4aef24165d6d061d88",
-      "mergedCommit": "1daa8ed643fbfb35d521a36393b2bc7ab6121eb1",
-      "summary": "PR #466 merged as 1daa8ed643fbfb35d521a36393b2bc7ab6121eb1. The tracker, STATUS.md and ROADMAP.md now record PR #465's persisted allocation collision hardening and exact automated checks. This documentation handoff does not close a live Single-Host production gate; productionReady remains false and Go/No-Go remains no-go.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/469",
+      "baseCommit": "f2c13bd3360308ab516b553ae46f0f8a4ac5e857",
+      "mergedCommit": "c59da1d8abb944bd9a0e19f9db2abd95c672c3e9",
+      "summary": "PR #469 merged as c59da1d8abb944bd9a0e19f9db2abd95c672c3e9. docs/STATUS.md, docs/ROADMAP.md and release/production-tracker.json now record PR #468's persisted Node PodCIDR overlap hardening, exact automated checks, skipped real-vm/PITR jobs and the unchanged productionReady=false/no-go status. This documentation handoff closes no live Single-Host production gate.",
       "evidence": [
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924150",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924150/job/140610830968",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924150/job/140610831338",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029923982",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924019",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029924150",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1daa8ed643fbfb35d521a36393b2bc7ab6121eb1"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/469",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/c59da1d8abb944bd9a0e19f9db2abd95c672c3e9",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46038639208",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46038639089",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46038639147"
       ]
     },
     "blockers": [
@@ -1170,9 +1168,9 @@
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/468",
       "summary": "PR #468 merged as f2c13bd3360308ab516b553ae46f0f8a4ac5e857. Persisted inventory validation now rejects overlapping non-empty Node PodCIDRs before reconciliation, backup import or commit while empty PodCIDRs remain allowed for deferred profiles. Regression coverage is in internal/model/model_test.go (TestStateRejectsOverlappingPersistedNodePodCIDRs). Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810984; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810984/job/140637570939; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810984/job/140637571296), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810956) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810943). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "documentationMergedCommit": "1daa8ed643fbfb35d521a36393b2bc7ab6121eb1",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/466",
-      "documentationSummary": "PR #466 merged as 1daa8ed643fbfb35d521a36393b2bc7ab6121eb1. The tracker, STATUS.md and ROADMAP.md now record PR #465's persisted allocation collision hardening and exact automated checks. This documentation handoff does not close a live Single-Host production gate; productionReady remains false and Go/No-Go remains no-go.",
+      "documentationMergedCommit": "c59da1d8abb944bd9a0e19f9db2abd95c672c3e9",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/469",
+      "documentationSummary": "PR #469 merged as c59da1d8abb944bd9a0e19f9db2abd95c672c3e9. docs/STATUS.md, docs/ROADMAP.md and release/production-tracker.json now record PR #468's persisted Node PodCIDR overlap hardening, exact automated checks, skipped real-vm/PITR jobs and the unchanged productionReady=false/no-go status. This documentation handoff closes no live Single-Host production gate.",
       "latestHardening": {
         "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/468",
         "mergeCommit": "f2c13bd3360308ab516b553ae46f0f8a4ac5e857",
@@ -1183,11 +1181,11 @@
     "commit": "f2c13bd3360308ab516b553ae46f0f8a4ac5e857",
     "codeCommit": "f2c13bd3360308ab516b553ae46f0f8a4ac5e857",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/468",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/466",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/469",
     "summary": "PR #468 merged as f2c13bd3360308ab516b553ae46f0f8a4ac5e857. Persisted inventory validation now rejects overlapping non-empty Node PodCIDRs before reconciliation, backup import or commit while empty PodCIDRs remain allowed for deferred profiles. Regression coverage is in internal/model/model_test.go (TestStateRejectsOverlappingPersistedNodePodCIDRs). Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810984; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810984/job/140637570939; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810984/job/140637571296), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810956) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46037810943). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/468",
     "nextCandidateRequired": true,
-    "updatedAt": "2026-11-27T17:02:12Z",
+    "updatedAt": "2026-11-27T17:09:00Z",
     "latestHardening": {
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/468",
       "mergeCommit": "f2c13bd3360308ab516b553ae46f0f8a4ac5e857",
