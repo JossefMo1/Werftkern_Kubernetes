@@ -537,6 +537,16 @@ func validateNewBundleOutput(path string) error {
 	return fmt.Errorf("OUTPUT_FILE_PATH_UNSAFE: %w", e)
 }
 
+// persistBundleBeforeRegistration makes the join bundle durable before the
+// control plane records the node. A local write failure therefore cannot leave
+// an enrolled worker without its private credentials.
+func persistBundleBeforeRegistration(out string, b Bundle, register func() error) error {
+	if e := safefile.JSON(out, b, 0600); e != nil {
+		return e
+	}
+	return register()
+}
+
 func CreateBundle(ctx context.Context, name, address, out string) error {
 	if e := RequireRoot(); e != nil {
 		return e
@@ -569,10 +579,9 @@ func CreateBundle(ctx context.Context, name, address, out string) error {
 		return e
 	}
 	b := Bundle{Servers: c.Servers, APIVersion: model.APIVersion, Server: c.Server, ClusterID: c.ClusterID, NodeID: id, NodeName: name, Address: address, CA: caCert, Identity: cert, ExpiresAt: time.Now().Add(24 * time.Hour)}
-	if e = api.Call(ctx, "POST", "/v1/nodes", control.NodeRegistration{ID: id, Name: name, Address: address}, nil, ""); e != nil {
-		return e
-	}
-	if e = safefile.JSON(out, b, 0600); e != nil {
+	if e = persistBundleBeforeRegistration(out, b, func() error {
+		return api.Call(ctx, "POST", "/v1/nodes", control.NodeRegistration{ID: id, Name: name, Address: address}, nil, "")
+	}); e != nil {
 		return e
 	}
 	fmt.Printf("Beitrittsdatei geschrieben: %s\nEnthält einen privaten Node-Schlüssel. Über einen sicheren Kanal übertragen.\nAuf Worker: sudo werft setup --join /pfad/zur/datei\n", out)
