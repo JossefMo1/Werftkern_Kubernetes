@@ -290,6 +290,33 @@ func TestStateRejectsIndexMismatches(t *testing.T) {
 	}
 }
 
+func TestStateRejectsMalformedEvents(t *testing.T) {
+	now := time.Now()
+	cases := []struct {
+		name   string
+		change func(*Event)
+	}{
+		{"id", func(e *Event) { e.ID = "invalid" }},
+		{"timestamp", func(e *Event) { e.At = time.Time{} }},
+		{"action_empty", func(e *Event) { e.Action = "" }},
+		{"action_control", func(e *Event) { e.Action = "workload.accepted\n" }},
+		{"action_too_long", func(e *Event) { e.Action = strings.Repeat("a", 101) }},
+		{"target_empty", func(e *Event) { e.Target = "" }},
+		{"target_control", func(e *Event) { e.Target = "demo\t" }},
+		{"target_too_long", func(e *Event) { e.Target = strings.Repeat("a", 101) }},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := NewState(ID(), "test", now)
+			s.Events = []Event{{ID: ID(), At: now, Action: "workload.accepted", Target: "demo"}}
+			tc.change(&s.Events[0])
+			if err := s.Validate(); err == nil || err.Error() != "EVENT_RECORD_INVALID" {
+				t.Fatalf("malformed event accepted: %v", err)
+			}
+		})
+	}
+}
+
 func TestStateRejectsMalformedReceipts(t *testing.T) {
 	now := time.Now()
 	cases := []struct {
