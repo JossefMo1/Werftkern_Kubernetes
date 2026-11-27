@@ -21,6 +21,7 @@ import (
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/safefile"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/store"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/testutil"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/volumearchive"
 )
 
 func TestVolumeArchiveCLIPhysicalRestoreAfterLostAcknowledgment(t *testing.T) {
@@ -241,5 +242,19 @@ func TestValidateVolumeArchiveBackupOutput(t *testing.T) {
 	unsafeParent := filepath.Join(parentLink, "new.wva")
 	if err := validateVolumeArchiveBackupOutput(unsafeParent); err == nil || err.Error() != "VOLUME_ARCHIVE_OUTPUT_PARENT_UNSAFE_OR_MISSING" {
 		t.Fatalf("symlinked archive parent was not rejected before key creation: %v", err)
+	}
+}
+
+
+func TestRestoreTreeDigestHonorsArchiveLimits(t *testing.T) {
+	root := filepath.Join(t.TempDir(), "data")
+	if err := os.MkdirAll(root, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "payload"), []byte("0123456789"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := restoreTreeDigest(root, volumearchive.Limits{Bytes: 9}); err == nil || err.Error() != "RESTORE_DATA_LIMIT_EXCEEDED" {
+		t.Fatalf("oversized existing restore tree was accepted: %v", err)
 	}
 }
