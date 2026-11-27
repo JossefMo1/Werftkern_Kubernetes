@@ -464,3 +464,42 @@ func TestStateRejectsInvalidPersistedAllocationEndpoints(t *testing.T) {
 		t.Fatal("container IP outside PodCIDR accepted")
 	}
 }
+
+func TestStateRejectsCollidingPersistedAllocationEndpoints(t *testing.T) {
+	newState := func() (*State, string, string) {
+		now := time.Now()
+		nodeID, workloadID := ID(), ID()
+		spec := validSpec()
+		s := NewState(ID(), "test", now)
+		s.Nodes[nodeID] = &Node{ID: nodeID, Name: "node", Address: "10.0.0.1", PodCIDR: "10.88.1.0/24", CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+		s.Workloads["demo"] = &Workload{UID: workloadID, Name: "demo", Generation: 1, Spec: spec, Phase: "pending", CreatedAt: now}
+		return s, nodeID, workloadID
+	}
+	allocation := func(id, nodeID, workloadID string, hostPort int, containerIP string) *Allocation {
+		now := time.Now()
+		return &Allocation{ID: id, WorkloadUID: workloadID, Name: "demo", Generation: 1, NodeID: nodeID, Spec: validSpec(), HostPort: hostPort, ContainerIP: containerIP, Desired: "run", Phase: "ready", CreatedAt: now, UpdatedAt: now}
+	}
+	t.Run("host_port_per_node", func(t *testing.T) {
+		s, nodeID, workloadID := newState()
+		firstID := ID()
+		s.Allocations[firstID] = allocation(firstID, nodeID, workloadID, 22000, "10.88.1.2")
+		if err := s.ValidateInventory(); err != nil {
+			t.Fatalf("valid allocation rejected: %v", err)
+		}
+		secondID := ID()
+		s.Allocations[secondID] = allocation(secondID, nodeID, workloadID, 22000, "10.88.1.3")
+		if err := s.ValidateInventory(); err == nil {
+			t.Fatal("duplicate host port on one node accepted")
+		}
+	})
+	t.Run("container_ip_global", func(t *testing.T) {
+		s, nodeID, workloadID := newState()
+		firstID := ID()
+		secondID := ID()
+		s.Allocations[firstID] = allocation(firstID, nodeID, workloadID, 22000, "10.88.1.2")
+		s.Allocations[secondID] = allocation(secondID, nodeID, workloadID, 22001, "10.88.1.2")
+		if err := s.ValidateInventory(); err == nil {
+			t.Fatal("duplicate container IP accepted")
+		}
+	})
+}

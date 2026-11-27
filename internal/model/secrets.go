@@ -165,6 +165,8 @@ func (s *State) ValidateInventory() error {
 		names[n.Name] = true
 		addrs[n.Address] = true
 	}
+	hostPortsByNode := map[string]map[int]string{}
+	containerIPs := map[string]string{}
 	for id, a := range s.Allocations {
 		if a == nil {
 			return errors.New("ALLOCATION_RECORD_INVALID")
@@ -182,6 +184,17 @@ func (s *State) ValidateInventory() error {
 		if a.HostPort != 0 && (a.Spec.Port == 0 || a.HostPort < 22000 || a.HostPort >= 23000) {
 			return errors.New("ALLOCATION_HOST_PORT_INVALID")
 		}
+		if a.HostPort != 0 {
+			ports := hostPortsByNode[a.NodeID]
+			if ports == nil {
+				ports = map[int]string{}
+				hostPortsByNode[a.NodeID] = ports
+			}
+			if previous, exists := ports[a.HostPort]; exists && previous != id {
+				return errors.New("ALLOCATION_HOST_PORT_CONFLICT")
+			}
+			ports[a.HostPort] = id
+		}
 		if a.ContainerIP != "" {
 			n := s.Nodes[a.NodeID]
 			_, cidr, err := net.ParseCIDR(n.PodCIDR)
@@ -189,6 +202,10 @@ func (s *State) ValidateInventory() error {
 			if err != nil || ip == nil || !cidr.Contains(ip) {
 				return errors.New("CONTAINER_IP_OUTSIDE_ENROLLED_SUBNET")
 			}
+			if previous, exists := containerIPs[a.ContainerIP]; exists && previous != id {
+				return errors.New("CONTAINER_IP_CONFLICT")
+			}
+			containerIPs[a.ContainerIP] = id
 		}
 		if e := s.ValidateSecretAvailability(a.Spec); e != nil {
 			return e
