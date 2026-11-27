@@ -20,12 +20,15 @@ func volumeCommand(ctx context.Context, args []string) error {
 	if args[0] != "list" && args[0] != "create" && args[0] != "release" {
 		return errors.New("VOLUME_ACTION_UNSUPPORTED")
 	}
-	c, e := client()
-	if e != nil {
-		return e
+	if args[0] == "list" && len(args) != 1 {
+		return errors.New("VOLUME_LIST_TAKES_NO_ARGUMENTS")
 	}
 	switch args[0] {
 	case "list":
+		c, e := client()
+		if e != nil {
+			return e
+		}
 		s, e := c.State(ctx)
 		if e != nil {
 			return e
@@ -35,11 +38,21 @@ func volumeCommand(ctx context.Context, args []string) error {
 		if len(args) < 2 {
 			return errors.New("VOLUME_NAME_REQUIRED")
 		}
+		if !model.ValidName(args[1]) {
+			return errors.New("VOLUME_NAME_INVALID")
+		}
 		f := parser("volume create")
 		node := f.String("node", "", "Node ID")
 		uid := f.Int("uid", 65532, "Container UID")
 		gid := f.Int("gid", 65532, "Container GID")
 		if e = f.Parse(args[2:]); e != nil {
+			return e
+		}
+		if f.NArg() != 0 || !model.ValidID(*node) || *uid < 1 || *uid > 65534 || *gid < 1 || *gid > 65534 {
+			return errors.New("VOLUME_REQUEST_INVALID")
+		}
+		c, e := client()
+		if e != nil {
 			return e
 		}
 		var out model.Volume
@@ -52,9 +65,19 @@ func volumeCommand(ctx context.Context, args []string) error {
 		if len(args) < 2 {
 			return errors.New("VOLUME_NAME_REQUIRED")
 		}
+		if !model.ValidName(args[1]) {
+			return errors.New("VOLUME_NAME_INVALID")
+		}
 		f := parser("volume release")
 		id := f.String("id", "", "Volume identity confirmation")
 		if e = f.Parse(args[2:]); e != nil {
+			return e
+		}
+		if f.NArg() != 0 || !model.ValidID(*id) {
+			return errors.New("VOLUME_REQUEST_INVALID")
+		}
+		c, e := client()
+		if e != nil {
 			return e
 		}
 		return c.Call(ctx, "POST", "/v1/volumes/"+args[1]+"/release", map[string]string{"id": *id}, nil, model.ID())
