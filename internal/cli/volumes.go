@@ -56,9 +56,9 @@ func volumeCommand(ctx context.Context, args []string) error {
 			return err
 		}
 		var out model.Volume
-		e = c.Call(ctx, "POST", "/v1/volumes", control.VolumeCreate{Name: args[1], NodeID: *node, UID: *uid, GID: *gid}, &out, model.ID())
-		if e != nil {
-			return e
+		err = c.Call(ctx, "POST", "/v1/volumes", control.VolumeCreate{Name: args[1], NodeID: *node, UID: *uid, GID: *gid}, &out, model.ID())
+		if err != nil {
+			return err
 		}
 		return json.NewEncoder(os.Stdout).Encode(out)
 	case "release":
