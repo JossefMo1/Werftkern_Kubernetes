@@ -436,3 +436,31 @@ func TestStateRejectsUnknownAllocationPhase(t *testing.T) {
 		})
 	}
 }
+
+func TestStateRejectsInvalidPersistedAllocationEndpoints(t *testing.T) {
+	now := time.Now()
+	nodeID, workloadID, allocationID := ID(), ID(), ID()
+	spec := validSpec()
+	s := NewState(ID(), "test", now)
+	s.Nodes[nodeID] = &Node{ID: nodeID, Name: "node", Address: "10.0.0.1", PodCIDR: "10.88.1.0/24", CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+	s.Workloads["demo"] = &Workload{UID: workloadID, Name: "demo", Generation: 1, Spec: spec, Phase: "pending", CreatedAt: now}
+	s.Allocations[allocationID] = &Allocation{ID: allocationID, WorkloadUID: workloadID, Name: "demo", Generation: 1, NodeID: nodeID, Spec: spec, HostPort: 22000, ContainerIP: "10.88.1.2", Desired: "run", Phase: "ready", CreatedAt: now, UpdatedAt: now}
+	if err := s.ValidateInventory(); err != nil {
+		t.Fatalf("valid endpoint rejected: %v", err)
+	}
+	base := *s.Allocations[allocationID]
+	for _, port := range []int{80, 23000} {
+		copy := base
+		copy.HostPort = port
+		s.Allocations[allocationID] = &copy
+		if err := s.ValidateInventory(); err == nil {
+			t.Fatalf("invalid host port %d accepted", port)
+		}
+	}
+	copy := base
+	copy.ContainerIP = "10.88.2.2"
+	s.Allocations[allocationID] = &copy
+	if err := s.ValidateInventory(); err == nil {
+		t.Fatal("container IP outside PodCIDR accepted")
+	}
+}
