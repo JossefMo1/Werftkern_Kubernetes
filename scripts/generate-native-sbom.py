@@ -38,6 +38,19 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def sha256_file(path: pathlib.Path) -> str:
+    """Return the content digest that binds the SBOM to the exact package bytes."""
+
+    digest = hashlib.sha256()
+    try:
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+    except OSError as exc:
+        fail(f"unable to hash package: {exc}")
+    return digest.hexdigest()
+
+
 def package_field(package: pathlib.Path, field: str) -> str:
     try:
         result = subprocess.run(
@@ -121,6 +134,7 @@ def main() -> int:
     if not args.package.is_file():
         fail(f"package does not exist: {args.package}")
     modules = parse_module_stream(args.modules)
+    package_sha256 = sha256_file(args.package)
 
     package_name = package_field(args.package, "Package")
     package_version = package_field(args.package, "Version")
@@ -133,9 +147,11 @@ def main() -> int:
     root = package_entry(
         package_name,
         package_version,
-        f"Native package architecture={package_arch}; sourceCommit={args.source_commit}. "
+        f"Native package architecture={package_arch}; sourceCommit={args.source_commit}; "
+        f"packageSha256={package_sha256}. "
         "OS vulnerability scanning and signing are separate release gates.",
     )
+    root["checksums"] = [{"algorithm": "SHA256", "checksumValue": package_sha256}]
     packages.append(root)
     seen = {package_name}
     for name in dependency_names(package_depends):
