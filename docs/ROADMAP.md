@@ -839,3 +839,12 @@ PR [#414](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/414) merged as 
 The exact PR checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376876), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376935) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879377042). `real-vm` and `real-PITR` were skipped, so this handoff closes no live Single-Host production gate.
 
 The next release step is to rebuild one immutable candidate from `940682d868cce16e77bc4f6549c2bd14e6e25b3c` and run the authorized Ubuntu 24.04 real-vm path, then collect same-candidate installation, backup/restore, upgrade/rollback, bounded load/soak and signed-provenance evidence. HA, multi-host and Kubernetes-production remain deferred.
+
+
+## Native single-host release handoff — PR #429 (2026-11-27)
+
+[PR #429](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/429) merged as [6cb1436f](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6cb1436fc5bf458defeb8260bc75901ae3e96599). The Native werft setup --bundle path now writes the private worker join bundle before control-plane node registration, preventing orphaned node records when local persistence fails. Regression tests verify ordering and fail-closed behavior.
+
+Corrected checks passed: [Native/runtime including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849361), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849407) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849350). The first native attempt failed only because its write-failure fixture allowed parent creation; that fixture was corrected and the successful run is the evidence of record. Real-VM and real-PITR remain skipped; this hardening closes no live production gate.
+
+The next step is to build a fresh immutable candidate from `6cb1436fc5bf458defeb8260bc75901ae3e96599`, run the authorized Ubuntu 24.04 real-vm path and collect same-candidate installation, backup/restore, upgrade/rollback, bounded load/soak and signed-provenance evidence. HA, multi-host and Kubernetes-production remain deferred.

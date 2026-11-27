@@ -1088,3 +1088,12 @@ PR [#414](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/414) merged as 
 Exact checks passed: [Native/runtime + real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376876), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879376935) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45879377042). The Native `real-vm` and `real-PITR` jobs were skipped. This is runtime/state hardening evidence only; no live Single-Host production gate closed.
 
 The published `v0.2.0-dev.4-test.17` candidate remains stale, non-immutable and unsigned. A new immutable candidate must be built from `940682d868cce16e77bc4f6549c2bd14e6e25b3c` before live Ubuntu installation, backup/restore, upgrade/rollback or load/soak evidence can cover this change. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
+
+
+## Latest Native setup hardening — PR #429 (2026-11-27)
+
+[PR #429](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/429) merged as [6cb1436f](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/6cb1436fc5bf458defeb8260bc75901ae3e96599). The `werft setup --bundle` path now persists the private worker join bundle before registering the node in the control-plane state. A local write failure therefore cannot leave an enrolled worker without usable credentials. Regression tests cover write-before-register ordering and fail-closed registration.
+
+Corrected PR checks passed: [Native/runtime including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849361), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849407) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45925849350). A previous native attempt exposed an invalid test fixture; it was corrected before merge. real-vm and real-PITR remain skipped, so no live Single-Host production gate closed.
+
+The old v0.2.0-dev.4-test.17 candidate remains stale, non-immutable and unsigned. Build the next immutable candidate from `6cb1436fc5bf458defeb8260bc75901ae3e96599`; productionReady=false and the production decision remains no-go. HA, multi-host and Kubernetes-production remain deferred.
