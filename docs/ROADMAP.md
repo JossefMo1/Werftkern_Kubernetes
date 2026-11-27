@@ -1,3 +1,11 @@
+## 2026-11-27 — Native-Inventur und redigierte State-Antworten fail-closed (PR #474)
+
+[PR #474](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474) wurde als [d6d730d6f9e4825023a5bbf47cc9ffde62911340](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d6d730d6f9e4825023a5bbf47cc9ffde62911340) gemergt. Native-State-Antworten validieren jetzt die vollständige Workload-/Node-/Allocation-Inventur; der Go-Client behandelt redigierte Secret-Projektionen separat und weist exponierten Ciphertext zurück. Damit sind Architecture, Backend/Runtime, Security und QA gegen manipulierte Inventur außerhalb des etcd-CAS-Pfads abgesichert.
+
+Die finalen PR-Prüfungen bestanden: [Native/runtime + Package-Smoke](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961), [Kubernetes-Contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906) und Real-etcd im Native-Lauf. Real-VM und real-PITR wurden übersprungen; kein Live-Single-Host-Production-Gate ist geschlossen. Countdown bleibt **9/100**, `productionReady=false`, Go/No-Go `no-go`.
+
+Nächster Schritt: unveränderlichen Kandidaten aus Main **d6d730d6f9e4825023a5bbf47cc9ffde62911340** bauen und auf demselben Kandidaten Ubuntu-Installation, Docker/etcd-Lifecycle, Backup/Restore, Upgrade/Rollback, Load/Soak, SBOM sowie Signierung/Provenienz belegen. HA/Multi-Host und Kubernetes-Production bleiben Erweiterungspfade.
+
 ## 2026-11-27 — Persistierte Event-Records fail-closed (PR #471)
 
 [PR #471](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471) wurde als [bea5189499275880d66c3c486d1ebc0f98232945](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bea5189499275880d66c3c486d1ebc0f98232945) gemergt. Persistierte Events werden jetzt vor Status-/Backup-/Reconciliation-Pfaden auf gültige IDs, Zeitstempel, begrenzte Längen und control-freie Texte geprüft; Regressionen decken ungültige IDs, Zeitstempel, Steuerzeichen, leere und überlange Felder ab. Kein Live-Single-Host-Production-Gate ist geschlossen.
