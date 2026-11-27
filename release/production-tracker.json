@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T19:12:52Z",
+  "updatedAt": "2026-11-27T20:04:22Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -71,7 +71,8 @@
       "PR #468 hardens persisted Node PodCIDR overlap validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #471 hardens persisted event-record validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #474 changed candidate-bearing Native inventory and API response validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this hardening into live evidence.",
-      "PR #475 synchronized status and roadmap for PR #474; documentation evidence does not close a live Single-Host production gate."
+      "PR #475 synchronized status and roadmap for PR #474; documentation evidence does not close a live Single-Host production gate.",
+      "PR #479 merged as ba2b820d735c71a2681fc7b0636fecac5800890e extends tests/e2e/ubuntu-vm.sh with an explicit Docker Engine restart and container/endpoint continuity assertions. Its automated checks passed, but real-vm and real-PITR were skipped; no live Single-Host gate closed."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -80,7 +81,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build one immutable candidate from current Native Main commit d6d730d6f9e4825023a5bbf47cc9ffde62911340 (including PR #474), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
+    "nextStep": "Build one immutable candidate from current Native Main commit ba2b820d735c71a2681fc7b0636fecac5800890e, including the merged Docker-restart E2E harness in PR #479, then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle (including Docker restart), backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
   },
   "workstreams": [
     {
@@ -734,7 +735,13 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b40e58e5d7ac17c1b397714f27289e8af3174d66"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b40e58e5d7ac17c1b397714f27289e8af3174d66",
+        "PR #479: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/479",
+        "PR #479 merge commit: ba2b820d735c71a2681fc7b0636fecac5800890e",
+        "PR #479 Native workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46060591366",
+        "PR #479 real-etcd job: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46060591366/job/140713615283",
+        "PR #479 real-vm job skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46060591366/job/140714463881",
+        "PR #479 real-PITR job skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46060591366/job/140714463938"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -760,7 +767,7 @@
         "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
         "PR #474 changed candidate-bearing Native inventory/API validation; no same-candidate live Ubuntu evidence exists and the published test.17 candidate remains stale."
       ],
-      "nextStep": "Build one immutable candidate from current Native Main commit d6d730d6f9e4825023a5bbf47cc9ffde62911340 (including PR #474), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
+      "nextStep": "Build one immutable candidate from current Native Main commit ba2b820d735c71a2681fc7b0636fecac5800890e, including the merged Docker-restart E2E harness in PR #479, then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle (including Docker restart), backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
       "lastEvidence": {
         "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
         "mergeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
@@ -1033,7 +1040,13 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171",
-        "PR #465 merged as e49ffb3910f2359c81fc0e4aef24165d6d061d88. Persisted inventory validation now rejects duplicate non-zero host ports on the same enrolled node and duplicate container IPs across allocations, while preserving zero host ports as unresolved unpublished legacy assignments. Regression coverage is in internal/model/model_test.go. Exact PR checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608304585; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608305158), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
+        "PR #465 merged as e49ffb3910f2359c81fc0e4aef24165d6d061d88. Persisted inventory validation now rejects duplicate non-zero host ports on the same enrolled node and duplicate container IPs across allocations, while preserving zero host ports as unresolved unpublished legacy assignments. Regression coverage is in internal/model/model_test.go. Exact PR checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608304585; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608305158), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+        "PR #479: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/479",
+        "PR #479 merge commit: ba2b820d735c71a2681fc7b0636fecac5800890e",
+        "PR #479 Native workflow: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46060591366",
+        "PR #479 real-etcd job: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46060591366/job/140713615283",
+        "PR #479 real-vm job skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46060591366/job/140714463881",
+        "PR #479 real-PITR job skipped: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46060591366/job/140714463938"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -1054,7 +1067,7 @@
         "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
         "The current Main includes PR #474 inventory/API validation; the published test.17 candidate is stale and cannot carry this change into Ubuntu live evidence."
       ],
-      "nextStep": "Build one immutable candidate from current Native Main commit d6d730d6f9e4825023a5bbf47cc9ffde62911340 (including PR #474), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
+      "nextStep": "Build one immutable candidate from current Native Main commit ba2b820d735c71a2681fc7b0636fecac5800890e, including the merged Docker-restart E2E harness in PR #479, then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle (including Docker restart), backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
       "lastEvidence": {
         "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
         "mergeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
