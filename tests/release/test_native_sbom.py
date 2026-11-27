@@ -1,3 +1,4 @@
+import hashlib
 import importlib.util
 import json
 import pathlib
@@ -20,7 +21,7 @@ class NativeSbomTests(unittest.TestCase):
             package.write_bytes(b"werftkern-package-bytes")
             self.assertEqual(
                 MODULE.sha256_file(package),
-                "1aee6c005e3c8c1b1e7e9955f4c58c984d26af5a94e84f7ca3d2d5a5f7adfcce",
+                hashlib.sha256(b"werftkern-package-bytes").hexdigest(),
             )
 
     def test_root_package_contains_exact_spdx_checksum(self):
@@ -51,11 +52,12 @@ class NativeSbomTests(unittest.TestCase):
                 self.assertEqual(MODULE.main(), 0)
             document = json.loads(output.read_text(encoding="utf-8"))
             root_package = next(item for item in document["packages"] if item["name"] == "werftkern")
+            expected_sha256 = hashlib.sha256(b"exact-package").hexdigest()
             self.assertEqual(
                 root_package["checksums"],
-                [{"algorithm": "SHA256", "checksumValue": "48f0f5f2f5cdd8de0f0d9fdbf2ac6d7a28d2f6b573bb3b1a2f4d724b4a4a7d32"}],
+                [{"algorithm": "SHA256", "checksumValue": expected_sha256}],
             )
-            self.assertIn("packageSha256=48f0f5f2f5cdd8de0f0d9fdbf2ac6d7a28d2f6b573bb3b1a2f4d724b4a4a7d32", root_package["packageComment"])
+            self.assertIn(f"packageSha256={expected_sha256}", root_package["packageComment"])
 
 
 if __name__ == "__main__":
