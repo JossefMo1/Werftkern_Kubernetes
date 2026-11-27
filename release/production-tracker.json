@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T09:05:00Z",
+  "updatedAt": "2026-11-27T09:12:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -724,7 +724,7 @@
         "PR #443 changed candidate-bearing Native CLI backup/restore profile validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
       ],
       "nextStep": "Build a fresh immutable candidate from Main 551162dd598d1860ec9537a8cdb3bca365b56bb4 before using any live evidence.",
-      "lastEvidence": "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/52dff842451a1bf3c4709acf1c1651c02cd9c2d7; PR #441 exact Native/runtime + real-etcd, Kubernetes and Source/Privacy checks passed (PR head 4ae264ea28311c64c36d56220f994a7a6a5ae399); real-vm and real-PITR were skipped, so no live Single-Host qualification gate closed."
+      "lastEvidence": "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/551162dd598d1860ec9537a8cdb3bca365b56bb4; PR #443 exact Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45969482513), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45969482599) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45969482748) passed; real-vm and real-PITR were skipped, so no live Single-Host qualification gate closed."
     },
     {
       "id": "E2E-K01",
@@ -991,7 +991,7 @@
         "PR #443 changed candidate-bearing Native CLI backup/restore profile validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
       ],
       "nextStep": "Build a fresh immutable candidate from Main 551162dd598d1860ec9537a8cdb3bca365b56bb4 before using any live evidence.",
-      "lastEvidence": "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/52dff842451a1bf3c4709acf1c1651c02cd9c2d7; PR #441 exact Native/runtime + real-etcd, Kubernetes and Source/Privacy checks passed (PR head 4ae264ea28311c64c36d56220f994a7a6a5ae399); real-vm and real-PITR were skipped, so no live Single-Host qualification gate closed."
+      "lastEvidence": "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/551162dd598d1860ec9537a8cdb3bca365b56bb4; PR #443 exact Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45969482513), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45969482599) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45969482748) passed; real-vm and real-PITR were skipped, so no live Single-Host qualification gate closed."
     },
     {
       "id": "E2E-H01",
@@ -1056,7 +1056,7 @@
     "lastDocumentationHandoff": {
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/444",
       "baseCommit": "551162dd598d1860ec9537a8cdb3bca365b56bb4",
-      "summary": "PR #444 synchronizes production-tracker.json, STATUS.md and ROADMAP.md after PR #443. Native CLI backup create and restore now fail closed on invalid or multi-node profile state; exact PR #443 automated Native/runtime including real-etcd, Kubernetes and Source/Privacy checks passed, while real-vm and real-PITR were skipped. No live Single-Host production gate is claimed; productionReady remains false and Go/No-Go remains no-go."
+      "summary": "PR #444 synchronizes production-tracker.json, STATUS.md and ROADMAP.md after PR #443. A follow-up tracker-only correction keeps E2E-00 and E2E-N01 lastEvidence pointers on current Main code commit 551162dd598d1860ec9537a8cdb3bca365b56bb4. Native CLI backup create and restore fail closed on invalid or multi-node profile state; exact PR #443 automated Native/runtime including real-etcd, Kubernetes and Source/Privacy checks passed, while real-vm and real-PITR were skipped. No live Single-Host production gate is claimed; productionReady remains false and Go/No-Go remains no-go."
     },
     "blockers": [
       "PR #431 merged exclusive join-bundle persistence; CI passed but real-vm and real-PITR were skipped, so no live Single-Host gate closed.",
