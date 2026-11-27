@@ -105,6 +105,14 @@ assert_state 2
 probe
 docker ps -q --filter "label=$filter" | sort > "$out/container-ids-after.txt"
 cmp "$out/container-ids-before.txt" "$out/container-ids-after.txt"
+stage=docker-restart
+systemctl restart docker.service
+sleep 8
+werft wait demo --timeout 120s
+assert_state 2
+probe
+docker ps -q --filter "label=$filter" | sort > "$out/container-ids-after-docker-restart.txt"
+cmp "$out/container-ids-before.txt" "$out/container-ids-after-docker-restart.txt"
 stage=scale
 werft scale demo 3
 werft wait demo --timeout 120s
