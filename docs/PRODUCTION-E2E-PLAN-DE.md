@@ -40,6 +40,8 @@ Der E2E-N01-Nachweis muss mindestens enthalten:
 - Workload-Neustart nach Controller-/Agent-Neustart;
 - etcd-Neustart und erneute Status-/Health-Prüfung;
 - Skalierung, Rollback, Secret-Mount- und Cleanup-Prüfung;
+- verschlüsseltes Backup mit negativer Same-Cluster-Restore-Prüfung (Ablehnung
+  wegen neuer Zielidentität und unveränderter Workload vor/nach dem Fehlversuch);
 - nicht-sensitive, kandidatengebundene Evidence.
 
 Danach werden Backup/Restore, Upgrade/Rollback und der begrenzte Soak-Lauf als eigene Nachweise gegen denselben Kandidaten ergänzt. Keine HA- oder Kubernetes-Evidence wird als Ersatz dafür akzeptiert.
