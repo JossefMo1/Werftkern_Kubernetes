@@ -1106,3 +1106,11 @@ Exact checks passed: [Native/runtime including real-etcd](https://github.com/Jos
 
 The published `v0.2.0-dev.4-test.17` candidate remains stale, non-immutable and unsigned. Build the next immutable candidate from `e42ee2a1f9aff03abc6a7b23d130e4d74554f22c` before live Ubuntu installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
 
+## Latest CI/QA handoff — PR #433 (2026-11-27)
+
+[PR #433](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/433) merged as [b97963a7](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b97963a7a43349ef3c66e1f26a62af858129a3de). The Native post-install package smoke test no longer contains a duplicated `werft --help` invocation on one shell line; the installed CLI contract is now explicit and deterministic.
+
+Exact checks passed: [Native/runtime including real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45937156110), [Kubernetes contracts](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45937156087) and [Source/Privacy audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45937156140). The Native test and real-etcd jobs succeeded; real-vm and real-PITR were skipped. This is CI/QA evidence only: no live Single-Host production gate closed.
+
+The published `v0.2.0-dev.4-test.17` candidate remains stale, non-immutable and unsigned. Build the next immutable candidate from `b97963a7a43349ef3c66e1f26a62af858129a3de` before live Ubuntu installation, backup/restore, upgrade/rollback or load/soak evidence can cover this workflow correction. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
+
