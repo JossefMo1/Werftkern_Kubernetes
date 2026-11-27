@@ -37,6 +37,8 @@ class NativeReleaseManifestContractTests(unittest.TestCase):
             package_root = root / "package"
             control_dir = package_root / "DEBIAN"
             control_dir.mkdir(parents=True)
+            package_root.chmod(0o755)
+            control_dir.chmod(0o755)
             (control_dir / "control").write_text(
                 "Package: werftkern\n"
                 "Version: 0.2.0~dev4\n"
