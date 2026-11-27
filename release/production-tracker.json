@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T18:08:00Z",
+  "updatedAt": "2026-11-27T19:03:21Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "bea5189499275880d66c3c486d1ebc0f98232945",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
-    "summary": "PR #471 merged as bea5189499275880d66c3c486d1ebc0f98232945. Persisted event records now require valid IDs and timestamps plus bounded control-free action/target text before status output, reconciliation or backup. Tampered log/terminal injection data fails closed with EVENT_RECORD_INVALID. Regression coverage is in internal/model/model_test.go. Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
+    "commit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+    "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -69,7 +69,9 @@
       "PR #462 hardens persisted allocation host-port and ContainerIP validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #468 hardens persisted Node PodCIDR overlap validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
-      "PR #471 hardens persisted event-record validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence."
+      "PR #471 hardens persisted event-record validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
+      "PR #474 changed candidate-bearing Native inventory and API response validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this hardening into live evidence.",
+      "PR #475 synchronized status and roadmap for PR #474; documentation evidence does not close a live Single-Host production gate."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -78,7 +80,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build an immutable candidate from current Native runtime Main commit bea5189499275880d66c3c486d1ebc0f98232945 (including PR #471), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build one immutable candidate from current Native Main commit b40e58e5d7ac17c1b397714f27289e8af3174d66 (including PR #474), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
   },
   "workstreams": [
     {
@@ -725,7 +727,14 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171",
-        "PR #465 merged as e49ffb3910f2359c81fc0e4aef24165d6d061d88. Persisted inventory validation now rejects duplicate non-zero host ports on the same enrolled node and duplicate container IPs across allocations, while preserving zero host ports as unresolved unpublished legacy assignments. Regression coverage is in internal/model/model_test.go. Exact PR checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608304585; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608305158), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
+        "PR #465 merged as e49ffb3910f2359c81fc0e4aef24165d6d061d88. Persisted inventory validation now rejects duplicate non-zero host ports on the same enrolled node and duplicate container IPs across allocations, while preserving zero host ports as unresolved unpublished legacy assignments. Regression coverage is in internal/model/model_test.go. Exact PR checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608304585; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608305158), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b40e58e5d7ac17c1b397714f27289e8af3174d66"
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -748,10 +757,19 @@
         "PR #452 changed candidate-bearing Native volume CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
         "PR #455 changed candidate-bearing Native discovery CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
         "PR #462 hardens persisted allocation host-port and ContainerIP validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
-        "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence."
+        "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
+        "PR #474 changed candidate-bearing Native inventory/API validation; no same-candidate live Ubuntu evidence exists and the published test.17 candidate remains stale."
       ],
-      "nextStep": "Build an immutable candidate from current Native runtime Main commit e49ffb3910f2359c81fc0e4aef24165d6d061d88 (including PR #465), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
-      "lastEvidence": "PR #465 merged as e49ffb3910f2359c81fc0e4aef24165d6d061d88. Persisted inventory validation now rejects duplicate non-zero host ports on the same enrolled node and duplicate container IPs across allocations, while preserving zero host ports as unresolved unpublished legacy assignments. Regression coverage is in internal/model/model_test.go. Exact PR checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608304585; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608305158), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
+      "nextStep": "Build one immutable candidate from current Native Main commit b40e58e5d7ac17c1b397714f27289e8af3174d66 (including PR #474), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
+      "lastEvidence": {
+        "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+        "mergeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+        "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+        "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
+        "documentationMergedCommit": "b40e58e5d7ac17c1b397714f27289e8af3174d66",
+        "documentationSummary": "PR #475 merged as b40e58e5d7ac17c1b397714f27289e8af3174d66. docs/STATUS.md and docs/ROADMAP.md record PR #474's exact checks, the corrected Secret projection test and the skipped real-vm/PITR jobs. This documentation handoff closes no live Single-Host production gate.",
+        "liveGateStatus": "not-closed"
+      }
     },
     {
       "id": "E2E-K01",
@@ -1033,10 +1051,16 @@
         "PR #452 changed candidate-bearing Native volume CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
         "PR #455 changed candidate-bearing Native discovery CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
         "PR #462 hardens persisted allocation host-port and ContainerIP validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
-        "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence."
+        "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
+        "The current Main includes PR #474 inventory/API validation; the published test.17 candidate is stale and cannot carry this change into Ubuntu live evidence."
       ],
-      "nextStep": "Build an immutable candidate from current Native runtime Main commit e49ffb3910f2359c81fc0e4aef24165d6d061d88 (including PR #465), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
-      "lastEvidence": "PR #465 merged as e49ffb3910f2359c81fc0e4aef24165d6d061d88. Persisted inventory validation now rejects duplicate non-zero host ports on the same enrolled node and duplicate container IPs across allocations, while preserving zero host ports as unresolved unpublished legacy assignments. Regression coverage is in internal/model/model_test.go. Exact PR checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608304585; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185204/job/140608305158), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185179) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46029185171). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
+      "nextStep": "Build one immutable candidate from current Native Main commit b40e58e5d7ac17c1b397714f27289e8af3174d66 (including PR #474), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
+      "lastEvidence": {
+        "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+        "mergeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+        "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+        "liveGateStatus": "not-closed"
+      }
     },
     {
       "id": "E2E-H01",
@@ -1088,9 +1112,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
-      "mergedCommit": "bea5189499275880d66c3c486d1ebc0f98232945",
-      "summary": "PR #471 merged as bea5189499275880d66c3c486d1ebc0f98232945. Persisted event records now require valid IDs and timestamps plus bounded control-free action/target text before status output, reconciliation or backup. Tampered log/terminal injection data fails closed with EVENT_RECORD_INVALID. Regression coverage is in internal/model/model_test.go. Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+      "mergedCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+      "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -1099,16 +1123,16 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/472",
-      "baseCommit": "bea5189499275880d66c3c486d1ebc0f98232945",
-      "mergedCommit": "042d984adf90bedef7d9d12c24e2dc7ae57bb8a4",
-      "summary": "PR #472 merged as 042d984adf90bedef7d9d12c24e2dc7ae57bb8a4. docs/STATUS.md, docs/ROADMAP.md and release/production-tracker.json now record PR #471 persisted event-record validation, exact automated checks, skipped real-vm/PITR jobs and the unchanged productionReady=false/no-go status. This documentation handoff closes no live Single-Host production gate.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
+      "baseCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+      "mergedCommit": "b40e58e5d7ac17c1b397714f27289e8af3174d66",
+      "summary": "PR #475 merged as b40e58e5d7ac17c1b397714f27289e8af3174d66. docs/STATUS.md and docs/ROADMAP.md record PR #474's exact checks, the corrected Secret projection test and the skipped real-vm/PITR jobs. This documentation handoff closes no live Single-Host production gate.",
       "evidence": [
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/472",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/042d984adf90bedef7d9d12c24e2dc7ae57bb8a4",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046598019",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046597761",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046597818"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b40e58e5d7ac17c1b397714f27289e8af3174d66",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46053467653",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46053467597",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46053467624"
       ]
     },
     "blockers": [
@@ -1123,9 +1147,11 @@
       "PR #452 changed candidate-bearing Native volume CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
       "PR #455 changed candidate-bearing Native discovery CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
       "PR #462 hardens persisted allocation host-port and ContainerIP validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
-      "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence."
+      "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
+      "PR #474 changed candidate-bearing Native inventory/API validation; automated checks passed but same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence remain open.",
+      "PR #475 is documentation synchronization only and closes no live Single-Host production gate."
     ],
-    "nextStep": "Build an immutable candidate from current Native runtime Main commit bea5189499275880d66c3c486d1ebc0f98232945 (including PR #471), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
+    "nextStep": "Build one immutable candidate from current Native Main commit b40e58e5d7ac17c1b397714f27289e8af3174d66 (including PR #474), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
     "lastEvidence": [
       "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/465",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e49ffb3910f2359c81fc0e4aef24165d6d061d88",
@@ -1149,7 +1175,16 @@
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/042d984adf90bedef7d9d12c24e2dc7ae57bb8a4",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046598019",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046597761",
-      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046597818"
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046597818",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906",
+      "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b40e58e5d7ac17c1b397714f27289e8af3174d66",
+      "PR #475 merged as b40e58e5d7ac17c1b397714f27289e8af3174d66. docs/STATUS.md and docs/ROADMAP.md record PR #474's exact checks, the corrected Secret projection test and the skipped real-vm/PITR jobs. This documentation handoff closes no live Single-Host production gate."
     ]
   },
   "candidate": {
@@ -1174,33 +1209,33 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "bea5189499275880d66c3c486d1ebc0f98232945",
-      "codeCommit": "bea5189499275880d66c3c486d1ebc0f98232945",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
-      "summary": "PR #471 merged as bea5189499275880d66c3c486d1ebc0f98232945. Persisted event records now require valid IDs and timestamps plus bounded control-free action/target text before status output, reconciliation or backup. Tampered log/terminal injection data fails closed with EVENT_RECORD_INVALID. Regression coverage is in internal/model/model_test.go. Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+      "commit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+      "codeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+      "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
-      "documentationMergedCommit": "042d984adf90bedef7d9d12c24e2dc7ae57bb8a4",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/472",
-      "documentationSummary": "PR #472 merged as 042d984adf90bedef7d9d12c24e2dc7ae57bb8a4. docs/STATUS.md, docs/ROADMAP.md and release/production-tracker.json now record PR #471 persisted event-record validation, exact automated checks, skipped real-vm/PITR jobs and the unchanged productionReady=false/no-go status. This documentation handoff closes no live Single-Host production gate.",
+      "documentationMergedCommit": "b40e58e5d7ac17c1b397714f27289e8af3174d66",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
+      "documentationSummary": "PR #475 merged as b40e58e5d7ac17c1b397714f27289e8af3174d66. docs/STATUS.md and docs/ROADMAP.md record PR #474's exact checks, the corrected Secret projection test and the skipped real-vm/PITR jobs. This documentation handoff closes no live Single-Host production gate.",
       "latestHardening": {
-        "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
-        "mergeCommit": "bea5189499275880d66c3c486d1ebc0f98232945",
-        "summary": "PR #471 merged as bea5189499275880d66c3c486d1ebc0f98232945. Persisted event records now require valid IDs and timestamps plus bounded control-free action/target text before status output, reconciliation or backup. Tampered log/terminal injection data fails closed with EVENT_RECORD_INVALID. Regression coverage is in internal/model/model_test.go. Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+        "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+        "mergeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+        "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
         "liveGateStatus": "not-closed"
       }
     },
-    "commit": "bea5189499275880d66c3c486d1ebc0f98232945",
-    "codeCommit": "bea5189499275880d66c3c486d1ebc0f98232945",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
-    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/472",
-    "summary": "PR #471 merged as bea5189499275880d66c3c486d1ebc0f98232945. Persisted event records now require valid IDs and timestamps plus bounded control-free action/target text before status output, reconciliation or backup. Tampered log/terminal injection data fails closed with EVENT_RECORD_INVALID. Regression coverage is in internal/model/model_test.go. Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
+    "commit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+    "codeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+    "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
+    "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
     "nextCandidateRequired": true,
-    "updatedAt": "2026-11-27T18:04:00Z",
+    "updatedAt": "2026-11-27T19:03:21Z",
     "latestHardening": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/471",
-      "mergeCommit": "bea5189499275880d66c3c486d1ebc0f98232945",
-      "summary": "PR #471 merged as bea5189499275880d66c3c486d1ebc0f98232945. Persisted event records now require valid IDs and timestamps plus bounded control-free action/target text before status output, reconciliation or backup. Tampered log/terminal injection data fails closed with EVENT_RECORD_INVALID. Regression coverage is in internal/model/model_test.go. Exact checks passed: Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079313), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079314) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46046079372). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+      "mergeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
+      "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
       "liveGateStatus": "not-closed"
     }
   },
