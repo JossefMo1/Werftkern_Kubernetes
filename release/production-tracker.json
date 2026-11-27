@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T13:57:48.927Z",
+  "updatedAt": "2026-11-27T14:01:29.363Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -1067,14 +1067,14 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/456",
-      "baseCommit": "9411d9a421b7161348338e7a773e3e564d772cb5",
-      "mergedCommit": "3569fbee713cef5bdb0a979b4458fe8dea98250f",
-      "summary": "PR #456 synchronisiert release/production-tracker.json, docs/STATUS.md und docs/ROADMAP.md für PR #455. Die finalen Native-, real-etcd-, Kubernetes- und Source/Privacy-Prüfungen sind erfolgreich; real-vm und real-PITR wurden übersprungen. Kein Live-Single-Host-Gate ist geschlossen; productionReady=false und Go/No-Go bleibt no-go.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/459",
+      "baseCommit": "8e44af05417c39a73610890f474180b040b3d980",
+      "mergedCommit": "4181450130dcf7e313c31993ff577012bb91659f",
+      "summary": "PR #459 synchronisierte release/production-tracker.json, docs/STATUS.md und docs/ROADMAP.md für PR #458. Die Discovery-Host-Port-Grenze und die erfolgreichen automatisierten Native-, real-etcd-, Kubernetes- und Source/Privacy-Prüfungen sind dokumentiert; real-vm und real-PITR wurden übersprungen. Kein Live-Single-Host-Gate ist geschlossen; productionReady=false und Go/No-Go bleibt no-go.",
       "evidence": [
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736642",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736915",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46001736530"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011699531",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011699736",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011699603"
       ]
     },
     "blockers": [
@@ -1191,10 +1191,10 @@
       "commit": "8e44af05417c39a73610890f474180b040b3d980",
       "codeCommit": "8e44af05417c39a73610890f474180b040b3d980",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/458",
-      "documentationPullRequest": null,
-      "summary": "PR #458 merged as 8e44af05417c39a73610890f474180b040b3d980. Native discovery now publishes host-routed endpoints only when the scheduler host port is within the unprivileged 22000-22999 range; port 0, privileged ports and out-of-range ports are rejected before CLI/dashboard publication. Regression coverage is in internal/discovery/zone_test.go. Exact PR checks passed: Native/runtime and real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766/job/140546446562), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079783) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079925). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/459",
+      "summary": "PR #458 merged as 8e44af05417c39a73610890f474180b040b3d980. Native discovery now publishes host-routed endpoints only when the scheduler host port is within the unprivileged 22000-22999 range; port 0, privileged ports and out-of-range ports are rejected before CLI/dashboard publication. Regression coverage is in internal/discovery/zone_test.go. Exact PR checks passed: Native/runtime and real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079766/job/140546446562), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079783) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46011079925). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go. Documentation handoff merged via PR #459.",
       "nextCandidateRequired": true,
-      "documentationMergedCommit": null
+      "documentationMergedCommit": "4181450130dcf7e313c31993ff577012bb91659f"
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
     "codeCommit": "79c8688286aacd916156dfb638e86c5372812976",
@@ -1203,7 +1203,7 @@
     "summary": "PR #424 merged as 7e07433ca88a8c00dba699260a2f97f2394deb4a. Docker image-pull and image-load JSON streams are now bounded and strict-validated; duplicate/case-ambiguous, malformed, trailing and oversized responses fail closed, explicit Docker error events preserve IMAGE_PULL_FAILED, and container logs are bounded. Exact PR head ee2f90a166760369a89d64cb8ce46850bc7f6963 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is runtime/security hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/458",
     "nextCandidateRequired": true,
-    "updatedAt": "2026-11-27T13:57:48.927Z",
+    "updatedAt": "2026-11-27T14:01:29.363Z",
     "latestHardening": {
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/458",
       "mergeCommit": "8e44af05417c39a73610890f474180b040b3d980",
