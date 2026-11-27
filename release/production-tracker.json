@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T10:30:00Z",
+  "updatedAt": "2026-11-27T11:40:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "cdfc82d970eef770157ae9c41d9bafa142d90707",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/446",
-    "summary": "PR #446 merged as cdfc82d970eef770157ae9c41d9bafa142d90707. Recovery.Seal now rejects a nil State with BACKUP_STATE_INVALID before ValidateInventory(), preventing a panic path at the backup boundary; regression coverage is in internal/recovery/backup_test.go. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315/job/140432117768), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295203) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295206). The real-vm and real-PITR jobs were skipped; this hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go."
+    "commit": "5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/449",
+    "summary": "PR #449 merged as 5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1. The Native CLI maintenance command now rejects unexpected positional arguments and validates the operation ID and reason locally before loading admin configuration or making a network request; invalid actions retain MAINTENANCE_ACTION_INVALID. Regression coverage is in internal/cli/cli_test.go. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284/job/140462483976), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242341) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242331). The real-vm and real-PITR jobs were skipped; this hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -61,7 +61,8 @@
       "PR #439 binds the Native Single-Host admission profile to the actual control process; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry this change's live evidence.",
       "PR #441 changed candidate-bearing Native startup/state validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
       "PR #443 changed candidate-bearing Native CLI backup/restore profile validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
-      "PR #446 changed candidate-bearing recovery backup validation (nil State fails closed); the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
+      "PR #446 changed candidate-bearing recovery backup validation (nil State fails closed); the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
+      "PR #449 changed candidate-bearing Native maintenance CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -70,7 +71,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build an immutable candidate from current Main including PR #446 (source commit cdfc82d970eef770157ae9c41d9bafa142d90707), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build an immutable candidate from current Main including PR #449 (source commit 5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -723,10 +724,11 @@
         "PR #437 changed the candidate runtime allocation limit; the published v0.2.0-dev.4-test.17 artifact remains stale and cannot carry this evidence.",
         "PR #441 changed candidate-bearing Native startup/state validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
         "PR #443 changed candidate-bearing Native CLI backup/restore profile validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
-        "PR #446 changed candidate-bearing recovery backup validation (nil State fails closed); the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
+        "PR #446 changed candidate-bearing recovery backup validation (nil State fails closed); the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
+        "PR #449 changed candidate-bearing Native maintenance CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
       ],
-      "nextStep": "Build a fresh immutable candidate from Main cdfc82d970eef770157ae9c41d9bafa142d90707 before using any live evidence.",
-      "lastEvidence": "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cdfc82d970eef770157ae9c41d9bafa142d90707; PR #446 exact Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295203) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295206) passed; real-vm and real-PITR were skipped, so no live Single-Host qualification gate closed."
+      "nextStep": "Build a fresh immutable candidate from Main 5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1 before using any live evidence.",
+      "lastEvidence": "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1; PR #449 exact Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242341) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242331) passed; real-vm and real-PITR were skipped, so no live Single-Host qualification gate closed."
     },
     {
       "id": "E2E-K01",
@@ -991,10 +993,11 @@
         "PR #437 changed the candidate runtime allocation limit; the published v0.2.0-dev.4-test.17 artifact remains stale and cannot carry this evidence.",
         "PR #441 changed candidate-bearing Native startup/state validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
         "PR #443 changed candidate-bearing Native CLI backup/restore profile validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
-        "PR #446 changed candidate-bearing recovery backup validation (nil State fails closed); the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
+        "PR #446 changed candidate-bearing recovery backup validation (nil State fails closed); the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
+        "PR #449 changed candidate-bearing Native maintenance CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
       ],
-      "nextStep": "Build a fresh immutable candidate from Main cdfc82d970eef770157ae9c41d9bafa142d90707 before using any live evidence.",
-      "lastEvidence": "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cdfc82d970eef770157ae9c41d9bafa142d90707; PR #446 exact Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295203) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295206) passed; real-vm and real-PITR were skipped, so no live Single-Host qualification gate closed."
+      "nextStep": "Build a fresh immutable candidate from Main 5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1 before using any live evidence.",
+      "lastEvidence": "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1; PR #449 exact Native/runtime + real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242341) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242331) passed; real-vm and real-PITR were skipped, so no live Single-Host qualification gate closed."
     },
     {
       "id": "E2E-H01",
@@ -1046,9 +1049,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/446",
-      "mergedCommit": "cdfc82d970eef770157ae9c41d9bafa142d90707",
-      "summary": "PR #446 merged as cdfc82d970eef770157ae9c41d9bafa142d90707. Recovery.Seal now rejects a nil State with BACKUP_STATE_INVALID before ValidateInventory(), preventing a panic path at the backup boundary; regression coverage is in internal/recovery/backup_test.go. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315/job/140432117768), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295203) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295206). The real-vm and real-PITR jobs were skipped; this hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/449",
+      "mergedCommit": "5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1",
+      "summary": "PR #449 merged as 5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1. The Native CLI maintenance command now rejects unexpected positional arguments and validates the operation ID and reason locally before loading admin configuration or making a network request; invalid actions retain MAINTENANCE_ACTION_INVALID. Regression coverage is in internal/cli/cli_test.go. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284/job/140462483976), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242341) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242331). The real-vm and real-PITR jobs were skipped; this hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -1069,9 +1072,10 @@
       "PR #439 merged NativeSingleHost admission/profile hardening; the stale test.17 candidate cannot carry this code into live evidence.",
       "PR #441 changed candidate-bearing Native startup/state validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
       "PR #443 changed candidate-bearing Native CLI backup/restore profile validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
-      "PR #446 changed candidate-bearing recovery backup validation (nil State fails closed); the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
+      "PR #446 changed candidate-bearing recovery backup validation (nil State fails closed); the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence.",
+      "PR #449 changed candidate-bearing Native maintenance CLI validation; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this evidence."
     ],
-    "nextStep": "Build an immutable candidate from current Main including PR #446 (source commit cdfc82d970eef770157ae9c41d9bafa142d90707), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
+    "nextStep": "Build an immutable candidate from current Main including PR #449 (source commit 5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
     "lastEvidence": [
       "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/431",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e42ee2a1f9aff03abc6a7b23d130e4d74554f22c",
@@ -1117,7 +1121,14 @@
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295203",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295206",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315/job/140432117768",
-      "PR #446 Native recovery nil-state hardening passed automated checks; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
+      "PR #446 Native recovery nil-state hardening passed automated checks; real-vm and real-PITR skipped; no live Single-Host qualification gate closed.",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/449",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242341",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242331",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284/job/140462483976",
+      "PR #449 Native maintenance CLI argument validation passed automated checks; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
     ]
   },
   "candidate": {
@@ -1142,11 +1153,11 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "cdfc82d970eef770157ae9c41d9bafa142d90707",
-      "codeCommit": "cdfc82d970eef770157ae9c41d9bafa142d90707",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/446",
+      "commit": "5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1",
+      "codeCommit": "5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/449",
       "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/447",
-      "summary": "PR #446 merged as cdfc82d970eef770157ae9c41d9bafa142d90707. Recovery.Seal now rejects a nil State with BACKUP_STATE_INVALID before ValidateInventory(), preventing a panic path at the backup boundary; regression coverage is in internal/recovery/backup_test.go. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315/job/140432117768), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295203) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295206). The real-vm and real-PITR jobs were skipped; this hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go.",
+      "summary": "PR #449 merged as 5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1. The Native CLI maintenance command now rejects unexpected positional arguments and validates the operation ID and reason locally before loading admin configuration or making a network request; invalid actions retain MAINTENANCE_ACTION_INVALID. Regression coverage is in internal/cli/cli_test.go. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284/job/140462483976), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242341) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242331). The real-vm and real-PITR jobs were skipped; this hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
@@ -1154,13 +1165,13 @@
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/368",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/369",
     "summary": "PR #424 merged as 7e07433ca88a8c00dba699260a2f97f2394deb4a. Docker image-pull and image-load JSON streams are now bounded and strict-validated; duplicate/case-ambiguous, malformed, trailing and oversized responses fail closed, explicit Docker error events preserve IMAGE_PULL_FAILED, and container logs are bounded. Exact PR head ee2f90a166760369a89d64cb8ce46850bc7f6963 passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy checks; real-vm and real-PITR were skipped. This is runtime/security hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/446",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/449",
     "nextCandidateRequired": true,
-    "updatedAt": "2026-11-27T10:30:00Z",
+    "updatedAt": "2026-11-27T11:40:00Z",
     "latestHardening": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/446",
-      "mergeCommit": "cdfc82d970eef770157ae9c41d9bafa142d90707",
-      "summary": "PR #446 merged as cdfc82d970eef770157ae9c41d9bafa142d90707. Recovery.Seal now rejects a nil State with BACKUP_STATE_INVALID before ValidateInventory(), preventing a panic path at the backup boundary; regression coverage is in internal/recovery/backup_test.go. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295315/job/140432117768), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295203) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45977295206). The real-vm and real-PITR jobs were skipped; this hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/449",
+      "mergeCommit": "5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1",
+      "summary": "PR #449 merged as 5e5f1fd93d4618bd9e187615fffdb08fbee0a9e1. The Native CLI maintenance command now rejects unexpected positional arguments and validates the operation ID and reason locally before loading admin configuration or making a network request; invalid actions retain MAINTENANCE_ACTION_INVALID. Regression coverage is in internal/cli/cli_test.go. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242284/job/140462483976), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242341) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45986242331). The real-vm and real-PITR jobs were skipped; this hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go.",
       "liveGateStatus": "not-closed"
     }
   },
