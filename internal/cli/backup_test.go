@@ -4,7 +4,11 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
+
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 )
 
 func TestReadBackupInputRejectsSymlinkedInputs(t *testing.T) {
@@ -48,6 +52,7 @@ func TestReadBackupInputReadsRegularFile(t *testing.T) {
 		t.Fatalf("read %q, want %q", got, want)
 	}
 }
+
 func TestBackupCLIRejectsUnexpectedArgumentsBeforeStateAccess(t *testing.T) {
 	if os.Geteuid() != 0 {
 		t.Skip("CLI root boundary requires explicit privileged test host")
@@ -95,7 +100,6 @@ func TestValidateBackupCreateOutput(t *testing.T) {
 	}
 }
 
-
 func TestValidateBackupCreateOutputRejectsUnsafeParentsAndAbsoluteCollisions(t *testing.T) {
 	root := t.TempDir()
 	keyPath := filepath.Join(root, "backup.key")
@@ -120,5 +124,20 @@ func TestValidateBackupCreateOutputRejectsUnsafeParentsAndAbsoluteCollisions(t *
 	}
 	if err := validateBackupCreateOutput(keyPath, filepath.Join(root, "missing", "new.backup")); err == nil || err.Error() != "BACKUP_OUTPUT_PARENT_UNSAFE_OR_MISSING" {
 		t.Fatalf("missing backup parent was accepted: %v", err)
+	}
+}
+
+func TestValidateNativeBackupState(t *testing.T) {
+	s := model.NewState(model.ID(), "native", time.Now().UTC())
+	if err := validateNativeBackupState(s); err != nil {
+		t.Fatalf("valid native state rejected: %v", err)
+	}
+	first := model.ID()
+	second := model.ID()
+	s.Nodes[first] = &model.Node{ID: first}
+	s.Nodes[second] = &model.Node{ID: second}
+	err := validateNativeBackupState(s)
+	if err == nil || !strings.Contains(err.Error(), "NATIVE_STATE_PROFILE_INVALID") {
+		t.Fatalf("multi-node native state accepted: %v", err)
 	}
 }
