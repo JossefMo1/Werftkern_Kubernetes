@@ -62,6 +62,18 @@ func validateBackupCreateOutput(keyPath, out string) error {
 	return nil
 }
 
+// validateNativeBackupState keeps the Native CLI fail-closed even though the
+// recovery package remains reusable for deferred multi-host profiles.
+func validateNativeBackupState(s *model.State) error {
+	if s == nil {
+		return errors.New("NATIVE_STATE_PROFILE_INVALID: nil state")
+	}
+	if e := s.ValidateNativeSingleHost(); e != nil {
+		return fmt.Errorf("NATIVE_STATE_PROFILE_INVALID: %w", e)
+	}
+	return nil
+}
+
 func backupCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return errors.New("backup create|inspect|restore --key-file KEY --out FILE / --file FILE")
@@ -112,6 +124,9 @@ func backupCommand(ctx context.Context, args []string) error {
 			fmt.Printf("sourceCluster=%s revision=%d createdAt=%s workloads=%d secretVersions=%d\n", snap.State.ClusterID, snap.Revision, snap.CreatedAt.Format(time.RFC3339), len(snap.State.Workloads), len(snap.State.Secrets))
 			return nil
 		}
+		if e = validateNativeBackupState(snap.State); e != nil {
+			return e
+		}
 		cc, db, master, e := localStore()
 		if e != nil {
 			return e
@@ -128,8 +143,14 @@ func backupCommand(ctx context.Context, args []string) error {
 			}
 		}
 		_, _, e = db.Update(ctx, func(s *model.State) error {
+			if e := validateNativeBackupState(s); e != nil {
+				return e
+			}
 			next, e := recovery.PrepareRestoreMapped(snap, s, master, time.Now().UTC(), mapping)
 			if e != nil {
+				return e
+			}
+			if e = validateNativeBackupState(next); e != nil {
 				return e
 			}
 			*s = *next
@@ -146,6 +167,9 @@ func backupCommand(ctx context.Context, args []string) error {
 	}
 	s, rev, e := db.Read(ctx)
 	if e != nil {
+		return e
+	}
+	if e = validateNativeBackupState(s); e != nil {
 		return e
 	}
 	b, e := recovery.Seal(s, rev, master, key, time.Now().UTC())
