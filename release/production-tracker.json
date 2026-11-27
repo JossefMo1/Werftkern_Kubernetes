@@ -32,7 +32,7 @@
   "lastCompleted": {
     "commit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
     "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
-    "summary": "PR #426 merged as 124a176fd9a6897ae9931c32070e1b7a74fdfb43. Native volume-restore tree verification is now bounded by the same byte, entry and depth limits as archive export/extract; a regression test rejects oversized existing restore data. Exact PR head 8dd7bfd74d3b455c7a5a2ad6fa9eb9bb5ff7687 passed Native/runtime + real-etcd (test and real-etcd succeeded; real-vm and real-PITR skipped), Kubernetes contracts and Source/Privacy. This is recovery/runtime hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
+    "summary": "PR #426 merged as 124a176fd9a6897ae9931c32070e1b7a74fdfb43. Native volume-restore tree verification is now bounded by the same byte, entry and depth limits as archive export/extract; a regression test rejects oversized existing restore data. Exact PR head 8dd7bfd74d3b455c7a5a2adf6da9eb9bb5ff7687 passed Native/runtime + real-etcd (test and real-etcd succeeded; real-vm and real-PITR skipped), Kubernetes contracts and Source/Privacy. This is recovery/runtime hardening only: no live Single-Host production gate closed, productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -646,7 +646,7 @@
         "Main merge commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/7e07433ca88a8c00dba699260a2f97f2394deb4a",
         "PR #424 did not close any Single-Host qualification gate; the released v0.2.0-dev.4-test.17 remains stale, unsigned and not immutable.",
         "PR #426: https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
-        "PR #426 head: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8dd7bfd74d3b455c7a5a2ad6fa9eb9bb5ff7687",
+        "PR #426 head: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8dd7bfd74d3b455c7a5a2adf6da9eb9bb5ff7687",
         "PR #426 Native/runtime + real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45919510060 (test and real-etcd succeeded; real-vm and real-PITR skipped)",
         "PR #426 Kubernetes contracts: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45919510070 (succeeded)",
         "PR #426 Source/Privacy audit: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45919510172 (succeeded)",
@@ -1141,7 +1141,7 @@
       "commit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
       "codeCommit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/425",
       "summary": "PR #426 merged as 124a176fd9a6897ae9931c32070e1b7a74fdfb43. Native volume-restore tree verification is bounded by archive byte, entry and depth limits with regression coverage; exact CI passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy, while real-vm and real-PITR were skipped. No live Single-Host gate was closed and productionReady remains false.",
       "nextCandidateRequired": true
     },
