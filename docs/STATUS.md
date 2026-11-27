@@ -1,3 +1,11 @@
+## 2026-11-27 – Upgrade-/Rollback-Fail-Closed-Regression (PR #488)
+
+- PR #488 merged as `b81c30530662d8190d0ebe78018c32cf9d2dee74`.
+- `tests/ops/test_upgrade.py::test_recover_package_identity_mismatch_keeps_explicit_recovery_locked` proves that a signed repair package with a mismatching Debian identity fails after the durable maintenance lock, leaves the journal at `explicit-recovery`, and performs no service stop/start or `dpkg` mutation.
+- Native/runtime, Kubernetes and Source/Privacy checks passed: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499), [test job](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774018307), [real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774017972), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217544), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217501).
+- The real-vm and real-PITR jobs were skipped. This is automated regression evidence only and closes no live Single-Host production gate.
+- Countdown remains **9/100**; `productionReady=false`, decision `no-go`.
+
 ## 2026-11-27 — Negativer Same-Cluster-Restore im Native-E2E (PR #486)
 
 [PR #486](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/486) wurde als [8b57afb5fb113a713ec2cd25ec088218971765a9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8b57afb5fb113a713ec2cd25ec088218971765a9) gemergt. Der echte Ubuntu-E2E-Harness erstellt und inspiziert nun ein verschlüsseltes logisches Backup und versucht anschließend bewusst eine Wiederherstellung in dieselbe Cluster-Identität. Der Versuch muss mit `RESTORE_REQUIRES_A_NEW_CLUSTER_IDENTITY` fail-closed scheitern; Generation, Phase und Pausenstatus des laufenden Workloads werden vor und nach dem Fehlversuch verglichen. Dadurch wird kein Restore in den Quellzustand als scheinbar sichere Aktion akzeptiert.
