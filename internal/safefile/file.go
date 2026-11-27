@@ -202,7 +202,7 @@ func JSONExclusive(path string, v any, mode os.FileMode) (err error) {
 			_ = os.Remove(path)
 		}
 	}()
-	if _, err = f.Write(append(b, '\\n')); err != nil {
+	if _, err = f.Write(append(b, '\n')); err != nil {
 		return err
 	}
 	if err = f.Sync(); err != nil {
