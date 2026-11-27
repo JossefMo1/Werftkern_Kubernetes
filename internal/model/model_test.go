@@ -179,6 +179,40 @@ func TestNativeAllocationCapacityMatchesSingleHostScope(t *testing.T) {
 	}
 }
 
+func TestNativeCapacityMatchesSingleHostScope(t *testing.T) {
+	if NativeMaxNodes != 1 {
+		t.Fatalf("native single-host node limit changed unexpectedly: %d", NativeMaxNodes)
+	}
+	if NativeMaxWorkloads != 20 {
+		t.Fatalf("native single-host workload limit changed unexpectedly: %d", NativeMaxWorkloads)
+	}
+	if NativeMaxAllocations != 50 {
+		t.Fatalf("native single-host allocation limit changed unexpectedly: %d", NativeMaxAllocations)
+	}
+
+	now := time.Now()
+	s := NewState(ID(), "test", now)
+	for i := 0; i < NativeMaxNodes+1; i++ {
+		id := ID()
+		s.Nodes[id] = &Node{ID: id}
+	}
+	if !errors.Is(s.ValidateNativeSingleHost(), ErrCapacity) {
+		t.Fatalf("native node inventory above limit was accepted: %d", len(s.Nodes))
+	}
+
+	s = NewState(ID(), "test", now)
+	for i := 0; i < NativeMaxWorkloads+1; i++ {
+		name := "w" + strings.Repeat("a", i%10) + strings.Repeat("-", i/10)
+		if !ValidName(name) {
+			name = "w" + strings.Repeat("a", i%39) + "-" + string(rune('a'+i%26))
+		}
+		s.Workloads[name] = &Workload{Name: name}
+	}
+	if len(s.Workloads) <= NativeMaxWorkloads || !errors.Is(s.ValidateNativeSingleHost(), ErrCapacity) {
+		t.Fatalf("native workload inventory above limit was accepted: %d", len(s.Workloads))
+	}
+}
+
 func TestExpiredReceiptKeyCanBeReused(t *testing.T) {
 	now := time.Now()
 	s := NewState(ID(), "test", now)

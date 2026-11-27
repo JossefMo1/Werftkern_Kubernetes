@@ -20,11 +20,15 @@ const Version = "0.2.0-dev.4"
 const StateSchema = 2
 const APIVersion = "werftkern/v1alpha1"
 const MaxStateBytes = 900000
+// Generic state bounds retain the deferred multi-host test/expansion profile.
+// Native single-host production applies the narrower limits through its API
+// admission path below; the profile is never inferred from generic persisted state.
 const MaxNodes = 20
 const MaxWorkloads = 50
-// Native single-host production bounds the persisted allocation inventory to the
-// declared release limit. Higher-capacity multi-host profiles are out of scope.
 const MaxAllocations = 50
+const NativeMaxNodes = 1
+const NativeMaxWorkloads = 20
+const NativeMaxAllocations = 50
 const HeartbeatTimeout = 30 * time.Second
 
 // Wire and state schema are unchanged for this explicitly bounded upgrade edge.
@@ -338,6 +342,16 @@ func (s *State) Validate() error {
 	}
 	return nil
 }
+// ValidateNativeSingleHost enforces the first production profile's
+// topology and inventory bounds. Generic model tests and deferred multi-host
+// profiles intentionally use Validate/ValidateInventory instead.
+func (s *State) ValidateNativeSingleHost() error {
+	if len(s.Nodes) > NativeMaxNodes || len(s.Workloads) > NativeMaxWorkloads || len(s.Allocations) > NativeMaxAllocations {
+		return ErrCapacity
+	}
+	return nil
+}
+
 func (s *State) Event(action, target string, now time.Time) {
 	s.Events = append(s.Events, Event{ID: ID(), At: now, Action: action, Target: target})
 	if len(s.Events) > 160 {

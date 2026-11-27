@@ -18,10 +18,11 @@ import (
 )
 
 type API struct {
-	Store     store.Store
-	ClusterID string
-	Vault     *vault.Vault
-	Now       func() time.Time
+	Store           store.Store
+	ClusterID       string
+	Vault           *vault.Vault
+	Now             func() time.Time
+	NativeSingleHost bool
 }
 type Problem struct {
 	Type   string `json:"type"`
@@ -199,9 +200,18 @@ func (a *API) apply(w http.ResponseWriter, r *http.Request) {
 	}
 	var receipt model.Receipt
 	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+		if a.NativeSingleHost && s.Workloads[req.Name] == nil && len(s.Workloads) >= model.NativeMaxWorkloads {
+			return model.ErrCapacity
+		}
 		var err error
 		receipt, err = model.Apply(s, req, r.Header.Get("Idempotency-Key"), a.now())
-		return err
+		if err != nil {
+			return err
+		}
+		if a.NativeSingleHost {
+			return s.ValidateNativeSingleHost()
+		}
+		return nil
 	})
 	if e != nil {
 		failError(w, e)
@@ -264,10 +274,18 @@ func (a *API) addNode(w http.ResponseWriter, r *http.Request) {
 				return model.ErrConflict
 			}
 		}
-		if len(s.Nodes) >= model.MaxNodes {
+		if a.NativeSingleHost && len(s.Nodes) >= model.NativeMaxNodes {
+			return model.ErrCapacity
+		}
+		if !a.NativeSingleHost && len(s.Nodes) >= model.MaxNodes {
 			return model.ErrCapacity
 		}
 		s.Nodes[n.ID] = &n
+		if a.NativeSingleHost {
+			if err := s.ValidateNativeSingleHost(); err != nil {
+				return err
+			}
+		}
 		s.Event("node.registered", n.Name, a.now())
 		return nil
 	})

@@ -399,7 +399,7 @@ func controlCommand(ctx context.Context, args []string) error {
 	if e != nil {
 		return e
 	}
-	api := &control.API{Store: db, ClusterID: c.Client.ClusterID, Vault: v}
+	api := &control.API{Store: db, ClusterID: c.Client.ClusterID, Vault: v, NativeSingleHost: true}
 	local, cancel := context.WithCancel(ctx)
 	defer cancel()
 	go api.RunReconciler(local)

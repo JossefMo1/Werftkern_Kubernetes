@@ -200,6 +200,15 @@ func TestAPIAllocationResponsesAreNodeScoped(t *testing.T) {
 	}
 }
 
+func TestAPINativeSingleHostRejectsAdditionalNode(t *testing.T) {
+	h := makeHarness(t)
+	h.api.NativeSingleHost = true
+	r := control.NodeRegistration{ID: model.ID(), Name: "native-extra", Address: "127.0.0.4"}
+	if e := h.admin.Call(context.Background(), "POST", "/v1/nodes", r, nil, ""); e == nil || !strings.Contains(e.Error(), "STATE_CAPACITY_REACHED") {
+		t.Fatalf("native profile admitted an additional node: %v", e)
+	}
+}
+
 // Persist only valid aggregates: authorization fixtures must not bypass the same
 // inventory validator used after an actual controller restart.
 func fixtureAllocation(s *model.State, id, node string) {
