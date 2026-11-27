@@ -36,6 +36,11 @@ func FromState(s *model.State, revision int64, now time.Time) Snapshot {
 		if n == nil || !n.Ready(now) || a.Desired != "run" || a.Phase != "ready" || !model.FreshObservation(a.UpdatedAt, now) || a.Spec.Port == 0 {
 			continue
 		}
+		if a.ContainerIP == "" && (a.HostPort < 22000 || a.HostPort >= 23000) {
+			// Host-routed endpoints must use the scheduler's unprivileged port range.
+			// Do not expose a zero/privileged/overflow port to CLI or dashboard clients.
+			continue
+		}
 		ip, port, routed := n.Address, a.HostPort, false
 		if a.ContainerIP != "" {
 			_, cidr, e := net.ParseCIDR(n.PodCIDR)

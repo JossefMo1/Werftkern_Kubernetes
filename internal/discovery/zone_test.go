@@ -52,3 +52,26 @@ func TestNoStaleRevokedOrForeignSubnetEndpoints(t *testing.T) {
 		t.Fatal("stale")
 	}
 }
+
+func TestFromStateSkipsInvalidHostRoutedPorts(t *testing.T) {
+	now := time.Now()
+	s := model.NewState(model.ID(), "lab", now)
+	node := model.ID()
+	s.Nodes[node] = &model.Node{ID: node, Address: "10.87.0.1", Healthy: true, LastSeen: now}
+	allocation := model.Allocation{
+		ID: model.ID(), Name: "web", NodeID: node, Desired: "run", Phase: "ready",
+		UpdatedAt: now, Spec: model.Spec{Port: 8080},
+	}
+	s.Allocations[allocation.ID] = &allocation
+
+	for _, hostPort := range []int{0, 80, 23000} {
+		s.Allocations[allocation.ID].HostPort = hostPort
+		if got := FromState(s, 1, now).Endpoints; len(got) != 0 {
+			t.Fatalf("invalid host port %d was published: %#v", hostPort, got)
+		}
+	}
+	s.Allocations[allocation.ID].HostPort = 22000
+	if got := FromState(s, 1, now).Endpoints; len(got) != 1 || got[0].Port != 22000 {
+		t.Fatalf("valid host port was not published: %#v", got)
+	}
+}
