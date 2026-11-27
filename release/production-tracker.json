@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T23:20:00Z",
+  "updatedAt": "2026-11-27T23:57:32.078Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
-    "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
+    "commit": "21550cc71af767b0ea0090ca2c9e809efd8797bc",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/492",
+    "summary": "PR #492 merged as 21550cc71af767b0ea0090ca2c9e809efd8797bc. Added fail-closed worker upgrade scope and replay regressions in tests/ops/test_worker_upgrade.py. Native test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794744/job/140791735638 and real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794744/job/140791735953 passed; Kubernetes contracts https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794743 and Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794740 passed. Real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794744/job/140792330276 and real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794744/job/140792330039 were skipped. Automated evidence only; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -75,7 +75,8 @@
       "PR #479 merged as ba2b820d735c71a2681fc7b0636fecac5800890e extends tests/e2e/ubuntu-vm.sh with an explicit Docker Engine restart and container/endpoint continuity assertions. Its automated checks passed, but real-vm and real-PITR were skipped; no live Single-Host gate closed.",
       "PR #482 merged as 56fdfe6130f7e04a41b9589cf0636aa93a5204d0 adds a deterministic digest-bound Native release manifest and SPDX/package checksum contract. Native/runtime, Kubernetes and Source/Privacy checks passed on the PR; real-vm and real-PITR were skipped. The manifest is evidence input only and does not close a live Single-Host gate.",
       "PR #486 merged as 8b57afb5fb113a713ec2cd25ec088218971765a9 extends the real Ubuntu E2E harness with a fail-closed same-cluster backup restore attempt. The harness requires RESTORE_REQUIRES_A_NEW_CLUSTER_IDENTITY and verifies workload generation/phase/paused state are unchanged. Native/runtime, Kubernetes and Source/Privacy checks passed (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187/job/140757086611; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187/job/140757086160); real-vm and real-PITR were skipped, so no live Single-Host gate closed.",
-      "PR #488 adds automated fail-closed recovery package-identity coverage; its CI evidence does not replace same-candidate Ubuntu upgrade/rollback evidence and leaves productionReady=false."
+      "PR #488 adds automated fail-closed recovery package-identity coverage; its CI evidence does not replace same-candidate Ubuntu upgrade/rollback evidence and leaves productionReady=false.",
+      "PR #492 adds automated worker upgrade scope/replay regressions; its CI evidence does not replace same-candidate Ubuntu upgrade/rollback, backup/restore or load/soak evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
