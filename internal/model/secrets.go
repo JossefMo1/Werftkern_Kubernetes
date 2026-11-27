@@ -158,12 +158,22 @@ func (s *State) ValidateInventory() error {
 			}
 		}
 	}
-	for id, n := range s.Nodes {
+	podCIDRs := make([]string, 0, len(s.Nodes))
+	for _, id := range SortedKeys(s.Nodes) {
+		n := s.Nodes[id]
 		if n == nil || id != n.ID || ValidateNode(*n) != nil || names[n.Name] || addrs[n.Address] {
 			return errors.New("NODE_RECORD_INVALID")
 		}
 		names[n.Name] = true
 		addrs[n.Address] = true
+		if n.PodCIDR != "" {
+			for _, existing := range podCIDRs {
+				if SubnetsOverlap(existing, n.PodCIDR) {
+					return errors.New("NODE_POD_CIDR_CONFLICT")
+				}
+			}
+			podCIDRs = append(podCIDRs, n.PodCIDR)
+		}
 	}
 	hostPortsByNode := map[string]map[int]string{}
 	containerIPs := map[string]string{}
