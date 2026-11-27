@@ -1,3 +1,11 @@
+## 2026-11-27 — Digest-gebundenes Native-Kandidatenmanifest (PR #482)
+
+[PR #482](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/482) ergänzt den reproduzierbaren Supply-Chain-Schritt zwischen Paketbau und späterer Kandidatenqualifikation. Ein neues Manifest bindet exakten Source-Commit, SOURCE_DATE_EPOCH, Debian-Paket- und SPDX-SBOM-Digest sowie Paketmetadaten. Es ist ausdrücklich `qualified=false` und `signed=false`; Ubuntu-VM, Recovery, Upgrade/Rollback, Load/Soak, Signierung und Maintainer-Entscheidung bleiben unabhängige Gates.
+
+[PR #483](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/483) synchronisiert den Production-Tracker auf Main [497dcb89633b6cf3797ee443d56d8e4a7a811ac2](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/497dcb89633b6cf3797ee443d56d8e4a7a811ac2). Countdown bleibt **9/100**, `productionReady=false`, Go/No-Go `no-go`. Der erste Release bleibt Native Single-Host; HA/Multi-Host und Kubernetes-Production bleiben spätere Erweiterungspfade.
+
+Nächster Handoff: aus Main einen unveränderlichen RC mit Manifest, Paket-/SBOM-Digests, Signierung und Provenienz erzeugen und erst danach den autorisierten Ubuntu-24.04-`run_real_vm_e2e=true`-Lauf auf genau diesem Kandidaten ausführen.
+
 ## 2026-11-27 — Docker-Engine-Neustart als kandidatengebundener E2E-Schritt (PR #479)
 
 [PR #479](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/479) ergänzt im Native-Ubuntu-E2E einen echten Docker-Dienstneustart nach dem Workload-Lifecycle. Nach `systemctl restart docker.service` werden Workload-Zustand, Endpunkte und Container-Identitäten erneut verglichen. Die Standardprüfungen bestanden; real-vm und real-PITR waren übersprungen, daher bleibt dieser Schritt Vorbereitung und keine Live-Production-Evidenz.
