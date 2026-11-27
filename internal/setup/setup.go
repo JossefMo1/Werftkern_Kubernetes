@@ -339,8 +339,9 @@ func Resume(ctx context.Context) error {
 	db := store.NewEtcd(cc.Etcd.Server, client, p.ClusterID)
 	fmt.Println("Prüfe persistente Zustandsablage …")
 	deadline := time.Now().Add(60 * time.Second)
+	var state *model.State
 	for {
-		_, _, e = db.Read(ctx)
+		state, _, e = db.Read(ctx)
 		if e == nil || errors.Is(e, store.ErrUninitialized) {
 			break
 		}
@@ -349,6 +350,11 @@ func Resume(ctx context.Context) error {
 		}
 		if e = sleep(ctx, time.Second); e != nil {
 			return e
+		}
+	}
+	if e == nil {
+		if profileErr := state.ValidateNativeSingleHost(); profileErr != nil {
+			return fmt.Errorf("NATIVE_STATE_PROFILE_INVALID: %w", profileErr)
 		}
 	}
 	if errors.Is(e, store.ErrUninitialized) {

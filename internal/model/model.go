@@ -346,6 +346,9 @@ func (s *State) Validate() error {
 // topology and inventory bounds. Generic model tests and deferred multi-host
 // profiles intentionally use Validate/ValidateInventory instead.
 func (s *State) ValidateNativeSingleHost() error {
+	if err := s.Validate(); err != nil {
+		return err
+	}
 	if len(s.Nodes) > NativeMaxNodes || len(s.Workloads) > NativeMaxWorkloads || len(s.Allocations) > NativeMaxAllocations {
 		return ErrCapacity
 	}

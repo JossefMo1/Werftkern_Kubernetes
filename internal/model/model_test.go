@@ -213,6 +213,14 @@ func TestNativeCapacityMatchesSingleHostScope(t *testing.T) {
 	}
 }
 
+func TestValidateNativeSingleHostRejectsMalformedPersistedState(t *testing.T) {
+	s := NewState(ID(), "test", time.Now())
+	s.Workloads["demo"] = &Workload{Name: "other"}
+	if err := s.ValidateNativeSingleHost(); err == nil || err.Error() != "WORKLOAD_INDEX_INVALID" {
+		t.Fatalf("malformed native state was accepted: %v", err)
+	}
+}
+
 func TestExpiredReceiptKeyCanBeReused(t *testing.T) {
 	now := time.Now()
 	s := NewState(ID(), "test", now)

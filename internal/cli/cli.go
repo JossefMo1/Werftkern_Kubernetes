@@ -381,8 +381,12 @@ func controlCommand(ctx context.Context, args []string) error {
 		ec.Transport = tr
 	}
 	db := store.NewEtcd(c.Etcd.Server, ec, c.Client.ClusterID)
-	if _, _, e = db.Read(ctx); e != nil {
+	state, _, e := db.Read(ctx)
+	if e != nil {
 		return e
+	}
+	if e = state.ValidateNativeSingleHost(); e != nil {
+		return fmt.Errorf("NATIVE_STATE_PROFILE_INVALID: %w", e)
 	}
 	tlsConfig, e := pki.ServerFiles(c.Client.CA, c.Client.Cert, c.Client.Key)
 	if e != nil {
