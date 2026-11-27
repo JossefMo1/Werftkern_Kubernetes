@@ -33,6 +33,9 @@ func Seal(s *model.State, revision int64, master, key []byte, now time.Time) ([]
 	if revision < 1 {
 		return nil, errors.New("BACKUP_REVISION_INVALID")
 	}
+	if s == nil {
+		return nil, errors.New("BACKUP_STATE_INVALID")
+	}
 	if e := s.ValidateInventory(); e != nil {
 		return nil, e
 	}

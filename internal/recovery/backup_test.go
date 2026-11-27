@@ -82,6 +82,13 @@ func TestBackupRejectsWrongKeysCorruptionAndBadInventory(t *testing.T) {
 		t.Fatal("invalid spec archived")
 	}
 }
+func TestSealRejectsNilState(t *testing.T) {
+	master, _ := vault.GenerateKey()
+	key, _ := vault.GenerateKey()
+	if _, e := Seal(nil, 1, master, key, time.Now()); e == nil || e.Error() != "BACKUP_STATE_INVALID" {
+		t.Fatalf("expected BACKUP_STATE_INVALID, got %v", e)
+	}
+}
 func FuzzBackupOpen(f *testing.F) {
 	f.Add([]byte(`{}`))
 	f.Fuzz(func(t *testing.T, b []byte) {
