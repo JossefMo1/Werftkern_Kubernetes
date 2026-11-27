@@ -299,10 +299,10 @@ func TestStateRejectsMalformedEvents(t *testing.T) {
 		{"id", func(e *Event) { e.ID = "invalid" }},
 		{"timestamp", func(e *Event) { e.At = time.Time{} }},
 		{"action_empty", func(e *Event) { e.Action = "" }},
-		{"action_control", func(e *Event) { e.Action = "workload.accepted\\n" }},
+		{"action_control", func(e *Event) { e.Action = "workload.accepted\n" }},
 		{"action_too_long", func(e *Event) { e.Action = strings.Repeat("a", 101) }},
 		{"target_empty", func(e *Event) { e.Target = "" }},
-		{"target_control", func(e *Event) { e.Target = "demo\\t" }},
+		{"target_control", func(e *Event) { e.Target = "demo\t" }},
 		{"target_too_long", func(e *Event) { e.Target = strings.Repeat("a", 101) }},
 	}
 	for _, tc := range cases {
