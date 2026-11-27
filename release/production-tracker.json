@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T00:59:34.762Z",
+  "updatedAt": "2026-11-27T01:03:01.134Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -1111,9 +1111,9 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/425",
-      "baseCommit": "7e07433ca88a8c00dba699260a2f97f2394deb4a",
-      "summary": "Tracker, STATUS and ROADMAP synchronized for PR #424 at Main 7e07433ca88a8c00dba699260a2f97f2394deb4a; exact CI evidence recorded and no live Single-Host gate claimed."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/427",
+      "baseCommit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
+      "summary": "Tracker, STATUS and ROADMAP synchronized for PR #426 at Main 124a176fd9a6897ae9931c32070e1b7a74fdfb43; exact CI evidence recorded and no live Single-Host gate claimed. Documentation merge commit is 377b32f35441f6c28aac34c18dcb4ca1cf9b0ad9."
     }
   },
   "candidate": {
@@ -1141,7 +1141,7 @@
       "commit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
       "codeCommit": "124a176fd9a6897ae9931c32070e1b7a74fdfb43",
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/426",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/425",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/427",
       "summary": "PR #426 merged as 124a176fd9a6897ae9931c32070e1b7a74fdfb43. Native volume-restore tree verification is bounded by archive byte, entry and depth limits with regression coverage; exact CI passed Native/runtime + real-etcd, Kubernetes contracts and Source/Privacy, while real-vm and real-PITR were skipped. No live Single-Host gate was closed and productionReady remains false.",
       "nextCandidateRequired": true
     },
