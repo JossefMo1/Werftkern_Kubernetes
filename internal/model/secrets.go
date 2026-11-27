@@ -104,6 +104,25 @@ func allocationSpecMatchesWorkload(spec Spec, generation int64, w *Workload) boo
 	return false
 }
 
+// ValidatePublicInventory validates the redacted state projection returned by
+// the admin API. Secret ciphertext is deliberately removed from that projection;
+// an empty Sealed value is therefore valid there, while every other inventory
+// invariant remains enforced.
+func (s *State) ValidatePublicInventory() error {
+	for _, sec := range s.Secrets {
+		if sec.Sealed != "" {
+			return errors.New("SECRET_RECORD_EXPOSED")
+		}
+	}
+	projection := *s
+	projection.Secrets = make(map[string]SecretVersion, len(s.Secrets))
+	for key, sec := range s.Secrets {
+		sec.Sealed = "redacted"
+		projection.Secrets[key] = sec
+	}
+	return projection.ValidateInventory()
+}
+
 // ValidateInventory checks persisted inventory before reads/commits and backup
 // import. Structural validity is not independent proof of an agent observation.
 func (s *State) ValidateInventory() error {

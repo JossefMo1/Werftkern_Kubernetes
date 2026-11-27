@@ -221,6 +221,33 @@ func TestValidateNativeSingleHostRejectsMalformedPersistedState(t *testing.T) {
 	}
 }
 
+func TestValidateNativeSingleHostRejectsMalformedInventory(t *testing.T) {
+	now := time.Now()
+	cases := []struct {
+		name   string
+		change func(*State)
+		want   string
+	}{
+		{"workload_spec", func(s *State) {
+			s.Workloads["demo"] = &Workload{UID: ID(), Name: "demo", Generation: 1, Spec: validSpec()}
+			s.Workloads["demo"].Spec.Image = "mutable:tag"
+		}, "IMAGE_DIGEST_REQUIRED"},
+		{"node_address", func(s *State) {
+			id := ID()
+			s.Nodes[id] = &Node{ID: id, Name: "node", Address: "8.8.8.8"}
+		}, "NODE_RECORD_INVALID"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := NewState(ID(), "test", now)
+			tc.change(s)
+			if err := s.ValidateNativeSingleHost(); err == nil || err.Error() != tc.want {
+				t.Fatalf("malformed native inventory accepted: got %v want %s", err, tc.want)
+			}
+		})
+	}
+}
+
 func TestExpiredReceiptKeyCanBeReused(t *testing.T) {
 	now := time.Now()
 	s := NewState(ID(), "test", now)

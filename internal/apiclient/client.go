@@ -105,5 +105,7 @@ func (c *Client) State(ctx context.Context) (*model.State, error) {
 	if s.ClusterID != c.ClusterID {
 		return nil, fmt.Errorf("CLUSTER_ID_MISMATCH")
 	}
-	return &s, s.Validate()
+	// State responses feed operator/CLI decisions; validate the complete
+	// persisted inventory contract rather than only the structural envelope.
+	return &s, s.ValidatePublicInventory()
 }
