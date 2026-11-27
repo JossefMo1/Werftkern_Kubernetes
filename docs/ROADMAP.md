@@ -1,3 +1,10 @@
+## 2026-11-27 – Upgrade-/Rollback-Fail-Closed-Regression (PR #488)
+
+- The Native recovery path now has explicit regression coverage for Debian package identity mismatch after the maintenance lock is persisted.
+- The journal remains in `explicit-recovery`; no service stop/start, `dpkg` install or automatic unlock is allowed before identity verification.
+- CI passed for Native/runtime, real-etcd, Kubernetes contracts and Source/Privacy. Real-vm and real-PITR remain skipped, so live upgrade/rollback qualification is still open.
+- Next handoff: build an immutable candidate from Main `b81c30530662d8190d0ebe78018c32cf9d2dee74` and run the authorized Ubuntu 24.04 single-host workflow.
+
 ## 2026-11-27 — Negativer Same-Cluster-Restore im Native-E2E (PR #486)
 
 [PR #486](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/486) wurde als [8b57afb5fb113a713ec2cd25ec088218971765a9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8b57afb5fb113a713ec2cd25ec088218971765a9) gemergt. Der echte Ubuntu-E2E-Harness erstellt und inspiziert nun ein verschlüsseltes logisches Backup und versucht anschließend bewusst eine Wiederherstellung in dieselbe Cluster-Identität. Der Versuch muss mit `RESTORE_REQUIRES_A_NEW_CLUSTER_IDENTITY` fail-closed scheitern; Generation, Phase und Pausenstatus des laufenden Workloads werden vor und nach dem Fehlversuch verglichen. Dadurch wird kein Restore in den Quellzustand als scheinbar sichere Aktion akzeptiert.
