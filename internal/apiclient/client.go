@@ -107,5 +107,5 @@ func (c *Client) State(ctx context.Context) (*model.State, error) {
 	}
 	// State responses feed operator/CLI decisions; validate the complete
 	// persisted inventory contract rather than only the structural envelope.
-	return &s, s.ValidateInventory()
+	return &s, s.ValidatePublicInventory()
 }
