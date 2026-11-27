@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T04:57:16.237Z",
+  "updatedAt": "2026-11-27T06:08:20.741Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "06f9850bbd97f74682b9d8d84af6d271dbc4e9d7",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/435",
-    "summary": "PR #435 merged as 06f9850bbd97f74682b9d8d84af6d271dbc4e9d7. The Native SPDX SBOM now records the exact SHA-256 checksum of the Debian package in the root package entry and its package comment; regression tests exercise deterministic checksum binding. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567592), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567598) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567619). Real-vm and real-PITR were skipped; this supply-chain hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go."
+    "commit": "0ce8e8254a073464081211ad4920262d47b68cf0",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/437",
+    "summary": "PR #437 merged as 0ce8e8254a073464081211ad4920262d47b68cf0. Native runtime allocation capacity now matches the declared single-host limit of 50; a regression test rejects overflow. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044127), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044133) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044189). Real-vm and real-PITR were skipped; this runtime-boundary hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -56,7 +56,8 @@
       "PR #429 merged setup ordering hardening; its CI evidence does not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #431 merged setup bundle hardening; its CI evidence does not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #433 corrected the Native post-install smoke command; its CI evidence does not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
-      "PR #435 binds the exact Debian package SHA-256 into the SPDX root; its CI evidence does not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence."
+      "PR #435 binds the exact Debian package SHA-256 into the SPDX root; its CI evidence does not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
+      "PR #437 aligns the runtime MaxAllocations boundary with the declared Native limit of 50; the published v0.2.0-dev.4-test.17 candidate remains stale and cannot carry this change's live evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -65,7 +66,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build an immutable candidate from current Main including PR #435 (source commit 06f9850bbd97f74682b9d8d84af6d271dbc4e9d7), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
+    "nextStep": "Build an immutable candidate from current Main including PR #437 (source commit 0ce8e8254a073464081211ad4920262d47b68cf0), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release."
   },
   "workstreams": [
     {
@@ -678,7 +679,11 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567592",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567598",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567619",
-        "PR #435 Native SBOM checksum binding passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
+        "PR #435 Native SBOM checksum binding passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044127",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044133",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044189",
+        "PR #437 runtime allocation-limit contract passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -692,9 +697,10 @@
         "The exact immutable candidate must include PR #420 PITR validation changes; test.17 is stale and cannot carry live qualification evidence.",
         "The exact immutable candidate must include PR #422 PostgreSQL validation changes; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry live qualification evidence.",
         "The exact immutable candidate must include PR #424 Docker response-boundary hardening; test.17 is stale and cannot carry live qualification evidence.",
-        "PR #435 changed the candidate SBOM output; the published v0.2.0-dev.4-test.17 artifact remains stale and cannot carry this evidence."
+        "PR #435 changed the candidate SBOM output; the published v0.2.0-dev.4-test.17 artifact remains stale and cannot carry this evidence.",
+        "PR #437 changed the candidate runtime allocation limit; the published v0.2.0-dev.4-test.17 artifact remains stale and cannot carry this evidence."
       ],
-      "nextStep": "Build an immutable candidate from current Main including PR #435 (source commit 06f9850bbd97f74682b9d8d84af6d271dbc4e9d7), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
+      "nextStep": "Build a fresh immutable candidate from Main 0ce8e8254a073464081211ad4920262d47b68cf0 before using any live evidence.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "PR #341 Native test and real-etcd: https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45549728444",
@@ -799,7 +805,11 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567592",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567598",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567619",
-        "PR #435 Native SBOM checksum binding passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
+        "PR #435 Native SBOM checksum binding passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044127",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044133",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044189",
+        "PR #437 runtime allocation-limit contract passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
       ]
     },
     {
@@ -1032,7 +1042,11 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567592",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567598",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567619",
-        "PR #435 Native SBOM checksum binding passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
+        "PR #435 Native SBOM checksum binding passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044127",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044133",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044189",
+        "PR #437 runtime allocation-limit contract passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -1041,9 +1055,10 @@
         "The exact immutable candidate must include PR #420 PITR validation changes; test.17 is stale and cannot carry live qualification evidence.",
         "The exact immutable candidate must include PR #422 PostgreSQL validation changes; the published v0.2.0-dev.4-test.17 candidate is stale and cannot carry live qualification evidence.",
         "The exact immutable candidate must include PR #424 Docker response-boundary hardening; test.17 is stale and cannot carry live qualification evidence.",
-        "PR #435 changed the candidate SBOM output; the published v0.2.0-dev.4-test.17 artifact remains stale and cannot carry this evidence."
+        "PR #435 changed the candidate SBOM output; the published v0.2.0-dev.4-test.17 artifact remains stale and cannot carry this evidence.",
+        "PR #437 changed the candidate runtime allocation limit; the published v0.2.0-dev.4-test.17 artifact remains stale and cannot carry this evidence."
       ],
-      "nextStep": "Build an immutable candidate from current Main including PR #435 (source commit 06f9850bbd97f74682b9d8d84af6d271dbc4e9d7), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
+      "nextStep": "Build a fresh immutable candidate from Main 0ce8e8254a073464081211ad4920262d47b68cf0 before using any live evidence.",
       "lastEvidence": [
         "Current Main code commit: https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e2f64d1092ee6a8b088f79262408dbb5fbb2199b",
         "Post-merge Main Native test and real-etcd passed (not Ubuntu installation evidence): https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45550035506",
@@ -1106,7 +1121,11 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567592",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567598",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567619",
-        "PR #435 Native SBOM checksum binding passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
+        "PR #435 Native SBOM checksum binding passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044127",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044133",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044189",
+        "PR #437 runtime allocation-limit contract passed; real-vm and real-PITR skipped; no live Single-Host qualification gate closed."
       ]
     },
     {
@@ -1159,9 +1178,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/435",
-      "mergedCommit": "06f9850bbd97f74682b9d8d84af6d271dbc4e9d7",
-      "summary": "PR #435 merged as 06f9850bbd97f74682b9d8d84af6d271dbc4e9d7. The Native SPDX SBOM now records the exact SHA-256 checksum of the Debian package in the root package entry and its package comment; regression tests exercise deterministic checksum binding. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567592), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567598) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567619). Real-vm and real-PITR were skipped; this supply-chain hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/437",
+      "mergedCommit": "0ce8e8254a073464081211ad4920262d47b68cf0",
+      "summary": "PR #437 merged as 0ce8e8254a073464081211ad4920262d47b68cf0. Native runtime allocation capacity now matches the declared single-host limit of 50; a regression test rejects overflow. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044127), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044133) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044189). Real-vm and real-PITR were skipped; this runtime-boundary hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -1170,16 +1189,16 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/436",
-      "baseCommit": "06f9850bbd97f74682b9d8d84af6d271dbc4e9d7",
-      "summary": "Tracker, STATUS and ROADMAP synchronization for PR #435; exact CI evidence recorded, package checksum binding documented, and no live Single-Host gate claimed. productionReady remains false and Go/No-Go remains no-go."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/438",
+      "baseCommit": "0ce8e8254a073464081211ad4920262d47b68cf0",
+      "summary": "PR #438 synchronizes production-tracker.json, STATUS.md and ROADMAP.md after PR #437. The Native runtime allocation limit now matches the declared single-host bound of 50; exact CI checks passed, while no live Single-Host gate is claimed. productionReady remains false and Go/No-Go remains no-go."
     },
     "blockers": [
       "PR #431 merged exclusive join-bundle persistence; CI passed but real-vm and real-PITR were skipped, so no live Single-Host gate closed.",
       "PR #433 corrected the Native package smoke command; CI passed but real-vm and real-PITR were skipped, so no live Single-Host gate closed.",
       "PR #435 binds the exact package digest into the SPDX root; CI passed but real-vm and real-PITR were skipped, so no live Single-Host gate closed."
     ],
-    "nextStep": "Build an immutable candidate from current Main including PR #435 (source commit 06f9850bbd97f74682b9d8d84af6d271dbc4e9d7), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
+    "nextStep": "Build an immutable candidate from current Main including PR #437 (source commit 0ce8e8254a073464081211ad4920262d47b68cf0), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, backup/restore, upgrade/rollback, bounded soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes lab for this first release.",
     "lastEvidence": [
       "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/431",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e42ee2a1f9aff03abc6a7b23d130e4d74554f22c",
@@ -1225,11 +1244,11 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "06f9850bbd97f74682b9d8d84af6d271dbc4e9d7",
-      "codeCommit": "06f9850bbd97f74682b9d8d84af6d271dbc4e9d7",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/435",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/436",
-      "summary": "PR #435 merged as 06f9850bbd97f74682b9d8d84af6d271dbc4e9d7. The Native SPDX SBOM now records the exact SHA-256 checksum of the Debian package in the root package entry and its package comment; regression tests exercise deterministic checksum binding. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567592), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567598) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45942567619). Real-vm and real-PITR were skipped; this supply-chain hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go.",
+      "commit": "0ce8e8254a073464081211ad4920262d47b68cf0",
+      "codeCommit": "0ce8e8254a073464081211ad4920262d47b68cf0",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/437",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/438",
+      "summary": "PR #437 merged as 0ce8e8254a073464081211ad4920262d47b68cf0. Native runtime allocation capacity now matches the declared single-host limit of 50; a regression test rejects overflow. Exact PR checks passed: Native/runtime including real-etcd (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044127), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044133) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45949044189). Real-vm and real-PITR were skipped; this runtime-boundary hardening closes no live Single-Host production gate. productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true
     },
     "commit": "79c8688286aacd916156dfb638e86c5372812976",
