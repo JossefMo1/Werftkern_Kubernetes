@@ -31,6 +31,11 @@ const NativeMaxWorkloads = 20
 const NativeMaxAllocations = 50
 const HeartbeatTimeout = 30 * time.Second
 
+// Node capacity bounds are shared by heartbeat admission and persisted-state
+// validation so scheduler decisions cannot be based on impossible resources.
+const MaxNodeCPUMilli = 512000
+const MaxNodeMemoryMiB = 2097152
+
 // Wire and state schema are unchanged for this explicitly bounded upgrade edge.
 // This is not a promise that arbitrary older/newer versions interoperate.
 func SupportedAgentVersion(v string) bool {
@@ -545,6 +550,9 @@ func SortedKeys[T any](m map[string]T) []string {
 func ValidateNode(n Node) error {
 	if n.PodCIDR != "" && !ValidPodCIDR(n.PodCIDR) {
 		return errors.New("POD_SUBNET_INVALID")
+	}
+	if n.CPUMilli < 0 || n.CPUMilli > MaxNodeCPUMilli || n.MemoryMiB < 0 || n.MemoryMiB > MaxNodeMemoryMiB {
+		return errors.New("NODE_CAPACITY_INVALID")
 	}
 	if !ValidID(n.ID) || !ValidName(n.Name) || !PrivateAddress(n.Address) {
 		return fmt.Errorf("NODE_ID_NAME_OR_PRIVATE_IPV4_INVALID")
