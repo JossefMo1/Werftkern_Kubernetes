@@ -1,3 +1,11 @@
+## 2026-11-28 — Native-Mutationsgrenze zentralisiert (PR #524)
+
+[PR #524](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/524) wurde als [948381049e3a8c781eb841d678fb012a7954b70e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/948381049e3a8c781eb841d678fb012a7954b70e) in `main` übernommen. Alle mutierenden Native-Control-API-Pfade validieren den resultierenden Zustand jetzt an einer gemeinsamen Grenze gegen das Single-Host-Profil; Heartbeat, Reconcile, Maintenance, Gateway-, Secret- und Volume-Mutationen können die Node-/Workload-Grenzen nicht mehr umgehen. Ein API-Regressionstest deckt den zuvor möglichen Bypass ab.
+
+Die finalen GitHub-Prüfungen für den PR-Head bestanden: Native [Run 46145627998](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46145627998) mit [Test 140980936015](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46145627998/job/140980936015) und [Real-etcd 140980936215](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46145627998/job/140980936215), Kubernetes [Run 46145628010](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46145628010) sowie Source/Privacy [Run 46145628001](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46145628001). Real-vm [Job 140981600059](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46145627998/job/140981600059) und real-PITR [Job 140981600105](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46145627998/job/140981600105) wurden übersprungen. Diese automatisierte Evidenz schließt kein Live-Single-Host-Production-Gate.
+
+`productionReady=false`, Go/No-Go bleibt `no-go`, Countdown **9/100**. Der nächste Handoff ist ein unveränderlicher Kandidat aus dem aktuellen Main-Stand mit anschließender autorisierter Ubuntu-24.04-Qualifikation auf exakt demselben Commit; der veraltete `v0.2.0-dev.4-test.17`-Kandidat bleibt unqualifiziert.
+
 ## 2026-11-28 — Persistierte Events gegen Unicode-Steuerzeichen härten ([PR #518](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/518))
 
 - **Architecture/Runtime/Security:** `Event.Validate` verwendet die zentrale `model.ValidReason`-Prüfung und weist damit sämtliche Unicode-Control-Characters in persistierten Event-Aktionen und -Zielen zurück. Das schließt ANSI-ESC- und U+0085-Injection vor operator-sichtbarer Ausgabe.
