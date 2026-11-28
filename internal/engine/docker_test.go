@@ -334,6 +334,20 @@ func TestEngineRejectsInvalidClusterIDBeforeContainerPathConstruction(t *testing
 	}
 }
 
+func TestEngineLogsRejectsInvalidAllocationIDBeforeDockerRequest(t *testing.T) {
+	f := dockerTest(t)
+	for _, id := range []string{"", "short", strings.Repeat("g", 32), strings.Repeat("a", 31)+"/json"} {
+		t.Run(id, func(t *testing.T) {
+			if _, e := f.d.Logs(context.Background(), id); e == nil || e.Error() != "ALLOCATION_ID_INVALID" {
+				t.Fatalf("invalid allocation ID was not rejected: %v", e)
+			}
+			if f.d.api != "" || f.creates+f.starts+f.stops+f.deletes != 0 {
+				t.Fatal("invalid allocation ID reached Docker adapter")
+			}
+		})
+	}
+}
+
 func TestEngineReadinessAndPrivatePortBinding(t *testing.T) {
 	f := dockerTest(t)
 	var listener net.Listener
