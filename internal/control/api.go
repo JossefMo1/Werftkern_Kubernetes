@@ -77,6 +77,23 @@ func (a *API) now() time.Time {
 	}
 	return time.Now().UTC()
 }
+
+// update is the single mutation boundary for the control API. Native
+// single-host mode must validate the complete aggregate after every mutation,
+// not only on workload and node registration endpoints. Keeping that check
+// here prevents future endpoints from bypassing the profile's limits and
+// inventory invariants.
+func (a *API) update(ctx context.Context, fn func(*model.State) error) (*model.State, int64, error) {
+	return a.Store.Update(ctx, func(s *model.State) error {
+		if err := fn(s); err != nil {
+			return err
+		}
+		if a.NativeSingleHost {
+			return s.ValidateNativeSingleHost()
+		}
+		return nil
+	})
+}
 func (a *API) identity(r *http.Request) string {
 	if r.TLS == nil || len(r.TLS.VerifiedChains) == 0 || len(r.TLS.PeerCertificates) == 0 {
 		return ""
@@ -199,7 +216,7 @@ func (a *API) apply(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var receipt model.Receipt
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		if a.NativeSingleHost && s.Workloads[req.Name] == nil && len(s.Workloads) >= model.NativeMaxWorkloads {
 			return model.ErrCapacity
 		}
@@ -207,9 +224,6 @@ func (a *API) apply(w http.ResponseWriter, r *http.Request) {
 		receipt, err = model.Apply(s, req, r.Header.Get("Idempotency-Key"), a.now())
 		if err != nil {
 			return err
-		}
-		if a.NativeSingleHost {
-			return s.ValidateNativeSingleHost()
 		}
 		return nil
 	})
@@ -230,7 +244,7 @@ func (a *API) mutate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var receipt model.Receipt
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		var err error
 		receipt, err = model.MutateWorkload(s, name, action, r.Header.Get("Idempotency-Key"), req.ExpectedGeneration, a.now())
 		return err
@@ -259,7 +273,7 @@ func (a *API) addNode(w http.ResponseWriter, r *http.Request) {
 		failError(w, e)
 		return
 	}
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		if s.MaintenanceID != "" {
 			return errors.New("MAINTENANCE_BLOCKS_NEW_MUTATIONS")
 		}
@@ -281,11 +295,6 @@ func (a *API) addNode(w http.ResponseWriter, r *http.Request) {
 			return model.ErrCapacity
 		}
 		s.Nodes[n.ID] = &n
-		if a.NativeSingleHost {
-			if err := s.ValidateNativeSingleHost(); err != nil {
-				return err
-			}
-		}
 		s.Event("node.registered", n.Name, a.now())
 		return nil
 	})
@@ -307,7 +316,7 @@ func (a *API) nodeAction(w http.ResponseWriter, r *http.Request) {
 		failure(w, 400, "EXACTLY_ONE_NODE_ACTION_REQUIRED")
 		return
 	}
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		if s.MaintenanceID != "" {
 			return errors.New("MAINTENANCE_BLOCKS_NEW_MUTATIONS")
 		}
@@ -369,7 +378,7 @@ func (a *API) heartbeat(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	now := a.now()
-	s, revision, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	s, revision, e := a.update(r.Context(), func(s *model.State) error {
 		n := s.Nodes[id]
 		if n == nil || n.Revoked {
 			return errors.New("NODE_NOT_AUTHORIZED")
@@ -466,7 +475,7 @@ func (a *API) RunReconciler(ctx context.Context) {
 			return
 		case <-t.C:
 			ctx2, cancel := context.WithTimeout(ctx, 10*time.Second)
-			_, _, e := a.Store.Update(ctx2, func(s *model.State) error { return Reconcile(s, a.now()) })
+			_, _, e := a.update(ctx2, func(s *model.State) error { return Reconcile(s, a.now()) })
 			cancel()
 			if e != nil {
 				log.Printf("reconcile_failed code=%s", safeError(e))
