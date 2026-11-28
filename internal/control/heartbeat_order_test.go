@@ -100,3 +100,27 @@ func TestUnsupportedAgentAndUnsequencedHeartbeatFailBeforeNodeMutation(t *testin
 		t.Fatal("unsupported writer refreshed liveness", e)
 	}
 }
+
+func TestHeartbeatRejectsControlCharactersInReportReason(t *testing.T) {
+	h := makeHarness(t)
+	ctx := context.Background()
+	aid := model.ID()
+	if _, _, e := h.s.Update(ctx, func(s *model.State) error {
+		fixtureAllocation(s, aid, h.nodeID)
+		return nil
+	}); e != nil {
+		t.Fatal(e)
+	}
+	req := hb(h)
+	req.Reports = []model.Report{{ID: aid, Phase: "failed", Reason: "bad\x00reason"}}
+	if e := h.node.Call(ctx, "POST", "/v1/heartbeat", req, nil, ""); e == nil || !strings.Contains(e.Error(), "REPORT_INVALID") {
+		t.Fatalf("control-character report accepted: %v", e)
+	}
+	s, _, e := h.s.Read(ctx)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if s.Allocations[aid].Reason != "" {
+		t.Fatalf("invalid report mutated allocation: %q", s.Allocations[aid].Reason)
+	}
+}

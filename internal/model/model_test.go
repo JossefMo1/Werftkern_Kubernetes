@@ -608,3 +608,37 @@ func TestValidateNodeRejectsCapacityOutsideHeartbeatBounds(t *testing.T) {
 		t.Fatalf("heartbeat capacity upper bounds rejected: %v", err)
 	}
 }
+
+func TestValidReasonRejectsControlCharactersAndOversizeValues(t *testing.T) {
+	for _, value := range []string{"line\nfeed", "tab\tvalue", "nul\x00value", "escape\x1bvalue", strings.Repeat("x", 101)} {
+		if ValidReason(value) {
+			t.Fatalf("invalid reason accepted: %q", value)
+		}
+	}
+	for _, value := range []string{"", "NODE_UNKNOWN_RESERVATION_RETAINED", "ä-safe"} {
+		if !ValidReason(value) {
+			t.Fatalf("valid reason rejected: %q", value)
+		}
+	}
+}
+
+func TestValidateInventoryRejectsControlCharactersInPersistedReasons(t *testing.T) {
+	now := time.Now()
+	nodeID, workloadID, allocationID := ID(), ID(), ID()
+	s := NewState(ID(), "test", now)
+	s.Nodes[nodeID] = &Node{ID: nodeID, Name: "node", Address: "10.0.0.1", CPUMilli: 1000, MemoryMiB: 512, LastSeen: now, Healthy: true}
+	s.Workloads["demo"] = &Workload{UID: workloadID, Name: "demo", Generation: 1, Spec: validSpec(), Phase: "pending", CreatedAt: now}
+	s.Allocations[allocationID] = &Allocation{ID: allocationID, WorkloadUID: workloadID, Name: "demo", Generation: 1, NodeID: nodeID, Spec: validSpec(), Desired: "run", Phase: "assigned", CreatedAt: now, UpdatedAt: now}
+	if err := s.ValidateInventory(); err != nil {
+		t.Fatalf("valid inventory rejected: %v", err)
+	}
+	s.Workloads["demo"].Reason = "\x1b[31mred"
+	if err := s.ValidateInventory(); err == nil || err.Error() != "WORKLOAD_REASON_INVALID" {
+		t.Fatalf("invalid workload reason accepted: %v", err)
+	}
+	s.Workloads["demo"].Reason = ""
+	s.Allocations[allocationID].Reason = "bad\x00reason"
+	if err := s.ValidateInventory(); err == nil || err.Error() != "ALLOCATION_REASON_INVALID" {
+		t.Fatalf("invalid allocation reason accepted: %v", err)
+	}
+}
