@@ -85,7 +85,16 @@ func NewDocker(socket, cluster string) *Docker {
 	}, MaxIdleConnsPerHost: 8, ResponseHeaderTimeout: 15 * time.Second}
 	return &Docker{Client: &http.Client{Transport: tr, Timeout: 4 * time.Minute}, ClusterID: cluster, SecretRoot: DefaultSecretRoot, RequireSecretTmpfs: true}
 }
-func (d *Docker) name(id string) string { return "cpr-" + d.ClusterID[:8] + "-" + id }
+func (d *Docker) name(id string) string {
+	// request validates ClusterID before sending anything to Docker. Keep path
+	// construction total as well: malformed configuration must return a stable
+	// error, never panic while slicing a short ID.
+	cluster := d.ClusterID
+	if len(cluster) < 8 {
+		cluster += strings.Repeat("-", 8-len(cluster))
+	}
+	return "cpr-" + cluster[:8] + "-" + id
+}
 func (d *Docker) raw(ctx context.Context, method, path string, body io.Reader) (*http.Response, error) {
 	r, e := http.NewRequestWithContext(ctx, method, "http://docker"+path, body)
 	if e != nil {
