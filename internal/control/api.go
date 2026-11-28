@@ -352,7 +352,7 @@ func (a *API) heartbeat(w http.ResponseWriter, r *http.Request) {
 		failure(w, 400, "HEARTBEAT_SEQUENCE_REQUIRED")
 		return
 	}
-	if !model.ValidID(req.InstanceID) || req.CPUMilli < 100 || req.CPUMilli > 512000 || req.MemoryMiB < 64 || req.MemoryMiB > 2097152 || len(req.Reports) > model.MaxAllocations || len(req.Version) > 40 {
+	if !model.ValidID(req.InstanceID) || req.CPUMilli < 100 || req.CPUMilli > model.MaxNodeCPUMilli || req.MemoryMiB < 64 || req.MemoryMiB > model.MaxNodeMemoryMiB || len(req.Reports) > model.MaxAllocations || len(req.Version) > 40 {
 		failure(w, 400, "HEARTBEAT_INVALID")
 		return
 	}

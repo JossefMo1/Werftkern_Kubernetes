@@ -577,3 +577,34 @@ func TestStateRejectsOverlappingPersistedNodePodCIDRs(t *testing.T) {
 		t.Fatalf("overlapping persisted PodCIDRs accepted: %v", err)
 	}
 }
+
+
+func TestValidateNodeRejectsCapacityOutsideHeartbeatBounds(t *testing.T) {
+	base := Node{ID: ID(), Name: "node", Address: "10.0.0.1"}
+	cases := []struct {
+		name string
+		cpu  int64
+		mem  int64
+	}{
+		{name: "negative_cpu", cpu: -1, mem: 0},
+		{name: "negative_memory", cpu: 0, mem: -1},
+		{name: "cpu_above_bound", cpu: MaxNodeCPUMilli + 1, mem: 0},
+		{name: "memory_above_bound", cpu: 0, mem: MaxNodeMemoryMiB + 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			n := base
+			n.CPUMilli, n.MemoryMiB = tc.cpu, tc.mem
+			if err := ValidateNode(n); err == nil {
+				t.Fatalf("invalid node capacity accepted: cpu=%d memory=%d", tc.cpu, tc.mem)
+			}
+		})
+	}
+	if err := ValidateNode(base); err != nil {
+		t.Fatalf("zero-capacity registration node rejected: %v", err)
+	}
+	base.CPUMilli, base.MemoryMiB = MaxNodeCPUMilli, MaxNodeMemoryMiB
+	if err := ValidateNode(base); err != nil {
+		t.Fatalf("heartbeat capacity upper bounds rejected: %v", err)
+	}
+}
