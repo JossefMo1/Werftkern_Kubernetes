@@ -36,7 +36,7 @@ func (a *API) putSecret(w http.ResponseWriter, r *http.Request) {
 		failure(w, 500, "SECRET_ENCRYPTION_FAILED")
 		return
 	}
-	_, _, e = a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e = a.update(r.Context(), func(s *model.State) error {
 		if s.MaintenanceID != "" {
 			return errors.New("MAINTENANCE_BLOCKS_NEW_MUTATIONS")
 		}
@@ -92,7 +92,7 @@ func (a *API) deleteSecret(w http.ResponseWriter, r *http.Request) {
 		failure(w, 400, "SECRET_REFERENCE_INVALID")
 		return
 	}
-	_, _, e = a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e = a.update(r.Context(), func(s *model.State) error {
 		if s.MaintenanceID != "" {
 			return errors.New("MAINTENANCE_BLOCKS_NEW_MUTATIONS")
 		}
