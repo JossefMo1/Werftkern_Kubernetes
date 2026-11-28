@@ -1,3 +1,13 @@
+## 2026-11-28 – Worker-Upgrade-Scope-Fail-Closed (PR #492)
+
+[PR #492](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/492) wurde als [21550cc71af767b0ea0090ca2c9e809efd8797bc](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/21550cc71af767b0ea0090ca2c9e809efd8797bc) gemergt. Die neuen Regressionen in `tests/ops/test_worker_upgrade.py` schützen zwei Single-Host-Betriebsinvarianten: Nach dem Stop eines Workers blockiert eine geänderte Maintenance-Identität die Installation und den Neustart mit `OWNED_DRAINED_EMPTY_NODE_REQUIRED`; ein bereits persistiertes, passendes Installations-Replay-Receipt führt weder erneut `dpkg` noch einen Dienststart aus. Die Tests prüfen damit den fail-closed Upgrade-/Rollback-Rand und vermeiden doppelte Paket- oder Dienstmutationen.
+
+Die automatisierten PR-Prüfungen bestanden: [Native/runtime + Package-Smoke](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794744) mit [test](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794744/job/140791735638) und [real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794744/job/140791735953), [Kubernetes-Verträge](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794743) sowie [Source/Privacy-Audit](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794740). [real-vm](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794744/job/140792330276) und [real-PITR](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46084794744/job/140792330039) wurden übersprungen. Das ist belastbare automatisierte Regressionsevidenz, aber kein Live-Single-Host-Production-Gate; `productionReady=false` und Go/No-Go bleibt `no-go`.
+
+Der eingefrorene Kandidaten-Quellstand bleibt `e6602a54f1f0efdc8a6b6a6840d92904f2078601`; der veröffentlichte `v0.2.0-dev.4-test.17` bleibt veraltet, unsigniert und nicht unveränderlich. Offen bleiben unveränderlicher Build/Digest, Ubuntu-Installation, Docker-/etcd-Lifecycle mit Neustarts, positiver Backup/Restore, Upgrade/Rollback auf demselben Kandidaten, Load/Soak, SBOM, Signierung/Provenienz und Maintainer-Go/No-Go.
+
+Nächster Schritt: aus dem eingefrorenen Quellstand einen unveränderlichen Kandidaten bauen und den autorisierten Ubuntu-24.04-Lauf mit `run_real_vm_e2e=true` ausführen. HA/Multi-Host, Quorum/Partition, Kubernetes-Production, Cloud-/Site-Recovery, DB-HA, GPU, Air-Gap und hostile Multi-Tenancy bleiben Erweiterungspfade außerhalb des ersten Releases.
+
 ## 2026-11-27 – Upgrade-/Rollback-Fail-Closed-Regression (PR #488)
 
 - PR #488 merged as `b81c30530662d8190d0ebe78018c32cf9d2dee74`.

@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-27T23:20:00Z",
+  "updatedAt": "2026-11-27T23:59:37.815Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -75,7 +75,8 @@
       "PR #479 merged as ba2b820d735c71a2681fc7b0636fecac5800890e extends tests/e2e/ubuntu-vm.sh with an explicit Docker Engine restart and container/endpoint continuity assertions. Its automated checks passed, but real-vm and real-PITR were skipped; no live Single-Host gate closed.",
       "PR #482 merged as 56fdfe6130f7e04a41b9589cf0636aa93a5204d0 adds a deterministic digest-bound Native release manifest and SPDX/package checksum contract. Native/runtime, Kubernetes and Source/Privacy checks passed on the PR; real-vm and real-PITR were skipped. The manifest is evidence input only and does not close a live Single-Host gate.",
       "PR #486 merged as 8b57afb5fb113a713ec2cd25ec088218971765a9 extends the real Ubuntu E2E harness with a fail-closed same-cluster backup restore attempt. The harness requires RESTORE_REQUIRES_A_NEW_CLUSTER_IDENTITY and verifies workload generation/phase/paused state are unchanged. Native/runtime, Kubernetes and Source/Privacy checks passed (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187/job/140757086611; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187/job/140757086160); real-vm and real-PITR were skipped, so no live Single-Host gate closed.",
-      "PR #488 adds automated fail-closed recovery package-identity coverage; its CI evidence does not replace same-candidate Ubuntu upgrade/rollback evidence and leaves productionReady=false."
+      "PR #488 adds automated fail-closed recovery package-identity coverage; its CI evidence does not replace same-candidate Ubuntu upgrade/rollback evidence and leaves productionReady=false.",
+      "PR #492 adds automated worker upgrade scope/replay regressions; its CI evidence does not replace same-candidate Ubuntu upgrade/rollback, backup/restore or load/soak evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
