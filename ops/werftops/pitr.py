@@ -141,8 +141,11 @@ def backup_identity(s,label):
     if len(found)!=1 or str(found[0].get('version'))!='17':raise Blocked('BACKUP_DATABASE_IDENTITY_UNSUPPORTED')
     sysid=str(found[0].get('system-id'))
     if not re.fullmatch(r'[0-9]{10,25}',sysid):raise Blocked('BACKUP_SYSTEM_ID_INVALID')
-    stop=b.get('timestamp',{}).get('stop')
-    if type(stop) is not int or stop<=0:raise Blocked('BACKUP_STOP_TIME_INVALID')
+    timestamp=b.get('timestamp',{})
+    start=timestamp.get('start') if isinstance(timestamp,dict) else None
+    stop=timestamp.get('stop') if isinstance(timestamp,dict) else None
+    if type(start) is not int or start<=0:raise Blocked('BACKUP_START_TIME_INVALID')
+    if type(stop) is not int or stop<=start:raise Blocked('BACKUP_STOP_TIME_INVALID')
     return {'label':label,'systemId':sysid,'stop':stop,'catalogBackupSHA256':fingerprint(b)}
 
 def initialize(file,scope,runner=run):
