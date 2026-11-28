@@ -319,6 +319,21 @@ func TestEngineRejectsInvalidClusterIDBeforeAPIRequest(t *testing.T) {
 	}
 }
 
+func TestEngineRejectsInvalidClusterIDBeforeContainerPathConstruction(t *testing.T) {
+	f := dockerTest(t)
+	f.d.ClusterID = "short"
+	a := allocation()
+	if _, e := f.d.Ensure(context.Background(), a, "127.0.0.1", func() bool { return true }); e == nil || e.Error() != "CLUSTER_ID_INVALID" {
+		t.Fatalf("invalid cluster ID was not rejected by Ensure: %v", e)
+	}
+	if e := f.d.Stop(context.Background(), a.ID); e == nil || e.Error() != "CLUSTER_ID_INVALID" {
+		t.Fatalf("invalid cluster ID was not rejected by Stop: %v", e)
+	}
+	if f.creates+f.starts+f.stops+f.deletes != 0 {
+		t.Fatal("invalid cluster ID reached Docker adapter")
+	}
+}
+
 func TestEngineReadinessAndPrivatePortBinding(t *testing.T) {
 	f := dockerTest(t)
 	var listener net.Listener
