@@ -145,6 +145,19 @@ func (d *Docker) volumeBinds(ctx context.Context, a model.Allocation) ([]string,
 	}
 	return out, nil
 }
+func validDockerExecID(id string) bool {
+	if len(id) != 64 {
+		return false
+	}
+	for i := 0; i < len(id); i++ {
+		c := id[i]
+		if !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) {
+			return false
+		}
+	}
+	return true
+}
+
 func (d *Docker) postgresReady(ctx context.Context, id string) bool {
 	var result struct {
 		ID string `json:"Id"`
@@ -153,8 +166,9 @@ func (d *Docker) postgresReady(ctx context.Context, id string) bool {
 	if e != nil || result.ID == "" {
 		return false
 	}
-	// Docker exec IDs must never be interpreted as paths.
-	if strings.ContainsAny(result.ID, "/?#\n\r") {
+	// Docker exec IDs are opaque daemon responses but must be canonical before
+	// interpolation into /exec/<id>/ paths.
+	if !validDockerExecID(result.ID) {
 		return false
 	}
 	if _, e = d.request(ctx, "POST", "/exec/"+result.ID+"/start", map[string]any{"Detach": false, "Tty": false}, nil); e != nil {
