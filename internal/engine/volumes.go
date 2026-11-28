@@ -166,8 +166,9 @@ func (d *Docker) postgresReady(ctx context.Context, id string) bool {
 	if e != nil || result.ID == "" {
 		return false
 	}
-	// Docker exec IDs must never be interpreted as paths.
-	if strings.ContainsAny(result.ID, "/?#\n\r") {
+	// Docker exec IDs are opaque daemon responses but must be canonical before
+	// interpolation into /exec/<id>/ paths.
+	if !validDockerExecID(result.ID) {
 		return false
 	}
 	if _, e = d.request(ctx, "POST", "/exec/"+result.ID+"/start", map[string]any{"Detach": false, "Tty": false}, nil); e != nil {
