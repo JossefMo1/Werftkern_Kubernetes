@@ -1,3 +1,13 @@
+Warning: truncated output (original token count: 43512)
+Total output lines: 1095
+
+## 2026-11-28 — Persistierte Events gegen Unicode-Steuerzeichen härten (PR #518)
+
+- **Architecture/Runtime/Security:** `Event.Validate` verwendet die zentrale `model.ValidReason`-Prüfung und weist damit sämtliche Unicode-Control-Characters in persistierten Event-Aktionen und -Zielen zurück. Das schließt ANSI-ESC- und U+0085-Injection vor operator-sichtbarer Ausgabe.
+- **QA/SDET:** Native/runtime [Run 46142366611](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366611) bestand mit [test](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366611/job/140970916553) und [real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366611/job/140970916301); Kubernetes [Run 46142366641](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366641) und Source/Privacy [Run 46142366642](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366642) bestanden. `real-vm` und `real-PITR` wurden übersprungen.
+- **Release:** PR #518 [wurde als 96e0a901c4eab232bc15ba97278e8800f6af7ab9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/96e0a901c4eab232bc15ba97278e8800f6af7ab9) gemergt. Kein Live-Single-Host-Gate ist geschlossen; `productionReady=false`, Go/No-Go `no-go`, Countdown **9/100**. Der aktuelle Main-Commit ersetzt nicht den alten Kandidaten `v0.2.0-dev.4-test.17`, dessen Paket-/Manifest-Digests veraltet, unsigniert und nicht unveränderlich bleiben.
+- **Nächster Schritt:** Unveränderlichen Kandidaten aus dem aktuellen Main bauen und den autorisierten Ubuntu-24.04-Pfad mit `run_real_vm_e2e=true` auf genau diesem Kandidaten ausführen. HA/Multi-Host und Kubernetes-Production bleiben spätere Erweiterungspfade.
+
 ## 2026-11-28 — Heartbeat-/Persistenzgründe gegen Steuerzeichen härten (PR #515)
 
 - **Architecture/Runtime/Security:** `model.ValidReason` zentralisiert die 100-Zeichen-/Control-Character-Grenze. Heartbeat-Reports sowie persistierte Workload-/Allocation-Reasons werden fail-closed validiert, bevor sie operator-sichtbar werden.
@@ -370,87 +380,7 @@ This closes no Single-Host qualification gate. The unchanged `v0.2.0-dev.4-test.
 
 # Latest code handoff (2026-11-23, PR #272)
 
-PR [#272](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/272) merged as [d92c922f](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d92c922fa8f1d46fc98e9dd5580124dacfdba001). Native `CreateBundle` now validates the join-bundle output destination before loading PKI material or registering the worker through `POST /v1/nodes`. Empty paths, existing destinations, final symlinks and symlinked parents are rejected; regression coverage verifies safe missing paths and each rejection case. This prevents a deterministic remote registration without a materialized local bundle.
-
-PR checks:
-- Native runtime/package [45244001391](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244001391) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
-- Kubernetes contracts [45244001496](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244001496) — **success**.
-- Source/Privacy audit [45244001445](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244001445) — **success**.
-
-Post-merge Main checks:
-- Native runtime/package [45244598160](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598160) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
-- Kubernetes contracts [45244598234](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598234) — **success**.
-- Source/Privacy audit [45244598089](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45244598089) — **success**.
-
-The roadmap remains **No-Go**: no Single-Host qualification gate closed. The unchanged `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope. Next handoff: build a new immutable candidate from [d92c922f](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d92c922fa8f1d46fc98e9dd5580124dacfdba001) and use the existing ephemeral Ubuntu path when dispatch access is available.
-
-# Latest code handoff (2026-11-23, PR #270)
-
-PR [#270](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/270) merged as [f7ab7e5a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f7ab7e5a0d3f10a6fa182222fb24c61c5dbb6b85). Native worker join-bundle input now uses no-follow safefile.OpenRead and bounded strict-JSON parsing from the opened descriptor. Final and parent symlink redirection, group-readable inputs and oversize bundles are rejected; regression coverage pins those cases and the exact 32 KiB boundary.
-
-PR checks:
-- Native runtime/package [45233988541](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45233988541) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
-- Kubernetes contracts [45233988578](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45233988578) — **success**.
-- Source/Privacy audit [45233988580](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45233988580) — **success**.
-
-Post-merge Main checks:
-- Native runtime/package [45234652978](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45234652978) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
-- Kubernetes contracts [45234652991](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45234652991) — **success**.
-- Source/Privacy audit [45234653067](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45234653067) — **success**.
-
-This defensive change closes no Single-Host qualification gate. The unchanged v0.2.0-dev.4-test.17 candidate remains bound to 28efa7518e171a618d4dcf9ff3aba58cddaf3296, reports immutable=false and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. HA/multi-host and Kubernetes Production remain deferred outside the first Native scope.
-
-# Latest code handoff (2026-11-23, PR #268)
-
-PR [#268](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/268) merged as [f73662f4](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f73662f4e957cf0489319d34445715d17c626cd4) with no-follow safefile directory locking, parent-chain validation, regular-file/0600/owner checks and a parent-symlink regression test. PR Native, Kubernetes and Source/Privacy checks passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888940), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220888882), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45220889258)). Post-merge Main checks also passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221411990), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412038), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45221412406)); Native real-etcd passed while real-vm/PITR remain skipped.
-
-This handoff closes no production gate. The old v0.2.0-dev.4-test.17 release remains non-immutable and unsigned, so a new candidate must be built from f73662f4 before live qualification. HA/multi-host and Kubernetes Production remain deferred outside the first Native Single-Host scope.
-# Latest code handoff (2026-11-23, PR #266)
-
-PR [#266](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/266) merged as [cdc929e8](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/cdc929e8651bef08ee4744edc234fa4c52f9ff35) with no-follow local lock handling, parent-chain validation, regular-file/0600/owner checks and final/parent symlink regression coverage. PR Native, Kubernetes and Source/Privacy checks passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45211017062), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45211016964), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45211016962)). Post-merge Main checks also passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279490), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279129), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45212279244)); Native real-etcd passed while real-vm/PITR remain skipped.
-
-This handoff closes no production gate. The old v0.2.0-dev.4-test.17 release remains non-immutable and unsigned, so a new candidate must be built from cdc929e8 before live qualification. HA/multi-host and Kubernetes Production remain deferred outside the first Native Single-Host scope.
-# Latest code handoff (2026-11-23, PR #264)
-
-PR [#264](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/264) merged as [1b24e6cd](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1b24e6cd7b0f38c13797f2ab161a609e2641ca48) with no-follow admin-certificate input and regression coverage for final and parent symlink paths. PR Native, Kubernetes and Source/Privacy checks passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198552808), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198553068), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45198552768)). Post-merge Main checks also passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052283), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052324), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45199052375)); Native real-etcd passed while real-vm/PITR remain skipped.
-
-This handoff closes no production gate. The old v0.2.0-dev.4-test.17 release remains non-immutable and unsigned, so a new candidate must be built from 1b24e6cd before live qualification. HA/multi-host and Kubernetes Production remain deferred outside the first Native Single-Host scope.
-
-# Latest code handoff (2026-11-23, PR #262)
-
-PR [#262](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/262) merged as [b99d5b8d](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b99d5b8d25b839f94fc1ed1e3c82cc658c74f4fe) with no-follow demo-archive verification and regression coverage for final and parent symlink paths. PR Native, Kubernetes and Source/Privacy checks passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189154392), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189154412), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189154242)). Post-merge Main checks also passed ([Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685437), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685472), [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45189685479)); Native real-etcd passed while real-vm/PITR remain skipped.
-
-This handoff closes no production gate. The old v0.2.0-dev.4-test.17 release remains non-immutable and unsigned, so a new candidate must be built from b99d5b8d before live qualification. HA/multi-host and Kubernetes Production remain deferred outside the first Native Single-Host scope.
-
-# Latest code handoff (2026-11-23, PR #260)
-
-PR [#260](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/260) merged as [5cfd4726](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5cfd47267648840f57d947e2bc9f14443e2bf2b2). Native `werft assess` inventory inputs now use no-follow regular-file access, with regression coverage for valid, final-symlink and parent-symlink paths. Required PR and post-merge Main checks are green: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45180128482), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45180128580) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45180128505); real-vm/PITR remain skipped.
-
-This defensive input hardening does not close a Single-Host gate. The next candidate must be rebuilt from [5cfd4726](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/5cfd47267648840f57d947e2bc9f14443e2bf2b2). Fresh Ubuntu install/reinstall, Docker/etcd lifecycle and restart, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability and final Go/No-Go evidence remain open. HA, multi-host and Kubernetes Production remain deferred outside the first Native scope.
-
-# Latest code handoff (2026-11-23, PR #257)
-
-PR [#257](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/257) merged as [bafbf1e9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bafbf1e98d93490282117b36a26a89eb3f51581b). Native secret-directory reuse now uses no-follow, bounded manifest reads and enforces the expected regular 0400 manifest. A regression test covers a symlinked manifest. Required PR and post-merge Main checks are green: [Native](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45170406716), [Kubernetes](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45170406949) and [Source/Privacy](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45170407002); real-vm/PITR remain skipped.
-
-This defensive hardening does not close a Single-Host gate. The next candidate must be rebuilt from [bafbf1e9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/bafbf1e98d93490282117b36a26a89eb3f51581b). Fresh Ubuntu install/reinstall, Docker/etcd lifecycle and restart, backup/restore, upgrade/rollback, bounded load/soak, signed provenance/immutability and final Go/No-Go evidence remain open. HA, multi-host and Kubernetes Production remain deferred outside the first Native scope.
-
-# Latest code handoff (2026-11-23, PR #255)
-
-PR [#255](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/255) merged as [e1586312](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e15863120152e08e280c65e8d00b00d27c06ea61). The Native `apply DATEI.json` path now opens manifest inputs through `safefile.OpenRead`, rejecting final and parent symlink traversal before a mutating manifest is parsed. Regression coverage verifies a valid file and both symlink forms. Stdin input (`-`), strict JSON, size limits, API contracts and state schema are unchanged.
-
-Post-merge Main checks:
-- [Native runtime/package 45160914694](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45160914694) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
-- [Kubernetes contracts 45160914910](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45160914910) — **success**.
-- [Source/Privacy audit 45160914778](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45160914778) — **success**.
-
-No Single-Host qualification gate closed. The existing `v0.2.0-dev.4-test.17` candidate remains bound to `28efa7518e171a618d4dcf9ff3aba58cddaf3296`, reports `immutable=false` and unsigned assets, and cannot evidence this newer Main commit. Fresh Ubuntu installation/deinstallation/reinstallation, Docker/etcd workload lifecycle, restart, local backup/restore, upgrade/rollback, bounded load/soak, signed provenance and final Go/No-Go remain open. Next handoff: build a new candidate from [e1586312](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e15863120152e08e280c65e8d00b00d27c06ea61) and use the existing ephemeral Ubuntu path when dispatch access is available.
-
-# Latest code handoff (2026-11-23, PR #253)
-
-PR [#253](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/253) merged as [39965f40](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/39965f40c5103e64cfe563da4d4631df9032fb6a). Native volume restore archive inputs now use `safefile.OpenRead`, rejecting final and parent symlink traversal before archive bytes are consumed. A focused regression covers a valid archive and a parent-symlink path. Archive format, restore state and authorization policy are unchanged.
-
-Post-merge Main checks:
-- [Native runtime/package 45151283506](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45151283506) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
+PR [#272](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/272) merged as [d92c922f](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/d92c922fa8f1d46fc98e9dd5580124dacfdba001). Native `CreateBundle` now validates the join-bundle output destination before loading PKI material or registering the worker through `POST /v1/nodes`. Empty paths, existing destinations, final symlinks and sy…3512 tokens truncated…m/JossefMo1/Werftkern_Kubernetes/actions/runs/45151283506) — **success**; real-etcd **success**, real-vm/PITR **skipped**.
 - [Kubernetes contracts 45151283604](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45151283604) — **success**.
 - [Source/Privacy audit 45151283665](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/45151283665) — **success**.
 
