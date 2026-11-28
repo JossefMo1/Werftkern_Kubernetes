@@ -363,7 +363,7 @@ func (a *API) heartbeat(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		seenReports[p.ID] = true
-		if !model.ValidID(p.ID) || !reportPhases[p.Phase] || len(p.Reason) > 100 || strings.ContainsAny(p.Reason, "\n\r\t") {
+		if !model.ValidID(p.ID) || !reportPhases[p.Phase] || !model.ValidReason(p.Reason) {
 			failure(w, 400, "REPORT_INVALID")
 			return
 		}
