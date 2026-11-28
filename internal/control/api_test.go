@@ -207,6 +207,12 @@ func TestAPINativeSingleHostRejectsAdditionalNode(t *testing.T) {
 	if e := h.admin.Call(context.Background(), "POST", "/v1/nodes", r, nil, ""); e == nil || !strings.Contains(e.Error(), "STATE_CAPACITY_REACHED") {
 		t.Fatalf("native profile admitted an additional node: %v", e)
 	}
+	// A mutation that does not itself add a node must still fail closed when
+	// the aggregate is already outside the native profile. This protects new
+	// mutation endpoints from bypassing the profile validator.
+	if e := h.admin.Call(context.Background(), "POST", "/v1/nodes/"+h.nodeID, map[string]bool{"revoked": true}, nil, ""); e == nil || !strings.Contains(e.Error(), "STATE_CAPACITY_REACHED") {
+		t.Fatalf("native profile allowed mutation of an oversized aggregate: %v", e)
+	}
 }
 
 // Persist only valid aggregates: authorization fixtures must not bypass the same
