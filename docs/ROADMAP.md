@@ -1,3 +1,10 @@
+## 2026-11-28 — Heartbeat-/Persistenzgründe gegen Steuerzeichen härten (PR #515)
+
+- **Architecture/Runtime/Security:** `model.ValidReason` zentralisiert die 100-Zeichen-/Control-Character-Grenze. Heartbeat-Reports sowie persistierte Workload-/Allocation-Reasons werden fail-closed validiert, bevor sie operator-sichtbar werden.
+- **QA/SDET:** Modell-, Persistenz- und Endpoint-Regressionstests decken NUL, ESC, TAB, Newline, Überlänge und unveränderten Allocation-Zustand nach einer abgewiesenen Meldung ab. [PR #515](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515) wurde als [ca2c8ca8230826708f76de4e0b6f634b2ed81f7a](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/ca2c8ca8230826708f76de4e0b6f634b2ed81f7a) gemergt; Native/runtime, real-etcd, Kubernetes-Verträge und Source/Privacy bestanden.
+- **Release:** Real-vm und real-PITR wurden in [Run 46137477003](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003) übersprungen. Kein Live-Single-Host-Gate ist geschlossen; `productionReady=false`, Go/No-Go `no-go`, Countdown **9/100**.
+- **Nächster Handoff:** Unveränderlichen Kandidaten exakt aus diesem Main-Commit bauen und die Ubuntu-24.04-Single-Host-Qualifikation mit `run_real_vm_e2e=true` auf demselben Kandidaten ausführen. Der erste Release bleibt Native Single-Host; HA/Multi-Host und Kubernetes-Production bleiben spätere Erweiterungspfade.
+
 ## 2026-11-28 — Persistierte Node-Kapazitäten fail-closed begrenzen (PR #513)
 
 - **Architecture/Runtime/Security:** Gemeinsame `MaxNodeCPUMilli`-/`MaxNodeMemoryMiB`-Grenzen gelten jetzt für Heartbeat-Admission und persistierte Node-Validierung. Negative oder oberhalb liegende CPU-/RAM-Werte werden vor Scheduler-Entscheidungen abgewiesen; 0/0-Registrierung bleibt zulässig.
