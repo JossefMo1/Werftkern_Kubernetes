@@ -90,3 +90,48 @@ class Upgrades(unittest.TestCase):
    self.assertTrue(any(a[:3]==['werft','maintenance','on'] for a in calls))
    self.assertFalse(any(a[:2]==['systemctl','stop'] or a[:2]==['systemctl','start'] for a in calls))
    self.assertFalse(any(a[0]=='dpkg' for a in calls))
+
+ def test_finish_rejects_mixed_controller_health_before_runtime_mutation(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);journal=root/'journal'
+   write_json(journal,{'format':'werftkern-host-update/v1','id':'a'*32,'clusterId':'c'*32,'phase':'awaiting-runtime-qualification','services':[],'target':{'version':'0.2.1-dev.1','packageVersion':'0.2.1~dev1','stateSchema':2}})
+   calls=[]
+   def runner(args,**kw):
+    calls.append(args)
+    if args[0]=='dpkg-query':return b'0.2.1~dev1'
+    if args[:2]==['werft','version']:return b'Werftkern 0.2.1-dev.1\n'
+    if args[:2]==['werft','health']:
+     return json.dumps({'clusterId':'c'*32,'controllers':[
+      {'status':'ready','clusterId':'c'*32,'version':'0.2.1-dev.1','stateSchema':2},
+      {'status':'ready','clusterId':'c'*32,'version':'0.2.1-dev.0','stateSchema':2},
+     ]}).encode()
+    if args[:3]==['werft','maintenance','off']:raise AssertionError('unlock must not run')
+    raise AssertionError(args)
+   with mock.patch.object(upgrade,'ROOT',root),mock.patch.object(upgrade,'host_preflight',lambda:None):
+    with self.assertRaisesRegex(Blocked,'CONTROLLER_TARGET_NOT_VERIFIED'):
+     upgrade.finish(journal,'a'*32,runner,lambda _:None)
+   self.assertEqual(read_json(journal,private=True)['phase'],'awaiting-runtime-qualification')
+   self.assertFalse(any(a[:3]==['werft','maintenance','off'] for a in calls))
+
+ def test_finish_rejects_maintenance_owner_change_between_observations(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d);journal=root/'journal';owners=iter(['b'*32,'f'*32])
+   write_json(journal,{'format':'werftkern-host-update/v1','id':'b'*32,'clusterId':'c'*32,'phase':'awaiting-runtime-qualification','services':[],'target':{'version':'0.2.1-dev.1','packageVersion':'0.2.1~dev1','stateSchema':2}})
+   calls=[]
+   def runner(args,**kw):
+    calls.append(args)
+    if args[0]=='dpkg-query':return b'0.2.1~dev1'
+    if args[:2]==['werft','version']:return b'Werftkern 0.2.1-dev.1\n'
+    if args[:2]==['werft','health']:
+     return json.dumps({'clusterId':'c'*32,'controllers':[{'status':'ready','clusterId':'c'*32,'version':'0.2.1-dev.1','stateSchema':2}]}).encode()
+    if args[:3]==['werft','status','--json']:
+     return json.dumps({'clusterId':'c'*32,'maintenanceId':next(owners)}).encode()
+    if args[:3]==['werft','maintenance','off']:raise AssertionError('unlock must not run')
+    raise AssertionError(args)
+   with mock.patch.object(upgrade,'ROOT',root),mock.patch.object(upgrade,'host_preflight',lambda:None),mock.patch.object(upgrade.readiness,'check',return_value={'node':1}),mock.patch.object(upgrade.readiness,'advanced'):
+    with self.assertRaisesRegex(Blocked,'UPDATE_MAINTENANCE_OWNER_CHANGED'):
+     upgrade.finish(journal,'b'*32,runner,lambda _:None)
+   self.assertEqual(len([a for a in calls if a[:3]==['werft','status','--json']]),2)
+   self.assertEqual(read_json(journal,private=True)['phase'],'awaiting-runtime-qualification')
+   self.assertFalse(any(a[:3]==['werft','maintenance','off'] for a in calls))
+
