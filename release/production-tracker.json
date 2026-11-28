@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-28T11:04:46.216Z",
+  "updatedAt": "2026-11-28T12:04:00Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -30,9 +30,9 @@
     "e2ePlan": "docs/PRODUCTION-E2E-PLAN-DE.md"
   },
   "lastCompleted": {
-    "commit": "ca2c8ca8230826708f76de4e0b6f634b2ed81f7a",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515",
-    "summary": "PR #515 wurde als ca2c8ca8230826708f76de4e0b6f634b2ed81f7a gemergt. Der autorisierte Heartbeat- und Persistenzpfad prüft Lifecycle-Gründe jetzt zentral mit model.ValidReason auf maximal 100 Zeichen und Unicode-Steuerzeichen. Dadurch werden NUL, ESC, TAB, Newline und weitere Control Characters vor der Persistenz bzw. Dashboard-/CLI-Ausgabe fail-closed abgewiesen; Workload- und Allocation-Inventur validiert dieselbe Grenze erneut. Regressionstests decken Modell, Persistenz und Endpoint ab und prüfen, dass ein abgewiesener Heartbeat den Allocation-Zustand nicht verändert. Final bestanden: Native/runtime https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003 mit test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904209 und real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904014, Kubernetes-Verträge https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476952 sowie Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476959. Real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956341132 und real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956340877 wurden übersprungen; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go."
+    "commit": "96e0a901c4eab232bc15ba97278e8800f6af7ab9",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/518",
+    "summary": "PR #518 wurde als 96e0a901c4eab232bc15ba97278e8800f6af7ab9 gemergt. Event.Validate verwendet jetzt die zentrale model.ValidReason-Prüfung und weist sämtliche Unicode-Control-Characters in persistierten Event-Aktionen und -Zielen fail-closed zurück; Regressionen decken ANSI-ESC und U+0085 ab. Native/runtime Run 46142366611 mit test 140970916553 und real-etcd 140970916301, Kubernetes Run 46142366641 sowie Source/Privacy Run 46142366642 bestanden. Real-vm Job 140971457727 und real-PITR Job 140971457014 wurden übersprungen. Dies ist automatisierte Security-/Runtime-Evidenz; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go."
   },
   "nextAction": {
     "id": "E2E-N01-SINGLE-HOST",
@@ -87,7 +87,8 @@
       "PR #509 härtet den Strict-JSON-Vertrag beim Offline-Schema-Migrations-Replay und weist unbekannte Persistenzfelder im Idempotenzpfad fail-closed zurück; die automatisierten Checks bestanden, aber der veraltete test.17-Kandidat kann diese Änderung nicht in Live-Evidenz tragen.",
       "PR #511 härtet die Offline-Schema-Migration gegen doppelte oder case-foldierte JSON-Mitglieder; die automatisierten Checks bestanden, aber der veraltete v0.2.0-dev.4-test.17-Kandidat kann diese Änderung nicht in Live-Evidenz tragen. Same-candidate Ubuntu-Installation, Backup/Restore, Upgrade/Rollback, Load/Soak und signierte Provenienz bleiben offen.",
       "PR #513 zentralisiert Node-CPU-/RAM-Grenzen und weist unmögliche persistierte Kapazitäten fail-closed zurück; die automatisierten Checks bestanden, aber der veraltete v0.2.0-dev.4-test.17-Kandidat kann diese Änderung nicht in Live-Evidenz tragen. Same-candidate Ubuntu-Installation, Backup/Restore, Upgrade/Rollback, Load/Soak und signierte Provenienz bleiben offen.",
-      "PR #515 härtet Lifecycle-Gründe gegen Steuerzeichen; die automatisierten Checks bestanden, aber der veraltete v0.2.0-dev.4-test.17-Kandidat kann diese Änderung nicht in Live-Evidenz tragen. Same-candidate Ubuntu-Installation, Backup/Restore, Upgrade/Rollback, Load/Soak und signierte Provenienz bleiben offen."
+      "PR #515 härtet Lifecycle-Gründe gegen Steuerzeichen; die automatisierten Checks bestanden, aber der veraltete v0.2.0-dev.4-test.17-Kandidat kann diese Änderung nicht in Live-Evidenz tragen. Same-candidate Ubuntu-Installation, Backup/Restore, Upgrade/Rollback, Load/Soak und signierte Provenienz bleiben offen.",
+      "PR #518 härtet persistierte Event-Ausgabe gegen sämtliche Unicode-Control-Characters; die CI-Evidenz ersetzt keine gleichkandidaten Ubuntu-, Backup/Restore-, Upgrade/Rollback-, Load/Soak- oder Signierungsnachweise."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -96,7 +97,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Einen unveränderlichen Kandidaten aus dem aktuellen Main-Commit ca2c8ca8230826708f76de4e0b6f634b2ed81f7a bauen (einschließlich PR #515) und anschließend den autorisierten Ubuntu-24.04-Pfad mit run_real_vm_e2e=true auf genau diesem Kandidaten ausführen. Dabei müssen Installation, Docker-/etcd-Lifecycle, Backup/Restore, Upgrade/Rollback, begrenzter Load/Soak sowie Signierung/Provenienz gemeinsam nachgewiesen werden. Der Connector kann den autorisierten Kandidaten-Tag bzw. workflow_dispatch nicht ausführen; diesen dokumentierten Blocker nicht wiederholen. Keine sieben-VM-HA- oder Kubernetes-Production-Qualifikation für den ersten Release starten."
+    "nextStep": "Einen unveränderlichen Kandidaten aus dem aktuellen Main-Commit 96e0a901c4eab232bc15ba97278e8800f6af7ab9 bauen und danach den autorisierten Ubuntu-24.04-Pfad mit run_real_vm_e2e=true auf genau diesem Kandidaten ausführen. Installation, Docker-/etcd-Lifecycle, Backup/Restore, Upgrade/Rollback, begrenzter Load/Soak sowie Signierung/Provenienz müssen gemeinsam nachgewiesen werden. Der Connector kann den autorisierten Kandidaten-Tag bzw. workflow_dispatch nicht ausführen; dieser dokumentierte Blocker wird nicht wiederholt. Keine sieben-VM-HA- oder Kubernetes-Production-Qualifikation für den ersten Release starten."
   },
   "workstreams": [
     {
@@ -1343,18 +1344,18 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "ca2c8ca8230826708f76de4e0b6f634b2ed81f7a",
-      "codeCommit": "ca2c8ca8230826708f76de4e0b6f634b2ed81f7a",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515",
-      "summary": "PR #515 wurde als ca2c8ca8230826708f76de4e0b6f634b2ed81f7a gemergt. Der autorisierte Heartbeat- und Persistenzpfad prüft Lifecycle-Gründe jetzt zentral mit model.ValidReason auf maximal 100 Zeichen und Unicode-Steuerzeichen. Dadurch werden NUL, ESC, TAB, Newline und weitere Control Characters vor der Persistenz bzw. Dashboard-/CLI-Ausgabe fail-closed abgewiesen; Workload- und Allocation-Inventur validiert dieselbe Grenze erneut. Regressionstests decken Modell, Persistenz und Endpoint ab und prüfen, dass ein abgewiesener Heartbeat den Allocation-Zustand nicht verändert. Final bestanden: Native/runtime https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003 mit test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904209 und real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904014, Kubernetes-Verträge https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476952 sowie Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476959. Real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956341132 und real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956340877 wurden übersprungen; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go.",
+      "commit": "96e0a901c4eab232bc15ba97278e8800f6af7ab9",
+      "codeCommit": "96e0a901c4eab232bc15ba97278e8800f6af7ab9",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/518",
+      "summary": "PR #518 wurde als 96e0a901c4eab232bc15ba97278e8800f6af7ab9 gemergt. Event.Validate verwendet jetzt die zentrale model.ValidReason-Prüfung und weist sämtliche Unicode-Control-Characters in persistierten Event-Aktionen und -Zielen fail-closed zurück; Regressionen decken ANSI-ESC und U+0085 ab. Native/runtime Run 46142366611 mit test 140970916553 und real-etcd 140970916301, Kubernetes Run 46142366641 sowie Source/Privacy Run 46142366642 bestanden. Real-vm Job 140971457727 und real-PITR Job 140971457014 wurden übersprungen. Dies ist automatisierte Security-/Runtime-Evidenz; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go.",
       "nextCandidateRequired": true,
       "documentationMergedCommit": "8c26db734215f3a7a33ca1d0db24112bcc5d8f41",
       "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/516",
       "documentationSummary": "PR #516 merged as 8c26db734215f3a7a33ca1d0db24112bcc5d8f41. release/production-tracker.json, docs/STATUS.md and docs/ROADMAP.md now record PR #515's lifecycle-reason validation hardening and its exact automated CI evidence. Real-vm and real-PITR were skipped; this documentation handoff closes no live Single-Host production gate. productionReady remains false and the decision remains no-go.",
       "latestHardening": {
-        "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515",
-        "mergeCommit": "ca2c8ca8230826708f76de4e0b6f634b2ed81f7a",
-        "summary": "PR #515 wurde als ca2c8ca8230826708f76de4e0b6f634b2ed81f7a gemergt. Der autorisierte Heartbeat- und Persistenzpfad prüft Lifecycle-Gründe jetzt zentral mit model.ValidReason auf maximal 100 Zeichen und Unicode-Steuerzeichen. Dadurch werden NUL, ESC, TAB, Newline und weitere Control Characters vor der Persistenz bzw. Dashboard-/CLI-Ausgabe fail-closed abgewiesen; Workload- und Allocation-Inventur validiert dieselbe Grenze erneut. Regressionstests decken Modell, Persistenz und Endpoint ab und prüfen, dass ein abgewiesener Heartbeat den Allocation-Zustand nicht verändert. Final bestanden: Native/runtime https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003 mit test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904209 und real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904014, Kubernetes-Verträge https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476952 sowie Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476959. Real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956341132 und real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956340877 wurden übersprungen; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go.",
+        "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/518",
+        "mergeCommit": "96e0a901c4eab232bc15ba97278e8800f6af7ab9",
+        "summary": "PR #518 wurde als 96e0a901c4eab232bc15ba97278e8800f6af7ab9 gemergt. Event.Validate verwendet jetzt die zentrale model.ValidReason-Prüfung und weist sämtliche Unicode-Control-Characters in persistierten Event-Aktionen und -Zielen fail-closed zurück; Regressionen decken ANSI-ESC und U+0085 ab. Native/runtime Run 46142366611 mit test 140970916553 und real-etcd 140970916301, Kubernetes Run 46142366641 sowie Source/Privacy Run 46142366642 bestanden. Real-vm Job 140971457727 und real-PITR Job 140971457014 wurden übersprungen. Dies ist automatisierte Security-/Runtime-Evidenz; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go.",
         "liveGateStatus": "not-closed"
       }
     },
@@ -1367,9 +1368,9 @@
     "nextCandidateRequired": true,
     "updatedAt": "2026-11-28T11:04:46.216Z",
     "latestHardening": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515",
-      "mergeCommit": "ca2c8ca8230826708f76de4e0b6f634b2ed81f7a",
-      "summary": "PR #515 wurde als ca2c8ca8230826708f76de4e0b6f634b2ed81f7a gemergt. Der autorisierte Heartbeat- und Persistenzpfad prüft Lifecycle-Gründe jetzt zentral mit model.ValidReason auf maximal 100 Zeichen und Unicode-Steuerzeichen. Dadurch werden NUL, ESC, TAB, Newline und weitere Control Characters vor der Persistenz bzw. Dashboard-/CLI-Ausgabe fail-closed abgewiesen; Workload- und Allocation-Inventur validiert dieselbe Grenze erneut. Regressionstests decken Modell, Persistenz und Endpoint ab und prüfen, dass ein abgewiesener Heartbeat den Allocation-Zustand nicht verändert. Final bestanden: Native/runtime https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003 mit test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904209 und real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904014, Kubernetes-Verträge https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476952 sowie Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476959. Real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956341132 und real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956340877 wurden übersprungen; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/518",
+      "mergeCommit": "96e0a901c4eab232bc15ba97278e8800f6af7ab9",
+      "summary": "PR #518 wurde als 96e0a901c4eab232bc15ba97278e8800f6af7ab9 gemergt. Event.Validate verwendet jetzt die zentrale model.ValidReason-Prüfung und weist sämtliche Unicode-Control-Characters in persistierten Event-Aktionen und -Zielen fail-closed zurück; Regressionen decken ANSI-ESC und U+0085 ab. Native/runtime Run 46142366611 mit test 140970916553 und real-etcd 140970916301, Kubernetes Run 46142366641 sowie Source/Privacy Run 46142366642 bestanden. Real-vm Job 140971457727 und real-PITR Job 140971457014 wurden übersprungen. Dies ist automatisierte Security-/Runtime-Evidenz; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go.",
       "liveGateStatus": "not-closed"
     }
   },
@@ -1436,8 +1437,8 @@
     }
   ],
   "recentAutomation": {
-    "commit": "ca2c8ca8230826708f76de4e0b6f634b2ed81f7a",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515",
-    "summary": "PR #515 wurde als ca2c8ca8230826708f76de4e0b6f634b2ed81f7a gemergt. Der autorisierte Heartbeat- und Persistenzpfad prüft Lifecycle-Gründe jetzt zentral mit model.ValidReason auf maximal 100 Zeichen und Unicode-Steuerzeichen. Dadurch werden NUL, ESC, TAB, Newline und weitere Control Characters vor der Persistenz bzw. Dashboard-/CLI-Ausgabe fail-closed abgewiesen; Workload- und Allocation-Inventur validiert dieselbe Grenze erneut. Regressionstests decken Modell, Persistenz und Endpoint ab und prüfen, dass ein abgewiesener Heartbeat den Allocation-Zustand nicht verändert. Final bestanden: Native/runtime https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003 mit test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904209 und real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904014, Kubernetes-Verträge https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476952 sowie Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476959. Real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956341132 und real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956340877 wurden übersprungen; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go."
+    "commit": "96e0a901c4eab232bc15ba97278e8800f6af7ab9",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/518",
+    "summary": "PR #518 wurde als 96e0a901c4eab232bc15ba97278e8800f6af7ab9 gemergt. Event.Validate verwendet jetzt die zentrale model.ValidReason-Prüfung und weist sämtliche Unicode-Control-Characters in persistierten Event-Aktionen und -Zielen fail-closed zurück; Regressionen decken ANSI-ESC und U+0085 ab. Native/runtime Run 46142366611 mit test 140970916553 und real-etcd 140970916301, Kubernetes Run 46142366641 sowie Source/Privacy Run 46142366642 bestanden. Real-vm Job 140971457727 und real-PITR Job 140971457014 wurden übersprungen. Dies ist automatisierte Security-/Runtime-Evidenz; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go."
   }
 }
