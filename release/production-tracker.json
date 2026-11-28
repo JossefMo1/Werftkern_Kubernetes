@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-28T12:16:30Z",
+  "updatedAt": "2026-11-28T12:19:30Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -97,7 +97,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Einen unveränderlichen Kandidaten aus dem aktuellen Main-Commit 96e0a901c4eab232bc15ba97278e8800f6af7ab9 bauen und danach den autorisierten Ubuntu-24.04-Pfad mit run_real_vm_e2e=true auf genau diesem Kandidaten ausführen. Installation, Docker-/etcd-Lifecycle, Backup/Restore, Upgrade/Rollback, begrenzter Load/Soak sowie Signierung/Provenienz müssen gemeinsam nachgewiesen werden. Der Connector kann den autorisierten Kandidaten-Tag bzw. workflow_dispatch nicht ausführen; dieser dokumentierte Blocker wird nicht wiederholt. Keine sieben-VM-HA- oder Kubernetes-Production-Qualifikation für den ersten Release starten."
+    "nextStep": "Einen unveränderlichen Kandidaten aus dem aktuellen finalen Main-Commit 84ef8667f3cd50c8371503e9dab4e511f3e01c6a (inklusive PR #518, PR #521 und PR #522) bauen und danach den autorisierten Ubuntu-24.04-Pfad mit run_real_vm_e2e=true auf genau diesem Kandidaten ausführen. Installation, Docker-/etcd-Lifecycle, Backup/Restore, Upgrade/Rollback, begrenzter Load/Soak sowie Signierung/Provenienz müssen gemeinsam nachgewiesen werden. Der Connector kann den autorisierten Kandidaten-Tag bzw. workflow_dispatch nicht ausführen; dieser dokumentierte Blocker wird nicht wiederholt. Keine sieben-VM-HA- oder Kubernetes-Production-Qualifikation für den ersten Release starten."
   },
   "workstreams": [
     {
