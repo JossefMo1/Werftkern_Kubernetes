@@ -1,3 +1,10 @@
+## 2026-11-28 — Persistierte Events gegen Unicode-Steuerzeichen härten (PR #518)
+
+- **Architecture/Runtime/Security:** `Event.Validate` verwendet die zentrale `model.ValidReason`-Prüfung und weist damit sämtliche Unicode-Control-Characters in persistierten Event-Aktionen und -Zielen zurück. Das schließt ANSI-ESC- und U+0085-Injection vor operator-sichtbarer Ausgabe.
+- **QA/SDET:** Native/runtime [Run 46142366611](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366611) bestand mit [test](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366611/job/140970916553) und [real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366611/job/140970916301); Kubernetes [Run 46142366641](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366641) und Source/Privacy [Run 46142366642](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366642) bestanden. `real-vm` und `real-PITR` wurden übersprungen.
+- **Release:** PR #518 [wurde als 96e0a901c4eab232bc15ba97278e8800f6af7ab9](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/96e0a901c4eab232bc15ba97278e8800f6af7ab9) gemergt. Kein Live-Single-Host-Gate ist geschlossen; `productionReady=false`, Go/No-Go `no-go`, Countdown **9/100**. Der aktuelle Main-Commit ersetzt nicht den alten Kandidaten `v0.2.0-dev.4-test.17`, dessen Paket-/Manifest-Digests veraltet, unsigniert und nicht unveränderlich bleiben.
+- **Nächster Schritt:** Unveränderlichen Kandidaten aus dem aktuellen Main bauen und den autorisierten Ubuntu-24.04-Pfad mit `run_real_vm_e2e=true` auf genau diesem Kandidaten ausführen. HA/Multi-Host und Kubernetes-Production bleiben spätere Erweiterungspfade.
+
 ## 2026-11-28 — Heartbeat-/Persistenzgründe gegen Steuerzeichen härten (PR #515)
 
 - **Architecture/Runtime/Security:** `model.ValidReason` zentralisiert die 100-Zeichen-/Control-Character-Grenze. Heartbeat-Reports sowie persistierte Workload-/Allocation-Reasons werden fail-closed validiert, bevor sie operator-sichtbar werden.
