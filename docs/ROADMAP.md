@@ -1,3 +1,11 @@
+## 2026-11-28 – SBOM-Identität an den Immutable-Contract gebunden (PR #498)
+
+PR #498 wurde als [8f2f8dfed8073e449b7c9076f9a7d5e7a0e8d2fd](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8f2f8dfed8073e449b7c9076f9a7d5e7a0e8d2fd) gemergt. Der Native-SBOM-Pfad akzeptiert nur noch vollständige 40-stellige Source-Commit-SHAs und reguläre Debian-Paketdateien; verkürzte Identitäten und Symlink-Eingaben werden durch Regressionstests zurückgewiesen.
+
+Native/runtime, real-etcd, Kubernetes-Verträge und Source/Privacy bestanden. real-vm und real-PITR wurden übersprungen. Das verbessert Source-/Supply-Chain-Härtung, schließt aber kein Live-Single-Host-Gate. Countdown **9/100**, `productionReady=false`, Go/No-Go `no-go`.
+
+Nächster Handoff: aus `e6602a54f1f0efdc8a6b6a6840d92904f2078601` einen unveränderlichen Kandidaten mit Paket-/Manifest-/SBOM-Digests, Signierung und Provenienz bauen und anschließend den autorisierten Ubuntu-24.04-`run_real_vm_e2e=true`-Lauf auf genau diesem Kandidaten durchführen. HA/Multi-Host und Kubernetes-Production bleiben spätere Erweiterungspfade.
+
 ## 2026-11-28 – Native-Upgrade-Abschluss: negative Regressionen (PR #496)
 
 PR #496 wurde als [90d60ffb13e20c8e283fc13c601006291ecf981b](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/90d60ffb13e20c8e283fc13c601006291ecf981b) gemergt. Die neue Abdeckung stellt sicher, dass gemischte Controller-Versionen und ein zwischen Beobachtungen wechselnder Maintenance-Owner den nativen Upgrade-Abschluss fail-closed stoppen; weder Unlock noch Journal-Abschluss darf erfolgen.
