@@ -1,4 +1,4 @@
-## 2026-11-28 — Persistierte Events gegen Unicode-Steuerzeichen härten (PR #518)
+## 2026-11-28 — Persistierte Events gegen Unicode-Steuerzeichen härten ([PR #518](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/518))
 
 - **Architecture/Runtime/Security:** `Event.Validate` verwendet die zentrale `model.ValidReason`-Prüfung und weist damit sämtliche Unicode-Control-Characters in persistierten Event-Aktionen und -Zielen zurück. Das schließt ANSI-ESC- und U+0085-Injection vor operator-sichtbarer Ausgabe.
 - **QA/SDET:** Native/runtime [Run 46142366611](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366611) bestand mit [test](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366611/job/140970916553) und [real-etcd](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366611/job/140970916301); Kubernetes [Run 46142366641](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366641) und Source/Privacy [Run 46142366642](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46142366642) bestanden. `real-vm` und `real-PITR` wurden übersprungen.
