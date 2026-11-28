@@ -157,6 +157,9 @@ func (s *State) ValidateInventory() error {
 		if w == nil || !ValidName(name) || name != w.Name || !ValidID(w.UID) || uids[w.UID] || w.Generation < 1 || len(w.History) > 5 {
 			return errors.New("WORKLOAD_RECORD_INVALID")
 		}
+		if !ValidReason(w.Reason) {
+			return errors.New("WORKLOAD_REASON_INVALID")
+		}
 		uids[w.UID] = true
 		workloadByUID[w.UID] = w
 		if e := w.Spec.Validate(); e != nil {
@@ -199,6 +202,9 @@ func (s *State) ValidateInventory() error {
 	for id, a := range s.Allocations {
 		if a == nil {
 			return errors.New("ALLOCATION_RECORD_INVALID")
+		}
+		if !ValidReason(a.Reason) {
+			return errors.New("ALLOCATION_REASON_INVALID")
 		}
 		w := workloadByUID[a.WorkloadUID]
 		if id != a.ID || !ValidID(id) || s.Nodes[a.NodeID] == nil || w == nil || a.Name != w.Name || a.Generation < 1 || a.Generation > w.Generation || (a.Desired != "run" && a.Desired != "stop") || !validAllocationPhase(a.Phase) || (a.Spec.Node != "" && a.Spec.Node != a.NodeID) || !allocationSpecMatchesWorkload(a.Spec, a.Generation, w) {
