@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-28T07:02:12.802Z",
+  "updatedAt": "2026-11-28T07:08:14.213Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -91,7 +91,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build one immutable candidate from current Native Main runtime commit bdd0e5496272874b61c4ab6d8a107674397ff54c (including PR #504), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
+    "nextStep": "Build one immutable candidate from current Main commit 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89 (including runtime hardening merged as bdd0e5496272874b61c4ab6d8a107674397ff54c), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
   },
   "workstreams": [
     {
@@ -788,7 +788,10 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140899731707",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034856/job/140899229400",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034849",
-        "PR #504 merged as bdd0e5496272874b61c4ab6d8a107674397ff54c. The PostgreSQL readiness path now accepts Docker exec responses only when the ID is exactly 64 lowercase hexadecimal characters before interpolation into /exec/<id>/start and /exec/<id>/json. Regression coverage rejects non-hex, short, long and path-like daemon responses and verifies no start request is sent. Final CI: Native/runtime run 46119034851 (test job 140899229674 success; real-etcd job 140899229518 success; real-vm job 140899732059 skipped; real-PITR job 140899731707 skipped), Kubernetes contracts run 46119034856/job/140899229400 success, Source/Privacy run 46119034849 success. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
+        "PR #504 merged as bdd0e5496272874b61c4ab6d8a107674397ff54c. The PostgreSQL readiness path now accepts Docker exec responses only when the ID is exactly 64 lowercase hexadecimal characters before interpolation into /exec/<id>/start and /exec/<id>/json. Regression coverage rejects non-hex, short, long and path-like daemon responses and verifies no start request is sent. Final CI: Native/runtime run 46119034851 (test job 140899229674 success; real-etcd job 140899229518 success; real-vm job 140899732059 skipped; real-PITR job 140899731707 skipped), Kubernetes contracts run 46119034856/job/140899229400 success, Source/Privacy run 46119034849 success. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/505",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8c0960c5a6ce67dc38e509e191e11d8aa2d12e89",
+        "PR #505 merged as 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89. docs/STATUS.md and docs/ROADMAP.md now record PR #504's PostgreSQL Docker exec-ID validation and its exact automated CI evidence. Native/runtime test and real-etcd succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603836; https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603507), Kubernetes contracts succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482160), and Source/Privacy succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482277). Real-vm and real-PITR were skipped; this documentation handoff closes no live Single-Host gate. productionReady remains false and the decision remains no-go."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -816,7 +819,7 @@
         "PR #488 merged as b81c30530662d8190d0ebe78018c32cf9d2dee74 adds tests/ops/test_upgrade.py::test_recover_package_identity_mismatch_keeps_explicit_recovery_locked. The regression proves a signed repair package with a mismatching Debian identity fails after the durable maintenance lock, leaves the journal at explicit-recovery, and performs no systemctl stop/start or dpkg mutation. Native/runtime, Kubernetes and Source/Privacy checks passed (Native run https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774018307; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774017972; Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217544; Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217501). Real-vm and real-PITR were skipped; this automated regression closes no live Single-Host gate.",
         "PR #504 changes candidate-bearing Docker readiness code; automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence."
       ],
-      "nextStep": "Build an immutable candidate from current Main bdd0e5496272874b61c4ab6d8a107674397ff54c and run the authorized Ubuntu 24.04 real-vm qualification; keep productionReady=false until all scoped gates pass.",
+      "nextStep": "Build one immutable candidate from current Main commit 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89 (including runtime hardening merged as bdd0e5496272874b61c4ab6d8a107674397ff54c), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
       "lastEvidence": {
         "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/488",
         "mergeCommit": "b81c30530662d8190d0ebe78018c32cf9d2dee74",
@@ -1118,7 +1121,10 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140899731707",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034856/job/140899229400",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034849",
-        "PR #504 merged as bdd0e5496272874b61c4ab6d8a107674397ff54c. The PostgreSQL readiness path now accepts Docker exec responses only when the ID is exactly 64 lowercase hexadecimal characters before interpolation into /exec/<id>/start and /exec/<id>/json. Regression coverage rejects non-hex, short, long and path-like daemon responses and verifies no start request is sent. Final CI: Native/runtime run 46119034851 (test job 140899229674 success; real-etcd job 140899229518 success; real-vm job 140899732059 skipped; real-PITR job 140899731707 skipped), Kubernetes contracts run 46119034856/job/140899229400 success, Source/Privacy run 46119034849 success. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
+        "PR #504 merged as bdd0e5496272874b61c4ab6d8a107674397ff54c. The PostgreSQL readiness path now accepts Docker exec responses only when the ID is exactly 64 lowercase hexadecimal characters before interpolation into /exec/<id>/start and /exec/<id>/json. Regression coverage rejects non-hex, short, long and path-like daemon responses and verifies no start request is sent. Final CI: Native/runtime run 46119034851 (test job 140899229674 success; real-etcd job 140899229518 success; real-vm job 140899732059 skipped; real-PITR job 140899731707 skipped), Kubernetes contracts run 46119034856/job/140899229400 success, Source/Privacy run 46119034849 success. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/505",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8c0960c5a6ce67dc38e509e191e11d8aa2d12e89",
+        "PR #505 merged as 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89. docs/STATUS.md and docs/ROADMAP.md now record PR #504's PostgreSQL Docker exec-ID validation and its exact automated CI evidence. Native/runtime test and real-etcd succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603836; https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603507), Kubernetes contracts succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482160), and Source/Privacy succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482277). Real-vm and real-PITR were skipped; this documentation handoff closes no live Single-Host gate. productionReady remains false and the decision remains no-go."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -1141,7 +1147,7 @@
         "PR #488 merged as b81c30530662d8190d0ebe78018c32cf9d2dee74 adds tests/ops/test_upgrade.py::test_recover_package_identity_mismatch_keeps_explicit_recovery_locked. The regression proves a signed repair package with a mismatching Debian identity fails after the durable maintenance lock, leaves the journal at explicit-recovery, and performs no systemctl stop/start or dpkg mutation. Native/runtime, Kubernetes and Source/Privacy checks passed (Native run https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774018307; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774017972; Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217544; Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217501). Real-vm and real-PITR were skipped; this automated regression closes no live Single-Host gate.",
         "PR #504 changes candidate-bearing Docker readiness code; automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence."
       ],
-      "nextStep": "Build an immutable candidate from current Main bdd0e5496272874b61c4ab6d8a107674397ff54c and run the authorized Ubuntu 24.04 real-vm qualification; keep productionReady=false until all scoped gates pass.",
+      "nextStep": "Build one immutable candidate from current Main commit 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89 (including runtime hardening merged as bdd0e5496272874b61c4ab6d8a107674397ff54c), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
       "lastEvidence": "PR #488 merged as b81c30530662d8190d0ebe78018c32cf9d2dee74 adds tests/ops/test_upgrade.py::test_recover_package_identity_mismatch_keeps_explicit_recovery_locked. A signed repair package with a mismatching Debian identity fails after the durable maintenance lock, leaves the journal at explicit-recovery, and performs no service stop/start or dpkg mutation. Native/runtime, Kubernetes and Source/Privacy checks passed (Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774018307; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774017972; Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217544; Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217501). Real-vm and real-PITR were skipped; this automated regression closes no live Single-Host gate."
     },
     {
@@ -1194,9 +1200,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/504",
-      "mergedCommit": "bdd0e5496272874b61c4ab6d8a107674397ff54c",
-      "summary": "PR #504 merged as bdd0e5496272874b61c4ab6d8a107674397ff54c. The PostgreSQL readiness path now accepts Docker exec responses only when the ID is exactly 64 lowercase hexadecimal characters before interpolation into /exec/<id>/start and /exec/<id>/json. Regression coverage rejects non-hex, short, long and path-like daemon responses and verifies no start request is sent. Final CI: Native/runtime run 46119034851 (test job 140899229674 success; real-etcd job 140899229518 success; real-vm job 140899732059 skipped; real-PITR job 140899731707 skipped), Kubernetes contracts run 46119034856/job/140899229400 success, Source/Privacy run 46119034849 success. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/505",
+      "mergedCommit": "8c0960c5a6ce67dc38e509e191e11d8aa2d12e89",
+      "summary": "PR #505 merged as 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89. docs/STATUS.md and docs/ROADMAP.md now record PR #504's PostgreSQL Docker exec-ID validation and its exact automated CI evidence. Native/runtime test and real-etcd succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603836; https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603507), Kubernetes contracts succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482160), and Source/Privacy succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482277). Real-vm and real-PITR were skipped; this documentation handoff closes no live Single-Host gate. productionReady remains false and the decision remains no-go."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -1205,16 +1211,16 @@
       "A runtime fix that changes candidate-bearing code requires a new immutable candidate before live qualification evidence can be reused."
     ],
     "lastDocumentationHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
-      "baseCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
-      "mergedCommit": "b40e58e5d7ac17c1b397714f27289e8af3174d66",
-      "summary": "PR #475 merged as b40e58e5d7ac17c1b397714f27289e8af3174d66. docs/STATUS.md and docs/ROADMAP.md record PR #474's exact checks, the corrected Secret projection test and the skipped real-vm/PITR jobs. This documentation handoff closes no live Single-Host production gate.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/505",
+      "baseCommit": "bdd0e5496272874b61c4ab6d8a107674397ff54c",
+      "mergedCommit": "8c0960c5a6ce67dc38e509e191e11d8aa2d12e89",
+      "summary": "PR #505 merged as 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89. docs/STATUS.md and docs/ROADMAP.md now record PR #504's PostgreSQL Docker exec-ID validation and its exact automated CI evidence. Native/runtime test and real-etcd succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603836; https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603507), Kubernetes contracts succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482160), and Source/Privacy succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482277). Real-vm and real-PITR were skipped; this documentation handoff closes no live Single-Host gate. productionReady remains false and the decision remains no-go.",
       "evidence": [
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b40e58e5d7ac17c1b397714f27289e8af3174d66",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46053467653",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46053467597",
-        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46053467624"
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/505",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8c0960c5a6ce67dc38e509e191e11d8aa2d12e89",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482301",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482160",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482277"
       ]
     },
     "blockers": [
@@ -1236,7 +1242,7 @@
       "PR #502 hardens exported Docker log reads; automated checks passed, but the stale test.17 candidate cannot carry this change into live evidence. Same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak and signed provenance remain open.",
       "PR #504 hardens candidate-bearing PostgreSQL Docker readiness path; automated checks passed after correcting the initial regression-test failure, but the stale v0.2.0-dev.4-test.17 candidate cannot carry this change into live evidence. Same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak and signed provenance remain open."
     ],
-    "nextStep": "Build one immutable candidate from current Native Main runtime commit bdd0e5496272874b61c4ab6d8a107674397ff54c (including PR #504), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
+    "nextStep": "Build one immutable candidate from current Main commit 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89 (including runtime hardening merged as bdd0e5496272874b61c4ab6d8a107674397ff54c), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
     "lastEvidence": [
       "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/465",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e49ffb3910f2359c81fc0e4aef24165d6d061d88",
@@ -1292,7 +1298,13 @@
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140899731707",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034856/job/140899229400",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034849",
-      "PR #504 merged as bdd0e5496272874b61c4ab6d8a107674397ff54c. The PostgreSQL readiness path now accepts Docker exec responses only when the ID is exactly 64 lowercase hexadecimal characters before interpolation into /exec/<id>/start and /exec/<id>/json. Regression coverage rejects non-hex, short, long and path-like daemon responses and verifies no start request is sent. Final CI: Native/runtime run 46119034851 (test job 140899229674 success; real-etcd job 140899229518 success; real-vm job 140899732059 skipped; real-PITR job 140899731707 skipped), Kubernetes contracts run 46119034856/job/140899229400 success, Source/Privacy run 46119034849 success. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
+      "PR #504 merged as bdd0e5496272874b61c4ab6d8a107674397ff54c. The PostgreSQL readiness path now accepts Docker exec responses only when the ID is exactly 64 lowercase hexadecimal characters before interpolation into /exec/<id>/start and /exec/<id>/json. Regression coverage rejects non-hex, short, long and path-like daemon responses and verifies no start request is sent. Final CI: Native/runtime run 46119034851 (test job 140899229674 success; real-etcd job 140899229518 success; real-vm job 140899732059 skipped; real-PITR job 140899731707 skipped), Kubernetes contracts run 46119034856/job/140899229400 success, Source/Privacy run 46119034849 success. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false.",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/505",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/8c0960c5a6ce67dc38e509e191e11d8aa2d12e89",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482301",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482160",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482277",
+      "PR #505 merged as 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89. docs/STATUS.md and docs/ROADMAP.md now record PR #504's PostgreSQL Docker exec-ID validation and its exact automated CI evidence. Native/runtime test and real-etcd succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603836; https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603507), Kubernetes contracts succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482160), and Source/Privacy succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482277). Real-vm and real-PITR were skipped; this documentation handoff closes no live Single-Host gate. productionReady remains false and the decision remains no-go."
     ]
   },
   "candidate": {
@@ -1410,8 +1422,8 @@
     }
   ],
   "recentAutomation": {
-    "commit": "bdd0e5496272874b61c4ab6d8a107674397ff54c",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/504",
-    "summary": "PR #504 merged as bdd0e5496272874b61c4ab6d8a107674397ff54c. The PostgreSQL readiness path now accepts Docker exec responses only when the ID is exactly 64 lowercase hexadecimal characters before interpolation into /exec/<id>/start and /exec/<id>/json. Regression coverage rejects non-hex, short, long and path-like daemon responses and verifies no start request is sent. Final CI: Native/runtime run 46119034851 (test job 140899229674 success; real-etcd job 140899229518 success; real-vm job 140899732059 skipped; real-PITR job 140899731707 skipped), Kubernetes contracts run 46119034856/job/140899229400 success, Source/Privacy run 46119034849 success. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
+    "commit": "8c0960c5a6ce67dc38e509e191e11d8aa2d12e89",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/505",
+    "summary": "PR #505 merged as 8c0960c5a6ce67dc38e509e191e11d8aa2d12e89. docs/STATUS.md and docs/ROADMAP.md now record PR #504's PostgreSQL Docker exec-ID validation and its exact automated CI evidence. Native/runtime test and real-etcd succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603836; https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119034851/job/140900603507), Kubernetes contracts succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482160), and Source/Privacy succeeded (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46119482277). Real-vm and real-PITR were skipped; this documentation handoff closes no live Single-Host gate. productionReady remains false and the decision remains no-go."
   }
 }
