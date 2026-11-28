@@ -179,6 +179,12 @@ func (a *API) restoreVolume(w http.ResponseWriter, r *http.Request) {
 			return e
 		}
 		if v.RestoreID != "" {
+			// A restore reservation is valid only under the maintenance lease
+			// that quiesced it. This prevents a later lease from acknowledging
+			// an old operation after a maintenance handover.
+			if v.RestoreMaintenanceID == "" || v.RestoreMaintenanceID != q.MaintenanceID {
+				return errors.New("VOLUME_RESTORE_MAINTENANCE_MISMATCH")
+			}
 			if v.RestoreID != q.OperationID || v.RestoreHash != q.SHA256 {
 				return model.ErrConflict
 			}
@@ -188,6 +194,7 @@ func (a *API) restoreVolume(w http.ResponseWriter, r *http.Request) {
 			}
 			v.RestoreID = q.OperationID
 			v.RestoreHash = q.SHA256
+			v.RestoreMaintenanceID = q.MaintenanceID
 			v.Initialized = true
 			s.Event("volume.restore_reserved", v.ID, a.now())
 		}
