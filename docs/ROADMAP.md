@@ -1,3 +1,10 @@
+## 2026-11-28 — Strict-JSON-Migrationsgrenze härten (PR #511)
+
+- **Runtime/Architecture/Security:** `prepareMigration` validiert die vollständigen Quellbytes vor der typisierten Dekodierung. Doppelte und case-foldierte JSON-Mitglieder werden fail-closed zurückgewiesen.
+- **QA/SDET:** Regressionstest für doppelte `clusterId`-Mitglieder ergänzt; Native `test` und `real-etcd`, Kubernetes-Verträge sowie Source/Privacy bestanden.
+- **Release:** PR #511 ist als [268dee48c1d02f6a9481194ae91ba18a81438a1e](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/268dee48c1d02f6a9481194ae91ba18a81438a1e) gemergt. Real-VM und real-PITR wurden übersprungen; kein Live-Gate geschlossen. `productionReady=false`, Go/No-Go `no-go`.
+- **Nächster Handoff:** unveränderlichen Kandidaten aus diesem Main-Commit bauen und die autorisierte Ubuntu-24.04-Single-Host-Qualifikation auf demselben Kandidaten ausführen. Der erste Release bleibt Native Single-Host; HA/Kubernetes-Production bleiben spätere Erweiterungspfade.
+
 ## 2026-11-28 – Strictes Schema-Migrations-Replay fail-closed (PR #509)
 
 [PR #509](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/509) wurde als [a92ad2141b36c7699a49d37ebb8e358599e6c165](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/a92ad2141b36c7699a49d37ebb8e358599e6c165) gemergt. Der Offline-Schema-Migrations-Replay verwendet für bereits migrierte Zustände jetzt denselben Strict-JSON-Vertrag wie der Etcd-Read-Pfad. Unbekannte oder eingeschleuste Persistenzfelder werden dadurch im Idempotenzpfad fail-closed zurückgewiesen, statt eine nicht mehr lesbare Persistenz als bereits erledigt zu bestätigen. Der Regressionstest injiziert ein unbekanntes Feld per Compare-and-Swap in das reale Etcd-Test-Setup und prüft zusätzlich, dass kein Migrations-Callback läuft.
