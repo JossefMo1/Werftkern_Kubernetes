@@ -1327,10 +1327,10 @@
     "productionReady": false,
     "qualification": "not-production-qualified",
     "mainAfterCandidate": {
-      "commit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
-      "codeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
-      "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+      "commit": "3e5c2e45ec2400f6e49005e69560c108e407862e",
+      "codeCommit": "3e5c2e45ec2400f6e49005e69560c108e407862e",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/507",
+      "summary": "PR #507 merged as 3e5c2e45ec2400f6e49005e69560c108e407862e. Native volume restore reservations now persist the maintenance lease that quiesced the volume; replay or acknowledgement under a later maintenance handover fails closed, while legacy snapshots remain readable but unbound restore replay is rejected. The regression test covers the handover boundary. Final PR checks passed: Native/runtime run 46123654516 with test job 140913373907 and real-etcd job 140913374156, Kubernetes contracts run 46123654515, and Source/Privacy audit run 46123654506. Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
       "nextCandidateRequired": true,
       "documentationMergedCommit": "b40e58e5d7ac17c1b397714f27289e8af3174d66",
       "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
@@ -1342,18 +1342,18 @@
         "liveGateStatus": "not-closed"
       }
     },
-    "commit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
-    "codeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+    "commit": "3e5c2e45ec2400f6e49005e69560c108e407862e",
+    "codeCommit": "3e5c2e45ec2400f6e49005e69560c108e407862e",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/507",
     "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
-    "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
-    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
+    "summary": "PR #507 merged as 3e5c2e45ec2400f6e49005e69560c108e407862e. Native volume restore reservations now persist the maintenance lease that quiesced the volume; replay or acknowledgement under a later maintenance handover fails closed, while legacy snapshots remain readable but unbound restore replay is rejected. The regression test covers the handover boundary. Final PR checks passed: Native/runtime run 46123654516 with test job 140913373907 and real-etcd job 140913374156, Kubernetes contracts run 46123654515, and Source/Privacy audit run 46123654506. Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+    "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/507",
     "nextCandidateRequired": true,
-    "updatedAt": "2026-11-27T19:03:21Z",
+    "updatedAt": "2026-11-28T08:06:14.501Z",
     "latestHardening": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
-      "mergeCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
-      "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/507",
+      "mergeCommit": "3e5c2e45ec2400f6e49005e69560c108e407862e",
+      "summary": "PR #507 merged as 3e5c2e45ec2400f6e49005e69560c108e407862e. Native volume restore reservations now persist the maintenance lease that quiesced the volume; replay or acknowledgement under a later maintenance handover fails closed, while legacy snapshots remain readable but unbound restore replay is rejected. The regression test covers the handover boundary. Final PR checks passed: Native/runtime run 46123654516 with test job 140913373907 and real-etcd job 140913374156, Kubernetes contracts run 46123654515, and Source/Privacy audit run 46123654506. Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
       "liveGateStatus": "not-closed"
     }
   },
