@@ -30,6 +30,16 @@ class PITRTests(unittest.TestCase):
     pitr.configuration(file,'shop')
  def test_system_id_uses_integer_without_float_rounding(self):
   self.assertEqual(pitr.backup_identity(info()[0],LABEL)['systemId'],SYSID)
+ def test_backup_identity_rejects_invalid_time_range(self):
+  value=info()[0]
+  value['backup'][0]['timestamp']['start']=0
+  with self.assertRaisesRegex(Blocked,'BACKUP_START_TIME_INVALID'):
+   pitr.backup_identity(value,LABEL)
+  value=info()[0]
+  value['backup'][0]['timestamp']['stop']=value['backup'][0]['timestamp']['start']
+  with self.assertRaisesRegex(Blocked,'BACKUP_STOP_TIME_INVALID'):
+   pitr.backup_identity(value,LABEL)
+
  def test_restore_never_promotes_or_overwrites_source(self):
   with tempfile.TemporaryDirectory() as d,mock.patch.object(pitr,'owned_actor',lambda:None):
    root=pathlib.Path(d);file=self.config(root);calls=[];target=root/'restored';journal=root/'restore.json'
