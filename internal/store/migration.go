@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
+	"github.com/JossefMo1/Werftkern_Kubernetes/internal/strictjson"
 )
 
 type MigrationPreview struct {
@@ -78,7 +79,10 @@ func (e *Etcd) MigrateSchema(ctx context.Context, owner, expectedSHA string, per
 		return MigrationPreview{}, err
 	}
 	var prior model.State
-	if json.Unmarshal(raw, &prior) == nil && prior.Schema == model.StateSchema && prior.MigrationSourceHash == expectedSHA && model.ValidSHA256(expectedSHA) && prior.ClusterID == e.ClusterID && prior.MaintenanceID == owner {
+	// The idempotent path must enforce the same strict persisted-state contract
+	// as Etcd.Read. Otherwise an injected unknown field could be acknowledged as
+	// already migrated while every subsequent strict read remains unrecoverable.
+	if strictjson.Unmarshal(raw, &prior) == nil && prior.Schema == model.StateSchema && prior.MigrationSourceHash == expectedSHA && model.ValidSHA256(expectedSHA) && prior.ClusterID == e.ClusterID && prior.MaintenanceID == owner {
 		if err = prior.ValidateInventory(); err != nil {
 			return MigrationPreview{}, err
 		}

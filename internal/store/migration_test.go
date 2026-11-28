@@ -8,6 +8,7 @@ import (
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/model"
 	"github.com/JossefMo1/Werftkern_Kubernetes/internal/testutil"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -109,5 +110,50 @@ func TestMigrationRefusesLiveWorkloadsAndAllocations(t *testing.T) {
 	raw, _ = json.Marshal(s)
 	if _, _, e := prepareMigration(raw, id, owner); e == nil {
 		t.Fatal("unclean allocations migrated")
+	}
+}
+
+func TestOfflineSchemaMigrationReplayRejectsUnknownFields(t *testing.T) {
+	db, owner := legacyStore(t)
+	ctx := context.Background()
+	preview, err := db.PreviewMigration(ctx, owner)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = db.MigrateSchema(ctx, owner, preview.SourceSHA256, func([]byte) error { return nil }); err != nil {
+		t.Fatal(err)
+	}
+	raw, revision, err := db.readRaw(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var state map[string]json.RawMessage
+	if err = json.Unmarshal(raw, &state); err != nil {
+		t.Fatal(err)
+	}
+	state["unexpected"] = json.RawMessage(`"tampered"`)
+	tampered, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var result any
+	if err = db.call(ctx, "/v3/kv/txn", map[string]any{
+		"compare": []any{map[string]any{
+			"key": b64([]byte(db.Key)), "target": "MOD", "result": "EQUAL",
+			"mod_revision": strconv.FormatInt(revision, 10),
+		}},
+		"success": []any{map[string]any{"request_put": map[string]any{
+			"key": b64([]byte(db.Key)), "value": base64.StdEncoding.EncodeToString(tampered),
+		}}},
+		"failure": []any{},
+	}, &result); err != nil {
+		t.Fatal(err)
+	}
+	called := false
+	if _, err = db.MigrateSchema(ctx, owner, preview.SourceSHA256, func([]byte) error {
+		called = true
+		return nil
+	}); err == nil || called {
+		t.Fatal("unknown fields were accepted as an idempotent migration replay")
 	}
 }
