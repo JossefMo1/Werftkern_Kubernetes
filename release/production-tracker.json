@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-28T02:56:01.264Z",
+  "updatedAt": "2026-11-28T04:06:49.588Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -79,7 +79,8 @@
       "PR #492 adds automated worker upgrade scope/replay regressions; its CI evidence does not replace same-candidate Ubuntu upgrade/rollback, backup/restore or load/soak evidence.",
       "PR #494 hardens PITR backup timestamp ordering with automated regression tests; its CI evidence does not replace same-candidate Ubuntu backup/restore or PITR live qualification.",
       "PR #496 adds automated fail-closed coverage for mixed controller health and maintenance-owner changes during upgrade completion; it does not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
-      "PR #498 hardens the Native SBOM source-identity contract (full 40-character commit SHA and regular package input); its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signing/provenance evidence."
+      "PR #498 hardens the Native SBOM source-identity contract (full 40-character commit SHA and regular package input); its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signing/provenance evidence.",
+      "PR #500 changes candidate-bearing Docker runtime code; automated checks passed, but the stale v0.2.0-dev.4-test.17 candidate cannot carry this hardening into live evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -88,7 +89,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build one immutable candidate from frozen candidate-bearing source e6602a54f1f0efdc8a6b6a6840d92904f2078601 (PR #498 adds source/SBOM identity hardening on Main 8f2f8dfed8073e449b7c9076f9a7d5e7a0e8d2fd), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
+    "nextStep": "Build one immutable candidate from current Native Main commit 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e (including PR #500), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
   },
   "workstreams": [
     {
@@ -762,7 +763,14 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921697",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921258",
-        "PR #488 merged as b81c30530662d8190d0ebe78018c32cf9d2dee74 adds tests/ops/test_upgrade.py::test_recover_package_identity_mismatch_keeps_explicit_recovery_locked. The regression proves a signed repair package with a mismatching Debian identity fails after the durable maintenance lock, leaves the journal at explicit-recovery, and performs no systemctl stop/start or dpkg mutation. Native/runtime, Kubernetes and Source/Privacy checks passed (Native run https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774018307; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774017972; Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217544; Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217501). Real-vm and real-PITR were skipped; this automated regression closes no live Single-Host gate."
+        "PR #488 merged as b81c30530662d8190d0ebe78018c32cf9d2dee74 adds tests/ops/test_upgrade.py::test_recover_package_identity_mismatch_keeps_explicit_recovery_locked. The regression proves a signed repair package with a mismatching Debian identity fails after the durable maintenance lock, leaves the journal at explicit-recovery, and performs no systemctl stop/start or dpkg mutation. Native/runtime, Kubernetes and Source/Privacy checks passed (Native run https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774018307; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774017972; Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217544; Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217501). Real-vm and real-PITR were skipped; this automated regression closes no live Single-Host gate.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/500",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/3544da5bc9807f6fa6e7a5398e5417b0073e9d7e",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664413/job/140857719106",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664413/job/140857719332",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664411/job/140857719214",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664373/job/140857719069",
+        "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -1157,9 +1165,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/474",
-      "mergedCommit": "d6d730d6f9e4825023a5bbf47cc9ffde62911340",
-      "summary": "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/500",
+      "mergedCommit": "3544da5bc9807f6fa6e7a5398e5417b0073e9d7e",
+      "summary": "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -1194,9 +1202,10 @@
       "PR #462 hardens persisted allocation host-port and ContainerIP validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #474 changed candidate-bearing Native inventory/API validation; automated checks passed but same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence remain open.",
-      "PR #475 is documentation synchronization only and closes no live Single-Host production gate."
+      "PR #475 is documentation synchronization only and closes no live Single-Host production gate.",
+      "PR #500 changes candidate-bearing Docker runtime code; its automated checks passed, but the stale test.17 candidate cannot carry this hardening into live evidence. Same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak and signed provenance remain open."
     ],
-    "nextStep": "Build one immutable candidate from current Native Main commit d6d730d6f9e4825023a5bbf47cc9ffde62911340 (including PR #474), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
+    "nextStep": "Build one immutable candidate from current Native Main commit 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e (including PR #500), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
     "lastEvidence": [
       "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/465",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e49ffb3910f2359c81fc0e4aef24165d6d061d88",
@@ -1229,7 +1238,14 @@
       "PR #474 merged as d6d730d6f9e4825023a5bbf47cc9ffde62911340. ValidateNativeSingleHost now re-runs full persisted inventory validation, rejecting malformed workload, node and allocation records outside the etcd-CAS path. Client state responses use a dedicated redacted projection validator that rejects exposed ciphertext while accepting intentionally blank SecretVersion.Sealed fields. Regression coverage includes mutable image, non-private node address and redacted/exposed secret projections. Final PR checks passed: Native/runtime + Package-Smoke (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356091; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876961/job/140688356485), Kubernetes contracts (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876993) and Source/Privacy audit (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46052876906). Real-vm and real-PITR were skipped; no live Single-Host production gate closed. productionReady remains false and the decision remains no-go.",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/b40e58e5d7ac17c1b397714f27289e8af3174d66",
-      "PR #475 merged as b40e58e5d7ac17c1b397714f27289e8af3174d66. docs/STATUS.md and docs/ROADMAP.md record PR #474's exact checks, the corrected Secret projection test and the skipped real-vm/PITR jobs. This documentation handoff closes no live Single-Host production gate."
+      "PR #475 merged as b40e58e5d7ac17c1b397714f27289e8af3174d66. docs/STATUS.md and docs/ROADMAP.md record PR #474's exact checks, the corrected Secret projection test and the skipped real-vm/PITR jobs. This documentation handoff closes no live Single-Host production gate.",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/500",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/3544da5bc9807f6fa6e7a5398e5417b0073e9d7e",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664413/job/140857719106",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664413/job/140857719332",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664411/job/140857719214",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664373/job/140857719069",
+      "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
     ]
   },
   "candidate": {
@@ -1347,8 +1363,8 @@
     }
   ],
   "recentAutomation": {
-    "commit": "8f2f8dfed8073e449b7c9076f9a7d5e7a0e8d2fd",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/498",
-    "summary": "PR #498 merged as 8f2f8dfed8073e449b7c9076f9a7d5e7a0e8d2fd. Native SBOM generation now requires a full 40-character lowercase source commit and rejects symlinked package paths; regression tests cover both boundaries. Native/runtime run 46100178573 (test 140840598387 success; real-etcd 140840598258 success; real-vm 140841101550 skipped; real-PITR 140841101422 skipped), Kubernetes contracts 46100178592 and Source/Privacy 46100178605 passed. This strengthens source/SBOM identity only; no live Single-Host gate closed and productionReady remains false."
+    "commit": "3544da5bc9807f6fa6e7a5398e5417b0073e9d7e",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/500",
+    "summary": "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
   }
 }
