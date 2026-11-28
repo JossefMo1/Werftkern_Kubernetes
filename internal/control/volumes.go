@@ -20,7 +20,7 @@ func (a *API) createVolume(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var out *model.Volume
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		if s.MaintenanceID != "" {
 			return errors.New("MAINTENANCE_BLOCKS_NEW_MUTATIONS")
 		}
@@ -88,7 +88,7 @@ func (a *API) initializeVolume(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &req) {
 		return
 	}
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		n := s.Nodes[id]
 		al := s.Allocations[req.AllocationID]
 		v := s.Volumes[r.PathValue("name")]
@@ -123,7 +123,7 @@ func (a *API) releaseVolume(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &q) {
 		return
 	}
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		if s.MaintenanceID != "" {
 			return errors.New("MAINTENANCE_BLOCKS_NEW_MUTATIONS")
 		}
@@ -167,7 +167,7 @@ func (a *API) restoreVolume(w http.ResponseWriter, r *http.Request) {
 		failure(w, 400, "VOLUME_RESTORE_REQUEST_INVALID")
 		return
 	}
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		v := s.Volumes[r.PathValue("name")]
 		if v == nil {
 			return model.ErrNotFound

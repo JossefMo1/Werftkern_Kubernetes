@@ -21,7 +21,7 @@ func (a *API) maintenance(w http.ResponseWriter, r *http.Request) {
 		failure(w, 400, "MAINTENANCE_REQUEST_INVALID")
 		return
 	}
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		if s.MaintenanceID != "" && s.MaintenanceID != q.ID {
 			return errors.New("MAINTENANCE_OWNED_BY_ANOTHER_OPERATION")
 		}

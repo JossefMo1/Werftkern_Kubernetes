@@ -20,7 +20,7 @@ func (a *API) registerGateway(w http.ResponseWriter, r *http.Request) {
 		failure(w, 400, "NEW_GATEWAY_CANNOT_BE_REVOKED")
 		return
 	}
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		if s.MaintenanceID != "" {
 			return errors.New("MAINTENANCE_BLOCKS_NEW_MUTATIONS")
 		}
@@ -53,7 +53,7 @@ func (a *API) registerGateway(w http.ResponseWriter, r *http.Request) {
 	write(w, 201, q)
 }
 func (a *API) revokeGateway(w http.ResponseWriter, r *http.Request) {
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		g := s.Gateways[r.PathValue("id")]
 		if g == nil {
 			return model.ErrNotFound

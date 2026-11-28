@@ -115,7 +115,7 @@ func (a *API) maintenanceNode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var result NodeState
-	_, _, e := a.Store.Update(r.Context(), func(s *model.State) error {
+	_, _, e := a.update(r.Context(), func(s *model.State) error {
 		if s.MaintenanceID != q.ID {
 			return errors.New("OWNED_MAINTENANCE_REQUIRED")
 		}
