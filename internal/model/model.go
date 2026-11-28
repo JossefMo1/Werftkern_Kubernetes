@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 )
 
 const Version = "0.2.0-dev.4"
@@ -54,6 +55,21 @@ var nameRE = regexp.MustCompile(`^[a-z][a-z0-9-]{0,39}$`)
 var digestRE = regexp.MustCompile(`^(?:[a-z0-9][a-z0-9._:/-]*@)?sha256:[a-f0-9]{64}$`)
 var idRE = regexp.MustCompile(`^[a-f0-9]{32}$`)
 var keyRE = regexp.MustCompile(`^[A-Za-z0-9_-]{16,100}$`)
+
+// ValidReason bounds operator-visible lifecycle reasons and rejects control
+// characters before they can be persisted or rendered by a dashboard/CLI.
+// Empty reasons are valid because most healthy records omit them.
+func ValidReason(s string) bool {
+	if len(s) > 100 {
+		return false
+	}
+	for _, r := range s {
+		if unicode.IsControl(r) {
+			return false
+		}
+	}
+	return true
+}
 
 func ID() string {
 	b := make([]byte, 16)
