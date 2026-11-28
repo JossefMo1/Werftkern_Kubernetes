@@ -20,7 +20,7 @@ import sys
 from typing import Any
 
 
-HEX_COMMIT = re.compile(r"^[0-9a-f]{7,64}$")
+HEX_COMMIT = re.compile(r"^[0-9a-f]{40}$")
 PACKAGE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9+.-]*$")
 
 
@@ -130,9 +130,9 @@ def main() -> int:
     if args.source_date_epoch < 0:
         fail("source date epoch must be non-negative")
     if not HEX_COMMIT.fullmatch(args.source_commit):
-        fail("source commit must be a lowercase hexadecimal Git object id")
-    if not args.package.is_file():
-        fail(f"package does not exist: {args.package}")
+        fail("source commit must be a 40-character lowercase Git object id")
+    if not args.package.is_file() or args.package.is_symlink():
+        fail(f"package must be a regular file: {args.package}")
     modules = parse_module_stream(args.modules)
     package_sha256 = sha256_file(args.package)
 
