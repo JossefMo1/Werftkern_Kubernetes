@@ -15,7 +15,11 @@ type VolumeRef struct {
 type Volume struct {
 	RestoreID       string `json:"restoreId,omitempty"`
 	RestoreHash     string `json:"restoreHash,omitempty"`
-	RestoreComplete bool   `json:"restoreComplete,omitempty"`
+	RestoreComplete       bool   `json:"restoreComplete,omitempty"`
+	// RestoreMaintenanceID binds a pending disk restore to the maintenance
+	// lease that quiesced the volume. Empty is tolerated only for legacy
+	// snapshots; new restore reservations always persist this binding.
+	RestoreMaintenanceID string `json:"restoreMaintenanceId,omitempty"`
 	ID              string `json:"id"`
 	Name            string `json:"name"`
 	NodeID          string `json:"nodeId"`
@@ -30,7 +34,14 @@ func ValidSHA256(s string) bool {
 	return e == nil && len(b) == 32 && len(s) == 64 && strings.ToLower(s) == s
 }
 func (v Volume) Validate() error {
-	if v.RestoreID != "" && (!ValidID(v.RestoreID) || !ValidSHA256(v.RestoreHash) || !v.Initialized) || v.RestoreID == "" && (v.RestoreHash != "" || v.RestoreComplete) {
+	if v.RestoreID != "" {
+		// Older snapshots may not carry RestoreMaintenanceID and remain
+		// readable; restoreVolume rejects replay/acknowledgement until a
+		// maintenance-bound reservation is present.
+		if !ValidID(v.RestoreID) || !ValidSHA256(v.RestoreHash) || !v.Initialized || v.RestoreMaintenanceID != "" && !ValidID(v.RestoreMaintenanceID) {
+			return errors.New("VOLUME_RESTORE_METADATA_INVALID")
+		}
+	} else if v.RestoreHash != "" || v.RestoreComplete || v.RestoreMaintenanceID != "" {
 		return errors.New("VOLUME_RESTORE_METADATA_INVALID")
 	}
 
