@@ -28,6 +28,15 @@ type MigrationPreview struct {
 func prepareMigration(raw []byte, cluster, owner string) (*model.State, MigrationPreview, error) {
 	var s model.State
 	var out MigrationPreview
+	// Reject duplicate/case-folded members before typed decoding. The standard
+	// decoder otherwise accepts the last duplicate, which could make the
+	// migration hash describe bytes whose interpreted state is ambiguous.
+	if e := strictjson.Validate(raw); e != nil {
+		if e.Error() == "JSON_TRAILING_DATA" {
+			return nil, out, errors.New("MIGRATION_TRAILING_STATE")
+		}
+		return nil, out, e
+	}
 	d := json.NewDecoder(bytes.NewReader(raw))
 	d.DisallowUnknownFields()
 	if e := d.Decode(&s); e != nil {
