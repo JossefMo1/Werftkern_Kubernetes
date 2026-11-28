@@ -157,3 +157,11 @@ func TestOfflineSchemaMigrationReplayRejectsUnknownFields(t *testing.T) {
 		t.Fatal("unknown fields were accepted as an idempotent migration replay")
 	}
 }
+
+func TestOfflineSchemaMigrationRejectsDuplicateSourceMembers(t *testing.T) {
+	id, owner := model.ID(), model.ID()
+	raw := []byte(`{"clusterId":"first","clusterId":"second"}`)
+	if _, _, err := prepareMigration(raw, id, owner); err == nil {
+		t.Fatal("duplicate source members were accepted")
+	}
+}
