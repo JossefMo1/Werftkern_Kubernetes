@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-28T01:00:31.587Z",
+  "updatedAt": "2026-11-28T02:04:34.905Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -77,7 +77,8 @@
       "PR #486 merged as 8b57afb5fb113a713ec2cd25ec088218971765a9 extends the real Ubuntu E2E harness with a fail-closed same-cluster backup restore attempt. The harness requires RESTORE_REQUIRES_A_NEW_CLUSTER_IDENTITY and verifies workload generation/phase/paused state are unchanged. Native/runtime, Kubernetes and Source/Privacy checks passed (https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187/job/140757086611; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46073921187/job/140757086160); real-vm and real-PITR were skipped, so no live Single-Host gate closed.",
       "PR #488 adds automated fail-closed recovery package-identity coverage; its CI evidence does not replace same-candidate Ubuntu upgrade/rollback evidence and leaves productionReady=false.",
       "PR #492 adds automated worker upgrade scope/replay regressions; its CI evidence does not replace same-candidate Ubuntu upgrade/rollback, backup/restore or load/soak evidence.",
-      "PR #494 hardens PITR backup timestamp ordering with automated regression tests; its CI evidence does not replace same-candidate Ubuntu backup/restore or PITR live qualification."
+      "PR #494 hardens PITR backup timestamp ordering with automated regression tests; its CI evidence does not replace same-candidate Ubuntu backup/restore or PITR live qualification.",
+      "PR #496 adds automated fail-closed coverage for mixed controller health and maintenance-owner changes during upgrade completion; it does not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -86,7 +87,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build one immutable candidate from current Native Main commit e6602a54f1f0efdc8a6b6a6840d92904f2078601, including the Docker-restart E2E harness from PR #479, digest-bound package/SBOM manifest from PR #482 and negative same-cluster restore check from PR #486, then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
+    "nextStep": "Build one immutable candidate from frozen candidate-bearing source e6602a54f1f0efdc8a6b6a6840d92904f2078601 (PR #496 adds QA-only coverage on Main 90d60ffb13e20c8e283fc13c601006291ecf981b), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
   },
   "workstreams": [
     {
@@ -787,7 +788,7 @@
         "PR #474 changed candidate-bearing Native inventory/API validation; no same-candidate live Ubuntu evidence exists and the published test.17 candidate remains stale.",
         "PR #488 merged as b81c30530662d8190d0ebe78018c32cf9d2dee74 adds tests/ops/test_upgrade.py::test_recover_package_identity_mismatch_keeps_explicit_recovery_locked. The regression proves a signed repair package with a mismatching Debian identity fails after the durable maintenance lock, leaves the journal at explicit-recovery, and performs no systemctl stop/start or dpkg mutation. Native/runtime, Kubernetes and Source/Privacy checks passed (Native run https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774018307; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774017972; Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217544; Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217501). Real-vm and real-PITR were skipped; this automated regression closes no live Single-Host gate."
       ],
-      "nextStep": "Build one immutable candidate from current Native Main commit e6602a54f1f0efdc8a6b6a6840d92904f2078601, including the Docker-restart E2E harness from PR #479, digest-bound package/SBOM manifest from PR #482 and negative same-cluster restore check from PR #486, then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
+      "nextStep": "Build one immutable candidate from frozen candidate-bearing source e6602a54f1f0efdc8a6b6a6840d92904f2078601 (PR #496 adds QA-only coverage on Main 90d60ffb13e20c8e283fc13c601006291ecf981b), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
       "lastEvidence": {
         "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/488",
         "mergeCommit": "b81c30530662d8190d0ebe78018c32cf9d2dee74",
@@ -1102,7 +1103,7 @@
         "The current Main includes PR #474 inventory/API validation; the published test.17 candidate is stale and cannot carry this change into Ubuntu live evidence.",
         "PR #488 merged as b81c30530662d8190d0ebe78018c32cf9d2dee74 adds tests/ops/test_upgrade.py::test_recover_package_identity_mismatch_keeps_explicit_recovery_locked. The regression proves a signed repair package with a mismatching Debian identity fails after the durable maintenance lock, leaves the journal at explicit-recovery, and performs no systemctl stop/start or dpkg mutation. Native/runtime, Kubernetes and Source/Privacy checks passed (Native run https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499; test job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774018307; real-etcd job https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774017972; Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217544; Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217501). Real-vm and real-PITR were skipped; this automated regression closes no live Single-Host gate."
       ],
-      "nextStep": "Build one immutable candidate from current Native Main commit e6602a54f1f0efdc8a6b6a6840d92904f2078601, including the Docker-restart E2E harness from PR #479, digest-bound package/SBOM manifest from PR #482 and negative same-cluster restore check from PR #486, then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
+      "nextStep": "Build one immutable candidate from frozen candidate-bearing source e6602a54f1f0efdc8a6b6a6840d92904f2078601 (PR #496 adds QA-only coverage on Main 90d60ffb13e20c8e283fc13c601006291ecf981b), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
       "lastEvidence": "PR #488 merged as b81c30530662d8190d0ebe78018c32cf9d2dee74 adds tests/ops/test_upgrade.py::test_recover_package_identity_mismatch_keeps_explicit_recovery_locked. A signed repair package with a mismatching Debian identity fails after the durable maintenance lock, leaves the journal at explicit-recovery, and performs no service stop/start or dpkg mutation. Native/runtime, Kubernetes and Source/Privacy checks passed (Native https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499; test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774018307; real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217499/job/140774017972; Kubernetes https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217544; Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46079217501). Real-vm and real-PITR were skipped; this automated regression closes no live Single-Host gate."
     },
     {
@@ -1343,5 +1344,10 @@
       "release": "https://github.com/JossefMo1/Werftkern_Kubernetes/releases/tag/v0.2.0-dev.4-test.12",
       "note": "Immutable candidate built from PR #95 merge; release notes/test-kit retained test11 wording before workflow normalization; superseded by test13."
     }
-  ]
+  ],
+  "recentAutomation": {
+    "commit": "90d60ffb13e20c8e283fc13c601006291ecf981b",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/496",
+    "summary": "PR #496 merged as 90d60ffb13e20c8e283fc13c601006291ecf981b. Negative upgrade-completion regressions now cover mixed controller health and a Maintenance-Owner change between fresh observations. Native/runtime (run 46095881606: test 140826988568 success; real-etcd 140826988925 success; real-vm 140827757486 skipped; real-PITR 140827756580 skipped), Kubernetes contracts (run 46095881508) and Source/Privacy (run 46095881484) passed. This is automated regression evidence only; no live Single-Host gate closed and productionReady remains false."
+  }
 }
