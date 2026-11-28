@@ -1,3 +1,11 @@
+## 2026-11-28 – Native-Upgrade-Abschluss: negative Regressionen (PR #496)
+
+PR #496 wurde als [90d60ffb13e20c8e283fc13c601006291ecf981b](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/90d60ffb13e20c8e283fc13c601006291ecf981b) gemergt. Die neue Abdeckung stellt sicher, dass gemischte Controller-Versionen und ein zwischen Beobachtungen wechselnder Maintenance-Owner den nativen Upgrade-Abschluss fail-closed stoppen; weder Unlock noch Journal-Abschluss darf erfolgen.
+
+Native/runtime, real-etcd, Kubernetes-Verträge und Source/Privacy bestanden. real-vm und real-PITR wurden übersprungen. Damit bleibt die automatisierte QA-Abdeckung verbessert, aber kein Live-Single-Host-Gate geschlossen. Countdown **9/100**, `productionReady=false`, Go/No-Go `no-go`.
+
+Nächster Handoff: aus dem eingefrorenen candidate-bearing Quellstand `e6602a54f1f0efdc8a6b6a6840d92904f2078601` einen unveränderlichen Kandidaten bauen, Digests/Manifest/SBOM/Signierung und Provenienz vorbereiten und anschließend den autorisierten Ubuntu-24.04-`run_real_vm_e2e=true`-Lauf auf genau diesem Kandidaten durchführen. HA/Multi-Host und Kubernetes-Production bleiben spätere Erweiterungspfade.
+
 ## 2026-11-28 – PITR-Backup-Zeitfenster fail-closed (PR #494)
 
 [PR #494](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/494) wurde als [1e3c51352db7a753e3d6fbdc05bedb1993df35d0](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/1e3c51352db7a753e3d6fbdc05bedb1993df35d0) gemergt. `backup_identity` akzeptiert jetzt nur Katalogeinträge mit positivem Startzeitpunkt und einem strikt späteren Stopzeitpunkt. Regressionen in `tests/ops/test_pitr.py` weisen fehlende/ungültige Startzeiten sowie ein leeres Zeitfenster zurück. Dadurch kann eine manipulierte pgBackRest-Katalogantwort keine intern widersprüchliche PITR-Identität erzeugen.
