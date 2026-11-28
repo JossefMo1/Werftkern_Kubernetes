@@ -551,6 +551,9 @@ func (d *Docker) Load(ctx context.Context, path string) error {
 	return nil
 }
 func (d *Docker) Logs(ctx context.Context, id string) ([]byte, error) {
+	if !model.ValidID(id) {
+		return nil, errors.New("ALLOCATION_ID_INVALID")
+	}
 	c, _, e := d.inspect(ctx, id)
 	if e != nil {
 		return nil, e
