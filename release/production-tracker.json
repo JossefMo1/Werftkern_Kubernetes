@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-28T11:01:21.929Z",
+  "updatedAt": "2026-11-28T11:04:46.216Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -1348,9 +1348,9 @@
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515",
       "summary": "PR #515 wurde als ca2c8ca8230826708f76de4e0b6f634b2ed81f7a gemergt. Der autorisierte Heartbeat- und Persistenzpfad prüft Lifecycle-Gründe jetzt zentral mit model.ValidReason auf maximal 100 Zeichen und Unicode-Steuerzeichen. Dadurch werden NUL, ESC, TAB, Newline und weitere Control Characters vor der Persistenz bzw. Dashboard-/CLI-Ausgabe fail-closed abgewiesen; Workload- und Allocation-Inventur validiert dieselbe Grenze erneut. Regressionstests decken Modell, Persistenz und Endpoint ab und prüfen, dass ein abgewiesener Heartbeat den Allocation-Zustand nicht verändert. Final bestanden: Native/runtime https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003 mit test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904209 und real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904014, Kubernetes-Verträge https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476952 sowie Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476959. Real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956341132 und real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956340877 wurden übersprungen; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go.",
       "nextCandidateRequired": true,
-      "documentationMergedCommit": "b40e58e5d7ac17c1b397714f27289e8af3174d66",
-      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/475",
-      "documentationSummary": "PR #475 merged as b40e58e5d7ac17c1b397714f27289e8af3174d66. docs/STATUS.md and docs/ROADMAP.md record PR #474's exact checks, the corrected Secret projection test and the skipped real-vm/PITR jobs. This documentation handoff closes no live Single-Host production gate.",
+      "documentationMergedCommit": "8c26db734215f3a7a33ca1d0db24112bcc5d8f41",
+      "documentationPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/516",
+      "documentationSummary": "PR #516 merged as 8c26db734215f3a7a33ca1d0db24112bcc5d8f41. release/production-tracker.json, docs/STATUS.md and docs/ROADMAP.md now record PR #515's lifecycle-reason validation hardening and its exact automated CI evidence. Real-vm and real-PITR were skipped; this documentation handoff closes no live Single-Host production gate. productionReady remains false and the decision remains no-go.",
       "latestHardening": {
         "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515",
         "mergeCommit": "ca2c8ca8230826708f76de4e0b6f634b2ed81f7a",
@@ -1365,7 +1365,7 @@
     "summary": "PR #515 wurde als ca2c8ca8230826708f76de4e0b6f634b2ed81f7a gemergt. Der autorisierte Heartbeat- und Persistenzpfad prüft Lifecycle-Gründe jetzt zentral mit model.ValidReason auf maximal 100 Zeichen und Unicode-Steuerzeichen. Dadurch werden NUL, ESC, TAB, Newline und weitere Control Characters vor der Persistenz bzw. Dashboard-/CLI-Ausgabe fail-closed abgewiesen; Workload- und Allocation-Inventur validiert dieselbe Grenze erneut. Regressionstests decken Modell, Persistenz und Endpoint ab und prüfen, dass ein abgewiesener Heartbeat den Allocation-Zustand nicht verändert. Final bestanden: Native/runtime https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003 mit test https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904209 und real-etcd https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140955904014, Kubernetes-Verträge https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476952 sowie Source/Privacy https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137476959. Real-vm https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956341132 und real-PITR https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46137477003/job/140956340877 wurden übersprungen; kein Live-Single-Host-Production-Gate wurde geschlossen. productionReady bleibt false und Go/No-Go bleibt no-go.",
     "latestPullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515",
     "nextCandidateRequired": true,
-    "updatedAt": "2026-11-28T11:01:21.929Z",
+    "updatedAt": "2026-11-28T11:04:46.216Z",
     "latestHardening": {
       "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/515",
       "mergeCommit": "ca2c8ca8230826708f76de4e0b6f634b2ed81f7a",
