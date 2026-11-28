@@ -386,3 +386,50 @@ func TestEngineReadinessAndPrivatePortBinding(t *testing.T) {
 		t.Fatal(binding)
 	}
 }
+
+func TestPostgresReadinessRejectsNonCanonicalExecIDs(t *testing.T) {
+	cluster := strings.Repeat("a", 32)
+	allocationID := strings.Repeat("b", 32)
+	validID := strings.Repeat("c", 64)
+	for _, tc := range []struct {
+		name      string
+		execID    string
+		wantReady bool
+	}{
+		{name: "valid", execID: validID, wantReady: true},
+		{name: "non-hex", execID: strings.Repeat("g", 64), wantReady: false},
+		{name: "short", execID: strings.Repeat("c", 63), wantReady: false},
+		{name: "long", execID: strings.Repeat("c", 65), wantReady: false},
+		{name: "path", execID: "../exec", wantReady: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			starts := 0
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				switch {
+				case r.URL.Path == "/version":
+					_ = json.NewEncoder(w).Encode(map[string]string{"ApiVersion": "1.51", "MinAPIVersion": "1.41"})
+				case r.URL.Path == "/v1.51/containers/cpr-" + cluster[:8] + "-" + allocationID + "/exec":
+					_ = json.NewEncoder(w).Encode(map[string]string{"Id": tc.execID})
+				case strings.HasSuffix(r.URL.Path, "/start") && strings.HasPrefix(r.URL.Path, "/v1.51/exec/"):
+					starts++
+					w.WriteHeader(http.StatusNoContent)
+				case strings.HasSuffix(r.URL.Path, "/json") && strings.HasPrefix(r.URL.Path, "/v1.51/exec/"):
+					_ = json.NewEncoder(w).Encode(map[string]any{"Running": false, "ExitCode": 0})
+				default:
+					http.NotFound(w, r)
+				}
+			}))
+			d := NewDocker("unused", cluster)
+			d.Client = &http.Client{Transport: redirectTransport{server.URL}}
+			ready := d.postgresReady(context.Background(), allocationID)
+			server.Close()
+			if ready != tc.wantReady {
+				t.Fatalf("ready=%v, want %v for exec id %q", ready, tc.wantReady, tc.execID)
+			}
+			if !tc.wantReady && starts != 0 {
+				t.Fatalf("malformed exec id reached start endpoint: %d", starts)
+			}
+		})
+	}
+}
