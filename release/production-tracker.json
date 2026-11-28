@@ -2,7 +2,7 @@
   "schema": "werftkern/production-tracker/v1",
   "status": "active-not-production-ready",
   "productionReady": false,
-  "updatedAt": "2026-11-28T04:06:49.588Z",
+  "updatedAt": "2026-11-28T04:57:46.309Z",
   "decision": {
     "status": "no-go",
     "decidedAt": "2026-11-22T14:30:00Z",
@@ -80,7 +80,8 @@
       "PR #494 hardens PITR backup timestamp ordering with automated regression tests; its CI evidence does not replace same-candidate Ubuntu backup/restore or PITR live qualification.",
       "PR #496 adds automated fail-closed coverage for mixed controller health and maintenance-owner changes during upgrade completion; it does not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #498 hardens the Native SBOM source-identity contract (full 40-character commit SHA and regular package input); its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signing/provenance evidence.",
-      "PR #500 changes candidate-bearing Docker runtime code; automated checks passed, but the stale v0.2.0-dev.4-test.17 candidate cannot carry this hardening into live evidence."
+      "PR #500 changes candidate-bearing Docker runtime code; automated checks passed, but the stale v0.2.0-dev.4-test.17 candidate cannot carry this hardening into live evidence.",
+      "PR #502 hardens exported Docker log reads; automated checks passed, but the stale v0.2.0-dev.4-test.17 candidate cannot carry this change into live evidence."
     ],
     "successCriteria": [
       "The exact source commit and package digest are recorded in every live evidence file.",
@@ -89,7 +90,7 @@
       "The release remains no-go if any scoped gate is missing or fails."
     ],
     "safeRollback": "Use only the ephemeral runner; preserve evidence on failure and do not reuse a host with Werftkern state.",
-    "nextStep": "Build one immutable candidate from current Native Main commit 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e (including PR #500), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
+    "nextStep": "Build one immutable candidate from current Native Main runtime commit 7a0c7ca35ab9730c995de1aa811f05cd94a64608 (including PR #502), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release."
   },
   "workstreams": [
     {
@@ -770,7 +771,14 @@
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664413/job/140857719332",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664411/job/140857719214",
         "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664373/job/140857719069",
-        "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
+        "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false.",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/502",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/7a0c7ca35ab9730c995de1aa811f05cd94a64608",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665119/job/140870152506",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665119/job/140870152325",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665047/job/140870152159",
+        "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665063/job/140870152092",
+        "PR #502 merged as 7a0c7ca35ab9730c995de1aa811f05cd94a64608. Exported Docker Logs now validates allocation IDs inside the engine layer before inspect/path construction, so invalid empty, short, non-hex or path-like IDs fail closed with ALLOCATION_ID_INVALID without Docker adapter calls. Regression coverage is in internal/engine/docker_test.go. Native run 46109665119 (test 140870152506 success; real-etcd 140870152325 success; real-vm 140870663493 skipped; real-PITR 140870663191 skipped), Kubernetes contracts 46109665047/job/140870152159 and Source/Privacy 46109665063/job/140870152092 passed. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
       ],
       "blockers": [
         "The exact immutable candidate must be rebuilt from the current Main ref at execution time (including merged runtime hardening); the published test.17 artifact is stale.",
@@ -1165,9 +1173,9 @@
   ],
   "reporting": {
     "lastHandoff": {
-      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/500",
-      "mergedCommit": "3544da5bc9807f6fa6e7a5398e5417b0073e9d7e",
-      "summary": "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
+      "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/502",
+      "mergedCommit": "7a0c7ca35ab9730c995de1aa811f05cd94a64608",
+      "summary": "PR #502 merged as 7a0c7ca35ab9730c995de1aa811f05cd94a64608. Exported Docker Logs now validates allocation IDs inside the engine layer before inspect/path construction, so invalid empty, short, non-hex or path-like IDs fail closed with ALLOCATION_ID_INVALID without Docker adapter calls. Regression coverage is in internal/engine/docker_test.go. Native run 46109665119 (test 140870152506 success; real-etcd 140870152325 success; real-vm 140870663493 skipped; real-PITR 140870663191 skipped), Kubernetes contracts 46109665047/job/140870152159 and Source/Privacy 46109665063/job/140870152092 passed. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
     },
     "rules": [
       "Record only actual commits, runs, evidence and blockers.",
@@ -1203,9 +1211,10 @@
       "PR #465 hardens persisted allocation collision validation; its automated checks do not replace same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak or signed-artifact evidence.",
       "PR #474 changed candidate-bearing Native inventory/API validation; automated checks passed but same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak and signed-artifact evidence remain open.",
       "PR #475 is documentation synchronization only and closes no live Single-Host production gate.",
-      "PR #500 changes candidate-bearing Docker runtime code; its automated checks passed, but the stale test.17 candidate cannot carry this hardening into live evidence. Same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak and signed provenance remain open."
+      "PR #500 changes candidate-bearing Docker runtime code; its automated checks passed, but the stale test.17 candidate cannot carry this hardening into live evidence. Same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak and signed provenance remain open.",
+      "PR #502 hardens exported Docker log reads; automated checks passed, but the stale test.17 candidate cannot carry this change into live evidence. Same-candidate Ubuntu installation, backup/restore, upgrade/rollback, load/soak and signed provenance remain open."
     ],
-    "nextStep": "Build one immutable candidate from current Native Main commit 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e (including PR #500), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
+    "nextStep": "Build one immutable candidate from current Native Main runtime commit 7a0c7ca35ab9730c995de1aa811f05cd94a64608 (including PR #502), then run the authorized Ubuntu 24.04 real-vm path with run_real_vm_e2e=true and collect same-candidate installation, Docker/etcd lifecycle, backup/restore, upgrade/rollback, bounded load/soak and signed-artifact/provenance evidence. The connector cannot create the authorized candidate tag or dispatch workflow_dispatch; do not repeat that blocked action. Do not start a seven-VM HA or Kubernetes production lab for this first release.",
     "lastEvidence": [
       "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/465",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/e49ffb3910f2359c81fc0e4aef24165d6d061d88",
@@ -1245,7 +1254,14 @@
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664413/job/140857719332",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664411/job/140857719214",
       "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46105664373/job/140857719069",
-      "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
+      "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false.",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/502",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/commit/7a0c7ca35ab9730c995de1aa811f05cd94a64608",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665119/job/140870152506",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665119/job/140870152325",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665047/job/140870152159",
+      "https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665063/job/140870152092",
+      "PR #502 merged as 7a0c7ca35ab9730c995de1aa811f05cd94a64608. Exported Docker Logs now validates allocation IDs inside the engine layer before inspect/path construction, so invalid empty, short, non-hex or path-like IDs fail closed with ALLOCATION_ID_INVALID without Docker adapter calls. Regression coverage is in internal/engine/docker_test.go. Native run 46109665119 (test 140870152506 success; real-etcd 140870152325 success; real-vm 140870663493 skipped; real-PITR 140870663191 skipped), Kubernetes contracts 46109665047/job/140870152159 and Source/Privacy 46109665063/job/140870152092 passed. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
     ]
   },
   "candidate": {
@@ -1363,8 +1379,8 @@
     }
   ],
   "recentAutomation": {
-    "commit": "3544da5bc9807f6fa6e7a5398e5417b0073e9d7e",
-    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/500",
-    "summary": "PR #500 merged as 3544da5bc9807f6fa6e7a5398e5417b0073e9d7e. Docker container-name path construction now remains total for malformed short cluster IDs: Ensure and Stop return CLUSTER_ID_INVALID before any Docker adapter mutation instead of panicking while slicing the identifier. Regression coverage is in internal/engine/docker_test.go. Native/runtime run 46105664413 (test 140857719106 success; real-etcd 140857719332 success; real-vm 140858275577 skipped; real-PITR 140858275890 skipped), Kubernetes contracts 46105664411/job/140857719214 and Source/Privacy 46105664373/job/140857719069 passed. This is runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
+    "commit": "7a0c7ca35ab9730c995de1aa811f05cd94a64608",
+    "pullRequest": "https://github.com/JossefMo1/Werftkern_Kubernetes/pull/502",
+    "summary": "PR #502 merged as 7a0c7ca35ab9730c995de1aa811f05cd94a64608. Exported Docker Logs now validates allocation IDs inside the engine layer before inspect/path construction, so invalid empty, short, non-hex or path-like IDs fail closed with ALLOCATION_ID_INVALID without Docker adapter calls. Regression coverage is in internal/engine/docker_test.go. Native run 46109665119 (test 140870152506 success; real-etcd 140870152325 success; real-vm 140870663493 skipped; real-PITR 140870663191 skipped), Kubernetes contracts 46109665047/job/140870152159 and Source/Privacy 46109665063/job/140870152092 passed. Runtime/security hardening only; no live Single-Host gate closed and productionReady remains false."
   }
 }

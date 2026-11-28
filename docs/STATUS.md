@@ -1313,3 +1313,12 @@ Exact checks passed: [Native runtime/package workflow](https://github.com/Jossef
 
 The published `v0.2.0-dev.4-test.17` candidate remains stale, non-immutable and unsigned. Build the next immutable candidate from [3544da5b](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/3544da5bc9807f6fa6e7a5398e5417b0073e9d7e) before live Ubuntu installation, backup/restore, upgrade/rollback or load/soak evidence can cover this hardening. `productionReady=false`; the production decision remains `no-go`. HA, multi-host and Kubernetes-production remain deferred.
 
+
+
+## Native Docker log-read hardening — PR #502 (2026-11-28)
+
+[PR #502](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/502) is merged in [7a0c7ca35ab9730c995de1aa811f05cd94a64608](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/7a0c7ca35ab9730c995de1aa811f05cd94a64608). The exported Docker runtime method `Logs` now validates allocation IDs before container-name/path construction. Empty, short, non-hex and path-like IDs fail closed with `ALLOCATION_ID_INVALID` without reaching the Docker adapter; regression coverage is in `internal/engine/docker_test.go`.
+
+Automated evidence: Native [run 46109665119](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665119) passed (test [140870152506](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665119/job/140870152506), real-etcd [140870152325](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665119/job/140870152325)); real-vm [140870663493](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665119/job/140870663493) and real-PITR [140870663191](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665119/job/140870663191) were skipped. Kubernetes contracts [140870152159](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665047/job/140870152159) and Source/Privacy [140870152092](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46109665063/job/140870152092) passed.
+
+This is runtime/security hardening only. It closes no live Single-Host Production gate. The historical v0.2.0-dev.4-test.17 candidate remains stale, unsigned and non-immutable; productionReady remains false/no-go. The next candidate must be built from the current Native runtime commit above. HA/Multi-Host and Kubernetes-Production remain deferred.
