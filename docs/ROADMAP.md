@@ -1,3 +1,10 @@
+## 2026-11-28 — Persistierte Node-Kapazitäten fail-closed begrenzen (PR #513)
+
+- **Architecture/Runtime/Security:** Gemeinsame `MaxNodeCPUMilli`-/`MaxNodeMemoryMiB`-Grenzen gelten jetzt für Heartbeat-Admission und persistierte Node-Validierung. Negative oder oberhalb liegende CPU-/RAM-Werte werden vor Scheduler-Entscheidungen abgewiesen; 0/0-Registrierung bleibt zulässig.
+- **QA/SDET:** Regressionstest für negative Werte, Überschreitungen und beide gültigen Grenzwerte ergänzt. [PR #513](https://github.com/JossefMo1/Werftkern_Kubernetes/pull/513) wurde als [f1d8bb41e4cc389b2e3fef9d194685b359fa7a95](https://github.com/JossefMo1/Werftkern_Kubernetes/commit/f1d8bb41e4cc389b2e3fef9d194685b359fa7a95) gemergt; Native/runtime, real-etcd, Kubernetes-Verträge und Source/Privacy bestanden.
+- **Release:** Real-vm und real-PITR wurden in [Run 46132790805](https://github.com/JossefMo1/Werftkern_Kubernetes/actions/runs/46132790805) übersprungen. Kein Live-Single-Host-Gate ist geschlossen; `productionReady=false`, Go/No-Go `no-go`, Countdown **9/100**.
+- **Nächster Handoff:** Unveränderlichen Kandidaten exakt aus diesem Main-Commit bauen und die Ubuntu-24.04-Single-Host-Qualifikation mit `run_real_vm_e2e=true` auf demselben Kandidaten ausführen. Der erste Release bleibt Native Single-Host; HA/Multi-Host und Kubernetes-Production bleiben spätere Erweiterungspfade.
+
 ## 2026-11-28 — Strict-JSON-Migrationsgrenze härten (PR #511)
 
 - **Runtime/Architecture/Security:** `prepareMigration` validiert die vollständigen Quellbytes vor der typisierten Dekodierung. Doppelte und case-foldierte JSON-Mitglieder werden fail-closed zurückgewiesen.
