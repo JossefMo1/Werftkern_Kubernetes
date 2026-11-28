@@ -327,9 +327,11 @@ func TestStateRejectsMalformedEvents(t *testing.T) {
 		{"timestamp", func(e *Event) { e.At = time.Time{} }},
 		{"action_empty", func(e *Event) { e.Action = "" }},
 		{"action_control", func(e *Event) { e.Action = "workload.accepted\n" }},
+		{"action_escape", func(e *Event) { e.Action = "workload.accepted\x1b[31m" }},
 		{"action_too_long", func(e *Event) { e.Action = strings.Repeat("a", 101) }},
 		{"target_empty", func(e *Event) { e.Target = "" }},
 		{"target_control", func(e *Event) { e.Target = "demo\t" }},
+		{"target_unicode_control", func(e *Event) { e.Target = "demo\u0085" }},
 		{"target_too_long", func(e *Event) { e.Target = strings.Repeat("a", 101) }},
 	}
 	for _, tc := range cases {

@@ -269,7 +269,7 @@ type Event struct {
 // bounded and control-free to prevent log/terminal injection from tampered
 // state while retaining forward-compatible action names.
 func (e Event) Validate() error {
-	if !ValidID(e.ID) || e.At.IsZero() || len(e.Action) == 0 || len(e.Action) > 100 || len(e.Target) == 0 || len(e.Target) > 100 || strings.ContainsAny(e.Action, "\x00\r\n\t") || strings.ContainsAny(e.Target, "\x00\r\n\t") {
+	if !ValidID(e.ID) || e.At.IsZero() || len(e.Action) == 0 || !ValidReason(e.Action) || len(e.Target) == 0 || !ValidReason(e.Target) {
 		return errors.New("EVENT_RECORD_INVALID")
 	}
 	return nil
